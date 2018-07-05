@@ -289,6 +289,11 @@ private:
 
   bool same_emote = false;
 
+  int m_log_limit = 200;
+  bool m_scroll_down = false;
+  bool m_previously_scroll_down = false;
+  bool m_scroll_type_changed = false;
+
 //  int note_amount = 0;
 
   QVector<evi_type> local_evidence_list;
