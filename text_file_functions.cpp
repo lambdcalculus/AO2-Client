@@ -587,11 +587,34 @@ QString AOApplication::get_char_name(QString p_char)
 
 QString AOApplication::get_showname(QString p_char)
 {
-  QString f_result = read_char_ini(p_char, "showname", "[Options]", "[Time]");
+  QString f_result = read_showname(p_char);
+  if(f_result == "")
+    f_result = read_char_ini(p_char, "showname", "[Options]", "[Time]");
 
   if (f_result == "")
     return p_char;
   else return f_result;
+}
+
+QString AOApplication::read_showname(QString p_char)
+{
+  QString f_filename = get_base_path() + "configs/shownames.ini";
+  QFile f_file(f_filename);
+  if(!f_file.open(QIODevice::ReadOnly))
+  { qDebug() << "Error reading" << f_filename; return ""; }
+
+  QTextStream in(&f_file);
+  while(!in.atEnd())
+  {
+    QString f_line = in.readLine();
+    if(!f_line.startsWith(p_char))
+      continue;
+
+    QStringList line_elements = f_line.split("=");
+    if(line_elements.at(0).trimmed() == p_char)
+      return line_elements.at(1).trimmed();
+  }
+  return "";
 }
 
 QString AOApplication::get_char_side(QString p_char)

@@ -362,7 +362,7 @@ void Courtroom::set_widgets()
   blip_rate = ao_app->read_blip_rate();
   blank_blip = ao_app->get_blank_blip();
 
-  QString filename = "courtroom_design.ini";
+  QString filename = design_ini;
   pos_size_type f_courtroom = ao_app->get_element_dimensions("courtroom", filename);
 
   if (f_courtroom.width < 0 || f_courtroom.height < 0)
@@ -544,7 +544,7 @@ void Courtroom::set_widgets()
   ui_shout_down->set_image("shoutdown.png");
   ui_shout_down->hide();
 
-  if( ao_app->read_design_ini( "enable_single_shout", ao_app->get_theme_path() + "courtroom_config.ini" ) == "true" ) // courtroom_config.ini necessary
+  if( ao_app->read_design_ini( "enable_single_shout", ao_app->get_theme_path() + cc_config_ini ) == "true" ) // courtroom_config.ini necessary
   {
     for(int i = 0; i < ui_shouts.size(); ++i)
     {
@@ -710,7 +710,7 @@ void Courtroom::set_fonts()
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
 {
-  QString design_file = "courtroom_fonts.ini";
+  QString design_file = fonts_ini;
   int f_weight = ao_app->get_font_size(p_identifier, design_file);
   QString class_name = widget->metaObject()->className();
 
@@ -753,7 +753,7 @@ void Courtroom::set_dropdowns()
 
 void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
 {
-  QString filename = "courtroom_design.ini";
+  QString filename = design_ini;
 
   pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
 
@@ -779,8 +779,8 @@ void Courtroom::set_shouts()
 
 void Courtroom::handle_music_anim(QString p_identifier_a, QString p_identifier_b)
 {
-  QString file_a = "courtroom_design.ini";
-  QString file_b = "courtroom_fonts.ini";
+  QString file_a = design_ini;
+  QString file_b = fonts_ini;
   pos_size_type res_a = ao_app->get_element_dimensions(p_identifier_a, file_a);
   pos_size_type res_b = ao_app->get_element_dimensions(p_identifier_b, file_a);
   float speed = static_cast<float>(ao_app->get_font_size(p_identifier_a + "_speed", file_b));
@@ -805,9 +805,9 @@ void Courtroom::set_char_rpc()
 {
   rpc_char_list.clear();
 
-  QFile config_file(ao_app->get_base_path() + "configs/rpccharlist.ini");
+  QFile config_file(ao_app->get_base_path() + rpc_ini);
   if (!config_file.open(QIODevice::ReadOnly))
-  { qDebug() << "Error reading rpccharlist.ini"; return; }
+  { qDebug() << "Error reading" << ao_app->get_base_path() + rpc_ini; return; }
 
   QTextStream in(&config_file);
 
@@ -825,7 +825,7 @@ void Courtroom::set_char_rpc()
 
 void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
-  QString filename = "courtroom_design.ini";
+  QString filename = design_ini;
 
 
   pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
@@ -918,6 +918,9 @@ void Courtroom::enter_courtroom(int p_cid)
   else
   {
     f_char = ao_app->get_char_name(char_list.at(m_cid).name);
+    QString r_char = f_char;
+    r_char.remove(QRegExp("[()]")); // regex for removing parenthesis
+
     if(!rpc_char_list.contains(f_char.toLower()))
     {
       ao_app->discord->toggle(1);
@@ -927,7 +930,7 @@ void Courtroom::enter_courtroom(int p_cid)
       ao_app->discord->toggle(0);
     }
 
-    ao_app->discord->state_character(f_char.toStdString());
+    ao_app->discord->state_character(r_char.toStdString());
   }
 
   current_char = f_char;
@@ -1035,7 +1038,7 @@ void Courtroom::list_music()
 {
   ui_music_list->clear();
 
-  QString f_file = "courtroom_design.ini";
+  QString f_file = design_ini;
 
   QBrush found_brush(ao_app->get_color("found_song_color", f_file));
   QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
@@ -1067,7 +1070,7 @@ void Courtroom::list_sfx()
   ui_sfx_list->clear();
   sfx_names.clear();
 
-  QString f_file = "courtroom_design.ini";
+  QString f_file = design_ini;
 
   QStringList sfx_list = ao_app->get_sfx_list();
 
@@ -1109,7 +1112,7 @@ void Courtroom::list_sfx()
 
 void Courtroom::list_note_files()
 {
-  QString f_config = ao_app->get_base_path() + "configs/filesabstract.ini";
+  QString f_config = ao_app->get_base_path() + file_select_ini;
   QFile f_file(f_config);
   if(!f_file.open(QIODevice::ReadOnly))
   { qDebug() << "Couldn't open" << f_config; return; }
@@ -2056,7 +2059,7 @@ void Courtroom::handle_song(QStringList *p_contents)
 
 void Courtroom::handle_wtce(QString p_wtce)
 {
-  QString sfx_file = "courtroom_sounds.ini";
+  QString sfx_file = cc_sounds_ini;
 
   //witness testimony
   if (p_wtce == "testimony1")

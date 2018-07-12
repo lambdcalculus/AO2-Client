@@ -229,6 +229,16 @@ private:
   //Generate a File Name based on the time you launched the client
   QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM yyyy hh.mm.ss.z'.txt'");
 
+  //configuration files locations
+  QString rpc_ini = "configs/rpccharlist.ini";
+  QString file_select_ini = "configs/filesabstract.ini";
+  QString shownames_ini = "configs/shownames.ini";
+  //theme files locations
+  QString design_ini = "courtroom_design.ini";
+  QString fonts_ini = "courtroom_fonts.ini";
+  QString cc_config_ini = "courtroom_config.ini";
+  QString cc_sounds_ini = "courtroom_sounds.ini";
+
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
