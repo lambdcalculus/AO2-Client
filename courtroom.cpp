@@ -2355,6 +2355,7 @@ void Courtroom::on_cycle_clicked()
   }
 
   set_shouts();
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::cycle_shout(int p_index)
@@ -2599,6 +2600,7 @@ void Courtroom::on_note_button_clicked()
     load_note();
     ui_vp_notepad_image->show();
     ui_vp_notepad->show();
+    ui_vp_notepad->setFocus();
     note_shown = true;
   }
   else
@@ -2606,6 +2608,7 @@ void Courtroom::on_note_button_clicked()
     save_note();
     ui_vp_notepad_image->hide();
     ui_vp_notepad->hide();
+    ui_ic_chat_message->setFocus();
     note_shown = false;
   }
 }

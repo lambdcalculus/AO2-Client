@@ -196,8 +196,6 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   {
       widget->setFont(font);
 
-      qDebug() << "font =" << font;
-
       QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
       bool bold = (bool)ao_app->get_font_size(p_identifier + "_bold", design_file); // is the font bold or not?
