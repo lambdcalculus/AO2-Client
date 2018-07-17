@@ -1450,8 +1450,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     //handles cases 1-7 (5-7 are DRO only)
     if(objection_mod >= 1 && objection_mod <= ui_shouts.size())
     {
-      ui_vp_objection->play(shout_names[objection_mod-1], f_char, f_custom_theme);
-      m_shout_player->play(shout_names[objection_mod-1] + ".wav", f_char);
+      ui_vp_objection->play(shout_names.at(objection_mod-1), f_char, f_custom_theme);
+      m_shout_player->play(shout_names.at(objection_mod-1) + ".wav", f_char);
     }
     else
       qDebug() << "W: Shout identifier unknown" << objection_mod;
@@ -2101,7 +2101,7 @@ void Courtroom::check_shouts()
   QString theme_path = ao_app->get_theme_path();
   for(int i = 0; i < ui_shouts.size(); ++i)
   {
-    if(file_exists(char_path + shout_names[i] + ".gif") || file_exists(theme_path + shout_names[i] + ".gif"))
+    if(file_exists(char_path + shout_names.at(i) + ".gif") || file_exists(theme_path + shout_names.at(i) + ".gif") || file_exists(theme_path + shout_names.at(i) + ".apng"))
       shouts_enabled[i] = true;
     else shouts_enabled[i] = false;
   }
@@ -2315,10 +2315,10 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 void Courtroom::reset_shout_buttons()
 {
   for(int i = 0; i < ui_shouts.size(); ++i)
-    ui_shouts[i]->set_image(shout_names[i] + ".png");
+    ui_shouts[i]->set_image(shout_names.at(i) + ".png");
 
   if(m_objection_state != 0)
-    ui_shouts[m_objection_state-1]->set_image(shout_names[m_objection_state-1] + "_selected.png");
+    ui_shouts.at(m_objection_state-1)->set_image(shout_names.at(m_objection_state-1) + "_selected.png");
 }
 
 void Courtroom::on_shout_clicked()

@@ -20,40 +20,53 @@ void AOMovie::set_play_once(bool p_play_once)
   play_once = p_play_once;
 }
 
-void AOMovie::play(QString p_gif, QString p_char, QString p_custom_theme)
+void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
 {
   m_movie->stop();
 
-  QString gif_path;
+  QVector<QString> f_vec;
+
+  QString file_path = "";
 
   QString custom_path;
-  if (p_gif == "custom")
-    custom_path = ao_app->get_character_path(p_char) + p_gif + ".gif";
+  if (p_file == "custom")
+    custom_path = ao_app->get_character_path(p_char) + p_file;
   else
-    custom_path = ao_app->get_character_path(p_char) + p_gif + "_bubble.gif";
+    custom_path = ao_app->get_character_path(p_char) + p_file + "_bubble";
 
-  QString custom_theme_path = ao_app->get_base_path() + "themes/" + p_custom_theme + "/" + p_gif + ".gif";
-  QString theme_path = ao_app->get_theme_path() + p_gif + ".gif";
-  QString default_theme_path = ao_app->get_default_theme_path() + p_gif + ".gif";
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
-  QString default_placeholder_path = ao_app->get_default_theme_path() + "placeholder.gif";
+  f_vec.push_back(custom_path);
 
-  if (file_exists(custom_path))
-    gif_path = custom_path;
-  else if (file_exists(custom_theme_path))
-    gif_path = custom_theme_path;
-  else if (file_exists(theme_path))
-    gif_path = theme_path;
-  else if (file_exists(default_theme_path))
-    gif_path = default_theme_path;
-  else if (file_exists(placeholder_path))
-    gif_path = placeholder_path;
-  else if (file_exists(default_placeholder_path))
-    gif_path = default_placeholder_path;
-  else
-    gif_path = "";
+  QString custom_theme_path = ao_app->get_base_path() + "themes/" + p_custom_theme + "/" + p_file;
+  QString theme_path = ao_app->get_theme_path() + p_file;
+  QString default_theme_path = ao_app->get_default_theme_path() + p_file;
+  QString placeholder_path = ao_app->get_theme_path() + "placeholder";
+  QString default_placeholder_path = ao_app->get_default_theme_path() + "placeholder";
 
-  m_movie->setFileName(gif_path);
+  f_vec.push_back(custom_theme_path);
+  f_vec.push_back(theme_path);
+  f_vec.push_back(default_theme_path);
+  f_vec.push_back(placeholder_path);
+  f_vec.push_back(default_placeholder_path);
+
+  for(auto &f_file : f_vec)
+  {
+    bool found = false;
+    for (auto &ext : decltype(f_vec){".apng", ".gif"})
+    {
+      QString fullPath = f_file + ext;
+      found = file_exists(fullPath);
+      if (found)
+      {
+        file_path = fullPath;
+        break;
+      }
+    }
+
+    if (found)
+      break;
+  }
+
+  m_movie->setFileName(file_path);
 
   this->show();
   m_movie->setScaledSize(this->size());
@@ -76,7 +89,7 @@ void AOMovie::frame_change(int n_frame)
     this->stop();
 
     //signal connected to courtroom object, let it figure out what to do
-    done();
+    emit done();
   }
 }
 

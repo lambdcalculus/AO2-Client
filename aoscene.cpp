@@ -19,9 +19,16 @@ AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 
 void AOScene::set_image(QString p_image)
 {
-  QString animated_background_path = ao_app->get_background_path() + p_image + ".gif";
+  QString animated_background_path = ao_app->get_background_path() + p_image;
   QString background_path = ao_app->get_background_path() + p_image + ".png";
   QString default_path = ao_app->get_default_background_path() + p_image;
+
+  for (auto& ext : QVector<QString>{".apng", ".gif"})
+  {
+    QString full_path = animated_background_path + ext;
+    if (file_exists(full_path))
+      break;
+  }
 
   QPixmap animated_background(animated_background_path);
   QPixmap background(background_path);
