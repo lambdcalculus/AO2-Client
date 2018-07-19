@@ -924,7 +924,8 @@ void Courtroom::enter_courtroom(int p_cid)
   {
     f_char = ao_app->get_char_name(char_list.at(m_cid).name);
     QString r_char = f_char;
-    r_char.remove(QRegExp("[()]")); // regex for removing parenthesis
+    QRegularExpression re(QString::fromUtf8("[-`~!@#$%^&*()—+=|:;<>«»,.?/{}\'\"\\[\\]\\d]")); // regex for removing non letter (except _) characters
+    r_char.remove(re);
 
     if(!rpc_char_list.contains(f_char.toLower()))
     {
