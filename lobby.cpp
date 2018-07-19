@@ -150,6 +150,7 @@ void Lobby::set_widgets()
   ui_loading_background->hide();
 
   set_fonts();
+  set_stylesheets();
 }
 
 void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
@@ -178,6 +179,26 @@ void Lobby::set_fonts()
     set_font(ui_chatname, "chatname");
     set_font(ui_chatmessage, "chatmessage");
     set_font(ui_loading_text, "loading_text");
+    set_font(ui_server_list, "server_list");
+}
+
+void Lobby::set_stylesheet(QWidget *widget, QString target_tag)
+{
+  QString f_file = "lobby_stylesheets.css";
+  QString style_sheet_string = ao_app->get_stylesheet(target_tag, f_file);
+  if (style_sheet_string != "")
+    widget->setStyleSheet(style_sheet_string);
+}
+
+void Lobby::set_stylesheets()
+{
+  set_stylesheet(ui_player_count, "[PLAYER COUNT]");
+  set_stylesheet(ui_description, "[DESCRIPTION]");
+  set_stylesheet(ui_chatbox, "[CHAT BOX]");
+  set_stylesheet(ui_chatname, "[CHAT NAME]");
+  set_stylesheet(ui_chatmessage, "[CHAT MESSAGE]");
+  set_stylesheet(ui_loading_text, "[LOADING TEXT]");
+  set_stylesheet(ui_server_list, "[SERVER LIST]");
 }
 
 void Lobby::set_font(QWidget *widget, QString p_identifier)

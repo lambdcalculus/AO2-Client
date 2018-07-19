@@ -573,7 +573,7 @@ void Courtroom::set_widgets()
   ui_reload_theme->set_image("reloadtheme.png");
 
   set_size_and_pos(ui_call_mod, "call_mod");
-  //  ui_call_mod->setText("Call mod")
+//  ui_call_mod->setText("Call mod")
   ui_call_mod->set_image("callmod.png");
 
   set_size_and_pos(ui_theme_list, "theme_list");
@@ -737,9 +737,10 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
 
 void Courtroom::set_dropdown(QWidget *widget, QString target_tag)
 {
-  QString style_sheet_string = ao_app->get_stylesheet(target_tag);
-
-  widget->setStyleSheet(style_sheet_string);
+  QString f_file = "courtroom_stylesheets.css";
+  QString style_sheet_string = ao_app->get_stylesheet(target_tag, f_file);
+  if (style_sheet_string != "")
+   widget->setStyleSheet(style_sheet_string);
 }
 
 void Courtroom::set_dropdowns()
@@ -783,12 +784,15 @@ void Courtroom::handle_music_anim(QString p_identifier_a, QString p_identifier_b
   QString file_b = fonts_ini;
   pos_size_type res_a = ao_app->get_element_dimensions(p_identifier_a, file_a);
   pos_size_type res_b = ao_app->get_element_dimensions(p_identifier_b, file_a);
-  float speed = static_cast<float>(ao_app->get_font_size(p_identifier_a + "_speed", file_b));
+  float speed = (float)(ao_app->get_font_size(p_identifier_a + "_speed", file_b));
 
   QFont f_font = ui_vp_music_name->font();
   QFontMetrics fm(f_font);
-  int dist = fm.width(ui_vp_music_name->toPlainText());
-  int time = static_cast<int>(1000000*dist/speed);
+  int dist;
+  if ( ao_app->read_design_ini( "enable_const_music_speed", ao_app->get_theme_path() + cc_config_ini ) == "true")
+    dist = res_b.width;
+  else dist = fm.width(ui_vp_music_name->toPlainText());
+  int time = (int)(1000000*dist/speed);
   music_anim->setLoopCount(-1);
   music_anim->setDuration(time);
   music_anim->setStartValue(QRect(res_b.width + res_b.x, res_a.y, res_a.width, res_a.height));
@@ -885,10 +889,11 @@ void Courtroom::set_background(QString p_background)
 
   current_background = p_background;
   QString bg_path = get_background_path();
+  QVector<QString> exts{".apng", ".gif", ".png"};
 
-  is_ao2_bg = file_exists(bg_path + "defensedesk.png") &&
-              file_exists(bg_path + "prosecutiondesk.png") &&
-              file_exists(bg_path + "stand.png");
+  is_ao2_bg = file_exists(bg_path + "defensedesk", exts) &&
+              file_exists(bg_path + "prosecutiondesk", exts) &&
+              file_exists(bg_path + "stand", exts);
 
   if (is_ao2_bg)
   {

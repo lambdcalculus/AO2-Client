@@ -430,9 +430,9 @@ QString AOApplication::get_font_name(QString p_identifier, QString p_file)
     return f_result;
 }
 
-QString AOApplication::get_stylesheet(QString target_tag)
+QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
 {
-  QString design_ini_path = get_theme_path() + "courtroom_config.ini";
+  QString design_ini_path = get_theme_path() + p_file;
 
   QFile design_ini;
 

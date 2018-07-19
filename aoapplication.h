@@ -177,8 +177,8 @@ public:
   //Returns the value of p_search_line within target_tag and terminator_tag
   QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
 
-  //Returns the text between target_tag and terminator_tag in courtroom_config.ini
-  QString get_stylesheet(QString target_tag);
+  //Returns the text between target_tag and terminator_tag in p_file
+  QString get_stylesheet(QString target_tag, QString p_file);
 
   //Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);
