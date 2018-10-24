@@ -23,6 +23,7 @@
 #include "aoevidencedisplay.h"
 #include "aonotepad.h"
 #include "aonotearea.hpp"
+#include "aolabel.hpp"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -41,6 +42,7 @@
 #include <QComboBox>
 #include <QDateTime>
 #include <QPropertyAnimation>
+#include <QStack>
 
 class AOApplication;
 
@@ -49,7 +51,6 @@ class Courtroom : public QMainWindow
   Q_OBJECT
 public:
   explicit Courtroom(AOApplication *p_ao_app);
-  virtual ~Courtroom();
 
   void append_char(char_type p_char){char_list.append(p_char);}
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
@@ -131,6 +132,8 @@ public:
 
   void set_shouts();
 
+  void set_effects();
+
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message);
@@ -156,7 +159,7 @@ public:
   void handle_song(QStringList *p_contents);
 
   //animates music text
-  void handle_music_anim(QString p_identifier_a, QString p_identifier_b);
+  void handle_music_anim();
 
   void play_preanim();
 
@@ -169,8 +172,9 @@ public:
 
   void check_connection_received();
 
-  //checks whether shout files are found
+  //checks whether shout/effect files are found
   void check_shouts();
+  void check_effects();
 
 private:
   AOApplication *ao_app = nullptr;
@@ -248,6 +252,10 @@ private:
 
   QString previous_ic_message = "";
 
+  QString m_string_color = "";
+
+  QStack<QString> m_color_stack;
+
   bool testimony_in_progress = false;
 
   //in milliseconds
@@ -296,8 +304,6 @@ private:
   int emote_columns = 5;
   int emote_rows = 2;
   int max_emotes_on_page = 10;
-
-  bool same_emote = false;
 
   int m_log_limit = 200;
   bool m_scroll_down = false;
@@ -360,7 +366,9 @@ private:
   AOImage* ui_vp_music_display_a = nullptr;
   AOImage* ui_vp_music_display_b = nullptr;
 
-  QTextEdit*          ui_vp_music_name = nullptr;
+  AOImage* ui_vp_showname_image = nullptr;
+
+  QTextEdit* ui_vp_music_name = nullptr;
   QPropertyAnimation* music_anim = nullptr;
 
   QWidget *ui_vp_music_area;
@@ -388,7 +396,7 @@ private:
 
   QLineEdit *ui_sfx_search;
 
-  QWidget *ui_emotes;
+  QWidget *ui_emotes = nullptr;
   QVector<AOEmoteButton*> ui_emote_list;
   AOButton *ui_emote_left;
   AOButton *ui_emote_right;
@@ -399,22 +407,31 @@ private:
   AOImage *ui_defense_bar;
   AOImage *ui_prosecution_bar;
 
-  QLabel *ui_music_label;
-  QLabel *ui_sfx_label;
-  QLabel *ui_blip_label;
+  AOLabel *ui_music_label;
+  AOLabel *ui_sfx_label;
+  AOLabel *ui_blip_label;
 
   //buttons to cycle through shouts
   AOButton* ui_shout_up = nullptr;
   AOButton* ui_shout_down = nullptr;
+  //buttons to cycle through effects
+  AOButton* ui_effect_up = nullptr;
+  AOButton* ui_effect_down = nullptr;
 
   //holds all the shout button objects
   QVector<AOButton*> ui_shouts;
+  //holds all the effect button objects
+  QVector<AOButton*> ui_effects;
 
   //holds all the names for sound files for the shouts
   QVector<QString> shout_names = {"holdit", "objection", "takethat", "custom", "gotit", "crossswords", "counteralt"};
 
-  //holds whether the sound file exists for a determined shout
+  //holds all the names for sound/anim files for the effects
+  QVector<QString> effect_names = {"effect_flash", "effect_gloom", "effect_investigation", "effect_makeargument"};
+
+  //holds whether the sound file exists for a determined shout/effect
   QVector<bool> shouts_enabled;
+  QVector<bool> effects_enabled;
 
 //  AOButton* ui_shout_hold_it      = nullptr; // 1
 //  AOButton* ui_shout_objection    = nullptr; // 2
@@ -442,6 +459,12 @@ private:
   QCheckBox *ui_pre;
   QCheckBox *ui_flip;
   QCheckBox *ui_guard;
+  QCheckBox *ui_hidden;
+
+  QVector<QCheckBox*> ui_checks; // 0 = pre, 1 = flip, 2 = guard, 3 = hidden
+  QVector<AOLabel*> ui_labels; // 0 = music, 1 = sfx, 2 = blip
+  QVector<AOImage*> ui_label_images;
+  QVector<QString> label_images = {"Pre", "Flip", "Guard", "Hidden", "Music", "SFX", "Blip"};
 
   AOButton* ui_effect_flash = nullptr;
   AOButton* ui_effect_gloom = nullptr;
@@ -482,7 +505,7 @@ private:
   AOImage *ui_char_select_background;
 
   //abstract widget to hold char buttons
-  QWidget *ui_char_buttons;
+  QWidget *ui_char_buttons = nullptr;
 
   QVector<AOCharButton*> ui_char_button_list;
   AOImage *ui_selector;
@@ -568,6 +591,8 @@ private slots:
 
   void cycle_shout(int p_index);
 
+  void cycle_effect(int p_index);
+
   void on_add_button_clicked();
 
   void on_delete_button_clicked();
@@ -622,6 +647,8 @@ private slots:
   void on_pre_clicked();
   void on_flip_clicked();
   void on_guard_clicked();
+
+  void on_hidden_clicked();
 
   void on_sfx_list_clicked();
 

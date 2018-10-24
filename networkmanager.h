@@ -43,13 +43,13 @@ public:
   const QString ms_nosrv_hostname = "master.aceattorneyonline.com";
 #endif
 
-  const int ms_port = 27016;
-  const int timeout_milliseconds = 2000;
+  static const int ms_port = 27016;
+  static const int timeout_milliseconds = 2000;
 
-  const int ms_reconnect_delay_ms = 7000;
+  static const int ms_reconnect_delay_ms = 7000;
 
   // kind of arbitrary
-  const size_t buffer_max_size = 16384;
+  static const size_t buffer_max_size = 16384;
 
   bool ms_partial_packet = false;
   QString ms_temp_packet = "";

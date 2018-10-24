@@ -469,6 +469,45 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
   return f_text;
 }
 
+QVector<QStringList> AOApplication::get_highlight_color()
+{
+  QString design_ini_path = get_theme_path() + "courtroom_config.ini";
+
+  QFile design_ini;
+
+  design_ini.setFileName(design_ini_path);
+
+  QVector<QStringList> f_vec;
+
+  if(!design_ini.open(QIODevice::ReadOnly))
+    return f_vec;
+
+  QTextStream in(&design_ini);
+
+  bool tag_found = false;
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith("[HIGHLIGHTS]", Qt::CaseInsensitive))
+    {
+      tag_found = true;
+      continue;
+    }
+
+    if(tag_found)
+      {
+        if((line.startsWith("[") && line.endsWith("]")))
+           break;
+        f_vec.append(line.split("="));
+      }
+  }
+
+  design_ini.close();
+  return f_vec;
+}
+
 QString AOApplication::get_sfx(QString p_identifier)
 {
   QString design_ini_path = get_theme_path() + "courtroom_sounds.ini";
