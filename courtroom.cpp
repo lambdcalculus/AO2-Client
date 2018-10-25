@@ -185,7 +185,13 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   ui_ooc_toggle = new AOButton(this, ao_app);
   ui_witness_testimony = new AOButton(this, ao_app);
+  ui_witness_testimony->setProperty("wtce_id", "1");
   ui_cross_examination = new AOButton(this, ao_app);
+  ui_cross_examination->setProperty("wtce_id", "2");
+  ui_investigation = new AOButton(this, ao_app);
+  ui_investigation->setProperty("wtce_id", "3");
+  ui_nonstop = new AOButton(this, ao_app);
+  ui_nonstop->setProperty("wtce_id", "4");
 
   ui_change_character = new AOButton(this, ao_app);
   ui_reload_theme = new AOButton(this, ao_app);
@@ -301,6 +307,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
 
+  connect(ui_music_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_music_list_clicked()));
   connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
 
   for(auto & shout : ui_shouts)
@@ -333,8 +340,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
   connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(on_sfx_search_edited(QString)));
 
-  connect(ui_witness_testimony, SIGNAL(clicked()), this, SLOT(on_witness_testimony_clicked()));
-  connect(ui_cross_examination, SIGNAL(clicked()), this, SLOT(on_cross_examination_clicked()));
+  connect(ui_witness_testimony, SIGNAL(clicked()), this, SLOT(on_wtce_clicked()));
+  connect(ui_cross_examination, SIGNAL(clicked()), this, SLOT(on_wtce_clicked()));
+  connect(ui_investigation, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
+  connect(ui_nonstop, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
@@ -589,7 +598,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_effects[0], "effect_flash");
   set_size_and_pos(ui_effects[1], "effect_gloom");
   set_size_and_pos(ui_effects[2], "effect_investigation");
-  set_size_and_pos(ui_effects[2], "effect_makeargument");
+  set_size_and_pos(ui_effects[3], "effect_makeargument");
   reset_effect_buttons();
 
   set_size_and_pos(ui_effect_up, "effect_up");
@@ -616,6 +625,10 @@ void Courtroom::set_widgets()
   ui_witness_testimony->set_image("witnesstestimony.png");
   set_size_and_pos(ui_cross_examination, "cross_examination");
   ui_cross_examination->set_image("crossexamination.png");
+  set_size_and_pos(ui_investigation, "investigation");
+  ui_investigation->set_image("investigation.png");
+  set_size_and_pos(ui_nonstop, "nonstop");
+  ui_investigation->set_image("nonstop.png");
   set_size_and_pos(ui_call_mod, "call_mod");
 
 
@@ -949,7 +962,7 @@ void Courtroom::set_shouts()
 void Courtroom::set_effects()
 {
   for(auto & effect : ui_effects) effect->hide();
-  ui_effects[m_effect_state]->show();
+  ui_effects[m_effect_current]->show();
 }
 
 void Courtroom::handle_music_anim()
@@ -1148,6 +1161,8 @@ void Courtroom::enter_courtroom(int p_cid)
   {
     ui_witness_testimony->show();
     ui_cross_examination->show();
+    ui_investigation->show();
+    ui_nonstop->show();
     ui_defense_minus->show();
     ui_defense_plus->show();
     ui_prosecution_minus->show();
@@ -1157,6 +1172,8 @@ void Courtroom::enter_courtroom(int p_cid)
   {
     ui_witness_testimony->hide();
     ui_cross_examination->hide();
+    ui_investigation->hide();
+    ui_nonstop->hide();
     ui_defense_minus->hide();
     ui_defense_plus->hide();
     ui_prosecution_minus->hide();
@@ -1788,6 +1805,7 @@ void Courtroom::handle_chatmessage_3()
 
   ui_vp_showname_image->show();
   QVector<QString> exts = {".png", ".jpg", ".bmp"};
+
   QString ext = file_exists(ao_app->get_character_path(f_char) + "showname", exts);
   if(ext != "" && !chatmessage_is_empty && ao_app->read_design_ini("enable_showname_image", ao_app->get_theme_path() + cc_config_ini) == "true")
   {
@@ -1830,7 +1848,7 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_effect->set_play_once(false);
     ui_vp_effect->play("effect_gloom");
   }
-  else if (effect > 0 && effect < ui_effects.size())
+  else if (effect.toInt() > 1 && effect.toInt() <= ui_effects.size())
   {
     QString s_eff = effect_names.at(effect.toInt() - 1);
     m_sfx_player->play(ao_app->get_sfx(s_eff));
@@ -2365,6 +2383,16 @@ void Courtroom::handle_wtce(QString p_wtce)
     ui_vp_wtce->play("crossexamination");
     testimony_in_progress = false;
   }
+  else if (p_wtce == "testimony3")
+  {
+    m_sfx_player->play(ao_app->get_sfx("investigation"));
+    ui_vp_wtce->play("investigation");
+  }
+  else if (p_wtce == "testimony4")
+  {
+    m_sfx_player->play(ao_app->get_sfx("nonstop"));
+    m_sfx_player->play("nonstop");
+  }
 }
 
 void Courtroom::set_hp_bar(int p_bar, int p_state)
@@ -2431,6 +2459,8 @@ void Courtroom::on_ooc_return_pressed()
     {
       ui_witness_testimony->show();
       ui_cross_examination->show();
+      ui_investigation->show();
+      ui_nonstop->show();
       ui_defense_minus->show();
       ui_defense_plus->show();
       ui_prosecution_minus->show();
@@ -2440,6 +2470,8 @@ void Courtroom::on_ooc_return_pressed()
     {
       ui_witness_testimony->hide();
       ui_cross_examination->hide();
+      ui_investigation->hide();
+      ui_nonstop->hide();
       ui_defense_minus->hide();
       ui_defense_plus->hide();
       ui_prosecution_minus->hide();
@@ -2601,6 +2633,11 @@ void Courtroom::on_mute_list_clicked(QModelIndex p_index)
   */
 }
 
+void Courtroom::on_music_list_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
+
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 {
   if (is_muted)
@@ -2676,7 +2713,7 @@ void Courtroom::cycle_shout(int p_index)
 void Courtroom::cycle_effect(int p_index)
 {
   int n = ui_effects.size();
-  do { m_effect_state = (m_effect_state - p_index + n) % n; } while( !effects_enabled[m_effect_state] );
+  do { m_effect_current = (m_effect_current - p_index + n) % n; qDebug() << m_effect_current;} while( !effects_enabled[m_effect_current] );
 
   set_effects();
 }
@@ -2792,6 +2829,21 @@ void Courtroom::on_cross_examination_clicked()
     return;
 
   ao_app->send_server_packet(new AOPacket("RT#testimony2#%"));
+
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_wtce_clicked()
+{
+  if (is_muted)
+    return;
+
+  AOButton* f_sig = static_cast<AOButton*>(sender());
+  QString id = f_sig->property("wtce_id").toString();
+
+  QString packet = QString("RT#testimony%1#%").arg(id);
+
+  ao_app->send_server_packet(new AOPacket(packet));
 
   ui_ic_chat_message->setFocus();
 }

@@ -288,6 +288,7 @@ private:
   int m_effect_state = 0;
   int m_text_color = 0;
   int m_shout_state = 0;
+  int m_effect_current = 0;
   bool is_presenting_evidence = false;
 
   int defense_bar_state = 0;
@@ -445,6 +446,8 @@ private:
 
   AOButton *ui_witness_testimony;
   AOButton *ui_cross_examination;
+  AOButton *ui_investigation;
+  AOButton *ui_nonstop;
 
   AOButton *ui_change_character;
   AOButton *ui_reload_theme;
@@ -561,6 +564,7 @@ private slots:
   void on_ooc_return_pressed();
 
   void on_music_search_edited(QString p_text);
+  void on_music_list_clicked();
   void on_music_list_double_clicked(QModelIndex p_model);
 
   void on_sfx_search_edited(QString p_text);
@@ -632,6 +636,7 @@ private slots:
 
   void on_witness_testimony_clicked();
   void on_cross_examination_clicked();
+  void on_wtce_clicked();
 
   void on_change_character_clicked();
   void on_reload_theme_clicked();
