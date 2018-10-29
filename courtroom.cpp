@@ -58,6 +58,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   m_shout_player->set_volume(0);
   m_mod_player = new AOSfxPlayer(this, ao_app);
   m_mod_player->set_volume(50);
+  m_cycle_player = new AOSfxPlayer(this, ao_app);
+  m_cycle_player->set_volume(35);
   m_music_player = new AOMusicPlayer(this, ao_app);
   m_music_player->set_volume(0);
 
@@ -597,8 +599,8 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_effects[0], "effect_flash");
   set_size_and_pos(ui_effects[1], "effect_gloom");
-  set_size_and_pos(ui_effects[2], "effect_investigation");
-  set_size_and_pos(ui_effects[3], "effect_makeargument");
+  set_size_and_pos(ui_effects[2], "effect_question");
+  set_size_and_pos(ui_effects[3], "effect_pow");
   reset_effect_buttons();
 
   set_size_and_pos(ui_effect_up, "effect_up");
@@ -628,7 +630,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_investigation, "investigation");
   ui_investigation->set_image("investigation.png");
   set_size_and_pos(ui_nonstop, "nonstop");
-  ui_investigation->set_image("nonstop.png");
+  ui_nonstop->set_image("nonstop.png");
   set_size_and_pos(ui_call_mod, "call_mod");
 
 
@@ -1829,31 +1831,51 @@ void Courtroom::handle_chatmessage_3()
   default:
     qDebug() << "W: invalid anim_state: " << f_anim_state;
   case 3:
-    //    handle_char_anim(ui_vp_player_char);
     ui_vp_player_char->play_idle(f_char, f_emote);
     anim_state = 3;
   }
 
   QString effect = m_chatmessage[EFFECT_STATE];
+  QStringList offset = ao_app->get_effect_offset(f_char, effect.toInt());
+
+  ui_vp_effect->move(ui_viewport->x() + offset.at(0).toInt(), ui_viewport->y() + offset.at(1).toInt());
+
+  QStringList overlay = ao_app->get_overlay(f_char, effect.toInt());
+  QString overlay_name = overlay.at(0);
+  QString overlay_sfx = overlay.at(1);
+
   if (effect == "1")
   {
-    m_sfx_player->play(ao_app->get_sfx("effect_flash"));
+    if (overlay_sfx == "")
+      overlay_sfx = ao_app->get_sfx("effect_flash");
+    m_sfx_player->play(overlay_sfx);
     ui_vp_effect->set_play_once(true);
-    ui_vp_effect->play("effect_flash");
+    if (overlay_name == "")
+      overlay_name = "effect_flash";
+    ui_vp_effect->play(overlay_name, f_char);
     realization_timer->start(60);
   }
   else if (effect == "2")
   {
-    m_sfx_player->play(ao_app->get_sfx("effect_gloom"));
+    if (overlay_sfx == "")
+      overlay_sfx = ao_app->get_sfx("effect_gloom");
+    m_sfx_player->play(overlay_sfx);
     ui_vp_effect->set_play_once(false);
-    ui_vp_effect->play("effect_gloom");
+    if (overlay_name == "")
+      overlay_name = "effect_gloom";
+    ui_vp_effect->play(overlay_name, f_char);
   }
   else if (effect.toInt() > 1 && effect.toInt() <= ui_effects.size())
   {
     QString s_eff = effect_names.at(effect.toInt() - 1);
-    m_sfx_player->play(ao_app->get_sfx(s_eff));
+    if (overlay_sfx == "")
+      overlay_sfx = ao_app->get_sfx(s_eff);
+    qDebug() << overlay_sfx << ao_app->get_sfx(s_eff);
+    m_sfx_player->play(overlay_sfx);
     ui_vp_effect->set_play_once(true);
-    ui_vp_effect->play(s_eff);
+    if (overlay_name == "")
+      overlay_name = s_eff;
+    ui_vp_effect->play(overlay_name, f_char);
   }
 
   QString f_message = m_chatmessage[MESSAGE];
@@ -2391,7 +2413,7 @@ void Courtroom::handle_wtce(QString p_wtce)
   else if (p_wtce == "testimony4")
   {
     m_sfx_player->play(ao_app->get_sfx("nonstop"));
-    m_sfx_player->play("nonstop");
+    ui_vp_wtce->play("nonstop");
   }
 }
 
@@ -2697,6 +2719,9 @@ void Courtroom::on_cycle_clicked()
   default:
     break;
   }
+
+  if(ao_app->read_design_ini("enable_cycle_ding", ao_app->get_theme_path() + cc_config_ini) == "true")
+    m_cycle_player->play(ao_app->get_sfx("cycle"));
 
   set_shouts();
   ui_ic_chat_message->setFocus();

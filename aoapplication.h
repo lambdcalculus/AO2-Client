@@ -222,6 +222,12 @@ public:
   //Returns the preanimation name of p_char's p_emote
   QString get_pre_emote(QString p_char, int p_emote);
 
+  //Returns x,y offset for effect p_effect
+  QStringList get_effect_offset(QString p_char, int p_effect);
+
+  //Returns overlay at p_effect in char_path/overlay
+  QStringList get_overlay(QString p_char, int p_effect);
+
   //Returns the sfx of p_char's p_emote
   QString get_sfx_name(QString p_char, int p_emote);
 

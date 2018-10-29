@@ -709,7 +709,7 @@ int AOApplication::get_ao2_preanim_duration(QString p_char, QString p_emote)
 
 int AOApplication::get_emote_number(QString p_char)
 {
-  QString f_result = read_char_ini(p_char, "number", "[Emotions]", "[SoundN]");
+  QString f_result = read_char_ini(p_char, "number", "[Emotions]", "[Offsets]");
 
   if (f_result == "")
     return 0;
@@ -718,7 +718,7 @@ int AOApplication::get_emote_number(QString p_char)
 
 QString AOApplication::get_emote_comment(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
@@ -732,7 +732,7 @@ QString AOApplication::get_emote_comment(QString p_char, int p_emote)
 
 QString AOApplication::get_pre_emote(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
@@ -746,7 +746,7 @@ QString AOApplication::get_pre_emote(QString p_char, int p_emote)
 
 QString AOApplication::get_emote(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
@@ -760,7 +760,7 @@ QString AOApplication::get_emote(QString p_char, int p_emote)
 
 int AOApplication::get_emote_mod(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
@@ -774,7 +774,7 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
 
 int AOApplication::get_desk_mod(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[SoundN]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
@@ -786,6 +786,26 @@ int AOApplication::get_desk_mod(QString p_char, int p_emote)
     return -1;
 
   else return string_result.toInt();
+}
+
+QStringList AOApplication::get_effect_offset(QString p_char, int p_effect)
+{
+  QStringList f_result = read_char_ini(p_char, QString::number(p_effect), "[Offsets]", "[Overlay]").split(",");
+
+  if (f_result.size() < 2)
+    return decltype(f_result) {0, 0};
+
+  return f_result;
+}
+
+QStringList AOApplication::get_overlay(QString p_char, int p_effect)
+{
+  QStringList f_result = read_char_ini(p_char, QString::number(p_effect), "[Overlay]", "[SoundN]").split("#");
+
+  if (f_result.size() < 2)
+    f_result.push_back("");
+
+  return f_result;
 }
 
 QString AOApplication::get_sfx_name(QString p_char, int p_emote)

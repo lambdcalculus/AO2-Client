@@ -333,6 +333,7 @@ private:
   AOSfxPlayer*   m_mod_player = nullptr;
   AOMusicPlayer* m_music_player = nullptr;
   AOSfxPlayer*   m_sfx_player = nullptr;
+  AOSfxPlayer*   m_cycle_player = nullptr;
   AOShoutPlayer* m_shout_player = nullptr;
 
   AOImage *ui_background;
@@ -428,7 +429,7 @@ private:
   QVector<QString> shout_names = {"holdit", "objection", "takethat", "custom", "gotit", "crossswords", "counteralt"};
 
   //holds all the names for sound/anim files for the effects
-  QVector<QString> effect_names = {"effect_flash", "effect_gloom", "effect_investigation", "effect_makeargument"};
+  QVector<QString> effect_names = {"effect_flash", "effect_gloom", "effect_question", "effect_pow"};
 
   //holds whether the sound file exists for a determined shout/effect
   QVector<bool> shouts_enabled;
