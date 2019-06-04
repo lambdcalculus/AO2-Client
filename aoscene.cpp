@@ -27,7 +27,10 @@ void AOScene::set_image(QString p_image)
   {
     QString full_path = animated_background_path + ext;
     if (file_exists(full_path))
+    {
+      animated_background_path = full_path;
       break;
+    }
   }
 
   QPixmap animated_background(animated_background_path);

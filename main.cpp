@@ -6,6 +6,7 @@
 #include "courtroom.h"
 #include <QPluginLoader>
 #include <QDebug>
+#include <cstdio>
 
 int main(int argc, char *argv[])
 {
@@ -20,7 +21,6 @@ int main(int argc, char *argv[])
   if (!apng.load())
   {
     qDebug() << apng.errorString();
-    exit(1);
   }
 
   AOApplication main_app(argc, argv);

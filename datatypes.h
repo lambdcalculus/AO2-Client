@@ -106,7 +106,8 @@ enum CHAT_MESSAGE
     EVIDENCE_ID,
     FLIP,
     EFFECT_STATE,
-    TEXT_COLOR
+    TEXT_COLOR,
+    SHOWNAME
 };
 
 enum COLOR

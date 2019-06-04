@@ -55,6 +55,20 @@ public:
   void append_char(char_type p_char){char_list.append(p_char);}
   void append_evidence(evi_type p_evi){evidence_list.append(p_evi);}
   void append_music(QString f_music){music_list.append(f_music);}
+  void append_area(QString f_area){area_list.append(f_area);}
+  void clear_music(){music_list.clear();}
+  void clear_areas(){area_list.clear();}
+
+  void fix_last_area()
+  {
+    if (area_list.size() > 0)
+    {
+      QString malplaced = area_list.last();
+      area_list.removeLast();
+      append_music(malplaced);
+//      qDebug() << "what" << malplaced;
+    }
+  }
 
   //sets position of widgets based on theme ini files
   void set_widgets();
@@ -120,6 +134,8 @@ public:
   //helper function that populates ui_music_list with the contents of music_list
   void list_music();
 
+  void list_areas();
+
   void list_sfx();
 
   void list_themes();
@@ -163,6 +179,8 @@ public:
 
   void play_preanim();
 
+  QString parse_message(QString message);
+
   //plays the witness testimony or cross examination animation based on argument
   void handle_wtce(QString p_wtce);
 
@@ -191,7 +209,9 @@ private:
   QVector<char_type> char_list;
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
+  QVector<QString> area_list;
   QVector<QString> sfx_names;
+  QVector<QString> area_names;
   QVector<QString> note_list;
 
   QSignalMapper *char_button_mapper;
@@ -246,7 +266,7 @@ private:
   //every time point in char.inis times this equals the final time
   const int time_mod = 40;
 
-  static const int chatmessage_size = 15;
+  static const int chatmessage_size = 16;
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
@@ -279,6 +299,9 @@ private:
 
   //character id, which index of the char_list the player is
   int m_cid = -1;
+
+  bool showed = true;
+
   //cid and this may differ in cases of ini-editing
   QString current_char = "";
 
@@ -426,10 +449,12 @@ private:
   QVector<AOButton*> ui_effects;
 
   //holds all the names for sound files for the shouts
-  QVector<QString> shout_names = {"holdit", "objection", "takethat", "custom", "gotit", "crossswords", "counteralt"};
+//  QVector<QString> shout_names = {"holdit", "objection", "takethat", "custom", "gotit", "crossswords", "counteralt"};
+  QVector<QString> shout_names;
 
   //holds all the names for sound/anim files for the effects
-  QVector<QString> effect_names = {"effect_flash", "effect_gloom", "effect_question", "effect_pow"};
+  //QVector<QString> effect_names = {"effect_flash", "effect_gloom", "effect_question", "effect_pow"};
+  QVector<QString> effect_names;
 
   //holds whether the sound file exists for a determined shout/effect
   QVector<bool> shouts_enabled;
@@ -453,6 +478,8 @@ private:
   AOButton *ui_change_character;
   AOButton *ui_reload_theme;
   AOButton *ui_call_mod;
+  AOButton *ui_switch_area_music;
+
 
   QComboBox *ui_theme_list;
 
@@ -538,6 +565,8 @@ private:
   void save_note();
   void save_textlog(QString p_text);
 
+  void set_bullets();
+
   void set_char_rpc();
 
 
@@ -566,7 +595,9 @@ private slots:
 
   void on_music_search_edited(QString p_text);
   void on_music_list_clicked();
+  void on_area_list_clicked();
   void on_music_list_double_clicked(QModelIndex p_model);
+  void on_area_list_double_clicked(QModelIndex p_model);
 
   void on_sfx_search_edited(QString p_text);
 
@@ -642,6 +673,8 @@ private slots:
   void on_change_character_clicked();
   void on_reload_theme_clicked();
   void on_call_mod_clicked();
+
+  void on_switch_area_music_clicked();
 
   void on_confirm_theme_clicked();
   void on_note_button_clicked();

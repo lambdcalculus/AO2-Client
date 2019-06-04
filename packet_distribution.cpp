@@ -354,6 +354,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
+    bool music_turn = false;
+    int areas = 0;
+
     for (int n_element = 0 ; n_element < f_contents.size() ; n_element += 2)
     {
       if (f_contents.at(n_element).toInt() != loaded_music)
@@ -368,12 +371,36 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
 
-      w_courtroom->append_music(f_music);
-    }
+      if (music_turn)
+      {
+          w_courtroom->append_music(f_music);
+      }
+      else
+      {
+          if (f_music.endsWith(".wav") ||
+                  f_music.endsWith(".mp3") ||
+                  f_music.endsWith(".mp4") ||
+                  f_music.endsWith(".ogg") ||
+                  f_music.endsWith(".opus"))
+          {
+              music_turn = true;
+              areas--;
+              w_courtroom->fix_last_area();
+              w_courtroom->append_music(f_music);
+          }
+          else
+          {
+              w_courtroom->append_area(f_music);
+              areas++;
+          }
+      }
+      qDebug() << f_music;
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = ((loaded_chars + loaded_evidence + loaded_music) / static_cast<double>(total_loading_size)) * 100;
-    w_lobby->set_loading_value(loading_value);
+      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+      int loading_value = ((loaded_chars + loaded_evidence + loaded_music) / static_cast<double>(total_loading_size)) * 100;
+      w_lobby->set_loading_value(loading_value);
+
+    }
 
     QString next_packet_number = QString::number(((loaded_music - 1) / 10) + 1);
     send_server_packet(new AOPacket("AM#" + next_packet_number + "#%"));
@@ -427,20 +454,88 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (!courtroom_constructed)
       goto end;
 
+    bool musics_time = false;
+    int areas = 0;
+
     for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
     {
       ++loaded_music;
 
       w_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" + QString::number(music_list_size));
 
-      w_courtroom->append_music(f_contents.at(n_element));
+      if (musics_time)
+      {
+          w_courtroom->append_music(f_contents.at(n_element));
+      }
+      else
+      {
+          if (f_contents.at(n_element).endsWith(".wav") ||
+                  f_contents.at(n_element).endsWith(".mp3") ||
+                  f_contents.at(n_element).endsWith(".mp4") ||
+                  f_contents.at(n_element).endsWith(".ogg") ||
+                  f_contents.at(n_element).endsWith(".opus"))
+          {
+              musics_time = true;
+              w_courtroom->fix_last_area();
+              w_courtroom->append_music(f_contents.at(n_element));
+              areas--;
+          }
+          else
+          {
+              w_courtroom->append_area(f_contents.at(n_element));
+              areas++;
+          }
+      }
+
+      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+      int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
+      w_lobby->set_loading_value(loading_value);
+
     }
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
-    w_lobby->set_loading_value(loading_value);
-
     send_server_packet(new AOPacket("RD#%"));
+  }
+  else if (header == "FM")
+  {
+    if (!courtroom_constructed)
+      goto end;
+
+    w_courtroom->clear_music();
+    w_courtroom->clear_areas();
+
+    bool musics_time = false;
+    int areas = 0;
+
+    for (int n_element = 0 ; n_element < f_contents.size() ; ++n_element)
+    {
+      if (musics_time)
+      {
+          w_courtroom->append_music(f_contents.at(n_element));
+      }
+      else
+      {
+          if (f_contents.at(n_element).endsWith(".wav") ||
+                  f_contents.at(n_element).endsWith(".mp3") ||
+                  f_contents.at(n_element).endsWith(".mp4") ||
+                  f_contents.at(n_element).endsWith(".ogg") ||
+                  f_contents.at(n_element).endsWith(".opus"))
+          {
+              musics_time = true;
+              w_courtroom->fix_last_area();
+              w_courtroom->append_music(f_contents.at(n_element));
+              areas--;
+//              qDebug() << "wtf!!" << f_contents.at(n_element);
+          }
+          else
+          {
+              w_courtroom->append_area(f_contents.at(n_element));
+              areas++;
+          }
+      }
+    }
+
+    w_courtroom->list_music();
+    w_courtroom->list_areas();
   }
   else if (header == "DONE")
   {

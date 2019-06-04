@@ -1,4 +1,5 @@
 #include "aocharmovie.h"
+#include "courtroom.h"
 
 #include "misc_functions.h"
 #include "file_functions.h"
@@ -20,22 +21,47 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   connect(preanim_timer, SIGNAL(timeout()), this, SLOT(timer_done()));
 }
 
-void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
+void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix, bool show)
 {
-  QString original_path = ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower() + ".gif";
-  QString alt_path = ao_app->get_character_path(p_char) + p_emote.toLower() + ".png";
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder.gif";
-  QString placeholder_default_path = ao_app->get_default_theme_path() + "placeholder.gif";
+  QStringList f_vec;
+
+  QString original_path = ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower(); // .gif
+  QString alt_path = ao_app->get_character_path(p_char) + p_emote.toLower(); // .png
+  QString placeholder_path = ao_app->get_theme_path() + "placeholder"; // .gif
+  QString placeholder_default_path = ao_app->get_default_theme_path() + "placeholder"; // .gif
   QString gif_path;
 
-  if (file_exists(original_path))
-    gif_path = original_path;
-  else if (file_exists(alt_path))
-    gif_path = alt_path;
-  else if (file_exists(placeholder_path))
-    gif_path = placeholder_path;
-  else
-    gif_path = placeholder_default_path;
+//  if (file_exists(original_path))
+//    gif_path = original_path;
+//  else if (file_exists(alt_path))
+//    gif_path = alt_path;
+//  else if (file_exists(placeholder_path))
+//    gif_path = placeholder_path;
+//  else
+//    gif_path = placeholder_default_path;
+
+  f_vec.push_back(original_path);
+  f_vec.push_back(alt_path);
+  f_vec.push_back(placeholder_path);
+  f_vec.push_back(placeholder_default_path);
+
+  for(auto &f_file : f_vec)
+  {
+    bool found = false;
+    for (auto &ext : decltype(f_vec){".apng", ".gif", ".png"})
+    {
+      QString fullPath = f_file + ext;
+      found = file_exists(fullPath);
+      if (found)
+      {
+        gif_path = fullPath;
+        break;
+      }
+    }
+
+    if (found)
+      break;
+  }
 
   m_movie->stop();
   m_movie->setFileName(gif_path);
@@ -56,11 +82,12 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix)
   delete reader;
 
   this->show();
+  if(!show) this->hide();
 
   m_movie->start();
 }
 
-void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
+void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration, bool show)
 {
   QString gif_path = ao_app->get_character_path(p_char) + p_emote.toLower();
 
@@ -106,10 +133,10 @@ void AOCharMovie::play_pre(QString p_char, QString p_emote, int duration)
 
 
   m_movie->setSpeed(static_cast<int>(percentage_modifier));
-  play(p_char, p_emote, "");
+  play(p_char, p_emote, "", show);
 }
 
-void AOCharMovie::play_talking(QString p_char, QString p_emote)
+void AOCharMovie::play_talking(QString p_char, QString p_emote, bool show)
 {
   QString gif_path = ao_app->get_character_path(p_char) + "(b)" + p_emote.toLower();
 
@@ -119,10 +146,10 @@ void AOCharMovie::play_talking(QString p_char, QString p_emote)
 
   play_once = false;
   m_movie->setSpeed(100);
-  play(p_char, p_emote, "(b)");
+  play(p_char, p_emote, "(b)", show);
 }
 
-void AOCharMovie::play_idle(QString p_char, QString p_emote)
+void AOCharMovie::play_idle(QString p_char, QString p_emote, bool show)
 {
   QString gif_path = ao_app->get_character_path(p_char) + "(a)" + p_emote.toLower();
 
@@ -132,7 +159,7 @@ void AOCharMovie::play_idle(QString p_char, QString p_emote)
 
   play_once = false;
   m_movie->setSpeed(100);
-  play(p_char, p_emote, "(a)");
+  play(p_char, p_emote, "(a)", show);
 }
 
 void AOCharMovie::stop()
