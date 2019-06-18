@@ -152,7 +152,11 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
   }
   else
   {
-    if (will_retry)
+    if (!lobby_constructed)
+    {
+      return;
+    }
+    else if (will_retry)
     {
       w_lobby->append_error("Error connecting to master server. Will try again in "
                           + QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
