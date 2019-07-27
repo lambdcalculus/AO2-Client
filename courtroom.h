@@ -177,6 +177,9 @@ public:
   //animates music text
   void handle_music_anim();
 
+  //handle server-side clock animation and display
+  void handle_clock(QString time);
+
   void play_preanim();
 
   QString parse_message(QString message);
@@ -350,6 +353,8 @@ private:
   //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
+  int current_clock = -1;
+
   QString current_background = "gs4";
 
   AOBlipPlayer*  m_blip_player = nullptr;
@@ -397,6 +402,8 @@ private:
   QPropertyAnimation* music_anim = nullptr;
 
   QWidget *ui_vp_music_area;
+
+  AOMovie *ui_vp_clock;
 
   QTextEdit* ui_ic_chatlog = nullptr;
   QVector<record_type_ptr> m_ic_records;

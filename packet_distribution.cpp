@@ -659,6 +659,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (courtroom_constructed && f_contents.size() > 0)
       w_courtroom->mod_called(f_contents.at(0));
   }
+  else if (header == "CL")
+  {
+    w_courtroom->handle_clock(f_contents.at(1));
+  }
 
   end:
 

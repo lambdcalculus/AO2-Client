@@ -84,6 +84,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_music_name->setReadOnly(true);
   music_anim = new QPropertyAnimation(ui_vp_music_name, "geometry", this);
 
+  ui_vp_clock = new AOMovie(this, ao_app);
+  ui_vp_clock->set_play_once(true);
+
   ui_vp_evidence_display = new AOEvidenceDisplay(this, ao_app);
 
   ui_vp_chatbox = new AOImage(this, ao_app);
@@ -552,6 +555,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_vp_music_display_b, "music_display_b");
   ui_vp_music_display_b->set_image("music_display_b.png");
   ui_vp_music_display_b->show();
+
+  set_size_and_pos(ui_vp_clock, "clock");
+  ui_vp_clock->show();
 
   ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
 
@@ -1048,6 +1054,15 @@ void Courtroom::handle_music_anim()
   music_anim->setStartValue(QRect(res_b.width + res_b.x, res_a.y, res_a.width, res_a.height));
   music_anim->setEndValue(QRect(-dist + res_a.x, res_a.y, res_a.width, res_a.height));
   music_anim->start();
+}
+
+void Courtroom::handle_clock(QString time)
+{
+  current_clock = time.toInt();
+
+  QString string = "hours\\" + time; // expected to be 0, 1, 2...
+  qDebug() << "hours:" << string;
+  ui_vp_clock->play(string);
 }
 
 void Courtroom::set_window_title(QString p_title)
@@ -1868,7 +1883,17 @@ void Courtroom::handle_chatmessage_2() // handles IC
   QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
 
   if (chatbox == "")
-    ui_vp_chatbox->set_image("chatmed.png");
+    if (ao_app->read_design_ini("daynight_theme", ao_app->get_theme_path() + cc_config_ini) == "true")
+    {
+      if (current_clock < 0)
+        ui_vp_chatbox->set_image("chatmed.png");
+      else if (current_clock >= 10 && current_clock < 22)
+        ui_vp_chatbox->set_image("chatmed_day.png");
+      else
+        ui_vp_chatbox->set_image("chatmed_night.png");
+    }
+    else
+      ui_vp_chatbox->set_image("chatmed.png");
   else
   {
     QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
@@ -3262,7 +3287,7 @@ void Courtroom::on_set_notes_clicked()
 void Courtroom::set_bullets()
 {
   QString somethingsomethingpath = ao_app->get_base_path() + "configs/" + "wow.ini";
-  qDebug() << "aye wee cunt is" << somethingsomethingpath;
+  //qDebug() << "aye wee cunt is" << somethingsomethingpath;
 
   QString thing = "";
   int i = 0;
