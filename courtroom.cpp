@@ -1887,7 +1887,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
     {
       if (current_clock < 0)
         ui_vp_chatbox->set_image("chatmed.png");
-      else if (current_clock >= 10 && current_clock < 22)
+      else if (current_clock >= 7 && current_clock < 22)
         ui_vp_chatbox->set_image("chatmed_day.png");
       else
         ui_vp_chatbox->set_image("chatmed_night.png");
