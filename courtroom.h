@@ -150,6 +150,8 @@ public:
 
   void set_effects();
 
+  void set_wtce();
+
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
   void append_server_chatmessage(QString p_name, QString p_message);
@@ -196,6 +198,7 @@ public:
   //checks whether shout/effect files are found
   void check_shouts();
   void check_effects();
+  void check_wtce();
 
 private:
   AOApplication *ao_app = nullptr;
@@ -315,7 +318,9 @@ private:
   int m_text_color = 0;
   int m_shout_state = 0;
   int m_effect_current = 0;
+  int m_wtce_current = 0;
   bool is_presenting_evidence = false;
+  bool is_judge = false;
 
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
@@ -449,11 +454,16 @@ private:
   //buttons to cycle through effects
   AOButton* ui_effect_up = nullptr;
   AOButton* ui_effect_down = nullptr;
+  //buttons to cycle through wtce
+  AOButton* ui_wtce_up = nullptr;
+  AOButton* ui_wtce_down = nullptr;
 
   //holds all the shout button objects
   QVector<AOButton*> ui_shouts;
   //holds all the effect button objects
   QVector<AOButton*> ui_effects;
+  //holds all the shout buttons objects
+  QVector<AOButton*> ui_wtce;
 
   //holds all the names for sound files for the shouts
 //  QVector<QString> shout_names = {"holdit", "objection", "takethat", "custom", "gotit", "crossswords", "counteralt"};
@@ -463,9 +473,14 @@ private:
   //QVector<QString> effect_names = {"effect_flash", "effect_gloom", "effect_question", "effect_pow"};
   QVector<QString> effect_names;
 
-  //holds whether the sound file exists for a determined shout/effect
+  //holds all the names for sound/anim files for the shouts
+  //QVector<QString> shout_names = {"witnesstestimony", "crossexamination", "investigation", "nonstop"};
+  QVector<QString> wtce_names;
+
+  //holds whether the animation file exists for a determined shout/effect
   QVector<bool> shouts_enabled;
   QVector<bool> effects_enabled;
+  QVector<bool> wtce_enabled;
 
 //  AOButton* ui_shout_hold_it      = nullptr; // 1
 //  AOButton* ui_shout_objection    = nullptr; // 2
@@ -636,6 +651,8 @@ private slots:
 
   void cycle_effect(int p_index);
 
+  void cycle_wtce(int p_index);
+
   void on_add_button_clicked();
 
   void on_delete_button_clicked();
@@ -675,6 +692,7 @@ private slots:
 
   void on_witness_testimony_clicked();
   void on_cross_examination_clicked();
+  void reset_wtce_buttons();
   void on_wtce_clicked();
 
   void on_change_character_clicked();

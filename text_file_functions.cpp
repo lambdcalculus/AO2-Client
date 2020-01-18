@@ -508,6 +508,48 @@ QVector<QStringList> AOApplication::get_highlight_color()
   return f_vec;
 }
 
+QString AOApplication::get_spbutton(QString p_tag, int index)
+{
+  QString design_ini_path = get_theme_path() + "courtroom_config.ini";
+
+  QFile design_ini;
+
+  design_ini.setFileName(design_ini_path);
+
+  QString res = "";
+
+  if(!design_ini.open(QIODevice::ReadOnly))
+    return res;
+
+  QTextStream in(&design_ini);
+
+  bool tag_found = false;
+
+  while(!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if(line.startsWith(p_tag, Qt::CaseInsensitive))
+    {
+      tag_found = true;
+      continue;
+    }
+
+    if(tag_found)
+      {
+        if((line.startsWith("[") && line.endsWith("]")))
+           break;
+
+        QStringList line_contents = line.split("=");
+        if(line_contents.at(0).trimmed() == QString::number(index))
+          res = line_contents.at(1);
+      }
+  }
+
+  design_ini.close();
+  return res;
+}
+
 QStringList AOApplication::get_effect(int index)
 {
   QString design_ini_path = get_theme_path() + "courtroom_config.ini";
@@ -546,49 +588,6 @@ QStringList AOApplication::get_effect(int index)
 
         if(res.size() == 1)
           res.append("1");
-
-      }
-  }
-
-  design_ini.close();
-  return res;
-}
-
-QString AOApplication::get_shout(int index)
-{
-  QString design_ini_path = get_theme_path() + "courtroom_config.ini";
-
-  QFile design_ini;
-
-  design_ini.setFileName(design_ini_path);
-
-  QString res = "";
-
-  if(!design_ini.open(QIODevice::ReadOnly))
-    return res;
-
-  QTextStream in(&design_ini);
-
-  bool tag_found = false;
-
-  while(!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if(line.startsWith("[SHOUTS]", Qt::CaseInsensitive))
-    {
-      tag_found = true;
-      continue;
-    }
-
-    if(tag_found)
-      {
-        if((line.startsWith("[") && line.endsWith("]")))
-           break;
-
-        QStringList line_contents = line.split("=");
-        if(line_contents.at(0).trimmed() == QString::number(index))
-          res = line_contents.at(1);
       }
   }
 

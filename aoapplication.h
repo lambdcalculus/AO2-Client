@@ -183,11 +183,14 @@ public:
   //Returns string list (characters, color) from p_file
   QVector<QStringList> get_highlight_color();
 
+  //Returns special button on cc_config according to index
+  QString get_spbutton(QString p_tag, int index);
+
   //Returns effect on cc_config according to index
   QStringList get_effect(int index);
 
-  //Returns shout on cc_config according to index
-  QString get_shout(int index);
+  //Returns wtce on cc_config according to index
+  QStringList get_wtce(int index);
 
   //Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);

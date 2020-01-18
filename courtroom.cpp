@@ -177,7 +177,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   int shout_number = ao_app->read_design_ini("shout_number", ao_app->get_theme_path() + cc_config_ini).toInt();
   shouts_enabled.resize(shout_number);
-  ui_shouts.resize(shout_number); // 7 is the number of shouts
+  ui_shouts.resize(shout_number);
 
   for(int i = 0; i < ui_shouts.size(); ++i)
   {
@@ -191,14 +191,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_shout_down->setProperty("cycle_id", 0);
 
   ui_ooc_toggle = new AOButton(this, ao_app);
-  ui_witness_testimony = new AOButton(this, ao_app);
-  ui_witness_testimony->setProperty("wtce_id", "1");
-  ui_cross_examination = new AOButton(this, ao_app);
-  ui_cross_examination->setProperty("wtce_id", "2");
-  ui_investigation = new AOButton(this, ao_app);
-  ui_investigation->setProperty("wtce_id", "3");
-  ui_nonstop = new AOButton(this, ao_app);
-  ui_nonstop->setProperty("wtce_id", "4");
 
   ui_change_character = new AOButton(this, ao_app);
   ui_reload_theme = new AOButton(this, ao_app);
@@ -249,6 +241,21 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_effect_down->setProperty("cycle_id", 2);
   ui_effect_up = new AOButton(this, ao_app);
   ui_effect_up->setProperty("cycle_id", 3);
+
+  int wtce_number = ao_app->read_design_ini("wtce_number", ao_app->get_theme_path() + cc_config_ini).toInt();
+  wtce_enabled.resize(wtce_number);
+  ui_wtce.resize(wtce_number);
+
+  for(int i = 0; i < ui_wtce.size(); ++i)
+  {
+    ui_wtce[i] = new AOButton(this, ao_app);
+    ui_wtce[i]->setProperty("wtce_id", i+1);
+  }
+
+  ui_wtce_up = new AOButton(this, ao_app);
+  ui_wtce_up->setProperty("cycle_id", 5);
+  ui_wtce_down = new AOButton(this, ao_app);
+  ui_wtce_down->setProperty("cycle_id", 4);
 
   ui_mute = new AOButton(this, ao_app);
 
@@ -333,6 +340,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_effect_up, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
   connect(ui_effect_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
 
+  for(auto & wtce : ui_wtce)
+    connect(wtce, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
+
+  connect(ui_wtce_up, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
+  connect(ui_wtce_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
+
   connect(ui_mute, SIGNAL(clicked()), this, SLOT(on_mute_clicked()));
 
   connect(ui_defense_minus, SIGNAL(clicked()), this, SLOT(on_defense_minus_clicked()));
@@ -350,11 +363,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
   connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(on_sfx_search_edited(QString)));
-
-  connect(ui_witness_testimony, SIGNAL(clicked()), this, SLOT(on_wtce_clicked()));
-  connect(ui_cross_examination, SIGNAL(clicked()), this, SLOT(on_wtce_clicked()));
-  connect(ui_investigation, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
-  connect(ui_nonstop, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
@@ -432,23 +440,29 @@ void Courtroom::set_widgets()
     this->resize(f_courtroom.width, f_courtroom.height);
   }
 
-  qDebug() << "burn my";
-  effect_names.clear();
-  for(int i = 1; i <= ui_effects.size(); ++i)
-  {
-    QStringList thingy = ao_app->get_effect(i);
-    if(!thingy.isEmpty())
-      effect_names.append(thingy.at(0).trimmed());
-  }
-
   shout_names.clear();
   for(int i = 1; i <= ui_shouts.size(); ++i)
   {
-    QString thingy = ao_app->get_shout(i);
-    if(!thingy.isEmpty())
-      shout_names.append(thingy.trimmed());
+    QString name = ao_app->get_spbutton("[SHOUTS]", i);
+    if(!name.isEmpty())
+      shout_names.append(name.trimmed());
   }
-  qDebug() << "dreaaaad";
+
+  effect_names.clear();
+  for(int i = 1; i <= ui_effects.size(); ++i)
+  {
+    QStringList names = ao_app->get_effect(i);
+    if(!names.isEmpty())
+      effect_names.append(names.at(0).trimmed());
+  }
+
+  wtce_names.clear();
+  for(int i = 1; i <= ui_wtce.size(); ++i)
+  {
+    QString name = ao_app->get_spbutton("[WTCE]", i);
+    if(!name.isEmpty())
+      wtce_names.append(name.trimmed());
+  }
 
   set_fonts();
 
@@ -474,7 +488,7 @@ void Courtroom::set_widgets()
   //the size of the ui_vp_legacy_desk element relies on various factors and is set in set_scene()
 
   double y_modifier = 147.0 / 192.0;
-  int final_y = y_modifier * ui_viewport->height();
+  int final_y = static_cast<int>(y_modifier * ui_viewport->height());
   ui_vp_legacy_desk->move(0, final_y);
   ui_vp_legacy_desk->hide();
 
@@ -648,7 +662,6 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_effects[i], effect_names[i]);
   }
   reset_effect_buttons();
-  qDebug() << "私のパンを燃やせ";
 
   set_size_and_pos(ui_effect_up, "effect_up");
   ui_effect_up->set_image("effectup.png");
@@ -667,17 +680,28 @@ void Courtroom::set_widgets()
     ui_effect_down->show();
   }
 
+  for(int i = 0; i < wtce_names.size(); ++i)
+  {
+    set_size_and_pos(ui_wtce[i], wtce_names[i]);
+  }
+
+  set_size_and_pos(ui_wtce_up, "wtce_up");
+  ui_wtce_up->set_image("wtceup.png");
+  ui_wtce_up->hide();
+  set_size_and_pos(ui_wtce_down, "wtce_down");
+  ui_wtce_down->set_image("wtcedown.png");
+  ui_wtce_down->hide();
+
+  if( ao_app->read_design_ini( "enable_single_wtce", ao_app->get_theme_path() + cc_config_ini ) == "true" ) // courtroom_config.ini necessary
+  {
+    for(auto & wtce : ui_wtce) move_widget(wtce, "wtce");
+    qDebug() << "AA: single wtce";
+    set_wtce();
+  }
+
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
   ui_ooc_toggle->setText("Server");
 
-  set_size_and_pos(ui_witness_testimony, "witness_testimony");
-  ui_witness_testimony->set_image("witnesstestimony.png");
-  set_size_and_pos(ui_cross_examination, "cross_examination");
-  ui_cross_examination->set_image("crossexamination.png");
-  set_size_and_pos(ui_investigation, "investigation");
-  ui_investigation->set_image("investigation.png");
-  set_size_and_pos(ui_nonstop, "nonstop");
-  ui_nonstop->set_image("nonstop.png");
   set_size_and_pos(ui_call_mod, "call_mod");
 
 
@@ -1034,13 +1058,34 @@ void Courtroom::set_effects()
   ui_effects[m_effect_current]->show();
 }
 
+void Courtroom::set_wtce()
+{
+  for(auto & wtce : ui_wtce) wtce->hide();
+
+  if(is_judge)
+  {
+    if( ao_app->read_design_ini( "enable_single_wtce", ao_app->get_theme_path() + cc_config_ini ) == "true" )
+    {
+      ui_wtce[m_wtce_current]->show();
+      ui_wtce_up->show();
+      ui_wtce_down->show();
+    }
+    else
+    {
+      for(auto & wtce : ui_wtce) wtce->show();
+      ui_wtce_up->hide();
+      ui_wtce_down->hide();
+    }
+  }
+}
+
 void Courtroom::handle_music_anim()
 {
   QString file_a = design_ini;
   QString file_b = fonts_ini;
   pos_size_type res_a = ao_app->get_element_dimensions("music_name", file_a);
   pos_size_type res_b = ao_app->get_element_dimensions("music_area", file_a);
-  float speed = (float)(ao_app->get_font_size("music_name_speed", file_b));
+  float speed = static_cast<float>(ao_app->get_font_size("music_name_speed", file_b));
 
   QFont f_font = ui_vp_music_name->font();
   QFontMetrics fm(f_font);
@@ -1048,7 +1093,7 @@ void Courtroom::handle_music_anim()
   if ( ao_app->read_design_ini( "enable_const_music_speed", ao_app->get_theme_path() + cc_config_ini ) == "true")
     dist = res_b.width;
   else dist = fm.width(ui_vp_music_name->toPlainText());
-  int time = (int)(1000000*dist/speed);
+  int time = static_cast<int>(1000000*dist/speed);
   music_anim->setLoopCount(-1);
   music_anim->setDuration(time);
   music_anim->setStartValue(QRect(res_b.width + res_b.x, res_a.y, res_a.width, res_a.height));
@@ -1201,8 +1246,6 @@ void Courtroom::enter_courtroom(int p_cid)
       ao_app->discord->toggle(0);
     }
 
-    qDebug() << "name=" << r_char;
-
     ao_app->discord->state_character(r_char.toStdString());
   }
 
@@ -1223,6 +1266,8 @@ void Courtroom::enter_courtroom(int p_cid)
   current_evidence = 0;
 
   m_shout_state = 0;
+  m_wtce_current = 0;
+  reset_wtce_buttons();
 
   if(const int log_limit = ao_app->read_config("chatlog_limit").toInt())
     m_log_limit = log_limit;
@@ -1239,10 +1284,11 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (side == "jud")
   {
-    ui_witness_testimony->show();
-    ui_cross_examination->show();
-    ui_investigation->show();
-    ui_nonstop->show();
+    is_judge = true;
+    //set_wtce();
+    //ui_wtce_down->show();
+    //ui_wtce_up->show();
+
     ui_defense_minus->show();
     ui_defense_plus->show();
     ui_prosecution_minus->show();
@@ -1250,10 +1296,11 @@ void Courtroom::enter_courtroom(int p_cid)
   }
   else
   {
-    ui_witness_testimony->hide();
-    ui_cross_examination->hide();
-    ui_investigation->hide();
-    ui_nonstop->hide();
+    is_judge = false;
+    //set_wtce();
+    //ui_wtce_down->hide();
+    //ui_wtce_up->hide();
+
     ui_defense_minus->hide();
     ui_defense_plus->hide();
     ui_prosecution_minus->hide();
@@ -1262,6 +1309,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   check_shouts();
   check_effects();
+  check_wtce();
 
   if (ao_app->custom_objection_enabled)
   {
@@ -1293,6 +1341,18 @@ void Courtroom::enter_courtroom(int p_cid)
     else
     {
       ui_effects[i]->hide();
+    }
+  }
+
+  for(int i = 0; i < ui_wtce.size(); ++i)
+  {
+    if(wtce_enabled[i] && is_judge)
+    {
+      ui_wtce[i]->show();
+    }
+    else
+    {
+      ui_wtce[i]->hide();
     }
   }
 
@@ -1751,7 +1811,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     return;
 
   QString f_showname;
-  qDebug() << "WINDLESS NIGHT";
+  qDebug() << "handle_chatmessage";
   qDebug() << m_chatmessage[SHOWNAME] << ao_app->get_showname(char_list.at(f_char_id).name);
 
   if(m_chatmessage[SHOWNAME].isEmpty())
@@ -1781,7 +1841,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   chatmessage_is_empty = m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
   showed = true;
 
-  if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text() && m_chatmessage[CHAR_ID].toInt() == m_cid)
+  if (m_chatmessage[MESSAGE] == ui_ic_chat_message->text())
   {
     ui_ic_chat_message->clear();
     ui_sfx_list->setCurrentItem(ui_sfx_list->item(0));
@@ -1791,6 +1851,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
     m_effect_state = 0;
     reset_effect_buttons();
+
+    m_wtce_current = 0;
+    reset_wtce_buttons();
 
     is_presenting_evidence = false;
     ui_evidence_present->set_image("present_disabled.png");
@@ -1803,11 +1866,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
     if(ao_app->read_config("first_person") == "true") showed = false;
     else showed = true;
-
-    qDebug() << "self spoke!";
   }
-  qDebug() << "showed:" << showed;
-  qDebug() << ui_vp_player_char->isVisible();
 
   append_ic_text(": " + m_chatmessage[MESSAGE], f_showname);
 
@@ -1850,6 +1909,8 @@ void Courtroom::handle_chatmessage_2() // handles IC
 {
   ui_vp_speedlines->stop();
   ui_vp_player_char->stop();
+
+  qDebug() << "handle_chatmessage_2";
 
   QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
 
@@ -1926,6 +1987,8 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
 void Courtroom::handle_chatmessage_3()
 {
+   qDebug() << "handle_chatmessage_3";
+
   start_chat_ticking();
 
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
@@ -2611,30 +2674,21 @@ void Courtroom::handle_wtce(QString p_wtce)
 {
   QString sfx_file = cc_sounds_ini;
 
-  //witness testimony
-  if (p_wtce == "testimony1")
+  int index = p_wtce.at(p_wtce.size() - 1).digitValue();
+  if (index > 0 && index < wtce_names.size() + 1)
   {
-    m_sfx_player->play(ao_app->get_sfx("witness_testimony"));
-    ui_vp_wtce->play("witnesstestimony");
-    testimony_in_progress = true;
-    show_testimony();
-  }
-  //cross examination
-  else if (p_wtce == "testimony2")
-  {
-    m_sfx_player->play(ao_app->get_sfx("cross_examination"));
-    ui_vp_wtce->play("crossexamination");
-    testimony_in_progress = false;
-  }
-  else if (p_wtce == "testimony3")
-  {
-    m_sfx_player->play(ao_app->get_sfx("investigation"));
-    ui_vp_wtce->play("investigation");
-  }
-  else if (p_wtce == "testimony4")
-  {
-    m_sfx_player->play(ao_app->get_sfx("nonstop"));
-    ui_vp_wtce->play("nonstop");
+    p_wtce.chop(1); // looking for the 'testimony' part
+    if (p_wtce == "testimony")
+    {
+      m_sfx_player->play(ao_app->get_sfx(wtce_names[index-1]));
+      ui_vp_wtce->play(wtce_names[index-1]);
+      if (index == 1)
+      {
+        testimony_in_progress = true;
+      }
+      else if (index == 2)
+        testimony_in_progress = false;
+    }
   }
 }
 
@@ -2679,6 +2733,18 @@ void Courtroom::check_effects()
   }
 }
 
+void Courtroom::check_wtce()
+{
+  QString char_path = ao_app->get_character_path(current_char);
+  QString theme_path = ao_app->get_theme_path();
+  for(int i = 0; i < ui_wtce.size(); ++i)
+  {
+    if(file_exists(char_path + wtce_names.at(i) + ".gif") || file_exists(theme_path + wtce_names.at(i) + ".gif") || file_exists(theme_path + wtce_names.at(i) + ".apng"))
+      wtce_enabled[i] = true;
+    else wtce_enabled[i] = false;
+  }
+}
+
 void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
@@ -2700,10 +2766,9 @@ void Courtroom::on_ooc_return_pressed()
   {
     if (ooc_message.startsWith("/pos jud"))
     {
-      ui_witness_testimony->show();
-      ui_cross_examination->show();
-      ui_investigation->show();
-      ui_nonstop->show();
+      is_judge = true;
+      set_wtce();
+
       ui_defense_minus->show();
       ui_defense_plus->show();
       ui_prosecution_minus->show();
@@ -2711,10 +2776,9 @@ void Courtroom::on_ooc_return_pressed()
     }
     else
     {
-      ui_witness_testimony->hide();
-      ui_cross_examination->hide();
-      ui_investigation->hide();
-      ui_nonstop->hide();
+      is_judge = false;
+      set_wtce();
+
       ui_defense_minus->hide();
       ui_defense_plus->hide();
       ui_prosecution_minus->hide();
@@ -2946,6 +3010,12 @@ void Courtroom::on_cycle_clicked()
 
   switch(f_cycle_id)
   {
+  case 5:
+    cycle_wtce(-1);
+    break;
+  case 4:
+    cycle_wtce(1);
+    break;
   case 3:
     cycle_effect(-1);
     break;
@@ -2980,9 +3050,17 @@ void Courtroom::cycle_shout(int p_index)
 void Courtroom::cycle_effect(int p_index)
 {
   int n = ui_effects.size();
-  do { m_effect_current = (m_effect_current - p_index + n) % n; qDebug() << m_effect_current;} while( !effects_enabled[m_effect_current] );
+  do { m_effect_current = (m_effect_current - p_index + n) % n; } while( !effects_enabled[m_effect_current] );
 
   set_effects();
+}
+
+void Courtroom::cycle_wtce(int p_index)
+{
+  int n = ui_wtce.size();
+  do { m_wtce_current = (m_wtce_current - p_index + n) % n; } while( !wtce_enabled[m_wtce_current] );
+
+  set_wtce();
 }
 
 void Courtroom::reset_effect_buttons()
@@ -3104,8 +3182,17 @@ void Courtroom::on_cross_examination_clicked()
   ui_ic_chat_message->setFocus();
 }
 
+void Courtroom::reset_wtce_buttons() // kind of an unnecessary function, but I added it just in case
+{
+  for(int i = 0; i < wtce_names.size(); ++i) // effect names does not necessarily have the same size as ui effects
+  {
+    ui_wtce[i]->set_image(wtce_names.at(i) + ".png");
+  }
+}
+
 void Courtroom::on_wtce_clicked()
 {
+//  qDebug() << "AA: wtce clicked!";
   if (is_muted)
     return;
 
@@ -3287,7 +3374,6 @@ void Courtroom::on_set_notes_clicked()
 void Courtroom::set_bullets()
 {
   QString somethingsomethingpath = ao_app->get_base_path() + "configs/" + "wow.ini";
-  //qDebug() << "aye wee cunt is" << somethingsomethingpath;
 
   QString thing = "";
   int i = 0;
