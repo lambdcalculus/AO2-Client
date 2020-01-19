@@ -1833,7 +1833,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + "\n";
 
-  if (f_message == previous_ic_message)
+  if (f_message == previous_ic_message && is_system_speaking == false)
     return;
 
   text_state = 0;
@@ -2236,7 +2236,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
 
 void Courtroom::append_system_text(QString p_text)
 {
-  if (p_text == "") return;
+  if (chatmessage_is_empty) return;
 
   QTextCharFormat bold;
   QTextCharFormat normal;
