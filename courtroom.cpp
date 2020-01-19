@@ -1804,6 +1804,14 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   int f_char_id = m_chatmessage[CHAR_ID].toInt();
 
+  if (f_char_id == -1)
+  {
+    is_system_speaking = true;
+    m_chatmessage[CHAR_ID] = "0";
+    f_char_id = 0;
+  }
+  else is_system_speaking = false;
+
   if (f_char_id < 0 || f_char_id >= char_list.size())
     return;
 
@@ -1823,7 +1831,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     f_showname = m_chatmessage[SHOWNAME];
   }
 
-  QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + '\n';
+  QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + "\n";
 
   if (f_message == previous_ic_message)
     return;
@@ -1868,7 +1876,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     else showed = true;
   }
 
-  append_ic_text(": " + m_chatmessage[MESSAGE], f_showname);
+  if (is_system_speaking)
+    append_system_text(m_chatmessage[MESSAGE]);
+  else append_ic_text(m_chatmessage[MESSAGE], f_showname);
 
   if(ao_app->read_config("enable_logging") == "true")
     save_textlog("[" + QTime::currentTime().toString() + "] " + f_showname + ": " + m_chatmessage[MESSAGE]);
@@ -2141,6 +2151,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
 {
   QTextCharFormat bold;
   QTextCharFormat normal;
+  QString color = ao_app->read_design_ini("chatlog_showname", ao_app->get_theme_path() + fonts_ini);
   bold.setFontWeight(QFont::Bold);
   normal.setFontWeight(QFont::Normal);
   const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
@@ -2156,14 +2167,23 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
     for (record_type_ptr record : m_ic_records)
     {
       ui_ic_chatlog->moveCursor(f_operation);
-      ui_ic_chatlog->textCursor().insertText(record->name, bold);
-      ui_ic_chatlog->textCursor().insertText(record->line + '\n', normal);
+      if (record->system == false)
+      {
+        ui_ic_chatlog->insertHtml("<b><font color=\"" + record->color + "\">" + record->name + "</font></b>");
+        ui_ic_chatlog->textCursor().insertText("\n");
+        ui_ic_chatlog->textCursor().insertText(record->line + "\n\n", normal);
+      }
+      else
+      {
+        ui_ic_chatlog->insertHtml("<font color=\"" + record->color + "\">" + record->line + "</font>");
+        ui_ic_chatlog->textCursor().insertText("\n\n");
+      }
     }
     m_scroll_type_changed = false;
   }
 
   // new record
-  m_ic_records.append(std::make_shared<record_type>(p_name, p_text));
+  m_ic_records.append(std::make_shared<record_type>(p_name, p_text, color, false));
 
   int len = m_ic_records.length();
 
@@ -2176,8 +2196,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
   if(m_scroll_down)
   {
     ui_ic_chatlog->moveCursor(QTextCursor::End);
-    ui_ic_chatlog->textCursor().insertText(p_name, bold);
-    ui_ic_chatlog->textCursor().insertText(p_text + '\n', normal);
+    ui_ic_chatlog->insertHtml("<b><font color=\"" + color + "\">" + p_name + "</font></b>");
+    ui_ic_chatlog->textCursor().insertText("\n" + p_text + "\n\n", normal);
   }
   else
   {
@@ -2186,10 +2206,109 @@ void Courtroom::append_ic_text(QString p_text, QString p_name)
     for (record_type_ptr record : m_ic_records)
     {
       ui_ic_chatlog->moveCursor(QTextCursor::Start);
-      ui_ic_chatlog->textCursor().insertText(record->name, bold);
-      ui_ic_chatlog->textCursor().insertText(record->line + '\n', normal);
+      if (record->system == false)
+      {
+        ui_ic_chatlog->insertHtml("<b><font color=\"" + record->color + "\">" + record->name + "</font></b>");
+        ui_ic_chatlog->textCursor().insertText("\n");
+        ui_ic_chatlog->textCursor().insertText(record->line + "\n\n", normal);
+      }
+      else
+      {
+        ui_ic_chatlog->insertHtml("<font color=\"" + record->color + "\">" + record->line + "</font>");
+        ui_ic_chatlog->textCursor().insertText("\n\n");
+      }
     }
   }
+
+  if (old_cursor.hasSelection() || !is_scrolled_up)
+  {
+    // The user has selected text or scrolled away from the top: maintain position.
+    ui_ic_chatlog->setTextCursor(old_cursor);
+    ui_ic_chatlog->verticalScrollBar()->setValue(old_scrollbar_value);
+  }
+  else
+  {
+    // The user hasn't selected any text and the scrollbar is at the top: scroll to the top.
+    ui_ic_chatlog->moveCursor(f_operation);
+    ui_ic_chatlog->verticalScrollBar()->setValue(ui_ic_chatlog->verticalScrollBar()->maximum());
+  }
+}
+
+void Courtroom::append_system_text(QString p_text)
+{
+  if (p_text == "") return;
+
+  QTextCharFormat bold;
+  QTextCharFormat normal;
+  QString color = ao_app->read_design_ini("system_msg", ao_app->get_theme_path() + fonts_ini);
+  bold.setFontWeight(QFont::Bold);
+  normal.setFontWeight(QFont::Normal);
+  const QTextCursor old_cursor = ui_ic_chatlog->textCursor();
+  const int old_scrollbar_value = ui_ic_chatlog->verticalScrollBar()->value();
+  const bool is_scrolled_up = old_scrollbar_value == ui_ic_chatlog->verticalScrollBar()->maximum();
+  const QTextCursor::MoveOperation f_operation = m_scroll_down ? QTextCursor::End : QTextCursor::Start;
+
+  //rewrite everything that was written before
+  if(m_scroll_type_changed)
+  {
+    ui_ic_chatlog->clear();
+
+    for (record_type_ptr record : m_ic_records)
+    {
+      ui_ic_chatlog->moveCursor(f_operation);
+      if (record->system == false)
+      {
+        ui_ic_chatlog->insertHtml("<b><font color=\"" + record->color + "\">" + record->name + "</font></b>");
+        ui_ic_chatlog->textCursor().insertText("\n" + record->line + "\n\n", normal);
+
+      }
+      else
+      {
+        ui_ic_chatlog->insertHtml("<font color=\"" + record->color + "\">" + record->line + "</font>");
+        ui_ic_chatlog->textCursor().insertText("\n\n");
+      }
+    }
+    m_scroll_type_changed = false;
+  }
+
+  // new record
+  m_ic_records.append(std::make_shared<record_type>("", p_text, color, true));
+
+  int len = m_ic_records.length();
+
+  if (len > m_log_limit) // magic numbers, woo!
+  {
+    m_ic_records = m_ic_records.mid(len - m_log_limit);
+  }
+
+  if(m_scroll_down)
+  {
+    ui_ic_chatlog->moveCursor(QTextCursor::End);
+    ui_ic_chatlog->insertHtml("<font color=\"" + color + "\">" + p_text + "</font>");
+    ui_ic_chatlog->textCursor().insertText("\n\n");
+  }
+  else
+  {
+    ui_ic_chatlog->clear();
+
+    for (record_type_ptr record : m_ic_records)
+    {
+      ui_ic_chatlog->moveCursor(QTextCursor::Start);
+      if (record->system == false)
+      {
+        ui_ic_chatlog->insertHtml("<b><font color=\"" + record->color + "\">" + record->name + "</font></b>");
+        ui_ic_chatlog->textCursor().insertText("\n" + record->line + "\n\n", normal);
+      }
+      else
+      {
+        qDebug() << "<font color=\"" + record->color + ">" + record->line + "</font>";
+        ui_ic_chatlog->insertHtml("<font color=\"" + record->color + "\">" + record->line + "</font>");
+        ui_ic_chatlog->textCursor().insertText("\n\n");
+      }
+    }
+  }
+
+  ui_ic_chatlog->setTextColor("#000000");
 
   if (old_cursor.hasSelection() || !is_scrolled_up)
   {
@@ -2799,6 +2918,19 @@ void Courtroom::on_ooc_return_pressed()
       on_switch_area_music_clicked();
       ui_ooc_chat_message->clear();
       return;
+  }
+
+  else if (ooc_message.startsWith("/roll"))
+  {
+    m_sfx_player->play(ao_app->get_sfx("dice"));
+  }
+  else if (ooc_message.startsWith("/rollp"))
+  {
+    m_sfx_player->play(ao_app->get_sfx("dice"));
+  }
+  else if (ooc_message.startsWith("/coinflip"))
+  {
+    m_sfx_player->play(ao_app->get_sfx("coinflip"));
   }
 
   QStringList packet_contents;

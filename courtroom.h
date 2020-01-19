@@ -172,6 +172,8 @@ public:
   // or the user isn't already scrolled to the top
   void append_ic_text(QString p_text, QString p_name = "");
 
+  void append_system_text(QString p_text);
+
   //prints who played the song to IC chat and plays said song(if found on local filesystem)
   //takes in a list where the first element is the song name and the second is the char id of who played it
   void handle_song(QStringList *p_contents);
@@ -321,6 +323,7 @@ private:
   int m_wtce_current = 0;
   bool is_presenting_evidence = false;
   bool is_judge = false;
+  bool is_system_speaking = false;
 
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;

@@ -7,12 +7,14 @@
 struct record_type
 {
     record_type() = default;
-    record_type(QString p_name, QString p_line)
-        : name(p_name), line(p_line)
+    record_type(QString p_name, QString p_line, QString p_color, bool p_system)
+        : name(p_name), line(p_line), color(p_color), system(p_system)
     {}
 
     QString name;
     QString line;
+    QString color;
+    bool system;
 };
 
 typedef std::shared_ptr<record_type> record_type_ptr;
