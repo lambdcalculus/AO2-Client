@@ -2800,7 +2800,18 @@ void Courtroom::on_ooc_return_pressed()
       ui_ooc_chat_message->clear();
       return;
   }
-
+  else if (ooc_message.startsWith("/roll"))
+  {
+   m_sfx_player->play(ao_app->get_sfx("dice"));
+  }
+  else if (ooc_message.startsWith("/rollp"))
+  {
+   m_sfx_player->play(ao_app->get_sfx("dice"));
+  }
+  else if (ooc_message.startsWith("/coinflip"))
+  {
+   m_sfx_player->play(ao_app->get_sfx("coinflip"));
+  }  
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
   packet_contents.append(ooc_message);
