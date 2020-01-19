@@ -156,6 +156,9 @@ public:
   //Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, QString p_design_path);
 
+  //Helper function for returning an int in a file inside of the theme folder
+  int get_design_ini_value(QString p_identifier, QString p_design_file);
+
   //Returns the coordinates of widget with p_identifier from p_file
   QPoint get_button_spacing(QString p_identifier, QString p_file);
 

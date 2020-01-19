@@ -175,7 +175,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_blip_label = new AOLabel(this, ao_app);
 
 
-  int shout_number = ao_app->read_design_ini("shout_number", ao_app->get_theme_path() + cc_config_ini).toInt();
+  int shout_number = ao_app->get_design_ini_value("shout_number", cc_config_ini);
   shouts_enabled.resize(shout_number);
   ui_shouts.resize(shout_number);
 
@@ -228,7 +228,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_labels.push_back(ui_blip_label);
   //
 
-  int effect_number = ao_app->read_design_ini("effect_number", ao_app->get_theme_path() + cc_config_ini).toInt();
+  int effect_number = ao_app->get_design_ini_value("effect_number", cc_config_ini);
   effects_enabled.resize(effect_number);
   ui_effects.resize(effect_number);
   for(int i = 0; i < ui_effects.size(); ++i)
@@ -242,7 +242,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_effect_up = new AOButton(this, ao_app);
   ui_effect_up->setProperty("cycle_id", 3);
 
-  int wtce_number = ao_app->read_design_ini("wtce_number", ao_app->get_theme_path() + cc_config_ini).toInt();
+  int wtce_number = ao_app->get_design_ini_value("wtce_number", cc_config_ini);
   wtce_enabled.resize(wtce_number);
   ui_wtce.resize(wtce_number);
 
@@ -631,9 +631,9 @@ void Courtroom::set_widgets()
   {
     set_size_and_pos(ui_shouts[i], shout_names[i]);
   }
-  ui_shouts[0]->show();
-  ui_shouts[1]->show();
-  ui_shouts[2]->show();
+//  ui_shouts[0]->show();
+//  ui_shouts[1]->show();
+//  ui_shouts[2]->show();
   reset_shout_buttons();
 
   set_size_and_pos(ui_shout_up, "shout_up");
@@ -643,7 +643,7 @@ void Courtroom::set_widgets()
   ui_shout_down->set_image("shoutdown.png");
   ui_shout_down->hide();
 
-  if( ao_app->read_design_ini( "enable_single_shout", ao_app->get_theme_path() + cc_config_ini ) == "true" ) // courtroom_config.ini necessary
+  if (ao_app->read_design_ini( "enable_single_shout", ao_app->get_theme_path() + cc_config_ini ) == "true" && ui_shouts.size() > 0) // courtroom_config.ini necessary + check for crash
   {
     for(auto & shout : ui_shouts) move_widget(shout, "bullet");
 
@@ -670,7 +670,7 @@ void Courtroom::set_widgets()
   ui_effect_down->set_image("effectdown.png");
   ui_effect_down->hide();
 
-  if( ao_app->read_design_ini( "enable_single_effect", ao_app->get_theme_path() + cc_config_ini ) == "true" )
+  if (ao_app->read_design_ini( "enable_single_effect", ao_app->get_theme_path() + cc_config_ini ) == "true" && ui_effects.size() > 0) // check to prevent crashing
   {
     for(auto & effect  : ui_effects) move_widget(effect, "effect");
 
@@ -1049,20 +1049,20 @@ void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
 void Courtroom::set_shouts()
 {
   for(auto & shout : ui_shouts) shout->hide();
-  ui_shouts[m_shout_state]->show();
+  if (ui_shouts.size() > 0) ui_shouts[m_shout_state]->show(); // check to prevent crashing
 }
 
 void Courtroom::set_effects()
 {
   for(auto & effect : ui_effects) effect->hide();
-  ui_effects[m_effect_current]->show();
+  if (ui_effects.size() > 0) ui_effects[m_effect_current]->show(); // check to prevent crashing
 }
 
 void Courtroom::set_wtce()
 {
   for(auto & wtce : ui_wtce) wtce->hide();
 
-  if(is_judge)
+  if(is_judge && ui_wtce.size() > 0) // check to prevent crashing
   {
     if( ao_app->read_design_ini( "enable_single_wtce", ao_app->get_theme_path() + cc_config_ini ) == "true" )
     {
@@ -1887,7 +1887,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       m_chatmessage[EMOTE_MOD] = 1;
 
     //handles cases 1-7 (5-7 are DRO only)
-    if(objection_mod >= 1 && objection_mod <= ui_shouts.size())
+    if(objection_mod >= 1 && objection_mod <= ui_shouts.size() && ui_shouts.size() > 0) // check to prevent crashing
     {
       ui_vp_objection->play(shout_names.at(objection_mod-1), f_char, f_custom_theme);
       m_shout_player->play(shout_names.at(objection_mod-1) + ".wav", f_char);
@@ -2103,7 +2103,7 @@ void Courtroom::handle_chatmessage_3()
 //      overlay_name = "effect_gloom";
 //    ui_vp_effect->play(overlay_name, f_char);
 //  }
-  else if (do_it && effect > 0 && effect <= ui_effects.size())
+  else if (do_it && effect > 0 && effect <= ui_effects.size() && effect_names.size() > 0) // check to prevent crashing
   {
     QString s_eff = effect_names.at(effect - 1);
     QStringList f_eff = ao_app->get_effect(effect);
@@ -2675,7 +2675,7 @@ void Courtroom::handle_wtce(QString p_wtce)
   QString sfx_file = cc_sounds_ini;
 
   int index = p_wtce.at(p_wtce.size() - 1).digitValue();
-  if (index > 0 && index < wtce_names.size() + 1)
+  if (index > 0 && index < wtce_names.size() + 1 && wtce_names.size() > 0) // check to prevent crash
   {
     p_wtce.chop(1); // looking for the 'testimony' part
     if (p_wtce == "testimony")
@@ -2983,7 +2983,7 @@ void Courtroom::reset_shout_buttons()
   for(int i = 0; i < ui_shouts.size(); ++i)
     ui_shouts[i]->set_image(shout_names.at(i) + ".png");
 
-  if(m_objection_state != 0)
+  if(m_objection_state != 0 && ui_shouts.size() > 0) // check to prevent crashing
     ui_shouts.at(m_objection_state-1)->set_image(shout_names.at(m_objection_state-1) + "_selected.png");
 }
 
@@ -3071,7 +3071,7 @@ void Courtroom::reset_effect_buttons()
     ui_effects[i]->set_image(effect_names.at(i) + ".png");
   }
 
-  if(m_effect_state != 0)
+  if(m_effect_state != 0 && ui_effects.size() > 0) // check to prevent crashing
     ui_effects[m_effect_state-1]->set_image(effect_names.at(m_effect_state-1) + "_pressed.png");
 }
 
@@ -3380,6 +3380,6 @@ void Courtroom::set_bullets()
   do
   {
     thing = ao_app->read_design_ini(QString::number(++i), somethingsomethingpath);
-    qDebug() << QString::number(i) << thing;
+    //qDebug() << QString::number(i) << thing;
   } while(thing != "");
 }

@@ -301,6 +301,15 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
   return result;
 }
 
+int AOApplication::get_design_ini_value(QString p_identifier, QString p_file)
+{
+  QString design_ini_path = get_theme_path() + p_file;
+  QString result = read_design_ini(p_identifier, design_ini_path);
+  int r = result.toInt();
+  if (result == "") r = 0;
+  return r;
+}
+
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 {
   QString design_ini_path = get_theme_path() + p_file;
