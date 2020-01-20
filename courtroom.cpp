@@ -2763,7 +2763,25 @@ void Courtroom::handle_song(QStringList *p_contents)
   }
   else
   {
-    QString str_char = char_list.at(n_char).name;
+    // This 2th argument corresponds to the showname to use when displaying the
+    // music change message in IC
+    // Backwards compatibility is explicitly kept for older versions of tsuserver
+    // that do not send such an argument by assuming an empty showname
+    // If there is an empty showname, the client will use instead the default
+    // showname of the character.
+    QString f_showname;
+    if (f_contents.size() == 3) {
+        f_showname = f_contents.at(2);
+    } else {
+        f_showname = "";
+    }
+
+    QString str_char;
+    if (f_showname.isEmpty()) {
+        str_char = ao_app->get_showname(char_list.at(n_char).name);
+    } else {
+        str_char = f_showname;
+    }
 
     if (!mute_map.value(n_char))
     {
@@ -2775,7 +2793,7 @@ void Courtroom::handle_song(QStringList *p_contents)
       }
       else
       {
-        append_ic_text(" has played a song: " + f_song, str_char);
+        append_ic_text("has played a song: " + f_song, str_char);
         m_music_player->play(f_song);
       }
     }
