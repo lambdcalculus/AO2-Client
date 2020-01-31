@@ -1201,9 +1201,18 @@ void Courtroom::set_background(QString p_background)
   QString bg_path = get_background_path();
   QVector<QString> exts{".apng", ".gif", ".png"};
 
-  is_ao2_bg = file_exists(bg_path + "defensedesk", exts) != "" &&
-                                                            file_exists(bg_path + "prosecutiondesk", exts) != "" &&
-                                                                                                              file_exists(bg_path + "stand", exts) != "";
+  QString ini_path = ao_app->get_background_path() + "backgrounds.ini";
+
+  if (file_exists(ini_path))
+  {
+    is_ao2_bg = true;
+  }
+  else
+  {
+    is_ao2_bg = file_exists(bg_path + "defensedesk", exts) != "" &&
+                                                              file_exists(bg_path + "prosecutiondesk", exts) != "" &&
+                                                                                                                file_exists(bg_path + "stand", exts) != "";
+  }
 
   if (is_ao2_bg)
   {
@@ -2589,78 +2598,93 @@ void Courtroom::set_scene()
   QString f_desk_image = "stand";
   QString f_desk_mod = m_chatmessage[DESK_MOD];
   QString f_side = m_chatmessage[SIDE];
+  QString ini_path = ao_app->get_background_path() + "backgrounds.ini";
 
-  if (f_side == "def")
+  if (file_exists(ini_path))
   {
-    f_background = "defenseempty";
-    if (is_ao2_bg)
-      f_desk_image = "defensedesk";
-    else
-      f_desk_image = "bancodefensa";
-  }
-  else if (f_side == "pro")
-  {
-    f_background = "prosecutorempty";
-    if (is_ao2_bg)
-      f_desk_image = "prosecutiondesk";
-    else
-      f_desk_image = "bancoacusacion";
-  }
-  else if (f_side == "jud")
-  {
-    f_background = "judgestand";
-    f_desk_image = "judgedesk";
-  }
-  else if (f_side == "hld")
-  {
-    f_background = "helperstand";
-    f_desk_image = "helperdesk";
-  }
-  else if (f_side == "hlp")
-  {
-    f_background = "prohelperstand";
-    f_desk_image = "prohelperdesk";
+    f_background = ao_app->read_design_ini(f_side, ini_path);
+    f_desk_image = ao_app->read_design_ini(f_side + "_desk", ini_path);
+
+    if (f_desk_mod == "0") // keeping a bit of the functionality for now
+    {
+      ui_vp_desk->hide();
+      ui_vp_legacy_desk->hide();
+    }
   }
   else
   {
-    if (is_ao2_bg)
-      f_desk_image = "stand";
+  if (f_side == "def")
+  {
+      f_background = "defenseempty";
+      if (is_ao2_bg)
+        f_desk_image = "defensedesk";
+      else
+        f_desk_image = "bancodefensa";
+    }
+    else if (f_side == "pro")
+    {
+      f_background = "prosecutorempty";
+      if (is_ao2_bg)
+        f_desk_image = "prosecutiondesk";
+      else
+        f_desk_image = "bancoacusacion";
+    }
+    else if (f_side == "jud")
+    {
+      f_background = "judgestand";
+      f_desk_image = "judgedesk";
+    }
+    else if (f_side == "hld")
+    {
+      f_background = "helperstand";
+      f_desk_image = "helperdesk";
+    }
+    else if (f_side == "hlp")
+    {
+      f_background = "prohelperstand";
+      f_desk_image = "prohelperdesk";
+    }
     else
-      f_desk_image = "estrado";
+    {
+      if (is_ao2_bg)
+        f_desk_image = "stand";
+      else
+        f_desk_image = "estrado";
+    }
+
+    if (f_desk_mod == "0" || (f_desk_mod != "1" &&
+                              (f_side == "jud" ||
+                               f_side == "hld" ||
+                               f_side == "hlp")))
+    {
+      ui_vp_desk->hide();
+      ui_vp_legacy_desk->hide();
+    }
+    else if (is_ao2_bg || (f_side == "jud" ||
+                           f_side == "hld" ||
+                           f_side == "hlp"))
+    {
+      ui_vp_legacy_desk->hide();
+      ui_vp_desk->show();
+    }
+    else
+    {
+      if (f_side == "wit")
+      {
+        ui_vp_desk->show();
+        ui_vp_legacy_desk->hide();
+      }
+      else
+      {
+        ui_vp_desk->hide();
+        ui_vp_legacy_desk->show();
+      }
+    }
   }
 
   ui_vp_background->set_image(f_background);
   ui_vp_desk->set_image(f_desk_image);
   ui_vp_legacy_desk->set_legacy_desk(f_desk_image);
-
-  if (f_desk_mod == "0" || (f_desk_mod != "1" &&
-                            (f_side == "jud" ||
-                             f_side == "hld" ||
-                             f_side == "hlp")))
-  {
-    ui_vp_desk->hide();
-    ui_vp_legacy_desk->hide();
-  }
-  else if (is_ao2_bg || (f_side == "jud" ||
-                         f_side == "hld" ||
-                         f_side == "hlp"))
-  {
-    ui_vp_legacy_desk->hide();
-    ui_vp_desk->show();
-  }
-  else
-  {
-    if (f_side == "wit")
-    {
-      ui_vp_desk->show();
-      ui_vp_legacy_desk->hide();
-    }
-    else
-    {
-      ui_vp_desk->hide();
-      ui_vp_legacy_desk->show();
-    }
-  }
 }
 
 void Courtroom::set_text_color()
