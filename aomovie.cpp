@@ -36,17 +36,18 @@ void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
 
   f_vec.push_back(custom_path);
 
-  QString overlay_path = ao_app->get_character_path(p_char) + "overlay/" + p_file;
-  QString custom_theme_path = ao_app->get_base_path() + "themes/" + p_custom_theme + "/" + p_file;
-  QString some_theme_path = ao_app->get_image_path(p_file);
-  QString some_placeholder_path = ao_app->get_image_path("placeholder");
+  QStringList f_paths{
+    ao_app->get_character_path(p_char) + "overlay/" + p_file,
+    ao_app->get_base_path() + "themes/" + p_custom_theme + "/" + p_file,
+    ao_app->get_theme_variant_path() + p_file,
+    ao_app->get_theme_path() + p_file,
+    ao_app->get_default_theme_path() + p_file,
+    ao_app->get_theme_variant_path() + "placeholder",
+    ao_app->get_theme_path() + "placeholder",
+    ao_app->get_default_theme_path() + "placeholder"
+  };
 
-  f_vec.push_back(overlay_path);
-  f_vec.push_back(custom_theme_path);
-  f_vec.push_back(some_theme_path);
-  f_vec.push_back(some_placeholder_path);
-
-  for(auto &f_file : f_vec)
+  for(auto &f_file : f_paths)
   {
     bool found = false;
     for (auto &ext : decltype(f_vec){".apng", ".gif", ".png"})
@@ -64,6 +65,7 @@ void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
       break;
   }
 
+  qDebug() << file_path;
   m_movie->setFileName(file_path);
 
   this->show();
