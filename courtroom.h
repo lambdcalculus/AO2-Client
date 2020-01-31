@@ -265,6 +265,7 @@ private:
   QString rpc_ini = "configs/rpccharlist.ini";
   QString file_select_ini = "configs/filesabstract.ini";
   QString shownames_ini = "configs/shownames.ini";
+
   //theme files locations
   QString design_ini = "courtroom_design.ini";
   QString fonts_ini = "courtroom_fonts.ini";

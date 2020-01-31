@@ -38,17 +38,13 @@ void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
 
   QString overlay_path = ao_app->get_character_path(p_char) + "overlay/" + p_file;
   QString custom_theme_path = ao_app->get_base_path() + "themes/" + p_custom_theme + "/" + p_file;
-  QString theme_path = ao_app->get_theme_path() + p_file;
-  QString default_theme_path = ao_app->get_default_theme_path() + p_file;
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder";
-  QString default_placeholder_path = ao_app->get_default_theme_path() + "placeholder";
+  QString some_theme_path = ao_app->get_image_path(p_file);
+  QString some_placeholder_path = ao_app->get_image_path("placeholder");
 
   f_vec.push_back(overlay_path);
   f_vec.push_back(custom_theme_path);
-  f_vec.push_back(theme_path);
-  f_vec.push_back(default_theme_path);
-  f_vec.push_back(placeholder_path);
-  f_vec.push_back(default_placeholder_path);
+  f_vec.push_back(some_theme_path);
+  f_vec.push_back(some_placeholder_path);
 
   for(auto &f_file : f_vec)
   {

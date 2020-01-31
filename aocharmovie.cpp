@@ -27,8 +27,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix, bo
 
   QString original_path = ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower(); // .gif
   QString alt_path = ao_app->get_character_path(p_char) + p_emote.toLower(); // .png
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder"; // .gif
-  QString placeholder_default_path = ao_app->get_default_theme_path() + "placeholder"; // .gif
+  QString placeholder_path = ao_app->get_image_path("placeholder"); // .gif
   QString gif_path;
 
 //  if (file_exists(original_path))
@@ -43,7 +42,6 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix, bo
   f_vec.push_back(original_path);
   f_vec.push_back(alt_path);
   f_vec.push_back(placeholder_path);
-  f_vec.push_back(placeholder_default_path);
 
   for(auto &f_file : f_vec)
   {

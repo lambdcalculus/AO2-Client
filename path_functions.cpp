@@ -56,6 +56,12 @@ QString AOApplication::get_theme_path()
   return get_base_path() + "themes/" + current_theme.toLower() + "/";
 }
 
+QString AOApplication::get_theme_variant_path()
+{
+  return get_base_path() + "themes/" + current_theme.toLower() + "/"
+      + theme_variant.toLower() + "/";
+}
+
 QString AOApplication::get_default_theme_path()
 {
   return get_base_path() + "themes/default/";
