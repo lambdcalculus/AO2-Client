@@ -1059,6 +1059,12 @@ void Courtroom::handle_clock(QString time)
   ui_vp_clock->play(string);
 }
 
+void Courtroom::handle_theme_variant(QString theme_variant)
+{
+  ao_app->set_theme_variant(theme_variant);
+  on_reload_theme_clicked();
+}
+
 void Courtroom::set_window_title(QString p_title)
 {
   this->setWindowTitle(p_title);
@@ -2968,6 +2974,19 @@ void Courtroom::on_ooc_return_pressed()
   {
    m_sfx_player->play(ao_app->get_sfx("coinflip"));
   }
+  else if (ooc_message.startsWith("/variant"))
+  {
+    int space_location = ooc_message.indexOf(" ");
+    QString variant;
+
+    if (space_location == -1)
+      variant = "";
+    else
+      variant = ooc_message.mid(space_location+1);
+
+    handle_theme_variant(variant);
+  }
+
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
   packet_contents.append(ooc_message);

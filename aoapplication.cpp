@@ -99,6 +99,11 @@ void AOApplication::reload_theme()
   current_theme = read_theme();
 }
 
+void AOApplication::set_theme_variant(QString theme_variant)
+{
+  this->theme_variant = theme_variant;
+}
+
 void AOApplication::set_favorite_list()
 {
   favorite_list = read_serverlist_txt();

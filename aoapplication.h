@@ -150,6 +150,8 @@ public:
   //Overwrites config.ini with new theme
   void write_theme(QString theme);
 
+  //Set the theme variant
+  void set_theme_variant(QString theme_variant);
 
   //Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
@@ -268,7 +270,7 @@ private:
   const int MINOR_VERSION = 8;
 
   QString current_theme = "default";
-  QString theme_variant = "dr2";
+  QString theme_variant = "";
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;

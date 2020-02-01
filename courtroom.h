@@ -184,6 +184,9 @@ public:
   //handle server-side clock animation and display
   void handle_clock(QString time);
 
+  //handle request to change theme variant
+  void handle_theme_variant(QString theme_variant);
+
   void play_preanim();
 
   QString parse_message(QString message);
