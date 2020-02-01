@@ -96,6 +96,7 @@ public:
   QString get_base_path();
   QString get_data_path();
   QString get_theme_path();
+  QString get_theme_variant_path();
   QString get_default_theme_path();
   QString get_character_path(QString p_character);
   QString get_demothings_path();
@@ -149,12 +150,17 @@ public:
   //Overwrites config.ini with new theme
   void write_theme(QString theme);
 
+  //Set the theme variant
+  void set_theme_variant(QString theme_variant);
 
   //Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
 
   //Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, QString p_design_path);
+
+  //Returns the value of p_identifier from p_file in either a theme variant subfolder, a theme folder, or default theme folder
+  QString read_theme_ini(QString p_identifier, QString p_file);
 
   //Helper function for returning an int in a file inside of the theme folder
   int get_design_ini_value(QString p_identifier, QString p_design_file);
@@ -255,12 +261,16 @@ public:
   //Returns p_char's gender
   QString get_gender(QString p_char);
 
+  //Get the location of p_image, which is either in a theme variant subfolder, a theme folder, or default theme folder
+  QString get_image_path(QString p_image);
+
 private:
   const int RELEASE = 2;
   const int MAJOR_VERSION = 4;
   const int MINOR_VERSION = 8;
 
   QString current_theme = "default";
+  QString theme_variant = "";
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;

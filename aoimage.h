@@ -16,8 +16,11 @@ public:
   AOApplication *ao_app = nullptr;
 
   void set_image(QString p_image);
+  void set_image_variant(QString p_image, QString p_variant);
   void set_image_from_path(QString p_path);
   void set_size_and_pos(QString identifier);
+
+  QString image_path = "";
 };
 
 #endif // AOIMAGE_H

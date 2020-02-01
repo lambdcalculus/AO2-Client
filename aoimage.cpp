@@ -16,19 +16,16 @@ AOImage::~AOImage()
 
 void AOImage::set_image(QString p_image)
 {
-  QString theme_image_path = ao_app->get_theme_path() + p_image;
-  QString default_image_path = ao_app->get_default_theme_path() + p_image;
-
-  QString final_image_path;
-
-  if (file_exists(theme_image_path))
-    final_image_path = theme_image_path;
-  else
-    final_image_path = default_image_path;
-
-  QPixmap f_pixmap(final_image_path);
+  QString f_path = ao_app->get_image_path(p_image);
+  QPixmap f_pixmap(f_path);
 
   this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio));
+
+  // Store final path if the path exists
+  if (file_exists(f_path))
+    image_path = f_path;
+  else
+    image_path = "";
 }
 
 void AOImage::set_image_from_path(QString p_path)
@@ -43,6 +40,11 @@ void AOImage::set_image_from_path(QString p_path)
     final_path = default_path;
 
   QPixmap f_pixmap(final_path);
-
   this->setPixmap(f_pixmap.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio));
+
+  // Store final path if the path exists
+  if (file_exists(final_path))
+    image_path = final_path;
+  else
+    image_path = "";
 }

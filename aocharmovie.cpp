@@ -23,29 +23,17 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
 
 void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix, bool show)
 {
-  QStringList f_vec;
-
-  QString original_path = ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower(); // .gif
-  QString alt_path = ao_app->get_character_path(p_char) + p_emote.toLower(); // .png
-  QString placeholder_path = ao_app->get_theme_path() + "placeholder"; // .gif
-  QString placeholder_default_path = ao_app->get_default_theme_path() + "placeholder"; // .gif
   QString gif_path;
+  QStringList f_vec;
+  QStringList f_paths{
+    ao_app->get_character_path(p_char) + emote_prefix + p_emote.toLower(), // .gif
+    ao_app->get_character_path(p_char) + p_emote.toLower(), // .png
+    ao_app->get_theme_variant_path() + "placeholder", // .gif
+    ao_app->get_theme_path() + "placeholder", // .gif
+    ao_app->get_default_theme_path() + "placeholder" // .gif
+  };
 
-//  if (file_exists(original_path))
-//    gif_path = original_path;
-//  else if (file_exists(alt_path))
-//    gif_path = alt_path;
-//  else if (file_exists(placeholder_path))
-//    gif_path = placeholder_path;
-//  else
-//    gif_path = placeholder_default_path;
-
-  f_vec.push_back(original_path);
-  f_vec.push_back(alt_path);
-  f_vec.push_back(placeholder_path);
-  f_vec.push_back(placeholder_default_path);
-
-  for(auto &f_file : f_vec)
+  for(auto &f_file : f_paths)
   {
     bool found = false;
     for (auto &ext : decltype(f_vec){".apng", ".gif", ".png"})

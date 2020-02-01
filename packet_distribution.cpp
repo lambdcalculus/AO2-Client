@@ -665,6 +665,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     w_courtroom->handle_clock(f_contents.at(1));
   }
+  else if (header == "VA")
+  {
+    if (courtroom_constructed)
+    {
+      w_courtroom->handle_theme_variant(f_contents.at(0));
+    }
+  }
 
   end:
 

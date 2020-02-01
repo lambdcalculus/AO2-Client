@@ -184,6 +184,9 @@ public:
   //handle server-side clock animation and display
   void handle_clock(QString time);
 
+  //handle request to change theme variant
+  void handle_theme_variant(QString theme_variant);
+
   void play_preanim();
 
   QString parse_message(QString message);
@@ -265,6 +268,7 @@ private:
   QString rpc_ini = "configs/rpccharlist.ini";
   QString file_select_ini = "configs/filesabstract.ini";
   QString shownames_ini = "configs/shownames.ini";
+
   //theme files locations
   QString design_ini = "courtroom_design.ini";
   QString fonts_ini = "courtroom_fonts.ini";
