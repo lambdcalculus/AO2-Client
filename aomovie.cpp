@@ -23,10 +23,14 @@ void AOMovie::set_play_once(bool p_play_once)
 void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
 {
   m_movie->stop();
-
   QVector<QString> f_vec;
-
   QString file_path = "";
+
+  // Remove ! at the beginning of p_file if needed
+  // This is an indicator that the file is not selectable in the current theme (variant) but
+  // is still usable by other people
+  if (p_file.length() > 0 && p_file.at(0) == "!")
+    p_file = p_file.remove(0, 1);
 
   QString custom_path;
   if (p_file == "custom")
@@ -34,9 +38,8 @@ void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
   else
     custom_path = ao_app->get_character_path(p_char) + p_file + "_bubble";
 
-  f_vec.push_back(custom_path);
-
   QStringList f_paths{
+    custom_path,
     ao_app->get_character_path(p_char) + "overlay/" + p_file,
     ao_app->get_base_path() + "themes/" + p_custom_theme + "/" + p_file,
     ao_app->get_theme_variant_path() + p_file,

@@ -655,19 +655,18 @@ private slots:
   void on_cycle_clicked();
 
   void cycle_shout(int p_index);
-
   void cycle_effect(int p_index);
-
   void cycle_wtce(int p_index);
 
   void on_add_button_clicked();
-
   void on_delete_button_clicked();
 
   void on_set_file_button_clicked();
-
   void on_file_selected();
 
+  void load_shouts();
+  void load_effects();
+  void load_wtce();
   /**
    * @brief reset the shout button's texture to default
    * DOES NOT MODIFY OBJECTION_STATE

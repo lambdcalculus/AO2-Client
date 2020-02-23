@@ -174,21 +174,26 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_sfx_label = new AOLabel(this, ao_app);
   ui_blip_label = new AOLabel(this, ao_app);
 
-
-  int shout_number = ao_app->get_design_ini_value("shout_number", cc_config_ini);
-  shouts_enabled.resize(shout_number);
-  ui_shouts.resize(shout_number);
-
-  for(int i = 0; i < ui_shouts.size(); ++i)
-  {
-    ui_shouts[i] = new AOButton(this, ao_app);
-    ui_shouts[i]->setProperty("shout_id", i+1);
-  }
+  load_shouts(); // Reads from theme, deletes old shouts if needed and creates new ones
 
   ui_shout_up = new AOButton(this, ao_app);
   ui_shout_up->setProperty("cycle_id", 1);
   ui_shout_down = new AOButton(this, ao_app);
   ui_shout_down->setProperty("cycle_id", 0);
+
+  load_effects();
+
+  ui_effect_down = new AOButton(this, ao_app);
+  ui_effect_down->setProperty("cycle_id", 2);
+  ui_effect_up = new AOButton(this, ao_app);
+  ui_effect_up->setProperty("cycle_id", 3);
+
+  load_wtce();
+
+  ui_wtce_up = new AOButton(this, ao_app);
+  ui_wtce_up->setProperty("cycle_id", 5);
+  ui_wtce_down = new AOButton(this, ao_app);
+  ui_wtce_down->setProperty("cycle_id", 4);
 
   ui_ooc_toggle = new AOButton(this, ao_app);
 
@@ -227,35 +232,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_labels.push_back(ui_sfx_label);
   ui_labels.push_back(ui_blip_label);
   //
-
-  int effect_number = ao_app->get_design_ini_value("effect_number", cc_config_ini);
-  effects_enabled.resize(effect_number);
-  ui_effects.resize(effect_number);
-  for(int i = 0; i < ui_effects.size(); ++i)
-  {
-    ui_effects[i] = new AOButton(this, ao_app);
-    ui_effects[i]->setProperty("effect_id", i+1);
-  }
-
-  ui_effect_down = new AOButton(this, ao_app);
-  ui_effect_down->setProperty("cycle_id", 2);
-  ui_effect_up = new AOButton(this, ao_app);
-  ui_effect_up->setProperty("cycle_id", 3);
-
-  int wtce_number = ao_app->get_design_ini_value("wtce_number", cc_config_ini);
-  wtce_enabled.resize(wtce_number);
-  ui_wtce.resize(wtce_number);
-
-  for(int i = 0; i < ui_wtce.size(); ++i)
-  {
-    ui_wtce[i] = new AOButton(this, ao_app);
-    ui_wtce[i]->setProperty("wtce_id", i+1);
-  }
-
-  ui_wtce_up = new AOButton(this, ao_app);
-  ui_wtce_up->setProperty("cycle_id", 5);
-  ui_wtce_down = new AOButton(this, ao_app);
-  ui_wtce_down->setProperty("cycle_id", 4);
 
   ui_mute = new AOButton(this, ao_app);
 
@@ -328,20 +304,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
   connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_area_list_double_clicked(QModelIndex)));
 
-  for(auto & shout : ui_shouts)
-    connect(shout, SIGNAL(clicked(bool)), this, SLOT(on_shout_clicked()));
+  // connection for buttons now happen in load_shouts(), load_effects(), load_wtce()
+  // for(auto & shout : ui_shouts)
+  //  connect(shout, SIGNAL(clicked(bool)), this, SLOT(on_shout_clicked()));
 
   connect(ui_shout_up, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
   connect(ui_shout_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
 
-  for(auto & effect : ui_effects)
-    connect(effect, SIGNAL(clicked(bool)), this, SLOT(on_effect_button_clicked()));
-
   connect(ui_effect_up, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
   connect(ui_effect_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
-
-  for(auto & wtce : ui_wtce)
-    connect(wtce, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
 
   connect(ui_wtce_up, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
   connect(ui_wtce_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
@@ -705,7 +676,6 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_call_mod, "call_mod");
 
-
   set_size_and_pos(ui_change_character, "change_character");
   set_size_and_pos(ui_reload_theme, "reload_theme");
   set_size_and_pos(ui_call_mod, "call_mod");
@@ -995,6 +965,87 @@ void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
   }
 }
 
+void Courtroom::load_shouts()
+{
+  // Close any existing shouts to prevent memory leaks
+  for (int i=0; i<ui_shouts.size(); ++i)
+  {
+    ui_shouts[i]->close();
+    delete ui_shouts[i];
+  }
+
+  // And create new shouts
+  int shout_number = ao_app->get_design_ini_value("shout_number", cc_config_ini);
+  shouts_enabled.resize(shout_number);
+  ui_shouts.resize(shout_number);
+
+  for (int i=0; i<ui_shouts.size(); ++i)
+  {
+    ui_shouts[i] = new AOButton(this, ao_app);
+    ui_shouts[i]->setProperty("shout_id", i+1);
+    ui_shouts[i]->stackUnder(ui_shout_up);
+    ui_shouts[i]->stackUnder(ui_shout_down);
+  }
+
+  // And connect their actions
+  for (auto & shout : ui_shouts)
+    connect(shout, SIGNAL(clicked(bool)), this, SLOT(on_shout_clicked()));
+}
+
+void Courtroom::load_effects()
+{
+  // Close any existing effects to prevent memory leaks
+  for (int i=0; i<ui_effects.size(); ++i)
+  {
+    ui_effects[i]->close();
+    delete ui_effects[i];
+  }
+
+  // And create new effects
+  int effect_number = ao_app->get_design_ini_value("effect_number", cc_config_ini);
+  effects_enabled.resize(effect_number);
+  ui_effects.resize(effect_number);
+
+  for (int i=0; i<ui_effects.size(); ++i)
+  {
+    ui_effects[i] = new AOButton(this, ao_app);
+    ui_effects[i]->setProperty("effect_id", i+1);
+    ui_effects[i]->stackUnder(ui_effect_up);
+    ui_effects[i]->stackUnder(ui_effect_down);
+  }
+
+  // And connect their actions
+  for (auto & effect : ui_effects)
+    connect(effect, SIGNAL(clicked(bool)), this, SLOT(on_effect_button_clicked()));
+}
+
+void Courtroom::load_wtce()
+{
+  // Close any existing wtce buttons to prevent memory leaks
+  for (int i=0; i<ui_wtce.size(); ++i)
+  {
+    ui_wtce[i]->close();
+    delete ui_wtce[i];
+  }
+
+  // And create new wtce buttons
+  int wtce_number = ao_app->get_design_ini_value("wtce_number", cc_config_ini);
+  wtce_enabled.resize(wtce_number);
+  ui_wtce.resize(wtce_number);
+
+  for (int i=0; i<ui_wtce.size(); ++i)
+  {
+    ui_wtce[i] = new AOButton(this, ao_app);
+    ui_wtce[i]->setProperty("wtce_id", i+1);
+    ui_wtce[i]->stackUnder(ui_wtce_up);
+    ui_wtce[i]->stackUnder(ui_wtce_down);
+  }
+
+  // And connect their actions
+  for (auto & wtce : ui_wtce)
+    connect(wtce, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
+}
+
 void Courtroom::set_shouts()
 {
   for(auto & shout : ui_shouts) shout->hide();
@@ -1271,55 +1322,28 @@ void Courtroom::enter_courtroom(int p_cid)
     ui_prosecution_plus->hide();
   }
 
+  // Update widgets first, then check if everything is valid
+  // This will also handle showing the correct shouts, effects and wtce buttons, and cycling
+  // through them if the buttons that are supposed to be displayed do not exist
+  qDebug() << "setting widgets";
+  set_widgets();
+
+  qDebug() << "checking shouts";
   check_shouts();
+  if (!shouts_enabled[m_shout_state])
+    cycle_shout(1);
+
+  qDebug() << "checking effects";
   check_effects();
+  if (!effects_enabled[m_effect_current])
+    cycle_effect(1);
+
+  qDebug() << "checking wtce";
   check_wtce();
+  if (is_judge && !wtce_enabled[m_wtce_current])
+    cycle_wtce(1);
 
-  if (ao_app->custom_objection_enabled)
-  {
-
-    for(int i = 0; i < ui_shouts.size(); ++i)
-    {
-      if(shouts_enabled[i])
-      {
-        ui_shouts[i]->show();
-      }
-      else
-      {
-        ui_shouts[i]->hide();
-      }
-    }
-  }
-  else
-  {
-    for(int i = 3; i < ui_shouts.size(); i++) // the non-official shouts
-      ui_shouts[i]->hide();
-  }
-
-  for(int i = 0; i < ui_effects.size(); ++i)
-  {
-    if(effects_enabled[i])
-    {
-      ui_effects[i]->show();
-    }
-    else
-    {
-      ui_effects[i]->hide();
-    }
-  }
-
-  for(int i = 0; i < ui_wtce.size(); ++i)
-  {
-    if(wtce_enabled[i] && is_judge)
-    {
-      ui_wtce[i]->show();
-    }
-    else
-    {
-      ui_wtce[i]->hide();
-    }
-  }
-
+  qDebug() << "checked all";
   if (ao_app->flipping_enabled)
     ui_flip->show();
   else
@@ -1339,8 +1363,6 @@ void Courtroom::enter_courtroom(int p_cid)
   m_blip_player->set_volume(ui_blip_slider->value());
 
   testimony_in_progress = false;
-
-  set_widgets();
 
   //ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
 
@@ -2901,9 +2923,12 @@ void Courtroom::check_wtce()
       if (file_exists(path))
       {
         wtce_enabled[i] = true;
+        qDebug() << i << " judge button exists " << path;
         break;
       }
+      qDebug() << " does not exist " << path;
     }
+    qDebug() << i << " no judge button for " << wtce_names.at(i);
   }
 }
 
@@ -2985,6 +3010,11 @@ void Courtroom::on_ooc_return_pressed()
       variant = ooc_message.mid(space_location+1);
 
     handle_theme_variant(variant);
+  }
+  else if (ooc_message.startsWith("/delbullet")) {
+    int last = ui_shouts.size()-1;
+    ui_shouts[last]->close();
+    ui_shouts.resize(last);
   }
 
   QStringList packet_contents;
@@ -3244,7 +3274,10 @@ void Courtroom::cycle_effect(int p_index)
 void Courtroom::cycle_wtce(int p_index)
 {
   int n = ui_wtce.size();
-  do { m_wtce_current = (m_wtce_current - p_index + n) % n; } while( !wtce_enabled[m_wtce_current] );
+  do {
+    m_wtce_current = (m_wtce_current - p_index + n) % n;
+    //qDebug() << m_wtce_current;
+  } while( !wtce_enabled[m_wtce_current] );
 
   set_wtce();
 }
@@ -3409,11 +3442,17 @@ void Courtroom::on_change_character_clicked()
 void Courtroom::on_reload_theme_clicked()
 {
   ao_app->reload_theme();
-
+  qDebug() << "loading shouts";
+  load_shouts();
+  qDebug() << "loading effects";
+  load_effects();
+  qDebug() << "loading wtce";
+  load_wtce();
+  qDebug() << "loaded everything";
   //to update status on the background
   set_background(current_background);
   enter_courtroom(m_cid);
-
+  qDebug() << "entered courtroom";
   anim_state = 4;
   text_state = 3;
 }
