@@ -304,10 +304,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
   connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_area_list_double_clicked(QModelIndex)));
 
-  // connection for buttons now happen in load_shouts(), load_effects(), load_wtce()
-  // for(auto & shout : ui_shouts)
-  //  connect(shout, SIGNAL(clicked(bool)), this, SLOT(on_shout_clicked()));
-
+  // connect events for shout/effect/wtce buttons happen in load_shouts(), load_effects(), load_wtce()
   connect(ui_shout_up, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
   connect(ui_shout_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
 
@@ -1325,25 +1322,20 @@ void Courtroom::enter_courtroom(int p_cid)
   // Update widgets first, then check if everything is valid
   // This will also handle showing the correct shouts, effects and wtce buttons, and cycling
   // through them if the buttons that are supposed to be displayed do not exist
-  qDebug() << "setting widgets";
   set_widgets();
 
-  qDebug() << "checking shouts";
   check_shouts();
   if (!shouts_enabled[m_shout_state])
     cycle_shout(1);
 
-  qDebug() << "checking effects";
   check_effects();
   if (!effects_enabled[m_effect_current])
     cycle_effect(1);
 
-  qDebug() << "checking wtce";
   check_wtce();
   if (is_judge && !wtce_enabled[m_wtce_current])
     cycle_wtce(1);
 
-  qDebug() << "checked all";
   if (ao_app->flipping_enabled)
     ui_flip->show();
   else
@@ -2923,12 +2915,9 @@ void Courtroom::check_wtce()
       if (file_exists(path))
       {
         wtce_enabled[i] = true;
-        qDebug() << i << " judge button exists " << path;
         break;
       }
-      qDebug() << " does not exist " << path;
     }
-    qDebug() << i << " no judge button for " << wtce_names.at(i);
   }
 }
 
@@ -3010,11 +2999,6 @@ void Courtroom::on_ooc_return_pressed()
       variant = ooc_message.mid(space_location+1);
 
     handle_theme_variant(variant);
-  }
-  else if (ooc_message.startsWith("/delbullet")) {
-    int last = ui_shouts.size()-1;
-    ui_shouts[last]->close();
-    ui_shouts.resize(last);
   }
 
   QStringList packet_contents;
@@ -3274,10 +3258,7 @@ void Courtroom::cycle_effect(int p_index)
 void Courtroom::cycle_wtce(int p_index)
 {
   int n = ui_wtce.size();
-  do {
-    m_wtce_current = (m_wtce_current - p_index + n) % n;
-    //qDebug() << m_wtce_current;
-  } while( !wtce_enabled[m_wtce_current] );
+  do { m_wtce_current = (m_wtce_current - p_index + n) % n; } while ( !wtce_enabled[m_wtce_current] );
 
   set_wtce();
 }
@@ -3442,17 +3423,13 @@ void Courtroom::on_change_character_clicked()
 void Courtroom::on_reload_theme_clicked()
 {
   ao_app->reload_theme();
-  qDebug() << "loading shouts";
   load_shouts();
-  qDebug() << "loading effects";
   load_effects();
-  qDebug() << "loading wtce";
   load_wtce();
-  qDebug() << "loaded everything";
+
   //to update status on the background
   set_background(current_background);
   enter_courtroom(m_cid);
-  qDebug() << "entered courtroom";
   anim_state = 4;
   text_state = 3;
 }
