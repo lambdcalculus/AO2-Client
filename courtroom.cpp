@@ -2378,6 +2378,7 @@ QString Courtroom::parse_message(QString message)
 void Courtroom::start_chat_ticking()
 {
   ui_vp_message->clear();
+
   set_text_color();
   rainbow_counter = 0;
   //we need to ensure that the text isn't already ticking because this function can be called by two logic paths
@@ -2410,6 +2411,9 @@ void Courtroom::chat_tick()
 {
   //note: this is called fairly often(every 60 ms when char is talking)
   //do not perform heavy operations here
+  QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
+  if (ao_app->read_theme_ini("enable_vp_outline", cc_config_ini) == "true")
+    vp_message_format.setTextOutline(QPen(Qt::black, 1));
 
   QString f_message = m_chatmessage[MESSAGE];
 //  QString parsed_message = parse_message(f_message);
@@ -2457,8 +2461,12 @@ void Courtroom::chat_tick()
       }
 
       ++rainbow_counter;
+      // Apply color to the next character
+      QColor text_color;
+      text_color.setNamedColor(html_color);
+      vp_message_format.setForeground(text_color);
 
-      ui_vp_message->insertHtml("<font color=\"" + html_color + "\">" + f_character + "</font>");
+      ui_vp_message->textCursor().insertText(f_character, vp_message_format);
     }
     else if (ao_app->read_theme_ini("enable_highlighting", cc_config_ini) == "true")
     {
@@ -2477,8 +2485,17 @@ void Courtroom::chat_tick()
         }
       }
 
-      //qDebug() << "character = " << f_character << "color=" << m_string_color;
-      ui_vp_message->insertHtml("<font color=\"" + m_string_color + "\">" + f_character + "</font>");
+      // Apply color to the next character
+      if (m_string_color.isEmpty())
+        vp_message_format.setForeground(Qt::white);
+      else
+      {
+        QColor textColor;
+        textColor.setNamedColor(m_string_color);
+        vp_message_format.setForeground(textColor);
+      }
+
+      ui_vp_message->textCursor().insertText(f_character, vp_message_format);
 
       for(const auto& col : f_vec)
       {
@@ -2488,18 +2505,13 @@ void Courtroom::chat_tick()
           m_string_color = m_color_stack.top();
           break;
         }
-
       }
     }
-//    else if(ao_app->read_theme_ini("enable_highlighting", cc_config_ini) == "extra")
-//    {
-//      QString ch = parsed_message.at(tick_pos);
-//      ui_vp_message->insertHtml(ch);
-//    }
     else
     {
-      ui_vp_message->insertHtml(f_character);
+      ui_vp_message->textCursor().insertText(f_character, vp_message_format);
     }
+
     QScrollBar *scroll = ui_vp_message->verticalScrollBar();
     scroll->setValue(scroll->maximum());
 
