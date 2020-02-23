@@ -2414,6 +2414,8 @@ void Courtroom::chat_tick()
   QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
   if (ao_app->read_theme_ini("enable_vp_outline", cc_config_ini) == "true")
     vp_message_format.setTextOutline(QPen(Qt::black, 1));
+  else
+    vp_message_format.setTextOutline(Qt::NoPen);
 
   QString f_message = m_chatmessage[MESSAGE];
 //  QString parsed_message = parse_message(f_message);
