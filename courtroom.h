@@ -284,6 +284,7 @@ private:
 
   QString previous_ic_message = "";
 
+  QColor m_base_string_color;
   QString m_string_color = "";
 
   QStack<QString> m_color_stack;

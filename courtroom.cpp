@@ -2472,7 +2472,7 @@ void Courtroom::chat_tick()
     }
     else if (ao_app->read_theme_ini("enable_highlighting", cc_config_ini) == "true")
     {
-      bool found = false;
+      bool highlight_found = false;
       QVector<QStringList> f_vec = ao_app->get_highlight_color();
       if(m_color_stack.isEmpty()) m_color_stack.push("");
 
@@ -2482,14 +2482,14 @@ void Courtroom::chat_tick()
         {
           m_color_stack.push(col[1].trimmed());
           m_string_color = m_color_stack.top();
-          found = true;
+          highlight_found = true;
           break;
         }
       }
 
       // Apply color to the next character
       if (m_string_color.isEmpty())
-        vp_message_format.setForeground(Qt::white);
+        vp_message_format.setForeground(m_base_string_color);
       else
       {
         QColor textColor;
@@ -2497,17 +2497,24 @@ void Courtroom::chat_tick()
         vp_message_format.setForeground(textColor);
       }
 
-      ui_vp_message->textCursor().insertText(f_character, vp_message_format);
+      ui_vp_message->setAlignment(Qt::AlignCenter);
+      QString m_future_string_color = m_string_color;
 
       for(const auto& col : f_vec)
       {
-        if(f_character == col[0].trimmed()[1] && !found)
+        if(f_character == col[0].trimmed()[1] && !highlight_found)
         {
           if(m_color_stack.size() > 1) m_color_stack.pop();
-          m_string_color = m_color_stack.top();
+          m_future_string_color = m_color_stack.top();
+          highlight_found = true;
           break;
         }
       }
+
+      if (!highlight_found)
+        ui_vp_message->textCursor().insertText(f_character, vp_message_format);
+
+      m_string_color = m_future_string_color;
     }
     else
     {
@@ -2671,34 +2678,34 @@ void Courtroom::set_scene()
 
 void Courtroom::set_text_color()
 {
+
   switch (m_chatmessage[TEXT_COLOR].toInt())
   {
   case GREEN:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: rgb(0, 255, 0)");
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
+    m_base_string_color.setRgb(0, 255, 0);
     break;
   case RED:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: red");
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
+    m_base_string_color.setNamedColor("red");
     break;
   case ORANGE:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: orange");
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
+    m_base_string_color.setNamedColor("orange");
     break;
   case BLUE:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: rgb(45, 150, 255)");
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
+    m_base_string_color.setRgb(45, 150, 255);
     break;
   case YELLOW:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: yellow");
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
+    m_base_string_color.setNamedColor("yellow");
     break;
   default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   case WHITE:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                 "color: white");
-
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
+    m_base_string_color.setNamedColor("white");
   }
 }
 
