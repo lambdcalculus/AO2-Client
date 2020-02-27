@@ -2412,7 +2412,7 @@ void Courtroom::chat_tick()
   //note: this is called fairly often(every 60 ms when char is talking)
   //do not perform heavy operations here
   QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
-  if (ao_app->read_theme_ini("enable_vp_outline", cc_config_ini) == "true")
+  if (ao_app->read_theme_ini("enable_vp_message_outline", cc_config_ini) == "true")
     vp_message_format.setTextOutline(QPen(Qt::black, 1));
   else
     vp_message_format.setTextOutline(Qt::NoPen);
@@ -2497,7 +2497,6 @@ void Courtroom::chat_tick()
         vp_message_format.setForeground(textColor);
       }
 
-      ui_vp_message->setAlignment(Qt::AlignCenter);
       QString m_future_string_color = m_string_color;
 
       for(const auto& col : f_vec)
