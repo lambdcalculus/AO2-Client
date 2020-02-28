@@ -268,6 +268,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_notepad = new QTextEdit(this);
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
 
+  ui_timer = new AOTimer(this, ao_app);
+
   construct_evidence();
 
   construct_char_select();

@@ -16,6 +16,7 @@ TEMPLATE = app
 VERSION = 2.4.8.0
 
 SOURCES += main.cpp\
+    aotimer.cpp \
         lobby.cpp \
     text_file_functions.cpp \
     path_functions.cpp \
@@ -60,6 +61,7 @@ SOURCES += main.cpp\
 
 HEADERS  += lobby.h \
     aoimage.h \
+    aotimer.h \
     file_functions.h \
     aobutton.h \
     debug_functions.h \

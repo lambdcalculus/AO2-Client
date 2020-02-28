@@ -24,6 +24,7 @@
 #include "aonotepad.h"
 #include "aonotearea.hpp"
 #include "aolabel.hpp"
+#include "aotimer.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -417,6 +418,7 @@ private:
   QWidget *ui_vp_music_area;
 
   AOMovie *ui_vp_clock;
+  AOTimer *ui_timer;
 
   QTextEdit* ui_ic_chatlog = nullptr;
   QVector<record_type_ptr> m_ic_records;
