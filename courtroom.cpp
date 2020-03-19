@@ -268,7 +268,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_notepad = new QTextEdit(this);
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
 
-  ui_timer = new AOTimer(this, ao_app);
+  ui_timers.resize(num_timers);
+  for (int i=0; i<num_timers; i++)
+  {
+    ui_timers[i] = new AOTimer(this, ao_app);
+  }
 
   construct_evidence();
 
@@ -3607,4 +3611,30 @@ void Courtroom::set_bullets()
     thing = ao_app->read_design_ini(QString::number(++i), somethingsomethingpath);
     //qDebug() << QString::number(i) << thing;
   } while(thing != "");
+}
+
+void Courtroom::timer_resume(int timer_id)
+{
+  if (timer_id >= num_timers)
+    return;
+
+  ui_timers[timer_id]->resume();
+}
+
+void Courtroom::timer_set(int timer_id, int new_time, int timestep_length, int firing_interval)
+{
+  if (timer_id >= num_timers)
+    return;
+
+  ui_timers[timer_id]->set_time(QTime(0, 0).addMSecs(new_time));
+  ui_timers[timer_id]->set_timestep_length(timestep_length);
+  ui_timers[timer_id]->set_firing_length(firing_interval);
+}
+
+void Courtroom::timer_pause(int timer_id)
+{
+  if (timer_id >= num_timers)
+    return;
+
+  ui_timers[timer_id]->pause();
 }

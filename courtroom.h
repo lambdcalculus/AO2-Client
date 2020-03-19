@@ -206,6 +206,10 @@ public:
   void check_effects();
   void check_wtce();
 
+  void timer_resume(int timer_id);
+  void timer_set(int timer_id, int new_time, int timestep_length, int firing_interval);
+  void timer_pause(int timer_id);
+
 private:
   AOApplication *ao_app = nullptr;
 
@@ -368,6 +372,7 @@ private:
   bool server_ooc = true;
 
   int current_clock = -1;
+  int num_timers = 1;
 
   QString current_background = "gs4";
 
@@ -418,7 +423,7 @@ private:
   QWidget *ui_vp_music_area;
 
   AOMovie *ui_vp_clock;
-  AOTimer *ui_timer;
+  QVector<AOTimer*> ui_timers;
 
   QTextEdit* ui_ic_chatlog = nullptr;
   QVector<record_type_ptr> m_ic_records;

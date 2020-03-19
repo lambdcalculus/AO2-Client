@@ -672,6 +672,37 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->handle_theme_variant(f_contents.at(0));
     }
   }
+  else if (header == "TR")
+  {
+    // Timer resume
+    if (f_contents.size() != 1)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    w_courtroom->timer_resume(timer_id);
+
+  }
+  else if (header == "TS")
+  {
+    // Timer set
+    if (f_contents.size() != 4)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    int new_time = f_contents.at(1).toInt();
+    int timestep_length = f_contents.at(2).toInt();
+    int firing_length = f_contents.at(3).toInt();
+    w_courtroom->timer_set(timer_id, new_time, timestep_length, firing_length);
+  }
+  else if (header == "TP")
+  {
+    // Timer pause
+    if (f_contents.size() != 1)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    w_courtroom->timer_pause(timer_id);
+  }
 
   end:
 
