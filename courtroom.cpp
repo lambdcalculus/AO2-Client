@@ -2440,7 +2440,7 @@ void Courtroom::chat_tick()
   else
   {
     QString f_character = f_message.at(tick_pos);
-    f_character = f_character.toHtmlEscaped();
+    //f_character = f_character.toHtmlEscaped();
     //qDebug() << f_character;
 
     if (f_character == " ")
