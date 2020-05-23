@@ -207,8 +207,13 @@ public:
   void check_wtce();
 
   void timer_resume(int timer_id);
-  void timer_set(int timer_id, int new_time, int timestep_length, int firing_interval);
+  void timer_set(int timer_id, int new_time, int timestep_length,
+                 int firing_interval);
   void timer_pause(int timer_id);
+
+  template<typename T>
+  int correct_numbered_items(QVector<T*> &item_vector, QString config_item_number,
+                             QString item_name);
 
 private:
   AOApplication *ao_app = nullptr;
@@ -372,7 +377,7 @@ private:
   bool server_ooc = true;
 
   int current_clock = -1;
-  int num_timers = 1;
+  int timer_number = 0;
 
   QString current_background = "gs4";
 

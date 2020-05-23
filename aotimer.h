@@ -21,7 +21,7 @@ class ManualTimer {
     void perform_timestep() {current_time = current_time.addMSecs(timestep_length);}
 };
 
-class AOTimer : public QWidget
+class AOTimer : public AOLabel
 {
   Q_OBJECT
 
@@ -30,7 +30,6 @@ public:
 
 private:
   AOApplication *ao_app = nullptr;
-  AOLabel *ui_timer_label;
 
   ManualTimer old_manual_timer; // Pre-update manual timer
   ManualTimer manual_timer;

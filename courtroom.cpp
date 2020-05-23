@@ -268,8 +268,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_notepad = new QTextEdit(this);
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
 
-  ui_timers.resize(num_timers);
-  for (int i=0; i<num_timers; i++)
+  ui_timers.resize(1);
+  for (int i=0; i<1; i++)
   {
     ui_timers[i] = new AOTimer(this, ao_app);
   }
@@ -437,8 +437,6 @@ void Courtroom::set_widgets()
     if(!name.isEmpty())
       wtce_names.append(name.trimmed());
   }
-
-  set_fonts();
 
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
@@ -888,7 +886,51 @@ void Courtroom::set_widgets()
     contains_add_button = true;
   }
 
+  // Redraw the new correct number of timers.
+  /*
+  int new_timer_number = ao_app->read_theme_ini("timer_number", cc_config_ini).toInt();
+  // Note we use the fact that, if timer_number is not there, read_theme_ini returns an empty
+  // string, which .toInt() would fail to convert and by documentation transform to 0.
+
+  // Decide what to do if the new theme has a different amount of timers than the old one
+  if (new_timer_number < timer_number)
+  {
+    // Hide old timers if there are any.
+    for (int i=new_timer_number; i<timer_number; i++)
+    {
+      ui_timers[i]->hide();
+    }
+  }
+  else if (timer_number < new_timer_number)
+  {
+    // Create new timers if needed
+    if (ui_timers.size() < new_timer_number)
+    {
+      ui_timers.resize(new_timer_number);
+      for (int i=timer_number; i<new_timer_number; i++)
+      {
+        ui_timers[i] = new AOTimer(this, ao_app);
+      }
+    }
+  }
+  // Note that by design we do *not* destroy timers (or similarly, the size of ui_timers
+  // is non-decreasing. This is because we want to allow for timers to, say, run in the
+  // background as invisible.
+  // With that said, we can now properly format our new timers
+  for (int i=0; i<new_timer_number; i++)
+  {
+    ui_timers[i]->show();
+    set_size_and_pos(ui_timers[i], "timer_"+QString::number(i));
+    // Note that show is deliberately placed before set_size_and_pos
+    // That is because we want to retain the functionality set_size_and_pos includes where
+    // hides a widget if it is unable to find a position for it, and does not change its
+    // visibility otherwise.
+  }
+  timer_number = new_timer_number;
+*/
+  timer_number = correct_numbered_items(ui_timers, "timer_number", "timer");
   set_dropdowns();
+  set_fonts();
 }
 
 void Courtroom::set_fonts()
@@ -903,6 +945,11 @@ void Courtroom::set_fonts()
   set_font(ui_sfx_list, "sfx_list");
   set_font(ui_vp_music_name, "music_name");
   set_font(ui_vp_notepad, "notepad");
+  for (int i=0; i<timer_number; i++)
+  {
+    qDebug() << "Setting font" << i;
+    set_font(ui_timers[i], "timer_"+QString::number(i));
+  }
 }
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
@@ -3026,7 +3073,46 @@ void Courtroom::on_ooc_return_pressed()
 
     handle_theme_variant(variant);
   }
+  else if (ooc_message.startsWith("/tr"))
+  {
+    // Timer resume
+    int space_location = ooc_message.indexOf(" ");
 
+    int timer_id;
+    if (space_location == -1)
+      timer_id = 0;
+    else
+     timer_id = ooc_message.mid(space_location+1).toInt();
+    timer_resume(timer_id);
+  }
+  else if (ooc_message.startsWith("/ts"))
+  {
+    // Timer set
+    QStringList arguments = ooc_message.split(" ");
+    int size = arguments.size();
+
+    // Note arguments[0] == "/ts", so every index (and thus length) is off by one.
+    if (size > 5)
+      return;
+
+    int timer_id = (size > 1 ? arguments[1].toInt() : 0);
+    int new_time = (size > 2 ? arguments[2].toInt() : 300)*1000;
+    int timestep_length = (size > 3 ? arguments[3].toDouble() : -.016)*1000;
+    int firing_length = (size > 4 ? arguments[4].toDouble() : .016)*1000;
+    timer_set(timer_id, new_time, timestep_length, firing_length);
+  }
+  else if (ooc_message.startsWith("/tp"))
+  {
+    // Timer pause
+    int space_location = ooc_message.indexOf(" ");
+
+    int timer_id;
+    if (space_location == -1)
+      timer_id = 0;
+    else
+     timer_id = ooc_message.mid(space_location+1).toInt();
+    timer_pause(timer_id);
+  }
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
   packet_contents.append(ooc_message);
@@ -3615,7 +3701,7 @@ void Courtroom::set_bullets()
 
 void Courtroom::timer_resume(int timer_id)
 {
-  if (timer_id >= num_timers)
+  if (timer_id >= timer_number)
     return;
 
   ui_timers[timer_id]->resume();
@@ -3623,7 +3709,7 @@ void Courtroom::timer_resume(int timer_id)
 
 void Courtroom::timer_set(int timer_id, int new_time, int timestep_length, int firing_interval)
 {
-  if (timer_id >= num_timers)
+  if (timer_id >= timer_number)
     return;
 
   ui_timers[timer_id]->set_time(QTime(0, 0).addMSecs(new_time));
@@ -3633,8 +3719,60 @@ void Courtroom::timer_set(int timer_id, int new_time, int timestep_length, int f
 
 void Courtroom::timer_pause(int timer_id)
 {
-  if (timer_id >= num_timers)
+  if (timer_id >= timer_number)
     return;
 
   ui_timers[timer_id]->pause();
+}
+
+template<typename T>
+int Courtroom::correct_numbered_items(QVector<T*> &item_vector, QString config_item_number,
+                                      QString item_name)
+{
+  // &item_vector must be a vector of size at least 1!
+
+  // Redraw the new correct number of items.
+  int new_item_number = ao_app->read_theme_ini(config_item_number, cc_config_ini).toInt();
+  int current_item_number = item_vector.size();
+  // Note we use the fact that, if config_item_number is not there, read_theme_ini returns an
+  // empty string, which .toInt() would fail to convert and by documentation transform to 0.
+
+  // Decide what to do if the new theme has a different amount of items than the old one
+  if (new_item_number < current_item_number)
+  {
+    // Hide old timers if there are any.
+    for (int i=new_item_number; i<current_item_number; i++)
+    {
+      item_vector[i]->hide();
+    }
+  }
+  else if (current_item_number < new_item_number)
+  {
+    // Create new items
+    item_vector.resize(new_item_number);
+    qDebug() << current_item_number << ' ' << new_item_number;
+    for (int i=current_item_number; i<new_item_number; i++)
+    {
+      item_vector[i] = new T(this, ao_app);
+      item_vector[i]->stackUnder(item_vector[i-1]);
+      // index i-1 exists as i >= current_item_number == item_vector.size() >= 1
+    }
+  }
+  // Note that by design we do *not* destroy items (or similarly, the size of item_vector
+  // is non-decreasing. This is because we want to allow for items to, say, run in the
+  // background as invisible.
+  // With that said, we can now properly format our new items
+  qDebug() << "Created";
+  for (int i=0; i<new_item_number; i++)
+  {
+    qDebug() << "Showing" << i;
+    item_vector[i]->show();
+    set_size_and_pos(item_vector[i], item_name+"_"+QString::number(i));
+    // Note that show is deliberately placed before set_size_and_pos
+    // That is because we want to retain the functionality set_size_and_pos includes where
+    // hides a widget if it is unable to find a position for it, and does not change its
+    // visibility otherwise.
+  }
+  qDebug() << "Showed all";
+  return new_item_number;
 }

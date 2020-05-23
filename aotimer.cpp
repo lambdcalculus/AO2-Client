@@ -1,12 +1,10 @@
 #include "aotimer.h"
 #include <QDebug>
 
-AOTimer::AOTimer(QWidget* p_parent, AOApplication *p_ao_app) : QWidget(p_parent)
+AOTimer::AOTimer(QWidget* p_parent, AOApplication *p_ao_app) : AOLabel(p_parent, p_ao_app)
 {
   // Adapted from: https://stackoverflow.com/questions/36679708/how-to-make-a-chronometer-in-qt-c
   ao_app = p_ao_app;
-
-  ui_timer_label = new AOLabel(this, ao_app);
   /*
   AOButton *set_button = new AOButton(this, ao_app);
   AOButton *resume_button = new AOButton(this, ao_app);
@@ -29,10 +27,9 @@ AOTimer::AOTimer(QWidget* p_parent, AOApplication *p_ao_app) : QWidget(p_parent)
   normal->move(0, 80);
   fast_forward->move(0, 100);*/
 
-  ui_timer_label->move(0, 120);
-  ui_timer_label->resize(200, 100);
-  this->resize(200, 400);
-  ui_timer_label->setStyleSheet("QLabel { color : white; }");
+  //this->move(0, 0);
+  //this->resize(this->width(), this->height());
+  this->setStyleSheet("QLabel { color : white; }");
 
   /*
   set_button->raise();
@@ -115,7 +112,7 @@ void AOTimer::pause()
 
 void AOTimer::redraw()
 {
-  ui_timer_label->setText(manual_timer.get_time().toString("mm:ss.zzz"));
+  setText(manual_timer.get_time().toString("mm:ss.zzz"));
 }
 
 void AOTimer::set_time(QTime new_time)
