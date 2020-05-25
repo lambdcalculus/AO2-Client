@@ -269,10 +269,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
 
   ui_timers.resize(1);
-  for (int i=0; i<1; i++)
-  {
-    ui_timers[i] = new AOTimer(this, ao_app);
-  }
+  ui_timers[0] = new AOTimer(this, ao_app);
 
   construct_evidence();
 
@@ -905,7 +902,6 @@ void Courtroom::set_fonts()
   set_font(ui_vp_notepad, "notepad");
   for (int i=0; i<timer_number; i++)
   {
-    qDebug() << "Setting font" << i;
     set_font(ui_timers[i], "timer_"+QString::number(i));
   }
 }
