@@ -36,8 +36,10 @@ private:
   QTimer firing_timer;
 
   QTime start_time = QTime(0, 5);
+  // All of this is in miliseconds
   int manual_timer_timestep_length = -12;
   int firing_timer_length = 12;
+  int time_spent_in_timestep = 0;
 
 public slots:
   void update_time();
@@ -47,7 +49,7 @@ public slots:
   void redraw();
   void set_time(QTime new_time);
   void set_timestep_length(int new_timestep_length);
-  void set_firing_length(int new_firing_length);
+  void set_firing_interval(int new_firing_interval);
   void set_concentrate_mode();
   void set_normal_mode();
   void set_fast_forward_mode();

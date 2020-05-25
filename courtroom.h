@@ -206,14 +206,15 @@ public:
   void check_effects();
   void check_wtce();
 
-  void timer_resume(int timer_id);
-  void timer_set(int timer_id, int new_time, int timestep_length,
-                 int firing_interval);
-  void timer_pause(int timer_id);
+  void resume_timer(int timer_id);
+  void set_timer_time(int timer_id, int new_time);
+  void set_timer_timestep(int timer_id, int timestep_length);
+  void set_timer_firing(int timer_id, int firing_interval);
+  void pause_timer(int timer_id);
 
   template<typename T>
-  int correct_numbered_items(QVector<T*> &item_vector, QString config_item_number,
-                             QString item_name);
+  int adapt_numbered_items(QVector<T*> &item_vector, QString config_item_number,
+                           QString item_name);
 
 private:
   AOApplication *ao_app = nullptr;

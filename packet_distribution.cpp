@@ -679,20 +679,38 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     int timer_id = f_contents.at(0).toInt();
-    w_courtroom->timer_resume(timer_id);
+    w_courtroom->resume_timer(timer_id);
 
   }
-  else if (header == "TS")
+  else if (header == "TST")
   {
-    // Timer set
-    if (f_contents.size() != 4)
+    // Timer set time
+    if (f_contents.size() != 2)
       goto end;
 
     int timer_id = f_contents.at(0).toInt();
     int new_time = f_contents.at(1).toInt();
-    int timestep_length = f_contents.at(2).toInt();
-    int firing_length = f_contents.at(3).toInt();
-    w_courtroom->timer_set(timer_id, new_time, timestep_length, firing_length);
+    w_courtroom->set_timer_time(timer_id, new_time);
+  }
+  else if (header == "TSS")
+  {
+    // Timer set timeStep length
+    if (f_contents.size() != 2)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    int timestep_length = f_contents.at(1).toInt();
+    w_courtroom->set_timer_timestep(timer_id, timestep_length);
+  }
+  else if (header == "TSF")
+  {
+    // Timer set Firing interval
+    if (f_contents.size() != 2)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    int firing_interval = f_contents.at(1).toInt();
+    w_courtroom->set_timer_firing(timer_id, firing_interval);
   }
   else if (header == "TP")
   {
@@ -701,7 +719,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     int timer_id = f_contents.at(0).toInt();
-    w_courtroom->timer_pause(timer_id);
+    w_courtroom->pause_timer(timer_id);
   }
 
   end:

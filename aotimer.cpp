@@ -5,52 +5,8 @@ AOTimer::AOTimer(QWidget* p_parent, AOApplication *p_ao_app) : AOLabel(p_parent,
 {
   // Adapted from: https://stackoverflow.com/questions/36679708/how-to-make-a-chronometer-in-qt-c
   ao_app = p_ao_app;
-  /*
-  AOButton *set_button = new AOButton(this, ao_app);
-  AOButton *resume_button = new AOButton(this, ao_app);
-  AOButton *end_button = new AOButton(this, ao_app);
-  AOButton *concentrate = new AOButton(this, ao_app);
-  AOButton *normal = new AOButton(this, ao_app);
-  AOButton *fast_forward = new AOButton(this, ao_app);
-
-  set_button->setText("set");
-  resume_button->setText("Resume");
-  end_button->setText("Pause");
-  concentrate->setText("Concentrate");
-  normal->setText("Normal");
-  fast_forward->setText("Fast Forward");
-
-  set_button->move(0, 0);
-  resume_button->move(0, 20);
-  end_button->move(0, 40);
-  concentrate->move(0, 60);
-  normal->move(0, 80);
-  fast_forward->move(0, 100);*/
-
-  //this->move(0, 0);
-  //this->resize(this->width(), this->height());
   this->setStyleSheet("QLabel { color : white; }");
-
-  /*
-  set_button->raise();
-  resume_button->raise();
-  end_button->raise();
-  concentrate->raise();
-  normal->raise();
-  fast_forward->raise();
-  ui_timer_label->raise();
-  */
-
   connect(&firing_timer, SIGNAL(timeout()), this, SLOT(update_time()));
-
-  /*
-  connect(set_button, SIGNAL(clicked()), this, SLOT(set()));
-  connect(resume_button, SIGNAL(clicked()), this, SLOT(resume()));
-  connect(concentrate, SIGNAL(clicked()), this, SLOT(set_concentrate_mode()));
-  connect(normal, SIGNAL(clicked()), this, SLOT(set_normal_mode()));
-  connect(fast_forward, SIGNAL(clicked()), this, SLOT(set_fast_forward_mode()));
-  connect(end_button, SIGNAL(clicked()), &firing_timer, SLOT(stop()));
-  */
 
   set_time(start_time);
   old_manual_timer.set_time(start_time);
@@ -60,6 +16,7 @@ AOTimer::AOTimer(QWidget* p_parent, AOApplication *p_ao_app) : AOLabel(p_parent,
 
 void AOTimer::update_time()
 {
+  time_spent_in_timestep = 0;
   manual_timer.perform_timestep();
 
   // Check for underflow/overflow
@@ -93,6 +50,7 @@ void AOTimer::update_time()
   // Redraw and return
   old_manual_timer.perform_timestep();
   redraw();
+  firing_timer.start(firing_timer_length);
 }
 
 void AOTimer::set()
@@ -128,26 +86,41 @@ void AOTimer::set_timestep_length(int new_timestep_length)
   old_manual_timer.set_timestep_length(new_timestep_length);
 }
 
-void AOTimer::set_firing_length(int new_firing_length)
+void AOTimer::set_firing_interval(int new_firing_interval)
 {
-  firing_timer_length = new_firing_length;
-  //firing_timer.start(firing_timer_length);
+  /*
+   * Update the firing interval of the steptimer for all future timesteps. If a timestep
+   * has started when this function is scheduled to run, the current timestep will be
+   * readapted to finish in this new firing interval as follows:
+   * - Assume length x of the 'current' timestep with orig has elapsed.
+   * - Then, the current timestep will be adapted to have length max(0, new_interval-x)
+   */
+
+  // Update time spent so far and new future firing interval
+  time_spent_in_timestep += (firing_timer_length - firing_timer.remainingTime());
+  firing_timer_length = new_firing_interval;
+  // For this timestep however, the firing interval will be shorter than firing_timer_length
+  // to account for the fact the timer may have already been running a bit in this timestep
+  if (new_firing_interval < time_spent_in_timestep)
+    firing_timer.start(0);
+  else
+    firing_timer.start(new_firing_interval-time_spent_in_timestep);
 }
 
 void AOTimer::set_concentrate_mode()
 {
   set_timestep_length(-12);
-  set_firing_length(120);
+  set_firing_interval(120);
 }
 
 void AOTimer::set_normal_mode()
 {
   set_timestep_length(-12);
-  set_firing_length(12);
+  set_firing_interval(12);
 }
 
 void AOTimer::set_fast_forward_mode()
 {
   set_timestep_length(-24);
-  set_firing_length(12);
+  set_firing_interval(12);
 }

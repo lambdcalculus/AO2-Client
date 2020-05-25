@@ -886,49 +886,7 @@ void Courtroom::set_widgets()
     contains_add_button = true;
   }
 
-  // Redraw the new correct number of timers.
-  /*
-  int new_timer_number = ao_app->read_theme_ini("timer_number", cc_config_ini).toInt();
-  // Note we use the fact that, if timer_number is not there, read_theme_ini returns an empty
-  // string, which .toInt() would fail to convert and by documentation transform to 0.
-
-  // Decide what to do if the new theme has a different amount of timers than the old one
-  if (new_timer_number < timer_number)
-  {
-    // Hide old timers if there are any.
-    for (int i=new_timer_number; i<timer_number; i++)
-    {
-      ui_timers[i]->hide();
-    }
-  }
-  else if (timer_number < new_timer_number)
-  {
-    // Create new timers if needed
-    if (ui_timers.size() < new_timer_number)
-    {
-      ui_timers.resize(new_timer_number);
-      for (int i=timer_number; i<new_timer_number; i++)
-      {
-        ui_timers[i] = new AOTimer(this, ao_app);
-      }
-    }
-  }
-  // Note that by design we do *not* destroy timers (or similarly, the size of ui_timers
-  // is non-decreasing. This is because we want to allow for timers to, say, run in the
-  // background as invisible.
-  // With that said, we can now properly format our new timers
-  for (int i=0; i<new_timer_number; i++)
-  {
-    ui_timers[i]->show();
-    set_size_and_pos(ui_timers[i], "timer_"+QString::number(i));
-    // Note that show is deliberately placed before set_size_and_pos
-    // That is because we want to retain the functionality set_size_and_pos includes where
-    // hides a widget if it is unable to find a position for it, and does not change its
-    // visibility otherwise.
-  }
-  timer_number = new_timer_number;
-*/
-  timer_number = correct_numbered_items(ui_timers, "timer_number", "timer");
+  timer_number = adapt_numbered_items(ui_timers, "timer_number", "timer");
   set_dropdowns();
   set_fonts();
 }
@@ -3083,7 +3041,7 @@ void Courtroom::on_ooc_return_pressed()
       timer_id = 0;
     else
      timer_id = ooc_message.mid(space_location+1).toInt();
-    timer_resume(timer_id);
+    resume_timer(timer_id);
   }
   else if (ooc_message.startsWith("/ts"))
   {
@@ -3098,8 +3056,10 @@ void Courtroom::on_ooc_return_pressed()
     int timer_id = (size > 1 ? arguments[1].toInt() : 0);
     int new_time = (size > 2 ? arguments[2].toInt() : 300)*1000;
     int timestep_length = (size > 3 ? arguments[3].toDouble() : -.016)*1000;
-    int firing_length = (size > 4 ? arguments[4].toDouble() : .016)*1000;
-    timer_set(timer_id, new_time, timestep_length, firing_length);
+    int firing_interval = (size > 4 ? arguments[4].toDouble() : .016)*1000;
+    set_timer_time(timer_id, new_time);
+    set_timer_timestep(timer_id, timestep_length);
+    set_timer_firing(timer_id, firing_interval);
   }
   else if (ooc_message.startsWith("/tp"))
   {
@@ -3111,7 +3071,7 @@ void Courtroom::on_ooc_return_pressed()
       timer_id = 0;
     else
      timer_id = ooc_message.mid(space_location+1).toInt();
-    timer_pause(timer_id);
+    pause_timer(timer_id);
   }
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
@@ -3699,7 +3659,7 @@ void Courtroom::set_bullets()
   } while(thing != "");
 }
 
-void Courtroom::timer_resume(int timer_id)
+void Courtroom::resume_timer(int timer_id)
 {
   if (timer_id >= timer_number)
     return;
@@ -3707,17 +3667,31 @@ void Courtroom::timer_resume(int timer_id)
   ui_timers[timer_id]->resume();
 }
 
-void Courtroom::timer_set(int timer_id, int new_time, int timestep_length, int firing_interval)
+void Courtroom::set_timer_time(int timer_id, int new_time)
 {
   if (timer_id >= timer_number)
     return;
 
   ui_timers[timer_id]->set_time(QTime(0, 0).addMSecs(new_time));
-  ui_timers[timer_id]->set_timestep_length(timestep_length);
-  ui_timers[timer_id]->set_firing_length(firing_interval);
 }
 
-void Courtroom::timer_pause(int timer_id)
+void Courtroom::set_timer_timestep(int timer_id, int timestep_length)
+{
+  if (timer_id >= timer_number)
+    return;
+
+  ui_timers[timer_id]->set_timestep_length(timestep_length);
+}
+
+void Courtroom::set_timer_firing(int timer_id, int firing_interval)
+{
+  if (timer_id >= timer_number)
+    return;
+
+  ui_timers[timer_id]->set_firing_interval(firing_interval);
+}
+
+void Courtroom::pause_timer(int timer_id)
 {
   if (timer_id >= timer_number)
     return;
@@ -3726,7 +3700,7 @@ void Courtroom::timer_pause(int timer_id)
 }
 
 template<typename T>
-int Courtroom::correct_numbered_items(QVector<T*> &item_vector, QString config_item_number,
+int Courtroom::adapt_numbered_items(QVector<T*> &item_vector, QString config_item_number,
                                       QString item_name)
 {
   // &item_vector must be a vector of size at least 1!
@@ -3740,7 +3714,7 @@ int Courtroom::correct_numbered_items(QVector<T*> &item_vector, QString config_i
   // Decide what to do if the new theme has a different amount of items than the old one
   if (new_item_number < current_item_number)
   {
-    // Hide old timers if there are any.
+    // Hide old items if there are any.
     for (int i=new_item_number; i<current_item_number; i++)
     {
       item_vector[i]->hide();
@@ -3750,7 +3724,6 @@ int Courtroom::correct_numbered_items(QVector<T*> &item_vector, QString config_i
   {
     // Create new items
     item_vector.resize(new_item_number);
-    qDebug() << current_item_number << ' ' << new_item_number;
     for (int i=current_item_number; i<new_item_number; i++)
     {
       item_vector[i] = new T(this, ao_app);
@@ -3762,10 +3735,8 @@ int Courtroom::correct_numbered_items(QVector<T*> &item_vector, QString config_i
   // is non-decreasing. This is because we want to allow for items to, say, run in the
   // background as invisible.
   // With that said, we can now properly format our new items
-  qDebug() << "Created";
   for (int i=0; i<new_item_number; i++)
   {
-    qDebug() << "Showing" << i;
     item_vector[i]->show();
     set_size_and_pos(item_vector[i], item_name+"_"+QString::number(i));
     // Note that show is deliberately placed before set_size_and_pos
@@ -3773,6 +3744,5 @@ int Courtroom::correct_numbered_items(QVector<T*> &item_vector, QString config_i
     // hides a widget if it is unable to find a position for it, and does not change its
     // visibility otherwise.
   }
-  qDebug() << "Showed all";
   return new_item_number;
 }
