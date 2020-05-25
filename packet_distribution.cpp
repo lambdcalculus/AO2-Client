@@ -672,6 +672,55 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->handle_theme_variant(f_contents.at(0));
     }
   }
+  else if (header == "TR")
+  {
+    // Timer resume
+    if (f_contents.size() != 1)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    w_courtroom->resume_timer(timer_id);
+
+  }
+  else if (header == "TST")
+  {
+    // Timer set time
+    if (f_contents.size() != 2)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    int new_time = f_contents.at(1).toInt();
+    w_courtroom->set_timer_time(timer_id, new_time);
+  }
+  else if (header == "TSS")
+  {
+    // Timer set timeStep length
+    if (f_contents.size() != 2)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    int timestep_length = f_contents.at(1).toInt();
+    w_courtroom->set_timer_timestep(timer_id, timestep_length);
+  }
+  else if (header == "TSF")
+  {
+    // Timer set Firing interval
+    if (f_contents.size() != 2)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    int firing_interval = f_contents.at(1).toInt();
+    w_courtroom->set_timer_firing(timer_id, firing_interval);
+  }
+  else if (header == "TP")
+  {
+    // Timer pause
+    if (f_contents.size() != 1)
+      goto end;
+
+    int timer_id = f_contents.at(0).toInt();
+    w_courtroom->pause_timer(timer_id);
+  }
 
   end:
 

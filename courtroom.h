@@ -24,6 +24,7 @@
 #include "aonotepad.h"
 #include "aonotearea.hpp"
 #include "aolabel.hpp"
+#include "aotimer.h"
 #include "datatypes.h"
 
 #include <QMainWindow>
@@ -205,6 +206,16 @@ public:
   void check_effects();
   void check_wtce();
 
+  void resume_timer(int timer_id);
+  void set_timer_time(int timer_id, int new_time);
+  void set_timer_timestep(int timer_id, int timestep_length);
+  void set_timer_firing(int timer_id, int firing_interval);
+  void pause_timer(int timer_id);
+
+  template<typename T>
+  int adapt_numbered_items(QVector<T*> &item_vector, QString config_item_number,
+                           QString item_name);
+
 private:
   AOApplication *ao_app = nullptr;
 
@@ -367,6 +378,7 @@ private:
   bool server_ooc = true;
 
   int current_clock = -1;
+  int timer_number = 0;
 
   QString current_background = "gs4";
 
@@ -417,6 +429,7 @@ private:
   QWidget *ui_vp_music_area;
 
   AOMovie *ui_vp_clock;
+  QVector<AOTimer*> ui_timers;
 
   QTextEdit* ui_ic_chatlog = nullptr;
   QVector<record_type_ptr> m_ic_records;

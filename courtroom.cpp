@@ -268,6 +268,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_vp_notepad = new QTextEdit(this);
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
 
+  ui_timers.resize(1);
+  ui_timers[0] = new AOTimer(this, ao_app);
+
   construct_evidence();
 
   construct_char_select();
@@ -431,8 +434,6 @@ void Courtroom::set_widgets()
     if(!name.isEmpty())
       wtce_names.append(name.trimmed());
   }
-
-  set_fonts();
 
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
@@ -882,7 +883,9 @@ void Courtroom::set_widgets()
     contains_add_button = true;
   }
 
+  timer_number = adapt_numbered_items(ui_timers, "timer_number", "timer");
   set_dropdowns();
+  set_fonts();
 }
 
 void Courtroom::set_fonts()
@@ -897,6 +900,10 @@ void Courtroom::set_fonts()
   set_font(ui_sfx_list, "sfx_list");
   set_font(ui_vp_music_name, "music_name");
   set_font(ui_vp_notepad, "notepad");
+  for (int i=0; i<timer_number; i++)
+  {
+    set_font(ui_timers[i], "timer_"+QString::number(i));
+  }
 }
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
@@ -2434,7 +2441,7 @@ void Courtroom::chat_tick()
   else
   {
     QString f_character = f_message.at(tick_pos);
-    f_character = f_character.toHtmlEscaped();
+    //f_character = f_character.toHtmlEscaped();
     //qDebug() << f_character;
 
     if (f_character == " ")
@@ -3020,7 +3027,48 @@ void Courtroom::on_ooc_return_pressed()
 
     handle_theme_variant(variant);
   }
+  else if (ooc_message.startsWith("/tr"))
+  {
+    // Timer resume
+    int space_location = ooc_message.indexOf(" ");
 
+    int timer_id;
+    if (space_location == -1)
+      timer_id = 0;
+    else
+     timer_id = ooc_message.mid(space_location+1).toInt();
+    resume_timer(timer_id);
+  }
+  else if (ooc_message.startsWith("/ts"))
+  {
+    // Timer set
+    QStringList arguments = ooc_message.split(" ");
+    int size = arguments.size();
+
+    // Note arguments[0] == "/ts", so every index (and thus length) is off by one.
+    if (size > 5)
+      return;
+
+    int timer_id = (size > 1 ? arguments[1].toInt() : 0);
+    int new_time = (size > 2 ? arguments[2].toInt() : 300)*1000;
+    int timestep_length = (size > 3 ? arguments[3].toDouble() : -.016)*1000;
+    int firing_interval = (size > 4 ? arguments[4].toDouble() : .016)*1000;
+    set_timer_time(timer_id, new_time);
+    set_timer_timestep(timer_id, timestep_length);
+    set_timer_firing(timer_id, firing_interval);
+  }
+  else if (ooc_message.startsWith("/tp"))
+  {
+    // Timer pause
+    int space_location = ooc_message.indexOf(" ");
+
+    int timer_id;
+    if (space_location == -1)
+      timer_id = 0;
+    else
+     timer_id = ooc_message.mid(space_location+1).toInt();
+    pause_timer(timer_id);
+  }
   QStringList packet_contents;
   packet_contents.append(ui_ooc_chat_name->text());
   packet_contents.append(ooc_message);
@@ -3605,4 +3653,92 @@ void Courtroom::set_bullets()
     thing = ao_app->read_design_ini(QString::number(++i), somethingsomethingpath);
     //qDebug() << QString::number(i) << thing;
   } while(thing != "");
+}
+
+void Courtroom::resume_timer(int timer_id)
+{
+  if (timer_id >= timer_number)
+    return;
+
+  ui_timers[timer_id]->resume();
+}
+
+void Courtroom::set_timer_time(int timer_id, int new_time)
+{
+  if (timer_id >= timer_number)
+    return;
+
+  ui_timers[timer_id]->set_time(QTime(0, 0).addMSecs(new_time));
+}
+
+void Courtroom::set_timer_timestep(int timer_id, int timestep_length)
+{
+  if (timer_id >= timer_number)
+    return;
+
+  ui_timers[timer_id]->set_timestep_length(timestep_length);
+}
+
+void Courtroom::set_timer_firing(int timer_id, int firing_interval)
+{
+  if (timer_id >= timer_number)
+    return;
+
+  ui_timers[timer_id]->set_firing_interval(firing_interval);
+}
+
+void Courtroom::pause_timer(int timer_id)
+{
+  if (timer_id >= timer_number)
+    return;
+
+  ui_timers[timer_id]->pause();
+}
+
+template<typename T>
+int Courtroom::adapt_numbered_items(QVector<T*> &item_vector, QString config_item_number,
+                                      QString item_name)
+{
+  // &item_vector must be a vector of size at least 1!
+
+  // Redraw the new correct number of items.
+  int new_item_number = ao_app->read_theme_ini(config_item_number, cc_config_ini).toInt();
+  int current_item_number = item_vector.size();
+  // Note we use the fact that, if config_item_number is not there, read_theme_ini returns an
+  // empty string, which .toInt() would fail to convert and by documentation transform to 0.
+
+  // Decide what to do if the new theme has a different amount of items than the old one
+  if (new_item_number < current_item_number)
+  {
+    // Hide old items if there are any.
+    for (int i=new_item_number; i<current_item_number; i++)
+    {
+      item_vector[i]->hide();
+    }
+  }
+  else if (current_item_number < new_item_number)
+  {
+    // Create new items
+    item_vector.resize(new_item_number);
+    for (int i=current_item_number; i<new_item_number; i++)
+    {
+      item_vector[i] = new T(this, ao_app);
+      item_vector[i]->stackUnder(item_vector[i-1]);
+      // index i-1 exists as i >= current_item_number == item_vector.size() >= 1
+    }
+  }
+  // Note that by design we do *not* destroy items (or similarly, the size of item_vector
+  // is non-decreasing. This is because we want to allow for items to, say, run in the
+  // background as invisible.
+  // With that said, we can now properly format our new items
+  for (int i=0; i<new_item_number; i++)
+  {
+    item_vector[i]->show();
+    set_size_and_pos(item_vector[i], item_name+"_"+QString::number(i));
+    // Note that show is deliberately placed before set_size_and_pos
+    // That is because we want to retain the functionality set_size_and_pos includes where
+    // hides a widget if it is unable to find a position for it, and does not change its
+    // visibility otherwise.
+  }
+  return new_item_number;
 }
