@@ -271,6 +271,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_timers.resize(1);
   ui_timers[0] = new AOTimer(this, ao_app);
 
+  load_free_blocks(); // Done last so they are guaranteed to be at bottom
+
   construct_evidence();
 
   construct_char_select();
@@ -433,6 +435,14 @@ void Courtroom::set_widgets()
     QString name = ao_app->get_spbutton("[WTCE]", i);
     if(!name.isEmpty())
       wtce_names.append(name.trimmed());
+  }
+
+  free_block_names.clear();
+  for(int i = 1; i <= ui_free_blocks.size(); ++i)
+  {
+    QString name = ao_app->get_spbutton("[FREE BLOCKS]", i);
+    if(!name.isEmpty())
+      free_block_names.append(name.trimmed());
   }
 
   ui_background->move(0, 0);
@@ -668,6 +678,13 @@ void Courtroom::set_widgets()
     qDebug() << "AA: single wtce";
     set_wtce();
   }
+
+  for(int i = 0; i < free_block_names.size(); ++i)
+  {
+    qDebug() << "Setting up free block " << i << " " << free_block_names[i];
+    set_size_and_pos(ui_free_blocks[i], "free_block_" + free_block_names[i]);
+  }
+  set_free_blocks();
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
   ui_ooc_toggle->setText("Server");
@@ -1050,6 +1067,30 @@ void Courtroom::load_wtce()
     connect(wtce, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
 }
 
+void Courtroom::load_free_blocks()
+{
+  // Close any existing free blocks to prevent memory leaks
+  for (int i=0; i<ui_free_blocks.size(); ++i)
+  {
+    ui_free_blocks[i]->close();
+    delete ui_free_blocks[i];
+  }
+
+  // And create new free block buttons
+  int free_block_number = ao_app->get_design_ini_value("free_block_number", cc_config_ini);
+  free_blocks_enabled.resize(free_block_number);
+  ui_free_blocks.resize(free_block_number);
+
+  for (int i=0; i<ui_free_blocks.size(); ++i)
+  {
+    ui_free_blocks[i] = new AOMovie(this, ao_app);
+    //ui_free_blocks[i]->setProperty("free_block_id", i+1);
+    ui_free_blocks[i]->set_play_once(false);
+    ui_free_blocks[i]->stackUnder(ui_vp_music_display_a);
+  }
+
+}
+
 void Courtroom::set_shouts()
 {
   for(auto & shout : ui_shouts) shout->hide();
@@ -1080,6 +1121,15 @@ void Courtroom::set_wtce()
       ui_wtce_up->hide();
       ui_wtce_down->hide();
     }
+  }
+}
+
+void Courtroom::set_free_blocks()
+{
+  for (int i=0; i<ui_free_blocks.size(); i++)
+  {
+    AOMovie* free_block = ui_free_blocks[i];
+    free_block->play("free_block_" + free_block_names[i]);
   }
 }
 
@@ -1329,6 +1379,7 @@ void Courtroom::enter_courtroom(int p_cid)
   // Update widgets first, then check if everything is valid
   // This will also handle showing the correct shouts, effects and wtce buttons, and cycling
   // through them if the buttons that are supposed to be displayed do not exist
+  // It will also take care of free blocks
   set_widgets();
 
   check_shouts();
@@ -1342,6 +1393,8 @@ void Courtroom::enter_courtroom(int p_cid)
   check_wtce();
   if (is_judge && !wtce_enabled[m_wtce_current])
     cycle_wtce(1);
+
+  check_free_blocks();
 
   if (ao_app->flipping_enabled)
     ui_flip->show();
@@ -2948,6 +3001,34 @@ void Courtroom::check_wtce()
   }
 }
 
+void Courtroom::check_free_blocks()
+{
+  QString char_path = ao_app->get_character_path(current_char);
+  QString theme_variant_path = ao_app->get_theme_variant_path();
+  QString theme_path = ao_app->get_theme_path();
+  for(int i = 0; i < ui_free_blocks.size(); ++i)
+  {
+    QStringList paths{
+      char_path + free_block_names.at(i) + ".gif",
+      theme_variant_path + free_block_names.at(i) + ".gif",
+      theme_variant_path + free_block_names.at(i) + ".apng",
+      theme_path + free_block_names.at(i) + ".gif",
+      theme_path + free_block_names.at(i) + ".apng"
+    };
+
+    // Assume the free block does not exist until a matching file is found
+    free_blocks_enabled[i] = false;
+    for (QString path : paths)
+    {
+      if (file_exists(path))
+      {
+        free_blocks_enabled[i] = true;
+        break;
+      }
+    }
+  }
+}
+
 void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
@@ -3494,6 +3575,7 @@ void Courtroom::on_reload_theme_clicked()
   load_shouts();
   load_effects();
   load_wtce();
+  load_free_blocks();
 
   //to update status on the background
   set_background(current_background);
