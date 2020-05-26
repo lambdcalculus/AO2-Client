@@ -599,6 +599,9 @@ private:
 
   AOButton *ui_spectator;
 
+  void create_widgets();
+  void connect_widgets();
+
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
