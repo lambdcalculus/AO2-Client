@@ -371,9 +371,6 @@ private:
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
 
-  //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
-  bool is_ao2_bg = false;
-
   //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 

@@ -236,18 +236,12 @@ void Courtroom::set_scene()
   if (f_side == "def")
   {
       f_background = "defenseempty";
-      if (is_ao2_bg)
-        f_desk_image = "defensedesk";
-      else
-        f_desk_image = "bancodefensa";
+      f_desk_image = "defensedesk";
     }
     else if (f_side == "pro")
     {
       f_background = "prosecutorempty";
-      if (is_ao2_bg)
-        f_desk_image = "prosecutiondesk";
-      else
-        f_desk_image = "bancoacusacion";
+      f_desk_image = "prosecutiondesk";
     }
     else if (f_side == "jud")
     {
@@ -266,23 +260,18 @@ void Courtroom::set_scene()
     }
     else
     {
-      if (is_ao2_bg)
-        f_desk_image = "stand";
-      else
-        f_desk_image = "estrado";
+      f_desk_image = "stand";
     }
 
-    if (f_desk_mod == "0" || (f_desk_mod != "1" &&
-                              (f_side == "jud" ||
+    if (f_desk_mod == "0" ||
+        (f_desk_mod != "1" && (f_side == "jud" ||
                                f_side == "hld" ||
                                f_side == "hlp")))
     {
       ui_vp_desk->hide();
       ui_vp_legacy_desk->hide();
     }
-    else if (is_ao2_bg || (f_side == "jud" ||
-                           f_side == "hld" ||
-                           f_side == "hlp"))
+    else if ((f_side == "jud" || f_side == "hld" || f_side == "hlp"))
     {
       ui_vp_legacy_desk->hide();
       ui_vp_desk->show();
@@ -349,38 +338,10 @@ void Courtroom::set_taken(int n_char, bool p_taken)
 void Courtroom::set_background(QString p_background)
 {
   testimony_in_progress = false;
-
   current_background = p_background;
-  QString bg_path = get_background_path();
-  QVector<QString> exts{".apng", ".gif", ".png"};
 
-  QString ini_path = ao_app->get_background_path() + "backgrounds.ini";
-
-  if (file_exists(ini_path))
-  {
-    is_ao2_bg = true;
-  }
-  else
-  {
-    if (file_exists(bg_path + "defensedesk", exts) == "")
-      is_ao2_bg = false;
-    else if (file_exists(bg_path + "prosecutiondesk", exts) == "")
-      is_ao2_bg = false;
-    else if (file_exists(bg_path + "stand", exts) == "")
-      is_ao2_bg = false;
-    is_ao2_bg = true;                                            ;
-  }
-
-  if (is_ao2_bg)
-  {
-    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
-    set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
-  }
-  else
-  {
-    set_size_and_pos(ui_vp_chatbox, "chatbox");
-    set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
-  }
+  set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
+  set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
 }
 
 void Courtroom::handle_music_anim()

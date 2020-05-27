@@ -494,16 +494,8 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_sfx_list, "sfx_list");
 
-  if (is_ao2_bg)
-  {
-    set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
-    set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
-  }
-  else
-  {
-    set_size_and_pos(ui_ic_chat_message, "ic_chat_message");
-    set_size_and_pos(ui_vp_chatbox, "chatbox");
-  }
+  set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
+  set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
 
   set_size_and_pos(ui_vp_music_area, "music_area");
   ui_vp_music_area->show();
