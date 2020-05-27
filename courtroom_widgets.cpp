@@ -381,38 +381,6 @@ void Courtroom::set_widgets()
     this->resize(f_courtroom.width, f_courtroom.height);
   }
 
-  shout_names.clear();
-  for(int i = 1; i <= ui_shouts.size(); ++i)
-  {
-    QString name = ao_app->get_spbutton("[SHOUTS]", i);
-    if(!name.isEmpty())
-      shout_names.append(name.trimmed());
-  }
-
-  effect_names.clear();
-  for(int i = 1; i <= ui_effects.size(); ++i)
-  {
-    QStringList names = ao_app->get_effect(i);
-    if(!names.isEmpty())
-      effect_names.append(names.at(0).trimmed());
-  }
-
-  wtce_names.clear();
-  for(int i = 1; i <= ui_wtce.size(); ++i)
-  {
-    QString name = ao_app->get_spbutton("[WTCE]", i);
-    if(!name.isEmpty())
-      wtce_names.append(name.trimmed());
-  }
-
-  free_block_names.clear();
-  for(int i = 1; i <= ui_free_blocks.size(); ++i)
-  {
-    QString name = ao_app->get_spbutton("[FREE BLOCKS]", i);
-    if(!name.isEmpty())
-      free_block_names.append(name.trimmed());
-  }
-
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
   ui_background->set_image("courtroombackground.png");
@@ -1065,6 +1033,12 @@ void Courtroom::load_effects()
   // Close any existing effects to prevent memory leaks
   for (int i=0; i<ui_effects.size(); ++i)
   {
+    QString name = ui_effects[i]->objectName();
+    widget_names.remove(name);
+    // This index exists as ui_effects[i] can only exist if it was added by a previous
+    // call of load_effects(). However, this code later adds the name of all shouts.
+    // As this is the only place that changes the size of ui_effects and it originally
+    // starts empty, this code is correct..
     ui_effects[i]->close();
     delete ui_effects[i];
   }
@@ -1085,6 +1059,20 @@ void Courtroom::load_effects()
   // And connect their actions
   for (auto & effect : ui_effects)
     connect(effect, SIGNAL(clicked(bool)), this, SLOT(on_effect_button_clicked()));
+
+  // And add names
+  effect_names.clear();
+  for (int i=1; i<=ui_effects.size(); ++i)
+  {
+    QStringList names = ao_app->get_effect(i);
+    if (!names.isEmpty())
+    {
+      QString name = names.at(0).trimmed();
+      effect_names.append(name);
+      widget_names[name] = ui_effects[i-1];
+      ui_effects[i-1]->setObjectName(name);
+    }
+  }
 }
 
 void Courtroom::load_free_blocks()
@@ -1092,6 +1080,9 @@ void Courtroom::load_free_blocks()
   // Close any existing free blocks to prevent memory leaks
   for (int i=0; i<ui_free_blocks.size(); ++i)
   {
+    QString name = ui_free_blocks[i]->objectName();
+    widget_names.remove(name);
+    // Same logic for why this index exists as in ui_effects()
     ui_free_blocks[i]->close();
     delete ui_free_blocks[i];
   }
@@ -1108,6 +1099,19 @@ void Courtroom::load_free_blocks()
     ui_free_blocks[i]->set_play_once(false);
     ui_free_blocks[i]->stackUnder(ui_vp_player_char);
   }
+
+  // And add names
+  free_block_names.clear();
+  for (int i=1; i<=ui_free_blocks.size(); ++i)
+  {
+    QString name = ao_app->get_spbutton("[FREE BLOCKS]", i).trimmed();
+    if (!name.isEmpty())
+    {
+      free_block_names.append(name);
+      widget_names[name] = ui_free_blocks[i-1];
+      ui_free_blocks[i-1]->setObjectName(name);
+    }
+  }
 }
 
 void Courtroom::load_shouts()
@@ -1115,8 +1119,10 @@ void Courtroom::load_shouts()
   // Close any existing shouts to prevent memory leaks
   for (int i=0; i<ui_shouts.size(); ++i)
   {
+    QString name = ui_shouts[i]->objectName();
+    widget_names.remove(name);
     ui_shouts[i]->close();
-    delete ui_shouts[i];
+    delete ui_shouts[i];    
   }
 
   // And create new shouts
@@ -1135,6 +1141,19 @@ void Courtroom::load_shouts()
   // And connect their actions
   for (auto & shout : ui_shouts)
     connect(shout, SIGNAL(clicked(bool)), this, SLOT(on_shout_clicked()));
+
+  // And add names
+  shout_names.clear();
+  for (int i=1; i<=ui_shouts.size(); ++i)
+  {
+    QString name = ao_app->get_spbutton("[SHOUTS]", i).trimmed();
+    if (!name.isEmpty())
+    {
+      shout_names.append(name);
+      widget_names[name] = ui_shouts[i-1];
+      ui_shouts[i-1]->setObjectName(name);
+    }
+  }
 }
 
 void Courtroom::load_wtce()
@@ -1142,6 +1161,8 @@ void Courtroom::load_wtce()
   // Close any existing wtce buttons to prevent memory leaks
   for (int i=0; i<ui_wtce.size(); ++i)
   {
+    QString name = ui_wtce[i]->objectName();
+    widget_names.remove(name);
     ui_wtce[i]->close();
     delete ui_wtce[i];
   }
@@ -1162,6 +1183,19 @@ void Courtroom::load_wtce()
   // And connect their actions
   for (auto & wtce : ui_wtce)
     connect(wtce, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
+
+  // And add names
+  wtce_names.clear();
+  for (int i=1; i<=ui_wtce.size(); ++i)
+  {
+    QString name = ao_app->get_spbutton("[WTCE]", i).trimmed();
+    if (!name.isEmpty())
+    {
+      wtce_names.append(name);
+      widget_names[name] = ui_wtce[i-1];
+      ui_wtce[i-1]->setObjectName(name);
+    }
+  }
 }
 
 void Courtroom::set_shouts()

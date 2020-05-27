@@ -339,9 +339,6 @@ void Courtroom::set_background(QString p_background)
 {
   testimony_in_progress = false;
   current_background = p_background;
-
-  set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
-  set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
 }
 
 void Courtroom::handle_music_anim()

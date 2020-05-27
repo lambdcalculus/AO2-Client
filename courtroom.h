@@ -596,6 +596,95 @@ private:
 
   AOButton *ui_spectator;
 
+  QHash<QString, QWidget*> widget_names{
+    {"viewport", ui_viewport},
+      // ui_vp_background
+      // ui_vp_speedlines
+      // ui_vp_player_char
+      // ui_vp_desk
+      // ui_vp_legacy_desk
+    {"music_display_a", ui_vp_music_display_a},
+    {"music_display_b", ui_vp_music_display_b},
+    {"music_area", ui_vp_music_area},
+    {"music_name", ui_vp_music_name},
+    // music_anim
+    {"clock", ui_vp_clock},
+    // ui_vp_evidence_display
+    {"ao2_chatbox", ui_vp_chatbox},
+    {"showname", ui_vp_showname},
+    {"message", ui_vp_message},
+    {"showname_image", ui_vp_showname_image},
+    // ui_vp_testimony
+    // ui_vp_effect
+    // ui_vp_wtce
+    // ui_vp_objection
+    {"ic_chatlog", ui_ic_chatlog},
+    {"ms_chatlog", ui_ms_chatlog},
+    {"server_chatlog", ui_server_chatlog},
+    {"mute_list", ui_mute_list},
+    {"area_list", ui_area_list},
+    {"music_list", ui_music_list},
+    {"sfx_list", ui_sfx_list},
+    {"ao2_ic_chat_message", ui_ic_chat_message},
+    // ui_muted
+    {"ooc_chat_message", ui_ooc_chat_message},
+    {"ooc_chat_name", ui_ooc_chat_name},
+    {"music_search", ui_music_search},
+    {"sfx_search", ui_sfx_search},
+    {"note_area", ui_note_area},
+      // add_button
+      // m_layout
+    // note_scroll_area
+    {"set_notes_button", ui_set_notes},
+    {"emotes", ui_emotes},
+    {"emote_left", ui_emote_left},
+    {"emote_right", ui_emote_right},
+    {"emote_dropdown", ui_emote_dropdown},
+    {"pos_dropdown", ui_pos_dropdown},
+    {"defense_bar", ui_defense_bar},
+    {"prosecution_bar", ui_prosecution_bar},
+    {"music_label", ui_music_label},
+    {"sfx_label", ui_sfx_label},
+    {"blip_label", ui_blip_label},
+    // Each ui_shouts[i]
+    {"shout_up", ui_shout_up},
+    {"shout_down", ui_shout_down},
+    // Each ui_effects[i]
+    {"effect_down", ui_effect_down},
+    {"effect_up", ui_effect_up},
+    // Each ui_wtce[i]
+    {"wtce_up", ui_wtce_up},
+    {"wtce_down", ui_wtce_down},
+    {"ooc_toggle", ui_ooc_toggle},
+    {"change_character", ui_change_character},
+    {"reload_theme", ui_reload_theme},
+    {"call_mod", ui_call_mod},
+    {"switch_area_music", ui_switch_area_music},
+    {"theme_list", ui_theme_list},
+    {"confirm_theme", ui_confirm_theme},
+    {"note_button", ui_note_button},
+    // Each ui_label_images[i]
+    {"pre", ui_pre},
+    {"flip", ui_flip},
+    {"guard", ui_guard},
+    {"hidden", ui_hidden},
+    {"defense_plus", ui_defense_plus},
+    {"defense_minus", ui_defense_minus},
+    {"prosecution_plus", ui_prosecution_plus},
+    {"prosecution_minus", ui_prosecution_minus},
+    {"text_color", ui_text_color},
+    {"music_slider", ui_music_slider},
+    {"sfx_slider", ui_sfx_slider},
+    {"blip_slider", ui_blip_slider},
+    {"evidence_button", ui_evidence_button},
+    {"notepad_image", ui_vp_notepad_image},
+    {"notepad", ui_vp_notepad},
+    // Each ui_timers[i]
+    {"evidence_background", ui_evidence},
+
+
+  };
+
   void create_widgets();
   void connect_widgets();
 
