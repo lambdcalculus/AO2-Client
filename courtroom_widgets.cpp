@@ -377,8 +377,8 @@ void Courtroom::name_widgets()
       {"clock", ui_vp_clock},
       // ui_vp_evidence_display
       {"ao2_chatbox", ui_vp_chatbox},
-      {"showname", ui_vp_showname},
-      {"message", ui_vp_message},
+        {"showname", ui_vp_showname},
+        {"message", ui_vp_message},
       {"showname_image", ui_vp_showname_image},
       // ui_vp_testimony
       // ui_vp_effect
@@ -397,10 +397,10 @@ void Courtroom::name_widgets()
       {"ooc_chat_name", ui_ooc_chat_name},
       {"music_search", ui_music_search},
       {"sfx_search", ui_sfx_search},
-      {"note_area", ui_note_area},
+      {"note_scroll_area", note_scroll_area},
+        {"note_area", ui_note_area},
         // add_button
         // m_layout
-      // note_scroll_area
       {"set_notes_button", ui_set_notes},
       {"emotes", ui_emotes},
       {"emote_left", ui_emote_left},
@@ -434,6 +434,7 @@ void Courtroom::name_widgets()
       {"flip", ui_flip},
       {"guard", ui_guard},
       {"hidden", ui_hidden},
+      {"mute_button", ui_mute},
       {"defense_plus", ui_defense_plus},
       {"defense_minus", ui_defense_minus},
       {"prosecution_plus", ui_prosecution_plus},
@@ -447,6 +448,7 @@ void Courtroom::name_widgets()
       {"notepad", ui_vp_notepad},
       // Each ui_timers[i]
       {"evidence_background", ui_evidence},
+        {"evidence_buttons", ui_evidence_buttons},
       {"char_select", ui_char_select_background},
         {"back_to_lobby", ui_back_to_lobby},
         {"char_password", ui_char_password},
@@ -463,46 +465,131 @@ void Courtroom::name_widgets()
     QWidget* widget = i.value();
     widget->setObjectName(name);
   }
+  // Why
+  for (int i=0; i<ui_effects.size(); ++i)
+  {
+    QString name = effect_names[i];
+    widget_names[name] = ui_effects[i];
+    ui_effects[i]->setObjectName(name);
+  }
+  for (int i=0; i<ui_free_blocks.size(); ++i)
+  {
+    QString name = free_block_names[i];
+    widget_names[name] = ui_free_blocks[i];
+    ui_free_blocks[i]->setObjectName(name);
+  }
+  for (int i=0; i<ui_shouts.size(); ++i)
+  {
+    QString name = shout_names[i];
+    widget_names[name] = ui_shouts[i];
+    ui_shouts[i]->setObjectName(name);
+  }
+  for (int i=0; i<ui_wtce.size(); ++i)
+  {
+    QString name = wtce_names[i];
+    widget_names[name] = ui_wtce[i];
+    ui_wtce[i]->setObjectName(name);
+  }
+  for (int i=0; i<ui_timers.size(); ++i)
+  {
+    QString name = "timer_" + QString::number(i);
+    widget_names[name] = ui_timers[i];
+    ui_timers[i]->setObjectName(name);
+  }
 }
 
-/*
- * bool Courtroom::set_widget_depths()
+void Courtroom::set_widget_depths()
 {
-  QFile design_ini;
+  qDebug() << widget_names;
+  QStringList paths{
+    ao_app->get_theme_variant_path() + "courtroom_layers.ini",
+    ao_app->get_theme_path() + "courtroom_layers.ini",
+    ao_app->get_default_theme_path() + "courtroom_layers.ini",
+  };
 
-  design_ini.setFileName(p_design_path);
+  QWidget* current_parent = this;
+  QString current_widget_name;
+  QWidget* current_widget;
 
-  if (!design_ini.open(QIODevice::ReadOnly))
+  for (QString path: paths)
   {
-    return "";
+    QFile layer_ini;
+    layer_ini.setFileName(path);
+    if (!layer_ini.open(QIODevice::ReadOnly))
+      continue;
+    QTextStream in(&layer_ini);
+
+    while (!in.atEnd())
+    {
+      QString f_line = in.readLine().trimmed();
+      // Lines are either empty, indicate the start of a frame
+      // or list the items in a frame. We consider each case in order.
+      if (f_line == "")
+        continue;
+      if (f_line.startsWith("["))
+      {
+        current_widget_name = f_line.remove(0, 1).chopped(1);
+        current_parent = widget_names[current_widget_name];
+        qDebug() << "New parent " << current_parent;
+      }
+      else
+      {
+        qDebug() << f_line;
+        current_widget = widget_names[f_line];
+        current_widget->setParent(current_parent);
+        current_widget->raise();
+        qDebug() << "Added " << f_line << "parent " << current_parent;
+      }
+    }
+
+    layer_ini.close();
+    return;
   }
-  QTextStream in(&design_ini);
+  return;
 
-  QString result = "";
+  /*
+  QHash<QString, QStringList> frames = {
+    {"", QStringList()}
+  };
+  QString current_frame = "";
 
-  while (!in.atEnd())
+  for (QString path: paths)
   {
-    QString f_line = in.readLine().trimmed();
-
-    if (!f_line.startsWith(p_identifier))
+    QFile layer_ini;
+    layer_ini.setFileName(path);
+    if (!layer_ini.open(QIODevice::ReadOnly))
+    {
       continue;
+    }
+    QTextStream in(&layer_ini);
+    QString result = "";
 
-    QStringList line_elements = f_line.split("=");
+    while (!in.atEnd())
+    {
+      QString f_line = in.readLine().trimmed();
+      // Lines are either empty, indicate the start of a frame
+      // or list the items in a frame. We consider each case in order.
+      if (f_line == "")
+        continue;
+      if (f_line.startsWith("["))
+      {
+        current_frame = f_line.remove(0, 1).chopped(1);
+        frames[current_frame] = QStringList();
+      }
+      else
+      {
+        frames[current_frame].append(f_line);
+        qDebug() << "Added " << f_line;
+      }
+    }
 
-    if (line_elements.at(0).trimmed() != p_identifier)
-      continue;
-
-    if (line_elements.size() < 2)
-      continue;
-
-    result = line_elements.at(1).trimmed();
-    break;
+    layer_ini.close();
+    qDebug() << frames;
+    return;
   }
-
-  design_ini.close();
-
-  return result;
-}*/
+  return;
+  */
+}
 
 void Courtroom::set_widgets()
 {
@@ -754,7 +841,7 @@ void Courtroom::set_widgets()
 
   for(int i = 0; i < free_block_names.size(); ++i)
   {
-    set_size_and_pos(ui_free_blocks[i], "free_block_" + free_block_names[i]);
+    set_size_and_pos(ui_free_blocks[i], free_block_names[i]);
   }
   set_free_blocks();
 
@@ -1214,8 +1301,6 @@ void Courtroom::load_effects()
     {
       QString name = names.at(0).trimmed();
       effect_names.append(name);
-      widget_names[name] = ui_effects[i-1];
-      ui_effects[i-1]->setObjectName(name);
     }
   }
 }
@@ -1249,7 +1334,7 @@ void Courtroom::load_free_blocks()
   free_block_names.clear();
   for (int i=1; i<=ui_free_blocks.size(); ++i)
   {
-    QString name = ao_app->get_spbutton("[FREE BLOCKS]", i).trimmed();
+    QString name = "free_block_" + ao_app->get_spbutton("[FREE BLOCKS]", i).trimmed();
     if (!name.isEmpty())
     {
       free_block_names.append(name);
@@ -1257,6 +1342,7 @@ void Courtroom::load_free_blocks()
       ui_free_blocks[i-1]->setObjectName(name);
     }
   }
+  qDebug() << "FREE BLOCKS HERE " << free_block_names;
 }
 
 void Courtroom::load_shouts()
@@ -1294,11 +1380,13 @@ void Courtroom::load_shouts()
     QString name = ao_app->get_spbutton("[SHOUTS]", i).trimmed();
     if (!name.isEmpty())
     {
+      qDebug() << "SHOUT " << name << " " << ui_shouts[i-1];
       shout_names.append(name);
       widget_names[name] = ui_shouts[i-1];
       ui_shouts[i-1]->setObjectName(name);
     }
   }
+  qDebug() << widget_names;
 }
 
 void Courtroom::load_wtce()
@@ -1381,8 +1469,22 @@ void Courtroom::set_free_blocks()
   for (int i=0; i<ui_free_blocks.size(); i++)
   {
     AOMovie* free_block = ui_free_blocks[i];
-    free_block->play("free_block_" + free_block_names[i]);
+    free_block->play(free_block_names[i]);
   }
+}
+
+
+void Courtroom::set_bullets()
+{
+  QString somethingsomethingpath = ao_app->get_base_path() + "configs/" + "wow.ini";
+
+  QString thing = "";
+  int i = 0;
+  do
+  {
+    thing = ao_app->read_design_ini(QString::number(++i), somethingsomethingpath);
+    //qDebug() << QString::number(i) << thing;
+  } while(thing != "");
 }
 
 void Courtroom::set_dropdown(QWidget *widget, QString target_tag)

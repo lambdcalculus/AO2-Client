@@ -30,11 +30,12 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   create_widgets();
   connect_widgets();
-  name_widgets();
 
   set_widgets();
   set_bullets();
   set_char_select();
+
+  name_widgets();
   setWindowState(Qt::WindowMaximized); // Remove later
 }
 
@@ -181,6 +182,8 @@ void Courtroom::enter_courtroom(int p_cid)
   ui_ic_chat_message->setFocus();
 
   set_bullets();
+  name_widgets();
+  set_widget_depths();
 }
 
 void Courtroom::done_received()
@@ -2465,19 +2468,6 @@ void Courtroom::on_set_notes_clicked()
     note_scroll_area->show();
   else
     note_scroll_area->hide();
-}
-
-void Courtroom::set_bullets()
-{
-  QString somethingsomethingpath = ao_app->get_base_path() + "configs/" + "wow.ini";
-
-  QString thing = "";
-  int i = 0;
-  do
-  {
-    thing = ao_app->read_design_ini(QString::number(++i), somethingsomethingpath);
-    //qDebug() << QString::number(i) << thing;
-  } while(thing != "");
 }
 
 void Courtroom::resume_timer(int timer_id)
