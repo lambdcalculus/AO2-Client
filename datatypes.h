@@ -120,6 +120,8 @@ enum COLOR
     ORANGE,
     BLUE,
     YELLOW,
+    PURPLE,
+    PINK,
     RAINBOW
 };
 
