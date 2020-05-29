@@ -26,14 +26,16 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   //initializing sound device
   BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
-  BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
+  BASS_PluginLoad("bassopus.dll", BASS_UNICODE); 
 
   create_widgets();
   connect_widgets();
+  name_widgets();
 
   set_widgets();
   set_bullets();
   set_char_select();
+  setWindowState(Qt::WindowMaximized); // Remove later
 }
 
 void Courtroom::enter_courtroom(int p_cid)
