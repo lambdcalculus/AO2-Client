@@ -148,10 +148,9 @@ public:
   void move_widget(QWidget *p_widget, QString p_identifier);
 
   void set_shouts();
-
   void set_effects();
-
   void set_wtce();
+  void set_free_blocks();
 
   //these are for OOC chat
   void append_ms_chatmessage(QString f_name, QString f_message);
@@ -201,10 +200,11 @@ public:
 
   void check_connection_received();
 
-  //checks whether shout/effect files are found
+  //checks whether shout/effect/wtce/free block files are found
   void check_shouts();
   void check_effects();
   void check_wtce();
+  void check_free_blocks();
 
   void resume_timer(int timer_id);
   void set_timer_time(int timer_id, int new_time);
@@ -371,9 +371,6 @@ private:
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
 
-  //is set to true if the bg folder contains defensedesk.png, prosecutiondesk.png and stand.png
-  bool is_ao2_bg = false;
-
   //whether the ooc chat is server or master chat, true is server
   bool server_ooc = true;
 
@@ -485,6 +482,8 @@ private:
   QVector<AOButton*> ui_effects;
   //holds all the shout buttons objects
   QVector<AOButton*> ui_wtce;
+  //holds all the free block objects
+  QVector<AOMovie*> ui_free_blocks;
 
   //holds all the names for sound files for the shouts
 //  QVector<QString> shout_names = {"holdit", "objection", "takethat", "custom", "gotit", "crossswords", "counteralt"};
@@ -498,10 +497,14 @@ private:
   //QVector<QString> shout_names = {"witnesstestimony", "crossexamination", "investigation", "nonstop"};
   QVector<QString> wtce_names;
 
+  //holds all the names for free blocks
+  QVector<QString> free_block_names;
+
   //holds whether the animation file exists for a determined shout/effect
   QVector<bool> shouts_enabled;
   QVector<bool> effects_enabled;
   QVector<bool> wtce_enabled;
+  QVector<bool> free_blocks_enabled;
 
 //  AOButton* ui_shout_hold_it      = nullptr; // 1
 //  AOButton* ui_shout_objection    = nullptr; // 2
@@ -593,6 +596,13 @@ private:
 
   AOButton *ui_spectator;
 
+  QHash<QString, QWidget*> widget_names;
+
+  void create_widgets();
+  void connect_widgets();
+  void name_widgets();
+  void set_widget_layers();
+
   void construct_char_select();
   void set_char_select();
   void set_char_select_page();
@@ -608,10 +618,7 @@ private:
   void save_note();
   void save_textlog(QString p_text);
 
-  void set_bullets();
-
   void set_char_rpc();
-
 
 public slots:
   void objection_done();
@@ -681,6 +688,7 @@ private slots:
   void load_shouts();
   void load_effects();
   void load_wtce();
+  void load_free_blocks();
   /**
    * @brief reset the shout button's texture to default
    * DOES NOT MODIFY OBJECTION_STATE

@@ -897,21 +897,18 @@ QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
 {
   // Try to obtain a theme ini from either the current theme variant folder,
   // the current theme folder or the default theme folder
-  QString variant_design_ini_path = get_theme_variant_path() + p_file;
-  QString design_ini_path = get_theme_path() + p_file;
-  QString default_path = get_default_theme_path() + p_file;
+  QStringList paths{
+    get_theme_variant_path() + p_file,
+    get_theme_path() + p_file,
+    get_default_theme_path() + p_file,
+  };
 
-  QString f_result = read_design_ini(p_identifier, variant_design_ini_path);
-  if (!f_result.isEmpty())
-    return f_result;
-
-  f_result = read_design_ini(p_identifier, design_ini_path);
-  if (!f_result.isEmpty())
-    return f_result;
-
-  f_result = read_design_ini(p_identifier, default_path);
-  if (!f_result.isEmpty())
-    return f_result;
+  for (QString path: paths)
+  {
+    QString f_result = read_design_ini(p_identifier, path);
+    if (!f_result.isEmpty())
+      return f_result;
+  }
 
   return "";
 }
@@ -930,4 +927,3 @@ QString AOApplication::get_image_path(QString p_image)
     return theme_image_path;
   return default_image_path;
 }
-

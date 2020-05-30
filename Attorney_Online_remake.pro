@@ -57,7 +57,8 @@ SOURCES += main.cpp\
     aoshoutplayer.cpp \
     aonotearea.cpp \
     aonotepicker.cpp \
-    aolabel.cpp
+    aolabel.cpp \
+    courtroom_widgets.cpp
 
 HEADERS  += lobby.h \
     aoimage.h \
