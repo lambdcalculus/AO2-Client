@@ -378,10 +378,10 @@ void Courtroom::name_widgets()
         {"showname", ui_vp_showname},
         {"message", ui_vp_message},
       {"showname_image", ui_vp_showname_image},
-      // ui_vp_testimony
-      // ui_vp_effect
-      // ui_vp_wtce
-      // ui_vp_objection
+      {"vp_testimony", ui_vp_testimony},
+      {"vp_effect", ui_vp_effect},
+      {"vp_wtce", ui_vp_wtce},
+      {"vp_objection", ui_vp_objection},
       {"ic_chatlog", ui_ic_chatlog},
       {"ms_chatlog", ui_ms_chatlog},
       {"server_chatlog", ui_server_chatlog},
