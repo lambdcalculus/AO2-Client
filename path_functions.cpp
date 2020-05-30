@@ -4,7 +4,6 @@
 #include <QDir>
 #include <QDebug>
 #include <QStandardPaths>
-#include "debug_functions.h"
 
 #ifdef BASE_OVERRIDE
 #include "base_override.h"
@@ -29,7 +28,6 @@ QString AOApplication::get_base_path()
   base_path = QDir::currentPath() + "/base/";
 #endif
 }
-    call_notice(QDir::currentPath() +  "/../../../base/");
     return base_path;
 }
 
