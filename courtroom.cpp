@@ -30,12 +30,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
   create_widgets();
   connect_widgets();
-
+  
   set_widgets();
   set_char_select();
-
   name_widgets();
-  setWindowState(Qt::WindowMaximized); // Remove later
 }
 
 void Courtroom::enter_courtroom(int p_cid)
@@ -1457,19 +1455,19 @@ void Courtroom::chat_tick()
       switch (rainbow_counter)
       {
       case 0:
-        html_color = "#FF0000";
+        html_color = "#BA1518";
         break;
       case 1:
-        html_color = "#FF7F00";
+        html_color = "#D55900";
         break;
       case 2:
-        html_color = "#FFFF00";
+        html_color = "#E7CE4E";
         break;
       case 3:
-        html_color = "#00FF00";
+        html_color = "#65C856";
         break;
       default:
-        html_color = "#2d96ff";
+        html_color = "#1596C8";
         rainbow_counter = -1;
       }
 
@@ -1597,29 +1595,37 @@ void Courtroom::set_text_color()
   {
   case GREEN:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(0, 255, 0);
+    m_base_string_color.setRgb(101, 200, 86);
     break;
   case RED:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setNamedColor("red");
+    m_base_string_color.setRgb(186, 21, 24);
     break;
   case ORANGE:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setNamedColor("orange");
+    m_base_string_color.setRgb(213, 89, 0);
     break;
   case BLUE:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(45, 150, 255);
+    m_base_string_color.setRgb(21, 136, 200);
     break;
   case YELLOW:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setNamedColor("yellow");
+    m_base_string_color.setRgb(231, 206, 78);
     break;
-  default:
+  case PURPLE:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
+    m_base_string_color.setRgb(247, 118, 253);
+    break;
+  case PINK:
+    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
+    m_base_string_color.setRgb(218, 124, 128);
+    break;
+    default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
   case WHITE:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setNamedColor("white");
+    m_base_string_color.setRgb(213, 213, 213);
   }
 }
 
