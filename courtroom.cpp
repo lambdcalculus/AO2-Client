@@ -229,13 +229,12 @@ void Courtroom::set_scene()
     if (f_desk_mod == "0") // keeping a bit of the functionality for now
     {
       ui_vp_desk->hide();
-      ui_vp_legacy_desk->hide();
     }
   }
   else
   {
-  if (f_side == "def")
-  {
+    if (f_side == "def")
+    {
       f_background = "defenseempty";
       f_desk_image = "defensedesk";
     }
@@ -264,37 +263,32 @@ void Courtroom::set_scene()
       f_desk_image = "stand";
     }
 
+    QString bg_path = get_background_path();
+    QVector<QString> exts{".apng", ".gif", ".png"};
+
+    bool has_all_desks;
+    if (file_exists(bg_path + "defensedesk", exts) == "")
+      has_all_desks = false;
+    else if (file_exists(bg_path + "prosecutiondesk", exts) == "")
+      has_all_desks = false;
+    else if (file_exists(bg_path + "stand", exts) == "")
+      has_all_desks = false;
+    else
+      has_all_desks = true;
+
     if (f_desk_mod == "0" ||
         (f_desk_mod != "1" && (f_side == "jud" ||
-                               f_side == "hld" ||
-                               f_side == "hlp")))
-    {
+                              f_side == "hld" ||
+                              f_side == "hlp")))
       ui_vp_desk->hide();
-      ui_vp_legacy_desk->hide();
-    }
-    else if ((f_side == "jud" || f_side == "hld" || f_side == "hlp"))
-    {
-      ui_vp_legacy_desk->hide();
-      ui_vp_desk->show();
-    }
+    else if (!has_all_desks)
+      ui_vp_desk->hide();
     else
-    {
-      if (f_side == "wit")
-      {
-        ui_vp_desk->show();
-        ui_vp_legacy_desk->hide();
-      }
-      else
-      {
-        ui_vp_desk->hide();
-        ui_vp_legacy_desk->show();
-      }
-    }
+      ui_vp_desk->show();
   }
 
   ui_vp_background->set_image(f_background);
   ui_vp_desk->set_image(f_desk_image);
-  ui_vp_legacy_desk->set_legacy_desk(f_desk_image);
 }
 
 void Courtroom::set_char_rpc()
@@ -1006,7 +1000,6 @@ void Courtroom::handle_chatmessage_3()
   {
     QString side = m_chatmessage[SIDE];
     ui_vp_desk->hide();
-    ui_vp_legacy_desk->hide();
 
     if (side == "pro" ||
         side == "hlp" ||

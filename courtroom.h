@@ -393,7 +393,6 @@ private:
   AOMovie *ui_vp_speedlines;
   AOCharMovie *ui_vp_player_char;
   AOScene *ui_vp_desk;
-  AOScene *ui_vp_legacy_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
 
   AONoteArea *ui_note_area;

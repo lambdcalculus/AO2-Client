@@ -65,7 +65,6 @@ void Courtroom::create_widgets()
   ui_vp_speedlines->set_play_once(false);
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
-  ui_vp_legacy_desk = new AOScene(ui_viewport, ao_app);
 
   ui_vp_music_display_a = new AOImage(this, ao_app);
   ui_vp_music_display_b = new AOImage(this, ao_app);
@@ -368,7 +367,6 @@ void Courtroom::name_widgets()
         {"speedlines", ui_vp_speedlines}, //*
         {"player_char", ui_vp_player_char}, //*
         {"desk", ui_vp_desk}, //*
-        {"legacy_desk", ui_vp_legacy_desk}, //*
       {"music_display_a", ui_vp_music_display_a},
       {"music_display_b", ui_vp_music_display_b},
       {"music_area", ui_vp_music_area},
@@ -592,13 +590,6 @@ void Courtroom::set_widgets()
   //the AO2 desk element
   ui_vp_desk->move(0, 0);
   ui_vp_desk->resize(ui_viewport->width(), ui_viewport->height());
-
-  //the size of the ui_vp_legacy_desk element relies on various factors and is set in set_scene()
-
-  double y_modifier = 147.0 / 192.0;
-  int final_y = static_cast<int>(y_modifier * ui_viewport->height());
-  ui_vp_legacy_desk->move(0, final_y);
-  ui_vp_legacy_desk->hide();
 
   ui_vp_evidence_display->move(0, 0);
   ui_vp_evidence_display->resize(ui_viewport->width(), ui_viewport->height());

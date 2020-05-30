@@ -13,7 +13,6 @@ public:
   explicit AOScene(QWidget *parent, AOApplication *p_ao_app);
 
   void set_image(QString p_image);
-  void set_legacy_desk(QString p_image);
 
 private:
   QWidget*       m_parent = nullptr;
