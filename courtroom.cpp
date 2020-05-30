@@ -32,7 +32,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect_widgets();
 
   set_widgets();
-  set_bullets();
   set_char_select();
 
   name_widgets();
@@ -181,9 +180,8 @@ void Courtroom::enter_courtroom(int p_cid)
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
 
-  set_bullets();
   name_widgets();
-  set_widget_depths();
+  set_widget_layers();
 }
 
 void Courtroom::done_received()

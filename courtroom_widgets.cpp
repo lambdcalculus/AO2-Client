@@ -498,7 +498,7 @@ void Courtroom::name_widgets()
   }
 }
 
-void Courtroom::set_widget_depths()
+void Courtroom::set_widget_layers()
 {
   qDebug() << widget_names;
   QStringList paths{
@@ -522,73 +522,34 @@ void Courtroom::set_widget_depths()
     while (!in.atEnd())
     {
       QString f_line = in.readLine().trimmed();
-      // Lines are either empty, indicate the start of a frame
+      // Lines are either empty, indicate the end or the start of a frame
       // or list the items in a frame. We consider each case in order.
       if (f_line == "")
+        continue;
+      // This particular check is not needed, but is added to keep compatibility
+      // with the other ini format.
+      if (f_line.startsWith("[\\"))
         continue;
       if (f_line.startsWith("["))
       {
         current_widget_name = f_line.remove(0, 1).chopped(1);
         current_parent = widget_names[current_widget_name];
-        qDebug() << "New parent " << current_parent;
-      }
-      else
-      {
-        qDebug() << f_line;
-        current_widget = widget_names[f_line];
-        current_widget->setParent(current_parent);
-        current_widget->raise();
-        qDebug() << "Added " << f_line << "parent " << current_parent;
-      }
-    }
-
-    layer_ini.close();
-    return;
-  }
-  return;
-
-  /*
-  QHash<QString, QStringList> frames = {
-    {"", QStringList()}
-  };
-  QString current_frame = "";
-
-  for (QString path: paths)
-  {
-    QFile layer_ini;
-    layer_ini.setFileName(path);
-    if (!layer_ini.open(QIODevice::ReadOnly))
-    {
-      continue;
-    }
-    QTextStream in(&layer_ini);
-    QString result = "";
-
-    while (!in.atEnd())
-    {
-      QString f_line = in.readLine().trimmed();
-      // Lines are either empty, indicate the start of a frame
-      // or list the items in a frame. We consider each case in order.
-      if (f_line == "")
         continue;
-      if (f_line.startsWith("["))
-      {
-        current_frame = f_line.remove(0, 1).chopped(1);
-        frames[current_frame] = QStringList();
       }
-      else
+      // If the item does not exist, do nothing; also prevent crashes
+      if (!widget_names.contains(f_line))
       {
-        frames[current_frame].append(f_line);
-        qDebug() << "Added " << f_line;
+        continue;
       }
+      current_widget = widget_names[f_line];
+      current_widget->setParent(current_parent);
+      current_widget->raise();
     }
 
     layer_ini.close();
-    qDebug() << frames;
     return;
   }
   return;
-  */
 }
 
 void Courtroom::set_widgets()
@@ -1471,20 +1432,6 @@ void Courtroom::set_free_blocks()
     AOMovie* free_block = ui_free_blocks[i];
     free_block->play(free_block_names[i]);
   }
-}
-
-
-void Courtroom::set_bullets()
-{
-  QString somethingsomethingpath = ao_app->get_base_path() + "configs/" + "wow.ini";
-
-  QString thing = "";
-  int i = 0;
-  do
-  {
-    thing = ao_app->read_design_ini(QString::number(++i), somethingsomethingpath);
-    //qDebug() << QString::number(i) << thing;
-  } while(thing != "");
 }
 
 void Courtroom::set_dropdown(QWidget *widget, QString target_tag)

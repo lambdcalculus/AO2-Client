@@ -601,7 +601,7 @@ private:
   void create_widgets();
   void connect_widgets();
   void name_widgets();
-  void set_widget_depths();
+  void set_widget_layers();
 
   void construct_char_select();
   void set_char_select();
@@ -618,12 +618,7 @@ private:
   void save_note();
   void save_textlog(QString p_text);
 
-  void set_depth();
-
-  void set_bullets();
-
   void set_char_rpc();
-
 
 public slots:
   void objection_done();
