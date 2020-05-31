@@ -540,13 +540,14 @@ void Courtroom::set_widget_layers()
       }
       current_widget = widget_names[f_line];
       bool was_visible = current_widget->isVisible();
-      qDebug() << current_widget << " " << current_widget->isVisible();
       current_widget->setParent(current_parent);
       current_widget->raise();
       // Readjust visibility in case this changed after the widget changed parent
+      // I don't know why, I don't want to know why, I shouldn't
+      // have to wonder why, but for whatever reason these stupid
+      // panels aren't laying out correctly unless we do this terribleness
       if (was_visible != current_widget->isVisible())
         current_widget->setVisible(was_visible);
-      qDebug() << current_widget << " " << current_widget->isVisible();
     }
 
     layer_ini.close();
