@@ -542,8 +542,8 @@ void Courtroom::set_widget_layers()
       bool was_visible = current_widget->isVisible();
       current_widget->setParent(current_parent);
       current_widget->raise();
-      if (was_visible)
-        current_widget->show(); // Show again in case the widget was hidden after changing parent
+      // Readjust visibility in case this changed after the widget changed parent
+      current_widget->setVisible(was_visible);
     }
 
     layer_ini.close();
