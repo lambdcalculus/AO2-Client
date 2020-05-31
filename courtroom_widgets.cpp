@@ -498,7 +498,6 @@ void Courtroom::name_widgets()
 
 void Courtroom::set_widget_layers()
 {
-  qDebug() << widget_names;
   QStringList paths{
     ao_app->get_theme_variant_path() + "courtroom_layers.ini",
     ao_app->get_theme_path() + "courtroom_layers.ini",
@@ -540,8 +539,11 @@ void Courtroom::set_widget_layers()
         continue;
       }
       current_widget = widget_names[f_line];
+      bool was_visible = current_widget->isVisible();
       current_widget->setParent(current_parent);
       current_widget->raise();
+      if (was_visible)
+        current_widget->show(); // Show again in case the widget was hidden after changing parent
     }
 
     layer_ini.close();
