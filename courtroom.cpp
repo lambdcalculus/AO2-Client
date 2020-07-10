@@ -1816,11 +1816,11 @@ void Courtroom::on_ooc_return_pressed()
       ui_ooc_chat_message->clear();
       return;
   }
-  else if (ooc_message.startsWith("/roll"))
+  else if (ooc_message.startsWith("/rollp"))
   {
    m_sfx_player->play(ao_app->get_sfx("dice"));
   }
-  else if (ooc_message.startsWith("/rollp"))
+  else if (ooc_message.startsWith("/roll"))
   {
    m_sfx_player->play(ao_app->get_sfx("dice"));
   }
@@ -1840,7 +1840,7 @@ void Courtroom::on_ooc_return_pressed()
 
     handle_theme_variant(variant);
   }
-  else if (ooc_message.startsWith("/tr"))
+  else if (ooc_message.startsWith("/tr "))
   {
     // Timer resume
     int space_location = ooc_message.indexOf(" ");
@@ -1852,7 +1852,7 @@ void Courtroom::on_ooc_return_pressed()
      timer_id = ooc_message.mid(space_location+1).toInt();
     resume_timer(timer_id);
   }
-  else if (ooc_message.startsWith("/ts"))
+  else if (ooc_message.startsWith("/ts "))
   {
     // Timer set
     QStringList arguments = ooc_message.split(" ");
@@ -1870,7 +1870,7 @@ void Courtroom::on_ooc_return_pressed()
     set_timer_timestep(timer_id, timestep_length);
     set_timer_firing(timer_id, firing_interval);
   }
-  else if (ooc_message.startsWith("/tp"))
+  else if (ooc_message.startsWith("/tp "))
   {
     // Timer pause
     int space_location = ooc_message.indexOf(" ");

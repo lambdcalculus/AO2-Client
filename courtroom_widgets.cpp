@@ -1134,7 +1134,7 @@ void Courtroom::check_effects()
   QString char_path = ao_app->get_character_path(current_char);
   QString theme_variant_path = ao_app->get_theme_variant_path();
   QString theme_path = ao_app->get_theme_path();
-  for(int i = 0; i < ui_shouts.size(); ++i)
+  for(int i = 0; i < ui_effects.size(); ++i)
   {
     QStringList paths{
       char_path + effect_names.at(i) + ".gif",
