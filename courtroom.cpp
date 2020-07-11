@@ -1263,7 +1263,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
     * character of the block that remains. That's why we have to do this whole complicated
     * process.
     * */
-    if (prev_cursor.hasSelection() || is_scrolled)
+    if (prev_cursor.hasSelection() || !is_scrolled)
     {
         // restore previous selection and vscrollbar
         ui_ic_chatlog->setTextCursor(prev_cursor);
