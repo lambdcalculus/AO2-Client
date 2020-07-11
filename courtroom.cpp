@@ -19,6 +19,7 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QInputDialog>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -1773,10 +1774,32 @@ void Courtroom::mod_called(QString p_ip)
 
 void Courtroom::on_ooc_return_pressed()
 {
+  QString ooc_name = ui_ooc_chat_name->text();
   QString ooc_message = ui_ooc_chat_message->text();
 
-  if (ooc_message == "" || ui_ooc_chat_name->text() == "")
+  if (ooc_message.isEmpty())
+  {
+    append_server_chatmessage(
+           "CLIENT", "You cannot send an empty message.");
     return;
+  }
+  if (ooc_name.isEmpty())
+  {
+    bool ok;
+    QString name;
+    do
+    {
+      ooc_name = QInputDialog::getText(this,
+                                       "Enter a name",
+                                       "You must have a name to talk in OOC chat. Enter a name: ",
+                                       QLineEdit::Normal,
+                                       "user", &ok);
+    } while (ok && ooc_name.isEmpty());
+    if (!ok)
+      return;
+
+    ui_ooc_chat_name->setText(ooc_name);
+  }
 
   if (ooc_message.startsWith("/pos"))
   {
@@ -1883,7 +1906,7 @@ void Courtroom::on_ooc_return_pressed()
     pause_timer(timer_id);
   }
   QStringList packet_contents;
-  packet_contents.append(ui_ooc_chat_name->text());
+  packet_contents.append(ooc_name);
   packet_contents.append(ooc_message);
 
   AOPacket *f_packet = new AOPacket("CT", packet_contents);
