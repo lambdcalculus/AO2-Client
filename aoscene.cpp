@@ -1,64 +1,46 @@
 #include "aoscene.h"
-
+// src
 #include "courtroom.h"
-
 #include "file_functions.h"
-
-// core
+// qt
 #include <QDebug>
-
-// gui
 #include <QMovie>
 
-AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
+AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app)
+    : QLabel(parent)
 {
-  m_parent = parent;
-  m_movie = new QMovie(this);
-  ao_app = p_ao_app;
+    ao_app = p_ao_app;
 }
 
 void AOScene::set_image(QString p_image)
 {
-  QString animated_background_path = ao_app->get_background_path() + p_image;
-  QString background_path = ao_app->get_background_path() + p_image + ".png";
-  QString default_path = ao_app->get_default_background_path() + p_image;
+    QString target_path = ao_app->get_default_background_path() + p_image;
 
-  for (auto& ext : QVector<QString>{".apng", ".gif"})
-  {
-    QString full_path = animated_background_path + ext;
-    if (file_exists(full_path))
+    // background specific path
+    QString background_path = ao_app->get_background_path() + p_image;
+
+    for (auto &ext : QVector<QString>{".apng", ".gif", ".png"})
     {
-      animated_background_path = full_path;
-      break;
+        QString full_background_path = background_path + ext;
+
+        if (file_exists(full_background_path))
+        {
+            target_path = full_background_path;
+            break;
+        }
     }
-  }
 
-  QPixmap animated_background(animated_background_path);
-  QPixmap background(background_path);
-  QPixmap default_bg(default_path);
+    // clear previous
+    this->clear();
 
-  int w = this->width();
-  int h = this->height();
+    // delete current movie
+    delete m_movie;
 
-  // remove movie
-  this->clear();
-  this->setMovie(nullptr);
-  // stop current movie
-  m_movie->stop();
-  m_movie->setFileName(animated_background_path);
-  m_movie->setScaledSize(QSize(w, h));
+    qDebug() << target_path;
 
-  if (m_movie->isValid())
-  {
-    this->setMovie(m_movie);
+    // create new movie to run
+    m_movie = new QMovie(this);
+    m_movie->setFileName(target_path);
+    m_movie->setScaledSize(size());
     m_movie->start();
-  }
-  else if (file_exists(background_path))
-  {
-    this->setPixmap(background.scaled(w, h));
-  }
-  else
-  {
-    this->setPixmap(default_bg.scaled(w, h));
-  }
 }
