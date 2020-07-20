@@ -36,10 +36,9 @@ void AOScene::set_image(QString p_image)
     // delete current movie
     delete m_movie;
 
-    qDebug() << target_path;
-
     // create new movie to run
     m_movie = new QMovie(this);
+    setMovie(m_movie);
     m_movie->setFileName(target_path);
     m_movie->setScaledSize(size());
     m_movie->start();
