@@ -149,7 +149,8 @@ public:
 
   void set_shouts();
   void set_effects();
-  void set_wtce();
+  void set_judge_enabled(bool p_enabled);
+  void set_judge_wtce();
   void set_free_blocks();
 
   //these are for OOC chat
@@ -581,9 +582,8 @@ private:
 
   //abstract widget to hold char buttons
   QWidget *ui_char_buttons = nullptr;
-
+  AOImage *ui_char_button_selector = nullptr;
   QVector<AOCharButton*> ui_char_button_list;
-  AOImage *ui_selector;
 
   AOButton *ui_back_to_lobby;
 
@@ -607,10 +607,14 @@ private:
   void set_widget_layers();
 
   void construct_char_select();
+  void reconstruct_char_select();
+  void reset_char_select();
   void set_char_select();
   void set_char_select_page();
 
   void construct_emotes();
+  void reconstruct_emotes();
+  void reset_emote_page();
   void set_emote_page();
   void set_emote_dropdown();
 
@@ -724,7 +728,7 @@ private slots:
 
   void on_witness_testimony_clicked();
   void on_cross_examination_clicked();
-  void reset_wtce_buttons();
+  void reset_judge_wtce_buttons();
   void on_wtce_clicked();
 
   void on_change_character_clicked();
@@ -757,10 +761,11 @@ private slots:
 
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
+  void char_clicked(int n_char);
+  void char_mouse_entered(AOCharButton *p_caller);
+  void char_mouse_left();
 
   void on_spectator_clicked();
-
-  void char_clicked(int n_char);
 
   void ping_server();
 };

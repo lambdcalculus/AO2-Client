@@ -88,7 +88,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   m_shout_state = 0;
   m_wtce_current = 0;
-  reset_wtce_buttons();
+  reset_judge_wtce_buttons();
 
   // forward declaration for a possible update of the chatlog
   bool chatlog_changed = false;
@@ -118,30 +118,8 @@ void Courtroom::enter_courtroom(int p_cid)
 
   QString side = ao_app->get_char_side(f_char);
 
-  if (side == "jud")
-  {
-    is_judge = true;
-    //set_wtce();
-    //ui_wtce_down->show();
-    //ui_wtce_up->show();
-
-    ui_defense_minus->show();
-    ui_defense_plus->show();
-    ui_prosecution_minus->show();
-    ui_prosecution_plus->show();
-  }
-  else
-  {
-    is_judge = false;
-    //set_wtce();
-    //ui_wtce_down->hide();
-    //ui_wtce_up->hide();
-
-    ui_defense_minus->hide();
-    ui_defense_plus->hide();
-    ui_prosecution_minus->hide();
-    ui_prosecution_plus->hide();
-  }
+  // enable judge mechanics
+  set_judge_enabled(side == "jud");
 
   // Update widgets first, then check if everything is valid
   // This will also handle showing the correct shouts, effects and wtce buttons, and cycling
@@ -575,6 +553,7 @@ void Courtroom::save_textlog(QString p_text)
 
 void Courtroom::list_themes()
 {
+    QString prev_theme_name = ui_theme_list->currentText();
   QString themes = ao_app->get_base_path() + "themes/";
   QDir dir(themes);
   ui_theme_list->clear();
@@ -585,6 +564,8 @@ void Courtroom::list_themes()
     if(s != "." && s != "..")
       ui_theme_list->addItem(s);
   }
+
+  ui_theme_list->setCurrentText(prev_theme_name);
 }
 
 void Courtroom::append_ms_chatmessage(QString f_name, QString f_message)
@@ -856,7 +837,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     reset_effect_buttons();
 
     m_wtce_current = 0;
-    reset_wtce_buttons();
+    reset_judge_wtce_buttons();
 
     is_presenting_evidence = false;
     ui_evidence_present->set_image("present_disabled.png");
@@ -1803,26 +1784,7 @@ void Courtroom::on_ooc_return_pressed()
 
   if (ooc_message.startsWith("/pos"))
   {
-    if (ooc_message.startsWith("/pos jud"))
-    {
-      is_judge = true;
-      set_wtce();
-
-      ui_defense_minus->show();
-      ui_defense_plus->show();
-      ui_prosecution_minus->show();
-      ui_prosecution_plus->show();
-    }
-    else
-    {
-      is_judge = false;
-      set_wtce();
-
-      ui_defense_minus->hide();
-      ui_defense_plus->hide();
-      ui_prosecution_minus->hide();
-      ui_prosecution_plus->hide();
-    }
+    set_judge_enabled(ooc_message.startsWith("/pos jud"));
   }
   else if (ooc_message.startsWith("/login"))
     ui_guard->show();
@@ -1991,6 +1953,8 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
   if (f_pos == "" || ui_ooc_chat_name->text() == "")
     return;
+
+  set_judge_enabled(f_pos == "jud");
 
   ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
 }
@@ -2164,7 +2128,7 @@ void Courtroom::cycle_wtce(int p_index)
   int n = ui_wtce.size();
   do { m_wtce_current = (m_wtce_current - p_index + n) % n; } while ( !wtce_enabled[m_wtce_current] );
 
-  set_wtce();
+  set_judge_wtce();
 }
 
 void Courtroom::reset_effect_buttons()
@@ -2287,7 +2251,7 @@ void Courtroom::on_cross_examination_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::reset_wtce_buttons() // kind of an unnecessary function, but I added it just in case
+void Courtroom::reset_judge_wtce_buttons() // kind of an unnecessary function, but I added it just in case
 {
   for(int i = 0; i < wtce_names.size(); ++i) // effect names does not necessarily have the same size as ui effects
   {
