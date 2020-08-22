@@ -5,16 +5,26 @@
 #include "networkmanager.h"
 #include "debug_functions.h"
 
+#include "aoconfig.h"
+#include "aoconfigpanel.h"
+
 #include <QDebug>
 #include <QRect>
 #include <QDesktopWidget>
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  net_manager = new NetworkManager(this);
-  discord = new AttorneyOnline::Discord();
-  QObject::connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
-                   SLOT(ms_connect_finished(bool, bool)));
+    discord = new AttorneyOnline::Discord();
+
+    net_manager = new NetworkManager(this);
+    connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)), SLOT(ms_connect_finished(bool, bool)));
+
+    config = new AOConfig(this);
+    connect(config, SIGNAL(theme_changed(QString)), this, SLOT(on_config_theme_changed()));
+
+    config_panel = new AOConfigPanel;
+    connect(config_panel, SIGNAL(reload_theme()), this, SLOT(on_config_reload_theme_requested()));
+    config_panel->hide();
 }
 
 AOApplication::~AOApplication()
@@ -22,6 +32,7 @@ AOApplication::~AOApplication()
   destruct_lobby();
   destruct_courtroom();
   delete discord;
+  delete config_panel;
 }
 
 void AOApplication::construct_lobby()
@@ -66,6 +77,8 @@ void AOApplication::construct_courtroom()
   }
 
   w_courtroom = new Courtroom(this);
+  connect(w_courtroom, SIGNAL(closing()), this, SLOT(on_courtroom_closing()));
+  connect(w_courtroom, SIGNAL(destroyed()), this, SLOT(on_courtroom_destroyed()));
   courtroom_constructed = true;
 
   QRect screenGeometry = QApplication::desktop()->screenGeometry();
@@ -76,37 +89,45 @@ void AOApplication::construct_courtroom()
 
 void AOApplication::destruct_courtroom()
 {
-  if (!courtroom_constructed)
-  {
-    qDebug() << "W: courtroom was attempted destructed when it did not exist";
-    return;
-  }
+    // destruct courtroom
+    if (courtroom_constructed)
+    {
+        delete w_courtroom;
+        courtroom_constructed = false;
+    }
+    else
+    {
+        qDebug() << "W: courtroom was attempted destructed when it did not exist";
+    }
 
-  delete w_courtroom;
-  courtroom_constructed = false;
+    // gracefully close our connection to the current server
+    net_manager->disconnect_from_server();
 }
 
 QString AOApplication::get_version_string()
 {
-  return
-  QString::number(RELEASE) + "." +
-  QString::number(MAJOR_VERSION) + "." +
-  QString::number(MINOR_VERSION);
+    return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION);
 }
 
-void AOApplication::reload_theme()
+void AOApplication::set_theme_variant(QString p_variant)
 {
-  current_theme = read_theme();
+    m_theme_variant = p_variant;
+    emit reload_theme();
 }
 
-void AOApplication::set_theme_variant(QString theme_variant)
+void AOApplication::on_config_theme_changed()
 {
-  this->theme_variant = theme_variant;
+    emit reload_theme();
+}
+
+void AOApplication::on_config_reload_theme_requested()
+{
+    emit reload_theme();
 }
 
 void AOApplication::set_favorite_list()
 {
-  favorite_list = read_serverlist_txt();
+    favorite_list = read_serverlist_txt();
 }
 
 QString AOApplication::get_current_char()
@@ -117,10 +138,64 @@ QString AOApplication::get_current_char()
     return "";
 }
 
+void AOApplication::toggle_config_panel()
+{
+    config_panel->setVisible(!config_panel->isVisible());
+    if (config_panel->isVisible())
+    {
+        QRect screenGeometry = QApplication::desktop()->screenGeometry();
+        int x = (screenGeometry.width()-config_panel->width()) / 2;
+        int y = (screenGeometry.height()-config_panel->height()) / 2;
+        config_panel->setFocus();
+        config_panel->raise();
+        config_panel->move(x, y);
+    }
+}
+
+bool AOApplication::get_always_pre_enabled()
+{
+    return config->get_bool("always_pre", true);
+}
+
+bool AOApplication::get_first_person_enabled()
+{
+    return config->get_bool("first_person", false);
+}
+
+bool AOApplication::get_chatlog_scrolldown()
+{
+    return config->log_goes_downward_enabled();
+}
+
+int AOApplication::get_chatlog_max_lines()
+{
+    return config->log_max_lines();
+}
+
+int AOApplication::get_chat_tick_interval()
+{
+    return config->get_number("chat_tick_interval", 60);
+}
+
+bool AOApplication::get_chatlog_newline()
+{
+    return config->log_uses_newline_enabled();
+}
+
+bool AOApplication::get_enable_logging_enabled()
+{
+    return config->log_is_recording_enabled();
+}
+
+bool AOApplication::get_music_change_log_enabled()
+{
+    return config->get_bool("music_change_log", true);
+}
+
 void AOApplication::add_favorite_server(int p_server)
 {
-  if (p_server < 0 || p_server >= server_list.size())
-    return;
+    if (p_server < 0 || p_server >= server_list.size())
+        return;
 
   server_type fav_server = server_list.at(p_server);
 
@@ -133,12 +208,11 @@ void AOApplication::add_favorite_server(int p_server)
 
 void AOApplication::server_disconnected()
 {
-  if (courtroom_constructed)
-  {
+    if (!courtroom_constructed)
+        return;
     call_notice("Disconnected from server.");
     construct_lobby();
     destruct_courtroom();
-  }
 }
 
 void AOApplication::loading_cancelled()
@@ -175,4 +249,14 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
                  "Please check your Internet connection and firewall, and please try again.");
     }
   }
+}
+
+void AOApplication::on_courtroom_closing()
+{
+    config_panel->hide();
+}
+
+void AOApplication::on_courtroom_destroyed()
+{
+    config_panel->hide();
 }

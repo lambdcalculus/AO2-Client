@@ -69,10 +69,6 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     {
       w_lobby->append_chatmessage(f_name, f_message);
     }
-    if (courtroom_constructed && courtroom_loaded)
-    {
-      w_courtroom->append_ms_chatmessage(f_name, f_message);
-    }
   }
   else if (header == "AO2CHECK")
   {
@@ -219,7 +215,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     loaded_evidence = 0;
     loaded_music = 0;
 
-    destruct_courtroom();
     construct_courtroom();
 
     courtroom_loaded = false;
@@ -541,9 +536,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (!courtroom_constructed)
       goto end;
-
-    if (lobby_constructed)
-      w_courtroom->append_ms_chatmessage("", w_lobby->get_chatlog());
 
     w_courtroom->done_received();
 
