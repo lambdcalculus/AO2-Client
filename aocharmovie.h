@@ -20,9 +20,9 @@ public:
   bool play_pre(QString p_char, QString p_emote, bool show);
   void play_talking(QString p_char, QString p_emote, bool show);
   void play_idle(QString p_char, QString p_emote, bool show);
-
   void set_flipped(bool p_flipped) {m_flipped = p_flipped;}
 
+  void refresh();
   void stop();
 
   void combo_resize(int w, int h);
@@ -39,6 +39,8 @@ private:
   bool m_flipped = false;
 
   bool play_once = true;
+  bool shown = true;
+  QString filename = "";
 
 signals:
   void done();

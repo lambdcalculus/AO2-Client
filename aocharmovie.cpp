@@ -50,11 +50,17 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix, bo
         if (found)
             break;
     }
+    shown = show;
+    filename = gif_path;
+    refresh();
+}
 
+void AOCharMovie::refresh()
+{
     m_movie->stop();
-    m_movie->setFileName(gif_path);
+    m_movie->setFileName(filename);
 
-    QImageReader *reader = new QImageReader(gif_path);
+    QImageReader *reader = new QImageReader(filename);
 
     movie_frames.clear();
     QImage f_image = reader->read();
@@ -68,9 +74,9 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString emote_prefix, bo
     }
     delete reader;
 
-    this->show();
-    if (!show)
-        this->hide();
+    show();
+    if (!shown)
+        hide();
 
     m_movie->start();
 }

@@ -573,6 +573,10 @@ void Courtroom::set_widgets()
 
   ui_vp_player_char->move(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
+  if (ui_vp_player_char->size() != original_viewport_size)
+  {
+    ui_vp_player_char->refresh();
+  }
 
   //the AO2 desk element
   ui_vp_desk->move(0, 0);
