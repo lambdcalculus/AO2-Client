@@ -182,7 +182,9 @@ void Courtroom::char_clicked(int n_char)
     }
     else
     {
-        ao_app->send_server_packet(new AOPacket("CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_real_char) + "#" + get_hdid() + "#%"));
+        QString content = "CC#" + QString::number(ao_app->s_pv) + "#" +
+                QString::number(n_real_char) + "#" + get_hdid() + "#%";
+        ao_app->send_server_packet(new AOPacket(content));
     }
 }
 
