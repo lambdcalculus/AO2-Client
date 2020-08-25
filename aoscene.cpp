@@ -33,6 +33,14 @@ void AOScene::set_image(QString p_image)
     // do not update the movie if we're using the same file
     if (m_movie && m_movie->fileName() == target_path)
         return;
+    filename = target_path;
+    refresh();
+}
+
+void AOScene::refresh()
+{
+    if (filename.isEmpty())
+        return;
 
     // clear previous
     this->clear();
@@ -43,7 +51,7 @@ void AOScene::set_image(QString p_image)
     // create new movie to run
     m_movie = new QMovie(this);
     setMovie(m_movie);
-    m_movie->setFileName(target_path);
+    m_movie->setFileName(filename);
     m_movie->setScaledSize(size());
     m_movie->start();
 }

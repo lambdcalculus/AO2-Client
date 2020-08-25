@@ -14,10 +14,12 @@ public:
     explicit AOScene(QWidget *parent, AOApplication *p_ao_app);
 
     void set_image(QString p_image);
+    void refresh();
 
 private:
     AOApplication *ao_app = nullptr;
     QMovie *m_movie       = nullptr;
+    QString filename = "";
 };
 
 #endif // AOSCENE_H
