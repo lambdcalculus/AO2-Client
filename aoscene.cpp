@@ -34,7 +34,6 @@ void AOScene::set_image(QString p_image)
     if (m_movie->fileName() == target_path)
         return;
     m_movie->stop();
-    this->clear();
     m_movie->setFileName(target_path);
     m_movie->start();
 }
