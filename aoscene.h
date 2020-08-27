@@ -11,13 +11,14 @@ class AOScene : public QLabel
     Q_OBJECT
 
 public:
-    explicit AOScene(QWidget *parent, AOApplication *p_ao_app);
+    AOScene(QWidget *parent, AOApplication *p_ao_app);
 
     void set_image(QString p_image);
+    void combo_resize(QSize p_size);
 
 private:
     AOApplication *ao_app = nullptr;
-    QMovie *m_movie       = nullptr;
+    QMovie *m_reader      = nullptr;
 };
 
 #endif // AOSCENE_H

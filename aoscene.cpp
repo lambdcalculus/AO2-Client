@@ -6,10 +6,10 @@
 #include <QDebug>
 #include <QMovie>
 
-AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app)
-    : QLabel(parent)
+AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent), ao_app(p_ao_app)
 {
-    ao_app = p_ao_app;
+    m_reader = new QMovie(this);
+    setMovie(m_reader);
 }
 
 void AOScene::set_image(QString p_image)
@@ -31,19 +31,17 @@ void AOScene::set_image(QString p_image)
     }
 
     // do not update the movie if we're using the same file
-    if (m_movie && m_movie->fileName() == target_path)
+    if (m_reader->fileName() == target_path)
         return;
+    m_reader->stop();
+    m_reader->setFileName(target_path);
+    m_reader->start();
+}
 
-    // clear previous
-    this->clear();
-
-    // delete current movie
-    delete m_movie;
-
-    // create new movie to run
-    m_movie = new QMovie(this);
-    setMovie(m_movie);
-    m_movie->setFileName(target_path);
-    m_movie->setScaledSize(size());
-    m_movie->start();
+void AOScene::combo_resize(QSize p_size)
+{
+    resize(p_size);
+    m_reader->stop();
+    m_reader->setScaledSize(p_size);
+    m_reader->start();
 }

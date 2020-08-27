@@ -561,17 +561,17 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_viewport, "viewport");
 
   ui_vp_background->move(0, 0);
-  ui_vp_background->resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_background->combo_resize(ui_viewport->size());
 
   ui_vp_speedlines->move(0, 0);
   ui_vp_speedlines->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_player_char->move(0, 0);
-  ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_player_char->combo_resize(ui_viewport->size());
 
   //the AO2 desk element
   ui_vp_desk->move(0, 0);
-  ui_vp_desk->resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_desk->combo_resize(ui_viewport->size());
 
   ui_vp_evidence_display->move(0, 0);
   ui_vp_evidence_display->resize(ui_viewport->width(), ui_viewport->height());
