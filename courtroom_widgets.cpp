@@ -558,33 +558,20 @@ void Courtroom::set_widgets()
   ui_background->resize(m_courtroom_width, m_courtroom_height);
   ui_background->set_image("courtroombackground.png");
 
-  QSize original_viewport_size = ui_viewport->size();
   set_size_and_pos(ui_viewport, "viewport");
 
   ui_vp_background->move(0, 0);
-  ui_vp_background->resize(ui_viewport->width(), ui_viewport->height());
-  if (ui_vp_background->size() != original_viewport_size)
-  {
-    ui_vp_background->refresh();
-  }
+  ui_vp_background->combo_resize(ui_viewport->size());
 
   ui_vp_speedlines->move(0, 0);
   ui_vp_speedlines->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_player_char->move(0, 0);
-  ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
-  if (ui_vp_player_char->size() != original_viewport_size)
-  {
-    ui_vp_player_char->refresh();
-  }
+  ui_vp_player_char->combo_resize(ui_viewport->size());
 
   //the AO2 desk element
   ui_vp_desk->move(0, 0);
-  ui_vp_desk->resize(ui_viewport->width(), ui_viewport->height());
-  if (ui_vp_desk->size() != original_viewport_size)
-  {
-    ui_vp_desk->refresh();
-  }
+  ui_vp_desk->combo_resize(ui_viewport->size());
 
   ui_vp_evidence_display->move(0, 0);
   ui_vp_evidence_display->resize(ui_viewport->width(), ui_viewport->height());

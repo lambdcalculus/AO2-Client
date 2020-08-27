@@ -869,9 +869,9 @@ void Courtroom::handle_chatmessage_2() // handles IC
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
   if (ao_app->flipping_enabled && m_chatmessage[FLIP].toInt() == 1)
-    ui_vp_player_char->set_flipped(true);
+    ui_vp_player_char->set_mirror_enabled(true);
   else
-    ui_vp_player_char->set_flipped(false);
+    ui_vp_player_char->set_mirror_enabled(false);
 
   switch (emote_mod)
   {
