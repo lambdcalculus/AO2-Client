@@ -18,7 +18,7 @@ public:
 
 private:
     AOApplication *ao_app = nullptr;
-    QMovie *m_movie       = nullptr;
+    QMovie *m_reader      = nullptr;
 };
 
 #endif // AOSCENE_H
