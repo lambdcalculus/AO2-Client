@@ -2184,7 +2184,7 @@ void Courtroom::on_change_character_clicked()
   set_char_select();
 
   ui_char_select_background->show();
-  ui_spectator->hide();
+  ui_spectator->show();
 }
 
 void Courtroom::on_app_reload_theme_requested()
@@ -2226,6 +2226,8 @@ void Courtroom::on_char_select_right_clicked()
 
 void Courtroom::on_spectator_clicked()
 {
+  QString content = "CC#" + QString::number(ao_app->s_pv) + "#-1#" + get_hdid() + "#%";
+  ao_app->send_server_packet(new AOPacket(content));
   enter_courtroom(-1);
 
   ui_emotes->hide();
