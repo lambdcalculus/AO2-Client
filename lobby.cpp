@@ -6,7 +6,9 @@
 #include "networkmanager.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QScrollBar>
+#include <QTextEdit>
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -20,10 +22,18 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
     ui_refresh        = new AOButton(this, ao_app);
     ui_add_to_fav     = new AOButton(this, ao_app);
     ui_connect        = new AOButton(this, ao_app);
-    ui_version        = new QLabel(this);
+    ui_version        = new QTextEdit(this);
+    ui_version->setFrameStyle(QFrame::NoFrame);
+    ui_version->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui_version->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui_version->setReadOnly(true);
     ui_about          = new AOButton(this, ao_app);
     ui_server_list    = new QListWidget(this);
-    ui_player_count   = new QLabel(this);
+    ui_player_count   = new QTextEdit(this);
+    ui_player_count->setFrameStyle(QFrame::NoFrame);
+    ui_player_count->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui_player_count->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui_player_count->setReadOnly(true);
     ui_description    = new AOTextArea(this);
     ui_chatbox        = new AOTextArea(this);
     ui_chatbox->setOpenExternalLinks(true);
@@ -66,8 +76,9 @@ void Lobby::set_widgets()
         qDebug() << "W: did not find lobby width or height in " << filename;
 
         // Most common symptom of bad config files and missing assets.
-        call_notice("It doesn't look like your client is set up correctly.\n"
-                    "Did you download all resources correctly from tiny.cc/getao, "
+        call_notice("It doesn't look like your client is set up correctly "
+                    "at " + QDir::currentPath() + "\n"
+                    "Did you download all resources correctly from the DRO Discord "
                     "including the large 'base' folder?");
 
         this->resize(517, 666);
@@ -170,12 +181,12 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Lobby::set_fonts()
 {
-    set_font(ui_player_count, "player_count");
-    set_font(ui_description, "description");
+    set_qtextedit_font(ui_player_count, "player_count");
+    set_qtextedit_font(ui_description, "description");
     set_font(ui_chatbox, "chatbox");
     set_font(ui_chatname, "chatname");
     set_font(ui_chatmessage, "chatmessage");
-    set_font(ui_loading_text, "loading_text");
+    set_qtextedit_font(ui_loading_text, "loading_text");
     set_font(ui_server_list, "server_list");
 }
 
@@ -201,42 +212,49 @@ void Lobby::set_stylesheets()
 void Lobby::set_font(QWidget *widget, QString p_identifier)
 {
     QString design_file = "lobby_fonts.ini";
-    int f_weight        = ao_app->get_font_size(p_identifier, design_file);
+
+    if (!(bool)ao_app->get_font_property("use_custom_fonts", design_file))
+        return;
+
+    int f_weight        = ao_app->get_font_property(p_identifier, design_file);
     QString class_name  = widget->metaObject()->className();
 
     QString font_name = ao_app->get_font_name("font_" + p_identifier, design_file);
-
     QFont font(font_name, f_weight);
+    widget->setFont(font);
 
-    bool use = (bool)ao_app->get_font_size("use_custom_fonts", design_file);
+    QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
-    if (use)
-    {
-        widget->setFont(font);
+    bool bold   = (bool)ao_app->get_font_property(p_identifier + "_bold", design_file);
+    QString is_bold = "";
+    if (bold) is_bold = "bold";
 
-        QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
+    bool center = (bool)ao_app->get_font_property(p_identifier + "_center", design_file);
+    QString is_center = "";
+    if (center) is_center = "qproperty-alignment: AlignCenter;";
 
-        bool bold   = (bool)ao_app->get_font_size(p_identifier + "_bold", design_file);   // is the font bold or not?
-        bool center = (bool)ao_app->get_font_size(p_identifier + "_center", design_file); // should it be centered?
+    QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
+                                 "color: rgba(" +
+                                 QString::number(f_color.red()) + ", " +
+                                 QString::number(f_color.green()) + ", " +
+                                 QString::number(f_color.blue()) + ", 255);\n" +
+                                 is_center + "\n" +
+                                 "font: " + is_bold + "; }";
 
-        QString is_bold = "";
-        if (bold) is_bold = "bold";
+    widget->setStyleSheet(style_sheet_string);
+}
 
-        QString is_center = "";
-        if (center) is_center = "qproperty-alignment: AlignCenter;";
+void Lobby::set_qtextedit_font(QTextEdit *widget, QString p_identifier)
+{
+  set_font(widget, p_identifier);
 
-        QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
-                                     "color: rgba(" +
-                                     QString::number(f_color.red()) + ", " +
-                                     QString::number(f_color.green()) + ", " +
-                                     QString::number(f_color.blue()) + ", 255);\n" +
-                                     is_center + "\n" +
-                                     "font: " + is_bold + "; }";
-
-        widget->setStyleSheet(style_sheet_string);
-    }
-
-    return;
+  QString design_file = "lobby_fonts.ini";
+  QTextCharFormat widget_format = widget->currentCharFormat();
+  if (ao_app->get_font_property(p_identifier + "_outline", design_file) == 1)
+    widget_format.setTextOutline(QPen(Qt::black, 1));
+  else
+    widget_format.setTextOutline(Qt::NoPen);
+  widget->setCurrentCharFormat(widget_format);
 }
 
 void Lobby::set_loading_text(QString p_text)
@@ -444,6 +462,7 @@ void Lobby::set_player_count(int players_online, int max_players)
 {
     QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
     ui_player_count->setText(f_string);
+    ui_player_count->setAlignment(Qt::AlignHCenter);
 
     ui_description->setText("Connected to " + f_last_server.name + "\n\n");
     ui_description->append(f_last_server.desc);

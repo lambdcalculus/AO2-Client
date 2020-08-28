@@ -85,7 +85,11 @@ void Courtroom::create_widgets()
   ui_vp_evidence_display = new AOEvidenceDisplay(this, ao_app);
 
   ui_vp_chatbox = new AOImage(this, ao_app);
-  ui_vp_showname = new QLabel(ui_vp_chatbox);
+  ui_vp_showname = new QTextEdit(ui_vp_chatbox);
+  ui_vp_showname->setFrameStyle(QFrame::NoFrame);
+  ui_vp_showname->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_vp_showname->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_vp_showname->setReadOnly(true);
   ui_vp_message = new QTextEdit(ui_vp_chatbox);
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -225,7 +229,7 @@ void Courtroom::create_widgets()
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
 
   ui_timers.resize(1);
-  ui_timers[0] = new AOTimer(this, ao_app);
+  ui_timers[0] = new AOTimer(this);
 
   construct_evidence();
 
@@ -1019,7 +1023,7 @@ void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
 
 template<typename T>
 int Courtroom::adapt_numbered_items(QVector<T*> &item_vector, QString config_item_number,
-                                      QString item_name)
+                                    QString item_name)
 {
   // &item_vector must be a vector of size at least 1!
 
@@ -1044,7 +1048,7 @@ int Courtroom::adapt_numbered_items(QVector<T*> &item_vector, QString config_ite
     item_vector.resize(new_item_number);
     for (int i=current_item_number; i<new_item_number; i++)
     {
-      item_vector[i] = new T(this, ao_app);
+      item_vector[i] = new T(this);
       item_vector[i]->stackUnder(item_vector[i-1]);
       // index i-1 exists as i >= current_item_number == item_vector.size() >= 1
     }
@@ -1441,45 +1445,67 @@ void Courtroom::set_dropdowns()
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
 {
+    set_font(widget, p_identifier, "");
+}
+
+void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override_color)
+{
+    QString design_file = fonts_ini;
+    QString class_name = widget->metaObject()->className();
+
+    int f_weight = ao_app->get_font_property(p_identifier, design_file);
+    QString font_name = ao_app->get_font_name("font_" + p_identifier, design_file);
+    widget->setFont(QFont(font_name, f_weight));
+
+    if (override_color.isEmpty())
+    {
+      QString color = ao_app->read_theme_ini(p_identifier + "_color", "courtroom_fonts.ini");
+      if (color.isEmpty())
+          color = "255, 255, 255";
+      override_color = "rgba(" + color + ", 255)";
+    }
+
+    int bold = ao_app->get_font_property(p_identifier + "_bold", design_file);
+    QString is_bold = (bold == 1 ? "bold" : "");
+
+    QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
+                                 "color: " + override_color + ";\n"
+                                 "font: " + is_bold + "; }";
+    widget->setStyleSheet(style_sheet_string);
+}
+
+void Courtroom::set_qtextedit_font(QTextEdit *widget, QString p_identifier)
+{
+    set_qtextedit_font(widget, p_identifier, "");
+}
+
+void Courtroom::set_qtextedit_font(QTextEdit *widget, QString p_identifier, QString override_color)
+{
+  set_font(widget, p_identifier, override_color);
+
   QString design_file = fonts_ini;
-  int f_weight = ao_app->get_font_size(p_identifier, design_file);
-  QString class_name = widget->metaObject()->className();
-
-  QString font_name = ao_app->get_font_name("font_" + p_identifier, design_file);
-
-  widget->setFont(QFont(font_name, f_weight));
-
-  QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
-
-  int bold = ao_app->get_font_size(p_identifier + "_bold", design_file); // is the font bold or not?
-
-  QString is_bold = "";
-  if(bold == 1) is_bold = "bold";
-
-  QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" +
-                               "color: rgba(" +
-                               QString::number(f_color.red()) + ", " +
-                               QString::number(f_color.green()) + ", " +
-                               QString::number(f_color.blue()) + ", 255);\n"
-                                                                 "font: " + is_bold + "; }";
-
-  widget->setStyleSheet(style_sheet_string);
+  QTextCharFormat widget_format = widget->currentCharFormat();
+  if (ao_app->get_font_property(p_identifier + "_outline", design_file) == 1)
+    widget_format.setTextOutline(QPen(Qt::black, 1));
+  else
+    widget_format.setTextOutline(Qt::NoPen);
+  widget->setCurrentCharFormat(widget_format);
 }
 
 void Courtroom::set_fonts()
 {
-  set_font(ui_vp_showname, "showname");
-  set_font(ui_vp_message, "message");
-  set_font(ui_ic_chatlog, "ic_chatlog");
-  set_font(ui_server_chatlog, "server_chatlog");
+  set_qtextedit_font(ui_vp_showname, "showname");
+  set_qtextedit_font(ui_vp_message, "message");
+  set_qtextedit_font(ui_ic_chatlog, "ic_chatlog");
+  set_font(ui_server_chatlog, "server_chatlog"); // Chatlog does not support qtextedit because html
   set_font(ui_music_list, "music_list");
   set_font(ui_area_list, "area_list");
   set_font(ui_sfx_list, "sfx_list");
-  set_font(ui_vp_music_name, "music_name");
-  set_font(ui_vp_notepad, "notepad");
+  set_qtextedit_font(ui_vp_music_name, "music_name");
+  set_qtextedit_font(ui_vp_notepad, "notepad");
   for (int i=0; i<timer_number; i++)
   {
-    set_font(ui_timers[i], "timer_"+QString::number(i));
+    set_qtextedit_font(ui_timers[i], "timer_"+QString::number(i));
   }
 }
 

@@ -35,6 +35,7 @@ public:
     void set_stylesheets();
     void set_fonts();
     void set_font(QWidget *widget, QString p_identifier);
+    void set_qtextedit_font(QTextEdit *widget, QString p_identifier);
     void show_loading_overlay() { ui_loading_background->show(); }
     void hide_loading_overlay() { ui_loading_background->hide(); }
     QString get_chatlog();
@@ -56,12 +57,12 @@ private:
     AOButton *ui_add_to_fav;
     AOButton *ui_connect;
 
-    QLabel *ui_version;
+    QTextEdit *ui_version;
     AOButton *ui_about;
 
     QListWidget *ui_server_list;
 
-    QLabel *ui_player_count;
+    QTextEdit *ui_player_count;
     AOTextArea *ui_description;
 
     AOTextArea *ui_chatbox;

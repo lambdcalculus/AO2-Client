@@ -146,6 +146,9 @@ void Courtroom::enter_courtroom(int p_cid)
   ui_ic_chat_message->setEnabled(m_cid != -1);
   ui_ic_chat_message->setFocus();
 
+  for (int i = 0; i < ui_timers.length(); ++i)
+      ui_timers[i]->redraw();
+
   set_widget_names();
   set_widget_layers();
 }
@@ -307,7 +310,7 @@ void Courtroom::handle_music_anim()
   QString file_b = fonts_ini;
   pos_size_type res_a = ao_app->get_element_dimensions("music_name", file_a);
   pos_size_type res_b = ao_app->get_element_dimensions("music_area", file_a);
-  float speed = static_cast<float>(ao_app->get_font_size("music_name_speed", file_b));
+  float speed = static_cast<float>(ao_app->get_font_property("music_name_speed", file_b));
 
   QFont f_font = ui_vp_music_name->font();
   QFontMetrics fm(f_font);
@@ -822,18 +825,12 @@ void Courtroom::handle_chatmessage_2() // handles IC
     f_showname = m_chatmessage[SHOWNAME];
   }
 
+  // Check if char.ini has color property, which overrides the theme's default showname color
   QString f_color = ao_app->read_char_ini(real_name, "color", "[Options]", "[Time]");
-  if (f_color == "")
-    f_color = "rgb(" + ao_app->read_theme_ini("showname_color" , "courtroom_fonts.ini") + ")";
+  set_qtextedit_font(ui_vp_showname, "showname", f_color);
 
-  // is the font bold or not? // taken directly from function up there lol // kinda hacky
-  int bold = ao_app->get_font_size("showname_bold", fonts_ini);
-  QString is_bold = "";
-  if(bold == 1) is_bold = "bold";
-
-  ui_vp_showname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
-                                "color: " + f_color + ";font: " + is_bold);
   ui_vp_showname->setText(f_showname);
+  ui_vp_showname->setAlignment(Qt::AlignVCenter);
 
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
@@ -1096,17 +1093,30 @@ void Courtroom::update_ic_log(bool p_reset_log)
     }
 
     // prepare the formats we need
+    // default color
+    QColor default_color = ao_app->get_color("ic_chatlog_color", fonts_ini);
+    QColor not_found_color = QColor(255, 255, 255);
+
     QTextCharFormat name_format = ui_ic_chatlog->currentCharFormat();
     name_format.setFontWeight(QFont::Bold);
-    name_format.setForeground(ao_app->get_color("chatlog_showname_color", fonts_ini));
+    QColor showname_color = ao_app->get_color("ic_chatlog_showname_color", fonts_ini);
+    if (showname_color == not_found_color)
+        showname_color = default_color;
+    name_format.setForeground(showname_color);
 
     QTextCharFormat line_format = ui_ic_chatlog->currentCharFormat();
     line_format.setFontWeight(QFont::Normal);
-    line_format.setForeground(ao_app->get_color("chatlog_message_color", fonts_ini));
+    QColor message_color = ao_app->get_color("ic_chatlog_message_color", fonts_ini);
+    if (message_color == not_found_color)
+        message_color = default_color;
+    line_format.setForeground(message_color);
 
     QTextCharFormat system_format = ui_ic_chatlog->currentCharFormat();
     system_format.setFontWeight(QFont::Normal);
-    system_format.setForeground(ao_app->get_color("system_msg", fonts_ini));
+    QColor system_color = ao_app->get_color("ic_chatlog_system_color", fonts_ini);
+    if (system_color == not_found_color)
+        system_color = not_found_color;
+    system_format.setForeground(system_color);
 
     // need vscroll bar for cache
     QScrollBar *vscrollbar = ui_ic_chatlog->verticalScrollBar();
@@ -1331,14 +1341,12 @@ void Courtroom::chat_tick()
   //note: this is called fairly often(every 60 ms when char is talking)
   //do not perform heavy operations here
   QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
-  if (ao_app->read_theme_ini("enable_vp_message_outline", cc_config_ini) == "true")
+  if (ao_app->get_font_property("message_outline", fonts_ini) == 1)
     vp_message_format.setTextOutline(QPen(Qt::black, 1));
   else
     vp_message_format.setTextOutline(Qt::NoPen);
 
   QString f_message = m_chatmessage[MESSAGE];
-//  QString parsed_message = parse_message(f_message);
-//  qDebug() << "parsed:" << parsed_message;
 
   if (tick_pos >= f_message.size())
   {
@@ -1358,8 +1366,6 @@ void Courtroom::chat_tick()
   else
   {
     QString f_character = f_message.at(tick_pos);
-    //f_character = f_character.toHtmlEscaped();
-    //qDebug() << f_character;
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");

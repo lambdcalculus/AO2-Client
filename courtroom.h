@@ -23,7 +23,7 @@
 #include "aosfxplayer.h"
 #include "aoshoutplayer.h"
 #include "aotextarea.h"
-#include "aotextedit.h"
+#include "aoevidencedescription.h"
 #include "aotimer.h"
 #include "datatypes.h"
 
@@ -72,8 +72,15 @@ public:
 
     //sets position of widgets based on theme ini files
     void set_widgets();
-    //sets font size based on theme ini files
+    //sets font properties based on theme ini files
     void set_font(QWidget *widget, QString p_identifier);
+    //same as above, but use override color as color if it is not an empty string, otherwise use
+    //normal logic for color of set_font
+    void set_font(QWidget *widget, QString p_identifier, QString override_color);
+    //sets font properties for QTextEdit (same as above but also text outline)
+    void set_qtextedit_font(QTextEdit *widget, QString p_identifier);
+    //same as second set_font but for qtextedit
+    void set_qtextedit_font(QTextEdit *widget, QString p_identifier, QString override_color);
     //helper function that calls above function on the relevant widgets
     void set_fonts();
 
@@ -390,7 +397,7 @@ private:
     QTextEdit *ui_vp_notepad;
 
     AOImage *ui_vp_chatbox   = nullptr;
-    QLabel *ui_vp_showname   = nullptr;
+    QTextEdit *ui_vp_showname   = nullptr;
     QTextEdit *ui_vp_message = nullptr;
     AOImage *ui_vp_testimony = nullptr;
     AOMovie *ui_vp_effect    = nullptr;
@@ -544,7 +551,7 @@ private:
     AOLineEdit *ui_evidence_image_name;
     AOButton *ui_evidence_image_button;
     AOButton *ui_evidence_x;
-    AOTextEdit *ui_evidence_description;
+    AOEvidenceDescription *ui_evidence_description;
 
     AOImage *ui_char_select_background;
 
