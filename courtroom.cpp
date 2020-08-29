@@ -1042,7 +1042,7 @@ void Courtroom::handle_chatmessage_3()
       ui_server_chatlog->append_chatmessage(
             "CLIENT",
             "[" + QTime::currentTime().toString("HH:mm") + "] " +
-            ui_vp_showname->text() + " has called you via your callword \"" + word +
+            ui_vp_showname->toPlainText() + " has called you via your callword \"" + word +
             "\": \"" + f_message + "\"");
       break;
     }
