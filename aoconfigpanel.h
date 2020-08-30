@@ -25,9 +25,14 @@ class AOConfigPanel : public QWidget
     QLineEdit *w_callwords = nullptr;
     QComboBox *w_theme = nullptr;
     QPushButton *w_reload_theme = nullptr;
+    QCheckBox *w_always_pre = nullptr;
+    QSpinBox *w_chat_tick_interval = nullptr;
+
+    // IC Chatlog
     QSpinBox *w_log_max_lines = nullptr;
     QCheckBox *w_log_uses_newline = nullptr;
     QCheckBox *w_log_goes_downward = nullptr;
+    QCheckBox *w_log_music = nullptr;
     QCheckBox *w_log_is_recording = nullptr;
 
     // audio

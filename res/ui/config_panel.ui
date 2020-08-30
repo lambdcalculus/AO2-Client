@@ -121,82 +121,210 @@
         </widget>
        </item>
        <item row="5" column="0">
-        <widget class="QLabel" name="log_length_label">
+        <widget class="QLabel" name="always_pre_label">
          <property name="text">
-          <string>Log length:</string>
+          <string>Pre-animation always selected</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="5" column="1">
-        <widget class="QSpinBox" name="log_length">
-         <property name="suffix">
-          <string> line(s)</string>
-         </property>
-         <property name="minimum">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <number>10000</number>
-         </property>
-         <property name="value">
-          <number>200</number>
+        <widget class="QCheckBox" name="always_pre">
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
        <item row="6" column="0">
-        <widget class="QLabel" name="log_newline_label">
+        <widget class="QLabel" name="chat_tick_interval_label">
          <property name="text">
-          <string>Log uses newline:</string>
+          <string>Chat tick interval</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item row="6" column="1">
-        <widget class="QCheckBox" name="log_newline">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QSpinBox" name="chat_tick_interval">
+         <property name="suffix">
+          <string> ms</string>
          </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="log_downward_label">
-         <property name="text">
-          <string>Log is downward:</string>
+         <property name="minimum">
+          <number>10</number>
          </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QCheckBox" name="log_downward">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="log_recording_label">
-         <property name="text">
-          <string>Log is recorded:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <widget class="QCheckBox" name="log_recording">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+         <property name="maximum">
+          <number>999</number>
          </property>
         </widget>
        </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>IC Chatlog</string>
+      </attribute>
+      <widget class="QCheckBox" name="log_newline">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>38</y>
+         <width>259</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="log_recording">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>120</y>
+         <width>259</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="log_length">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>13</y>
+         <width>259</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="suffix">
+        <string> line(s)</string>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>200</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="log_newline_label">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>38</y>
+         <width>85</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Log uses newline:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="log_recording_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>120</y>
+         <width>77</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Log is recorded:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="log_length_label">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>13</y>
+         <width>54</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Log length:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="log_downward_label">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>59</y>
+         <width>84</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Log is downward:</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="log_downward">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>59</y>
+         <width>259</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="log_music">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>90</y>
+         <width>259</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="log_music_label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>77</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Log shows music changes:</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="tab_3">
       <attribute name="title">
        <string>Audio</string>
       </attribute>

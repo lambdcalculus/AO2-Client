@@ -171,7 +171,7 @@ public:
     //this function keeps the chatlog scrolled to the top unless there's text selected
     // or the user isn't already scrolled to the top
     void update_ic_log(bool p_reset_log);
-    void append_ic_text(QString p_name, QString p_line, bool p_system);
+    void append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music);
     void append_system_text(QString p_line);
 
     //prints who played the song to IC chat and plays said song(if found on local filesystem)
@@ -244,9 +244,8 @@ private:
     //triggers ping_server() every 60 seconds
     QTimer *keepalive_timer;
 
-    //determines how fast messages tick onto screen
+    //maintains a timer for how fast messages tick onto screen
     QTimer *chat_tick_timer;
-    int chat_tick_interval = 60;
     //which tick position(character in chat message) we are at
     int tick_pos = 0;
     //used to determine how often blips sound

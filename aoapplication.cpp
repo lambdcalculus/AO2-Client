@@ -154,7 +154,7 @@ void AOApplication::toggle_config_panel()
 
 bool AOApplication::get_always_pre_enabled()
 {
-    return config->get_bool("always_pre", true);
+    return config->always_pre_enabled();
 }
 
 bool AOApplication::get_first_person_enabled()
@@ -174,7 +174,7 @@ int AOApplication::get_chatlog_max_lines()
 
 int AOApplication::get_chat_tick_interval()
 {
-    return config->get_number("chat_tick_interval", 60);
+    return config->chat_tick_interval();
 }
 
 bool AOApplication::get_chatlog_newline()
@@ -189,7 +189,7 @@ bool AOApplication::get_enable_logging_enabled()
 
 bool AOApplication::get_music_change_log_enabled()
 {
-    return config->get_bool("music_change_log", true);
+    return config->log_music_enabled();
 }
 
 void AOApplication::add_favorite_server(int p_server)
