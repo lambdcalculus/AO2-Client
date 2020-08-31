@@ -55,6 +55,9 @@ class AOConfigPanel : public QWidget
 public:
     AOConfigPanel(QWidget *p_parent = nullptr);
 
+public slots:
+    void on_config_reload_theme_requested();
+
 signals:
     void reload_theme();
 

@@ -24,6 +24,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
     config_panel = new AOConfigPanel;
     connect(config_panel, SIGNAL(reload_theme()), this, SLOT(on_config_reload_theme_requested()));
+    connect(this, SIGNAL(reload_theme()), config_panel, SLOT(on_config_reload_theme_requested()));
     config_panel->hide();
 }
 

@@ -165,3 +165,8 @@ void AOConfigPanel::on_blips_value_changed(int p_num)
 {
     w_blips_value->setText(QString::number(p_num) + "%");
 }
+
+void AOConfigPanel::on_config_reload_theme_requested()
+{
+    refresh_theme_list();
+}
