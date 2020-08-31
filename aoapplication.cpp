@@ -21,6 +21,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
     config = new AOConfig(this);
     connect(config, SIGNAL(theme_changed(QString)), this, SLOT(on_config_theme_changed()));
+    connect(config, SIGNAL(theme_variant_changed(QString)), this, SLOT(on_config_theme_variant_changed()));
 
     config_panel = new AOConfigPanel;
     connect(config_panel, SIGNAL(reload_theme()), this, SLOT(on_config_reload_theme_requested()));
@@ -122,6 +123,11 @@ void AOApplication::on_config_theme_changed()
 }
 
 void AOApplication::on_config_reload_theme_requested()
+{
+    emit reload_theme();
+}
+
+void AOApplication::on_config_theme_variant_changed()
 {
     emit reload_theme();
 }

@@ -73,6 +73,7 @@ signals:
     void username_changed(QString);
     void callwords_changed(QString);
     void theme_changed(QString);
+    void theme_variant_changed(QString);
     void always_pre_changed(bool);
     void chat_tick_interval_changed(int);
     void log_max_lines_changed(int);

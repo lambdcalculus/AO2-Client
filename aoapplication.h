@@ -315,6 +315,7 @@ private slots:
     void on_courtroom_destroyed();
     void on_config_theme_changed();
     void on_config_reload_theme_requested();
+    void on_config_theme_variant_changed();
 
 public slots:
     void server_disconnected();
