@@ -63,6 +63,7 @@ signals:
 
 private:
     void refresh_theme_list();
+    void refresh_theme_variant_list();
 
 private slots:
     void on_reload_theme_clicked();

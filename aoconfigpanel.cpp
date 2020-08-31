@@ -48,6 +48,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent) : QWidget(p_parent), m_config(ne
 
     // themes
     refresh_theme_list();
+    refresh_theme_variant_list();
 
     // input
     connect(m_config, SIGNAL(username_changed(QString)), w_username, SLOT(setText(QString)));
@@ -75,7 +76,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent) : QWidget(p_parent), m_config(ne
     connect(w_callwords, SIGNAL(textEdited(QString)), m_config, SLOT(set_callwords(QString)));
     connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
     connect(w_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
-    connect(w_theme_variant, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
+    connect(w_theme_variant, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme_variant(QString)));
     connect(w_always_pre, SIGNAL(stateChanged(int)), m_config, SLOT(set_always_pre(int)));
     connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
     connect(w_server_alerts, SIGNAL(stateChanged(int)), m_config, SLOT(set_server_alerts(int)));
@@ -139,10 +140,39 @@ void AOConfigPanel::refresh_theme_list()
     w_theme->blockSignals(false);
 }
 
+void AOConfigPanel::refresh_theme_variant_list()
+{
+    const QString p_prev_text = w_theme_variant->currentText();
+
+    // block signals
+    w_theme_variant->blockSignals(true);
+    w_theme_variant->clear();
+
+    // add empty entry indicating no variant chosen
+    w_theme_variant->addItem("", "");
+    // themes
+    for (QString i_folder : QDir(QDir::currentPath() + "/base/themes/" +
+                                 m_config->theme()).entryList(QDir::Dirs))
+    {
+        if (i_folder == "." || i_folder == "..")
+            continue;
+        w_theme_variant->addItem(i_folder, i_folder);
+    }
+
+    // if the current theme does not have a variant folder for the current folder, add the variant
+    // to the combobox anyway. Selecting it will not do anything
+    if (w_theme_variant->findText(m_config->theme_variant()) == -1)
+      w_theme_variant->addItem(m_config->theme_variant(), m_config->theme_variant());
+    // restore previous selection
+    w_theme_variant->setCurrentText(p_prev_text);
+
+    // unblock
+    w_theme_variant->blockSignals(false);
+}
+
 void AOConfigPanel::on_reload_theme_clicked()
 {
     qDebug() << "reload theme clicked";
-    refresh_theme_list();
     emit reload_theme();
 }
 
@@ -169,4 +199,5 @@ void AOConfigPanel::on_blips_value_changed(int p_num)
 void AOConfigPanel::on_config_reload_theme_requested()
 {
     refresh_theme_list();
+    refresh_theme_variant_list();
 }
