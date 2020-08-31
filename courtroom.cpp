@@ -1700,7 +1700,7 @@ void Courtroom::set_character_position(QString p_pos, bool refresh_dropdown)
 void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
-  if (ui_guard->isChecked())
+  if (ao_app->get_server_alerts_enabled())
   {
     m_system_player->play(ao_app->get_sfx("mod_call"));
     ao_app->alert(this);
@@ -1735,8 +1735,6 @@ void Courtroom::on_ooc_return_pressed()
 
     ao_config->set_username(ooc_name);
   }
-  else if (ooc_message.startsWith("/login"))
-    ui_guard->show();
   else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled && !rainbow_appended)
   {
     ui_text_color->addItem("Rainbow");
@@ -2280,11 +2278,6 @@ void Courtroom::on_pre_clicked()
 }
 
 void Courtroom::on_flip_clicked()
-{
-  ui_ic_chat_message->setFocus();
-}
-
-void Courtroom::on_guard_clicked()
 {
   ui_ic_chat_message->setFocus();
 }
