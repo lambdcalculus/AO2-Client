@@ -25,6 +25,7 @@ class AOConfigPanel : public QWidget
     QLineEdit *w_callwords = nullptr;
     QComboBox *w_theme = nullptr;
     QPushButton *w_reload_theme = nullptr;
+    QComboBox *w_theme_variant = nullptr;
     QCheckBox *w_always_pre = nullptr;
     QSpinBox *w_chat_tick_interval = nullptr;
     QCheckBox *w_server_alerts = nullptr;

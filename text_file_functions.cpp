@@ -15,6 +15,11 @@ QString AOApplication::get_theme()
     return config->theme();
 }
 
+QString AOApplication::get_theme_variant()
+{
+    return config->theme_variant();
+}
+
 int AOApplication::read_blip_rate()
 {
     return config->blip_rate();

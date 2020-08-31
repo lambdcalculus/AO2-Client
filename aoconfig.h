@@ -20,6 +20,7 @@ public:
     QString username();
     QString callwords();
     QString theme();
+    QString theme_variant();
     bool always_pre_enabled();
     int chat_tick_interval();
     bool server_alerts_enabled();
@@ -44,6 +45,7 @@ public slots:
     void set_username(QString p_string);
     void set_callwords(QString p_string);
     void set_theme(QString p_string);
+    void set_theme_variant(QString p_string);
     void set_always_pre(bool p_enabled);
     void set_always_pre(int p_state);
     void set_chat_tick_interval(int p_number);

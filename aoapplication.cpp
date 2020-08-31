@@ -111,7 +111,7 @@ QString AOApplication::get_version_string()
 
 void AOApplication::set_theme_variant(QString p_variant)
 {
-    m_theme_variant = p_variant;
+    config->set_theme_variant(p_variant);
     emit reload_theme();
 }
 

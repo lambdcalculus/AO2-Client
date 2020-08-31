@@ -123,6 +123,9 @@ public:
     //Reads the theme from config.ini and loads it into the current_theme variable
     QString get_theme();
 
+    //Reads the theme variant from config.ini and loads it into the current theme variant variable
+    QString get_theme_variant();
+
     //Returns the blip rate from config.ini
     int read_blip_rate();
 
@@ -302,8 +305,6 @@ private:
     const int RELEASE       = 2;
     const int MAJOR_VERSION = 4;
     const int MINOR_VERSION = 8;
-
-    QString m_theme_variant = "";
 
     QVector<server_type> server_list;
     QVector<server_type> favorite_list;
