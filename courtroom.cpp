@@ -1760,18 +1760,6 @@ void Courtroom::on_ooc_return_pressed()
   {
    m_effects_player->play(ao_app->get_sfx("coinflip"));
   }
-  else if (ooc_message.startsWith("/variant"))
-  {
-    int space_location = ooc_message.indexOf(" ");
-    QString variant;
-
-    if (space_location == -1)
-      variant = "";
-    else
-      variant = ooc_message.mid(space_location+1);
-
-    handle_theme_variant(variant);
-  }
   else if (ooc_message.startsWith("/tr "))
   {
     // Timer resume
