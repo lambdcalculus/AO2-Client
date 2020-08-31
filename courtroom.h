@@ -274,7 +274,7 @@ private:
     QTimer *testimony_hide_timer;
 
     //Generate a File Name based on the time you launched the client
-    QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM yyyy hh.mm.ss.z'.txt'");
+    QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
 
     //configuration files locations
     QString rpc_ini         = "configs/rpccharlist.ini";
