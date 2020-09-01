@@ -790,7 +790,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     if (emote_mod == 0)
       m_chatmessage[EMOTE_MOD] = 1;
 
-    //handles cases 1-7 (5-7 are DRO only)
+    //handles cases 1-8 (5-8 are DRO only)
     if(objection_mod >= 1 && objection_mod <= ui_shouts.size() && ui_shouts.size() > 0) // check to prevent crashing
     {
       ui_vp_objection->play(shout_names.at(objection_mod-1), f_char, f_custom_theme);

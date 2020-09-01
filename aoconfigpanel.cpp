@@ -152,7 +152,7 @@ void AOConfigPanel::refresh_theme_variant_list()
     w_theme_variant->addItem("", "");
     // themes
     for (QString i_folder : QDir(QDir::currentPath() + "/base/themes/" +
-                                 m_config->theme()).entryList(QDir::Dirs))
+                                 m_config->theme() + "/variants/").entryList(QDir::Dirs))
     {
         if (i_folder == "." || i_folder == "..")
             continue;
