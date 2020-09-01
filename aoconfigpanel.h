@@ -25,6 +25,7 @@ class AOConfigPanel : public QWidget
     QLineEdit *w_callwords = nullptr;
     QComboBox *w_theme = nullptr;
     QPushButton *w_reload_theme = nullptr;
+    QComboBox *w_theme_variant = nullptr;
     QCheckBox *w_always_pre = nullptr;
     QSpinBox *w_chat_tick_interval = nullptr;
     QCheckBox *w_server_alerts = nullptr;
@@ -54,11 +55,15 @@ class AOConfigPanel : public QWidget
 public:
     AOConfigPanel(QWidget *p_parent = nullptr);
 
+public slots:
+    void on_config_reload_theme_requested();
+
 signals:
     void reload_theme();
 
 private:
     void refresh_theme_list();
+    void refresh_theme_variant_list();
 
 private slots:
     void on_reload_theme_clicked();

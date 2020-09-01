@@ -43,7 +43,8 @@ QString AOApplication::get_theme_path()
 
 QString AOApplication::get_theme_variant_path()
 {
-  return get_base_path() + "themes/" + get_theme().toLower() + "/" + m_theme_variant.toLower() + "/";
+  return get_base_path() + "themes/" + get_theme().toLower() + "/variants/" + get_theme_variant()
+      + "/";
 }
 
 QString AOApplication::get_default_theme_path()

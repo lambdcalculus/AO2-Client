@@ -300,8 +300,6 @@ void Courtroom::connect_widgets()
 
   connect(ui_switch_area_music, SIGNAL(clicked()), this, SLOT(on_switch_area_music_clicked()));
 
-  connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(set_theme(QString)));
-
   connect(ui_config_panel, SIGNAL(clicked()), this, SLOT(on_config_panel_clicked()));
   connect(ui_note_button, SIGNAL(clicked()), this, SLOT(on_note_button_clicked()));
 

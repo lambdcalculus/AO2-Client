@@ -21,6 +21,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent) : QWidget(p_parent), m_config(ne
     w_username = AO_GUI_WIDGET(QLineEdit, "username");
     w_callwords = AO_GUI_WIDGET(QLineEdit, "callwords");
     w_theme = AO_GUI_WIDGET(QComboBox, "theme");
+    w_theme_variant = AO_GUI_WIDGET(QComboBox, "theme_variant");
     w_reload_theme = AO_GUI_WIDGET(QPushButton, "theme_reload");
     w_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
     w_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
@@ -47,11 +48,13 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent) : QWidget(p_parent), m_config(ne
 
     // themes
     refresh_theme_list();
+    refresh_theme_variant_list();
 
     // input
     connect(m_config, SIGNAL(username_changed(QString)), w_username, SLOT(setText(QString)));
     connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords, SLOT(setText(QString)));
     connect(m_config, SIGNAL(theme_changed(QString)), w_theme, SLOT(setCurrentText(QString)));
+    connect(m_config, SIGNAL(theme_variant_changed(QString)), w_theme_variant, SLOT(setCurrentText(QString)));
     connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre, SLOT(setChecked(bool)));
     connect(m_config, SIGNAL(chat_tick_interval_changed(int)), w_chat_tick_interval, SLOT(setValue(int)));
     connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts, SLOT(setChecked(bool)));
@@ -73,6 +76,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent) : QWidget(p_parent), m_config(ne
     connect(w_callwords, SIGNAL(textEdited(QString)), m_config, SLOT(set_callwords(QString)));
     connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
     connect(w_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
+    connect(w_theme_variant, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme_variant(QString)));
     connect(w_always_pre, SIGNAL(stateChanged(int)), m_config, SLOT(set_always_pre(int)));
     connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
     connect(w_server_alerts, SIGNAL(stateChanged(int)), m_config, SLOT(set_server_alerts(int)));
@@ -96,6 +100,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent) : QWidget(p_parent), m_config(ne
     w_username->setText(m_config->username());
     w_callwords->setText(m_config->callwords());
     w_theme->setCurrentText(m_config->theme());
+    w_theme_variant->setCurrentText(m_config->theme_variant());
     w_always_pre->setChecked(m_config->always_pre_enabled());
     w_chat_tick_interval->setValue(m_config->chat_tick_interval());
     w_server_alerts->setChecked(m_config->server_alerts_enabled());
@@ -135,10 +140,39 @@ void AOConfigPanel::refresh_theme_list()
     w_theme->blockSignals(false);
 }
 
+void AOConfigPanel::refresh_theme_variant_list()
+{
+    const QString p_prev_text = w_theme_variant->currentText();
+
+    // block signals
+    w_theme_variant->blockSignals(true);
+    w_theme_variant->clear();
+
+    // add empty entry indicating no variant chosen
+    w_theme_variant->addItem("", "");
+    // themes
+    for (QString i_folder : QDir(QDir::currentPath() + "/base/themes/" +
+                                 m_config->theme() + "/variants/").entryList(QDir::Dirs))
+    {
+        if (i_folder == "." || i_folder == "..")
+            continue;
+        w_theme_variant->addItem(i_folder, i_folder);
+    }
+
+    // if the current theme does not have a variant folder for the current folder, add the variant
+    // to the combobox anyway. Selecting it will not do anything
+    if (w_theme_variant->findText(m_config->theme_variant()) == -1)
+      w_theme_variant->addItem(m_config->theme_variant(), m_config->theme_variant());
+    // restore previous selection
+    w_theme_variant->setCurrentText(p_prev_text);
+
+    // unblock
+    w_theme_variant->blockSignals(false);
+}
+
 void AOConfigPanel::on_reload_theme_clicked()
 {
     qDebug() << "reload theme clicked";
-    refresh_theme_list();
     emit reload_theme();
 }
 
@@ -160,4 +194,10 @@ void AOConfigPanel::on_music_value_changed(int p_num)
 void AOConfigPanel::on_blips_value_changed(int p_num)
 {
     w_blips_value->setText(QString::number(p_num) + "%");
+}
+
+void AOConfigPanel::on_config_reload_theme_requested()
+{
+    refresh_theme_list();
+    refresh_theme_variant_list();
 }
