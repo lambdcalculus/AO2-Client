@@ -526,6 +526,16 @@ void Courtroom::set_widget_layers()
             break;
         }
     }
+    // do special logic if config panel was not found in courtroom_layers. In particular, make it
+    // visible and raise it in front of all assets. This can help assist a theme designer who
+    // accidentally missed config_panel and would have become unable to reload themes had they
+    // closed the config panel
+    if (!recorded_widgets.contains("config_panel"))
+    {
+      ui_config_panel->setParent(this);
+      ui_config_panel->raise();
+      ui_config_panel->setVisible(true);
+    }
 }
 
 void Courtroom::set_widgets()
@@ -768,29 +778,23 @@ void Courtroom::set_widgets()
   }
   set_free_blocks();
 
-  set_size_and_pos(ui_call_mod, "call_mod");
-
+  // Set the default values for the buttons, then determine if they should be replaced by images
   set_size_and_pos(ui_change_character, "change_character");
   set_size_and_pos(ui_call_mod, "call_mod");
-  set_size_and_pos(ui_config_panel, "config_panel");
   set_size_and_pos(ui_note_button, "note_button");
-
   set_size_and_pos(ui_switch_area_music, "switch_area_music");
+  set_size_and_pos(ui_config_panel, "config_panel");
 
-  // Set the default values for the buttons, then try and determine if they should be replaced by images
-  ui_change_character->setText("Change character");
+  ui_change_character->setText("");
+  ui_call_mod->setText("");
+  ui_switch_area_music->setText("");
+  ui_config_panel->setText("");
+  ui_note_button->setText("");
+
   ui_change_character->setStyleSheet("");
-
-  ui_call_mod->setText("Call mod");
   ui_call_mod->setStyleSheet("");
-
-  ui_switch_area_music->setText("A/M");
   ui_switch_area_music->setStyleSheet("");
-
-  ui_config_panel->setText("Config");
   ui_config_panel->setStyleSheet("");
-
-  ui_note_button->setText("Notes");
   ui_note_button->setStyleSheet("");
 
   if (ao_app->read_theme_ini("enable_button_images", cc_config_ini) == "true")
@@ -799,24 +803,40 @@ void Courtroom::set_widgets()
     // set_image first tries the theme variant folder, then the theme folder, then falls back to
     // the default theme
     ui_change_character->set_image("changecharacter.png");
-    if (!ui_change_character->image_path.isEmpty())
-      ui_change_character->setText("");
+    if (ui_change_character->image_path.isEmpty())
+      ui_change_character->setText("Change Character");
 
     ui_call_mod->set_image("callmod.png");
-    if (!ui_call_mod->image_path.isEmpty())
-      ui_call_mod->setText("");
+    if (ui_call_mod->image_path.isEmpty())
+      ui_call_mod->setText("Call Mod");
 
     ui_switch_area_music->set_image("switch_area_music.png");
-    if (!ui_switch_area_music->image_path.isEmpty())
-      ui_switch_area_music->setText("");
+    if (ui_switch_area_music->image_path.isEmpty())
+      ui_switch_area_music->setText("A/M");
 
     ui_config_panel->set_image("config_panel.png");
-    if (!ui_config_panel->image_path.isEmpty())
-        ui_config_panel->setText("");
+    if (ui_config_panel->image_path.isEmpty())
+        ui_config_panel->setText("Config");
 
     ui_note_button->set_image("notebutton.png");
-    if (!ui_note_button->image_path.isEmpty())
-        ui_note_button->setText("");
+    if (ui_note_button->image_path.isEmpty())
+        ui_note_button->setText("Notes");
+  }
+
+  // The config panel has a special property. If it is displayed beyond the right or lower limit
+  // of the window, it will be moved to 0, 0
+  // A similar behavior will occur if the button is hidden due to 'config_panel' not being found
+  // in courtroom_design.ini
+  // This is to assist with people who switch to incompatible and/or smaller themes and have the
+  // button disappear
+  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() ||
+      !ui_config_panel->isVisible())
+  {
+    ui_config_panel->setVisible(true);
+    ui_config_panel->move(0, 0);
+    // Moreover, if the width or height is invalid, change it to some fixed values
+    if (ui_config_panel->width() <= 0 || ui_config_panel->height() <= 0)
+      ui_config_panel->resize(64, 64);
   }
 
   set_size_and_pos(ui_pre, "pre");
