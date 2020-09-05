@@ -33,7 +33,7 @@ class AOConfigPrivate : public QObject
     int music_volume;
     int blips_volume;
     int blip_rate;
-    int blank_blips;
+    bool blank_blips;
 
 public:
     AOConfigPrivate() : QObject(qApp), cfg(QDir::currentPath() + "/base/config.ini", QSettings::IniFormat)
