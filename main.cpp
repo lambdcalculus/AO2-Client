@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
 #if defined(Q_OS_WIN)
     QPluginLoader apng("imageformats/qapng.dll");
 #elif defined(Q_OS_UNIX)
-    QPluginLoader apng("imageformats/qapng.so");
+    QPluginLoader apng("imageformats/libqapng.so");
 #elif defined(Q_OS_MAC)
-    QPluginLoader apng("imageformats/qapng.a");
+    QPluginLoader apng("imageformats/libqapng.a");
 #endif
 
     if (!apng.load())
