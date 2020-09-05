@@ -213,7 +213,11 @@ void Courtroom::create_widgets()
   ui_text_color->addItem("Orange");
   ui_text_color->addItem("Blue");
   if (ao_app->yellow_text_enabled)
+  {
     ui_text_color->addItem("Yellow");
+    ui_text_color->addItem("Purple");
+    ui_text_color->addItem("Pink");
+  }
 
   ui_evidence_button = new AOButton(this, ao_app);
 
