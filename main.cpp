@@ -21,18 +21,11 @@ int main(int argc, char *argv[])
 #endif
     AOApplication app(argc, argv);
 
-#if defined(Q_OS_WIN)
-    QPluginLoader apng("imageformats/qapng.dll");
-#elif defined(Q_OS_UNIX)
-    QPluginLoader apng("imageformats/libqapng.so");
-#elif defined(Q_OS_MAC)
-    QPluginLoader apng("imageformats/libqapng.a");
-#endif
-
+    QPluginLoader apng("qapng");
     if (!apng.load())
     {
 #ifdef QT_NO_DEBUG
-        call_error(QString("APNG plugin has encountered an error: %s").arg(apng.errorString()));
+        call_error("APNG plugin could not be loaded.");
 #endif
     }
 
