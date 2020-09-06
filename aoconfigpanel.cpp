@@ -126,7 +126,7 @@ void AOConfigPanel::refresh_theme_list()
     w_theme->clear();
 
     // themes
-    for (QString i_folder : QDir(QDir::currentPath() + "/base/themes").entryList())
+    for (QString i_folder : QDir(QDir::currentPath() + "/base/themes").entryList(QDir::Dirs))
     {
         if (i_folder == "." || i_folder == "..")
             continue;
