@@ -25,7 +25,8 @@ void AOShoutPlayer::play(QString p_name, QString p_char)
   else
     f_file = "";
 
-  try {
+  try
+  {
     AOBassHandle *handle = new AOBassHandle(f_file, true, this);
     connect(this, &AOShoutPlayer::new_volume, handle,
             &AOBassHandle::set_volume);
@@ -33,7 +34,8 @@ void AOShoutPlayer::play(QString p_name, QString p_char)
     handle->set_volume(get_volume());
     handle->play();
   }
-  catch (const std::exception &e_exception) {
+  catch (const std::exception &e_exception)
+  {
     qDebug() << e_exception.what();
   }
 }

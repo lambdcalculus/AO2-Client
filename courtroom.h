@@ -46,7 +46,8 @@
 
 class AOApplication;
 
-class Courtroom : public QMainWindow {
+class Courtroom : public QMainWindow
+{
   Q_OBJECT
 public:
   explicit Courtroom(AOApplication *p_ao_app);
@@ -60,7 +61,8 @@ public:
 
   void fix_last_area()
   {
-    if (area_list.size() > 0) {
+    if (area_list.size() > 0)
+    {
       QString malplaced = area_list.last();
       area_list.removeLast();
       append_music(malplaced);
@@ -182,8 +184,8 @@ public:
   void append_system_text(QString p_line);
 
   // prints who played the song to IC chat and plays said song(if found on local
-  // filesystem) takes in a list where the first element is the song name and the
-  // second is the char id of who played it
+  // filesystem) takes in a list where the first element is the song name and
+  // the second is the char id of who played it
   void handle_song(QStringList *p_contents);
 
   // animates music text

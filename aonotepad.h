@@ -5,7 +5,8 @@
 
 #include "aoapplication.h"
 
-class AONotepad : public QTextEdit {
+class AONotepad : public QTextEdit
+{
   Q_OBJECT
 
 public:

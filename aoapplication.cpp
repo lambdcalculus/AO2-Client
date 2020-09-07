@@ -44,7 +44,8 @@ AOApplication::~AOApplication()
 
 void AOApplication::construct_lobby()
 {
-  if (lobby_constructed) {
+  if (lobby_constructed)
+  {
     qDebug() << "W: lobby was attempted constructed when it already exists";
     return;
   }
@@ -64,7 +65,8 @@ void AOApplication::construct_lobby()
 
 void AOApplication::destruct_lobby()
 {
-  if (!lobby_constructed) {
+  if (!lobby_constructed)
+  {
     qDebug() << "W: lobby was attempted destructed when it did not exist";
     return;
   }
@@ -75,7 +77,8 @@ void AOApplication::destruct_lobby()
 
 void AOApplication::construct_courtroom()
 {
-  if (courtroom_constructed) {
+  if (courtroom_constructed)
+  {
     qDebug() << "W: courtroom was attempted constructed when it already exists";
     return;
   }
@@ -95,11 +98,13 @@ void AOApplication::construct_courtroom()
 void AOApplication::destruct_courtroom()
 {
   // destruct courtroom
-  if (courtroom_constructed) {
+  if (courtroom_constructed)
+  {
     delete w_courtroom;
     courtroom_constructed = false;
   }
-  else {
+  else
+  {
     qDebug() << "W: courtroom was attempted destructed when it did not exist";
   }
 
@@ -141,7 +146,8 @@ QString AOApplication::get_current_char()
 void AOApplication::toggle_config_panel()
 {
   config_panel->setVisible(!config_panel->isVisible());
-  if (config_panel->isVisible()) {
+  if (config_panel->isVisible())
+  {
     QRect screenGeometry = QApplication::desktop()->screenGeometry();
     int x = (screenGeometry.width() - config_panel->width()) / 2;
     int y = (screenGeometry.height() - config_panel->height()) / 2;
@@ -225,21 +231,26 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::ms_connect_finished(bool connected, bool will_retry)
 {
-  if (connected) {
+  if (connected)
+  {
     AOPacket *f_packet = new AOPacket("ALL#%");
     send_ms_packet(f_packet);
   }
-  else {
-    if (!lobby_constructed) {
+  else
+  {
+    if (!lobby_constructed)
+    {
       return;
     }
-    else if (will_retry) {
+    else if (will_retry)
+    {
       w_lobby->append_error(
           "Error connecting to master server. Will try again in " +
           QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) +
           " seconds.");
     }
-    else {
+    else
+    {
       call_error("There was an error connecting to the master server.\n"
                  "We deploy multiple master servers to mitigate any possible "
                  "downtime, "

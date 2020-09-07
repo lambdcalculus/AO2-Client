@@ -4,9 +4,11 @@
 #include <discord-rpc.h>
 #include <string>
 
-namespace AttorneyOnline {
+namespace AttorneyOnline
+{
 
-class Discord {
+class Discord
+{
 private:
   const char *APPLICATION_ID[2] = {
       "538080629535801347",

@@ -3,13 +3,15 @@
 
 #include "hex_functions.h"
 
-namespace omni {
+namespace omni
+{
 char halfword_to_hex_char(unsigned int input)
 {
   if (input > 127)
     return 'F';
 
-  switch (input) {
+  switch (input)
+  {
   case 0:
     return '0';
   case 1:

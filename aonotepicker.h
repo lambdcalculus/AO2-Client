@@ -6,7 +6,8 @@
 #include <QLabel>
 #include <QLineEdit>
 
-class AONotePicker : public QLabel {
+class AONotePicker : public QLabel
+{
   Q_OBJECT
 
 public:

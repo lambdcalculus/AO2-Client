@@ -26,13 +26,16 @@ void AOEmoteButton::set_image(QString p_char, int p_emote, QString suffix)
                        "emotions/hovers/button" + emotion_number + "_hover" +
                        suffix;
 
-  if (file_exists(image_path)) {
+  if (file_exists(image_path))
+  {
     this->setText("");
     this->setStyleSheet("border-image:url(\"" + image_path + "\")");
   }
-  else if (file_exists(alt_path)) {
+  else if (file_exists(alt_path))
+  {
     this->setText("");
-    if (file_exists(hover_path)) {
+    if (file_exists(hover_path))
+    {
       this->setStyleSheet("QPushButton {border-image:url(\"" + alt_path +
                           "\");}"
                           "QPushButton:hover {border-image:url(\"" +
@@ -41,7 +44,8 @@ void AOEmoteButton::set_image(QString p_char, int p_emote, QString suffix)
     else
       this->setStyleSheet("border-image:url(\"" + alt_path + "\")");
   }
-  else {
+  else
+  {
     this->setText(ao_app->get_emote_comment(p_char, p_emote));
     this->setStyleSheet("border-image:url(\"\")");
   }

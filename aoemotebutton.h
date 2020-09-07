@@ -5,7 +5,8 @@
 
 #include "aoapplication.h"
 
-class AOEmoteButton : public QPushButton {
+class AOEmoteButton : public QPushButton
+{
   Q_OBJECT
 
 public:

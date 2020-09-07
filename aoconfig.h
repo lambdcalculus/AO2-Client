@@ -3,7 +3,8 @@
 // qt
 #include <QObject>
 
-class AOConfig : public QObject {
+class AOConfig : public QObject
+{
   Q_OBJECT
 
 public:

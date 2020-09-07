@@ -76,7 +76,8 @@ void Lobby::set_widgets()
 
   pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
 
-  if (f_lobby.width < 0 || f_lobby.height < 0) {
+  if (f_lobby.width < 0 || f_lobby.height < 0)
+  {
     qDebug() << "W: did not find lobby width or height in " << filename;
 
     // Most common symptom of bad config files and missing assets.
@@ -89,7 +90,8 @@ void Lobby::set_widgets()
 
     this->resize(517, 666);
   }
-  else {
+  else
+  {
     this->resize(f_lobby.width, f_lobby.height);
   }
 
@@ -175,11 +177,13 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
   pos_size_type design_ini_result =
       ao_app->get_element_dimensions(p_identifier, filename);
 
-  if (design_ini_result.width < 0 || design_ini_result.height < 0) {
+  if (design_ini_result.width < 0 || design_ini_result.height < 0)
+  {
     qDebug() << "W: could not find " << p_identifier << " in " << filename;
     p_widget->hide();
   }
-  else {
+  else
+  {
     p_widget->move(design_ini_result.x, design_ini_result.y);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
@@ -382,7 +386,8 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   if (n_server < 0)
     return;
 
-  if (public_servers_selected) {
+  if (public_servers_selected)
+  {
     QVector<server_type> f_server_list = ao_app->get_server_list();
 
     if (n_server >= f_server_list.size())
@@ -390,7 +395,8 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
 
     f_last_server = f_server_list.at(p_model.row());
   }
-  else {
+  else
+  {
     if (n_server >= ao_app->get_favorite_list().size())
       return;
 
@@ -430,7 +436,8 @@ void Lobby::list_servers()
 
   ui_server_list->clear();
 
-  for (server_type i_server : ao_app->get_server_list()) {
+  for (server_type i_server : ao_app->get_server_list())
+  {
     ui_server_list->addItem(i_server.name);
   }
 }
@@ -439,7 +446,8 @@ void Lobby::list_favorites()
 {
   ui_server_list->clear();
 
-  for (server_type i_server : ao_app->get_favorite_list()) {
+  for (server_type i_server : ao_app->get_favorite_list())
+  {
     ui_server_list->addItem(i_server.name);
   }
 }

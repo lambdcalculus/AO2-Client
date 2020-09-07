@@ -37,12 +37,14 @@ void AOCharButton::set_image(QString p_character)
 
   if (file_exists(image_path))
     this->setStyleSheet("border-image:url(\"" + image_path + "\")");
-  else if (file_exists(legacy_path)) {
+  else if (file_exists(legacy_path))
+  {
     this->setStyleSheet("border-image:url(\"" + legacy_path + "\")");
     // ninja optimization
     QFile::copy(legacy_path, image_path);
   }
-  else {
+  else
+  {
     this->setStyleSheet("border-image:url()");
     this->setText(p_character);
   }

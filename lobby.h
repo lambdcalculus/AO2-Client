@@ -16,7 +16,8 @@
 
 class AOApplication;
 
-class Lobby : public QMainWindow {
+class Lobby : public QMainWindow
+{
   Q_OBJECT
 
 public:

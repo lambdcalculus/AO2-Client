@@ -5,7 +5,8 @@
 
 #include <QPushButton>
 
-class AOButton : public QPushButton {
+class AOButton : public QPushButton
+{
   Q_OBJECT
 
 public:

@@ -18,7 +18,8 @@ void AOButton::set_image(QString p_image)
   QString image_name = p_image.left(p_image.lastIndexOf(QChar('.')));
   QString hover_image_path = ao_app->get_image_path(image_name + "_hover.png");
 
-  if (file_exists(image_path)) {
+  if (file_exists(image_path))
+  {
     if (file_exists(hover_image_path))
       this->setStyleSheet("QPushButton {border-image:url(\"" + image_path +
                           "\");}"
@@ -27,7 +28,8 @@ void AOButton::set_image(QString p_image)
     else
       this->setStyleSheet("border-image:url(\"" + image_path + "\")");
   }
-  else {
+  else
+  {
     image_path = "";
     this->setStyleSheet("border-image:url(\"" + image_path + "\")");
   }

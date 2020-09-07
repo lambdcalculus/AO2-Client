@@ -5,7 +5,8 @@
 #include <cstdint>
 #include <iostream>
 
-namespace omni {
+namespace omni
+{
 char halfword_to_hex_char(unsigned int input);
 std::string int_to_hex(unsigned int input);
 } // namespace omni

@@ -3,7 +3,8 @@
 
 #include "aoabstractplayer.h"
 
-class AOSfxPlayer : public AOAbstractPlayer {
+class AOSfxPlayer : public AOAbstractPlayer
+{
   Q_OBJECT
 
 public:

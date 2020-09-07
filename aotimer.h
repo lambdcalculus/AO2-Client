@@ -9,7 +9,8 @@
 #include <aobutton.h>
 #include <aolabel.h>
 
-class ManualTimer {
+class ManualTimer
+{
   QTime current_time;
   int timestep_length;
 
@@ -28,7 +29,8 @@ public:
   }
 };
 
-class AOTimer : public QTextEdit {
+class AOTimer : public QTextEdit
+{
   Q_OBJECT
 
 public:

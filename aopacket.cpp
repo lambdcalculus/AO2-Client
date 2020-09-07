@@ -10,7 +10,8 @@ AOPacket::AOPacket(QString p_packet_string)
 
   m_header = packet_contents.at(0);
 
-  for (int n_string = 1; n_string < packet_contents.size() - 1; ++n_string) {
+  for (int n_string = 1; n_string < packet_contents.size() - 1; ++n_string)
+  {
     m_contents.append(packet_contents.at(n_string));
   }
 }
@@ -25,7 +26,8 @@ QString AOPacket::to_string()
 {
   QString f_string = m_header;
 
-  for (QString i_string : m_contents) {
+  for (QString i_string : m_contents)
+  {
     f_string += ("#" + i_string);
   }
 
@@ -53,7 +55,8 @@ void AOPacket::decrypt_header(unsigned int p_key)
 
 void AOPacket::net_encode()
 {
-  for (int n_element = 0; n_element < m_contents.size(); ++n_element) {
+  for (int n_element = 0; n_element < m_contents.size(); ++n_element)
+  {
     QString f_element = m_contents.at(n_element);
     f_element.replace("#", "<num>")
         .replace("%", "<percent>")
@@ -67,7 +70,8 @@ void AOPacket::net_encode()
 
 void AOPacket::net_decode()
 {
-  for (int n_element = 0; n_element < m_contents.size(); ++n_element) {
+  for (int n_element = 0; n_element < m_contents.size(); ++n_element)
+  {
     QString f_element = m_contents.at(n_element);
     f_element.replace("<num>", "#")
         .replace("<percent>", "%")

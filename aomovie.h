@@ -7,7 +7,8 @@
 class Courtroom;
 class AOApplication;
 
-class AOMovie : public QLabel {
+class AOMovie : public QLabel
+{
   Q_OBJECT
 
 public:

@@ -3,7 +3,8 @@
 
 #include "aoabstractplayer.h"
 
-class AOMusicPlayer : public AOAbstractPlayer {
+class AOMusicPlayer : public AOAbstractPlayer
+{
   Q_OBJECT
 
 public:

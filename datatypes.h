@@ -4,7 +4,8 @@
 #include <QString>
 #include <memory>
 
-struct record_type {
+struct record_type
+{
   QString name;
   QString line;
   QString color;
@@ -24,14 +25,16 @@ typedef std::shared_ptr<record_type> record_type_ptr;
 
 typedef QVector<record_type_ptr> record_type_array;
 
-struct server_type {
+struct server_type
+{
   QString name;
   QString desc;
   QString ip;
   int port;
 };
 
-struct emote_type {
+struct emote_type
+{
   QString comment;
   QString preanim;
   QString anim;
@@ -41,20 +44,23 @@ struct emote_type {
   int sfx_duration;
 };
 
-struct char_type {
+struct char_type
+{
   QString name;
   QString description;
   QString evidence_string;
   bool taken;
 };
 
-struct evi_type {
+struct evi_type
+{
   QString name;
   QString description;
   QString image;
 };
 
-struct chatmessage_type {
+struct chatmessage_type
+{
   QString message;
   QString character;
   QString side;
@@ -71,24 +77,28 @@ struct chatmessage_type {
   int flip;
 };
 
-struct area_type {
+struct area_type
+{
   QString name;
   QString background;
 };
 
-struct pos_type {
+struct pos_type
+{
   int x;
   int y;
 };
 
-struct pos_size_type {
+struct pos_size_type
+{
   int x = 0;
   int y = 0;
   int width = 0;
   int height = 0;
 };
 
-enum CHAT_MESSAGE {
+enum CHAT_MESSAGE
+{
   DESK_MOD = 0,
   PRE_EMOTE,
   CHAR_NAME,
@@ -107,7 +117,8 @@ enum CHAT_MESSAGE {
   SHOWNAME
 };
 
-enum COLOR {
+enum COLOR
+{
   WHITE = 0,
   GREEN,
   RED,

@@ -7,7 +7,8 @@
 // we could make a smarter system but let's keep it simple ;)
 #define AO_GUI_WIDGET(p_type, p_name) findChild<p_type *>(p_name)
 
-class AOGuiLoader : public QUiLoader {
+class AOGuiLoader : public QUiLoader
+{
   Q_OBJECT
 
 public:

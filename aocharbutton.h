@@ -8,7 +8,8 @@
 #include <QString>
 #include <QWidget>
 
-class AOCharButton : public QPushButton {
+class AOCharButton : public QPushButton
+{
   Q_OBJECT
 
 public:

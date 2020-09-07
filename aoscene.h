@@ -6,7 +6,8 @@
 class Courtroom;
 class AOApplication;
 
-class AOScene : public QLabel {
+class AOScene : public QLabel
+{
   Q_OBJECT
 
 public:

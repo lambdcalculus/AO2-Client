@@ -4,7 +4,8 @@
 #include <QString>
 #include <QStringList>
 
-class AOPacket {
+class AOPacket
+{
 public:
   AOPacket(QString p_packet_string);
   AOPacket(QString header, QStringList &p_contents);

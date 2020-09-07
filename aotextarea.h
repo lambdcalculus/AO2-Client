@@ -3,7 +3,8 @@
 
 #include <QTextBrowser>
 
-class AOTextArea : public QTextBrowser {
+class AOTextArea : public QTextBrowser
+{
 public:
   AOTextArea(QWidget *p_parent = nullptr);
 

@@ -12,7 +12,8 @@
 
 #include "aoapplication.h"
 
-class AONoteArea : public AOImage {
+class AONoteArea : public AOImage
+{
   Q_OBJECT
 
 public:

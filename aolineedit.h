@@ -4,7 +4,8 @@
 #include <QLineEdit>
 #include <QMouseEvent>
 
-class AOLineEdit : public QLineEdit {
+class AOLineEdit : public QLineEdit
+{
   Q_OBJECT
 
 public:

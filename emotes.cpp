@@ -50,7 +50,8 @@ void Courtroom::reconstruct_emotes()
 
   max_emotes_on_page = emote_columns * emote_rows;
 
-  for (int n = 0; n < max_emotes_on_page; ++n) {
+  for (int n = 0; n < max_emotes_on_page; ++n)
+  {
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
@@ -65,7 +66,8 @@ void Courtroom::reconstruct_emotes()
 
     ++x_mod_count;
 
-    if (x_mod_count == emote_columns) {
+    if (x_mod_count == emote_columns)
+    {
       ++y_mod_count;
       x_mod_count = 0;
     }
@@ -98,14 +100,16 @@ void Courtroom::set_emote_page()
   ui_emote_left->hide();
   ui_emote_right->hide();
 
-  for (AOEmoteButton *i_button : ui_emote_list) {
+  for (AOEmoteButton *i_button : ui_emote_list)
+  {
     i_button->hide();
   }
 
   int total_pages = total_emotes / max_emotes_on_page;
   int emotes_on_page = 0;
 
-  if (total_emotes % max_emotes_on_page != 0) {
+  if (total_emotes % max_emotes_on_page != 0)
+  {
     ++total_pages;
     // i. e. not on the last page
     if (total_pages > current_emote_page + 1)
@@ -122,7 +126,8 @@ void Courtroom::set_emote_page()
   if (current_emote_page > 0)
     ui_emote_left->show();
 
-  for (int n_emote = 0; n_emote < emotes_on_page; ++n_emote) {
+  for (int n_emote = 0; n_emote < emotes_on_page; ++n_emote)
+  {
     int n_real_emote = n_emote + current_emote_page * max_emotes_on_page;
     AOEmoteButton *f_emote = ui_emote_list.at(n_emote);
 
@@ -142,7 +147,8 @@ void Courtroom::set_emote_dropdown()
   int total_emotes = ao_app->get_emote_number(current_char);
   QStringList emote_list;
 
-  for (int n = 0; n < total_emotes; ++n) {
+  for (int n = 0; n < total_emotes; ++n)
+  {
     emote_list.append(ao_app->get_emote_comment(current_char, n));
   }
 

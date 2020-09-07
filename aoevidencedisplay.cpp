@@ -32,11 +32,13 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
   QString gif_name;
   QString icon_identifier;
 
-  if (is_left_side) {
+  if (is_left_side)
+  {
     icon_identifier = "left_evidence_icon";
     gif_name = "evidence_appear_left.gif";
   }
-  else {
+  else
+  {
     icon_identifier = "right_evidence_icon";
     gif_name = "evidence_appear_right.gif";
   }
@@ -61,7 +63,8 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 
 void AOEvidenceDisplay::frame_change(int p_frame)
 {
-  if (p_frame == (evidence_movie->frameCount() - 1)) {
+  if (p_frame == (evidence_movie->frameCount() - 1))
+  {
     // we need this or else the last frame wont show
     delay(evidence_movie->nextFrameDelay());
 

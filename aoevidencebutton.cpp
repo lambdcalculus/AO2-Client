@@ -41,11 +41,13 @@ void AOEvidenceButton::set_image(QString p_image)
 {
   QString image_path = ao_app->get_evidence_path() + p_image;
 
-  if (file_exists(image_path)) {
+  if (file_exists(image_path))
+  {
     this->setText("");
     this->setStyleSheet("border-image:url(\"" + image_path + "\")");
   }
-  else {
+  else
+  {
     this->setText(p_image);
     this->setStyleSheet("");
   }

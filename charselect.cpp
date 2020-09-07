@@ -65,7 +65,8 @@ void Courtroom::reconstruct_char_select()
 
   max_chars_on_page = char_columns * char_rows;
 
-  for (int n = 0; n < max_chars_on_page; ++n) {
+  for (int n = 0; n < max_chars_on_page; ++n)
+  {
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
@@ -83,7 +84,8 @@ void Courtroom::reconstruct_char_select()
 
     ++x_mod_count;
 
-    if (x_mod_count == char_columns) {
+    if (x_mod_count == char_columns)
+    {
       ++y_mod_count;
       x_mod_count = 0;
     }
@@ -107,7 +109,8 @@ void Courtroom::set_char_select()
   pos_size_type f_charselect =
       ao_app->get_element_dimensions("char_select", filename);
 
-  if (f_charselect.width < 0 || f_charselect.height < 0) {
+  if (f_charselect.width < 0 || f_charselect.height < 0)
+  {
     qDebug()
         << "W: did not find courtroom width or height in courtroom_design.ini!";
     this->resize(714, 668);
@@ -126,7 +129,8 @@ void Courtroom::set_char_select_page()
   ui_char_select_left->hide();
   ui_char_select_right->hide();
 
-  for (AOCharButton *button : ui_char_button_list) {
+  for (AOCharButton *button : ui_char_button_list)
+  {
     button->reset();
     button->hide();
   }
@@ -134,7 +138,8 @@ void Courtroom::set_char_select_page()
   int total_pages = char_list.size() / max_chars_on_page;
   int chars_on_page = 0;
 
-  if (char_list.size() % max_chars_on_page != 0) {
+  if (char_list.size() % max_chars_on_page != 0)
+  {
     ++total_pages;
     // i. e. not on the last page
     if (total_pages > current_char_page + 1)
@@ -152,7 +157,8 @@ void Courtroom::set_char_select_page()
     ui_char_select_left->show();
 
   // show all buttons for this page
-  for (int n_button = 0; n_button < chars_on_page; ++n_button) {
+  for (int n_button = 0; n_button < chars_on_page; ++n_button)
+  {
     if (char_list.length() <= n_button)
       continue;
 
@@ -175,16 +181,19 @@ void Courtroom::char_clicked(int n_char)
       ao_app->get_character_path(char_list.at(n_real_char).name) + "char.ini";
   qDebug() << "char_ini_path" << char_ini_path;
 
-  if (!file_exists(char_ini_path)) {
+  if (!file_exists(char_ini_path))
+  {
     qDebug() << "did not find " << char_ini_path;
     call_notice("Could not find " + char_ini_path);
     return;
   }
 
-  if (n_real_char == m_cid) {
+  if (n_real_char == m_cid)
+  {
     enter_courtroom(m_cid);
   }
-  else {
+  else
+  {
     QString content = "CC#" + QString::number(ao_app->s_pv) + "#" +
                       QString::number(n_real_char) + "#" + get_hdid() + "#%";
     ao_app->send_server_packet(new AOPacket(content));

@@ -36,12 +36,15 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
       ao_app->get_default_theme_path() + "placeholder"        // .gif
   };
 
-  for (auto &f_file : f_paths) {
+  for (auto &f_file : f_paths)
+  {
     bool found = false;
-    for (auto &ext : QStringList{".webp", ".apng", ".gif", ".png"}) {
+    for (auto &ext : QStringList{".webp", ".apng", ".gif", ".png"})
+    {
       QString fullPath = f_file + ext;
       found = file_exists(fullPath);
-      if (found) {
+      if (found)
+      {
         target_path = fullPath;
         break;
       }
@@ -57,8 +60,8 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
 
   movie_frames.clear();
   QImageReader *reader = new QImageReader(target_path);
-  for (int i = 0; i < reader->imageCount();
-       ++i) { // optimize can be better, but I'll just keep it like that for now
+  for (int i = 0; i < reader->imageCount(); ++i)
+  { // optimize can be better, but I'll just keep it like that for now
     QImage f_image = reader->read();
     if (m_mirror)
       f_image = f_image.mirrored(true, false);
@@ -80,9 +83,11 @@ bool AOCharMovie::play_pre(QString p_char, QString p_emote, bool show)
   { // figure out what extension the animation is using
     QString f_source_path =
         ao_app->get_character_path(p_char) + p_emote.toLower();
-    for (QString &i_ext : QStringList{".webp", ".apng", ".gif", ".png"}) {
+    for (QString &i_ext : QStringList{".webp", ".apng", ".gif", ".png"})
+    {
       QString f_target_path = f_source_path + i_ext;
-      if (file_exists(f_target_path)) {
+      if (file_exists(f_target_path))
+      {
         f_file_path = f_target_path;
         f_file_exist = true;
         break;
@@ -91,7 +96,8 @@ bool AOCharMovie::play_pre(QString p_char, QString p_emote, bool show)
   }
 
   // play if it exist
-  if (f_file_exist) {
+  if (f_file_exist)
+  {
     m_reader->stop();
     this->clear();
     m_play_once = true;
@@ -148,15 +154,18 @@ void AOCharMovie::combo_resize(QSize p_size)
 
 void AOCharMovie::on_frame_changed(int p_frame_num)
 {
-  if (movie_frames.size() > p_frame_num) {
+  if (movie_frames.size() > p_frame_num)
+  {
     AOPixmap f_pixmap = QPixmap::fromImage(movie_frames.at(p_frame_num));
     this->setPixmap(f_pixmap.scale_to_size(this->size()));
   }
 
   // pre-anim only
-  if (m_play_once) {
+  if (m_play_once)
+  {
     int f_frame_count = m_reader->frameCount();
-    if (f_frame_count == 0 || p_frame_num == (f_frame_count - 1)) {
+    if (f_frame_count == 0 || p_frame_num == (f_frame_count - 1))
+    {
       int f_frame_delay = m_reader->nextFrameDelay();
       if (f_frame_delay < 0)
         f_frame_delay = 0;

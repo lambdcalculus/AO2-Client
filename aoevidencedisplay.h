@@ -8,7 +8,8 @@
 #include "aopixmap.h"
 #include "aosfxplayer.h"
 
-class AOEvidenceDisplay : public QLabel {
+class AOEvidenceDisplay : public QLabel
+{
   Q_OBJECT
 
 public:

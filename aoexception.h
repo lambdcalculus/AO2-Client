@@ -5,7 +5,8 @@
 
 #include <QString>
 
-class AOException : public std::exception {
+class AOException : public std::exception
+{
 public:
   AOException() = default;
   AOException(QString p_msg);

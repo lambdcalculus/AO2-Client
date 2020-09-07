@@ -52,13 +52,15 @@ void AOTextArea::append_error(QString p_message)
 void AOTextArea::auto_scroll(QTextCursor old_cursor, int old_scrollbar_value,
                              bool is_scrolled_down)
 {
-  if (old_cursor.hasSelection() || !is_scrolled_down) {
+  if (old_cursor.hasSelection() || !is_scrolled_down)
+  {
     // The user has selected text or scrolled away from the bottom: maintain
     // position.
     this->setTextCursor(old_cursor);
     this->verticalScrollBar()->setValue(old_scrollbar_value);
   }
-  else {
+  else
+  {
     // The user hasn't selected any text and the scrollbar is at the bottom:
     // scroll to the bottom.
     this->moveCursor(QTextCursor::End);

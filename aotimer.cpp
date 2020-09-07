@@ -29,8 +29,10 @@ void AOTimer::update_time()
   // This one checks overflows, as the updated manual timer would appear to have
   // a past time compared to the manual timer a step ago (represented by
   // old_manual_timer)
-  if (manual_timer.get_timestep_length() > 0) {
-    if (manual_timer.get_time().operator<(old_manual_timer.get_time())) {
+  if (manual_timer.get_timestep_length() > 0)
+  {
+    if (manual_timer.get_time().operator<(old_manual_timer.get_time()))
+    {
       set_time(QTime(0, 0));
       firing_timer.stop();
       redraw();
@@ -40,8 +42,10 @@ void AOTimer::update_time()
   // This one checks underflows, as the updated manual timer would appear to
   // have a future time compared to the manual timer a step ago (represented by
   // old_manual_timer)
-  else if (manual_timer.get_timestep_length() < 0) {
-    if (manual_timer.get_time().operator>(old_manual_timer.get_time())) {
+  else if (manual_timer.get_timestep_length() < 0)
+  {
+    if (manual_timer.get_time().operator>(old_manual_timer.get_time()))
+    {
       set_time(QTime(0, 0));
       firing_timer.stop();
       redraw();

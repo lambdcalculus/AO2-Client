@@ -13,7 +13,8 @@
  * The class may destroy itself once the audio provided is done playing.
  */
 
-class AOBassHandle : public QObject {
+class AOBassHandle : public QObject
+{
   Q_OBJECT
 
 public:

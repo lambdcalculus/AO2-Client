@@ -7,7 +7,8 @@
 #include <QPushButton>
 #include <QString>
 
-class AOEvidenceButton : public QPushButton {
+class AOEvidenceButton : public QPushButton
+{
   Q_OBJECT
 
 public:

@@ -40,7 +40,8 @@ QString AOApplication::read_note(QString filename)
 {
   QFile note_txt(filename);
 
-  if (!note_txt.open(QIODevice::ReadOnly | QFile::Text)) {
+  if (!note_txt.open(QIODevice::ReadOnly | QFile::Text))
+  {
     qDebug() << "Couldn't open" << filename;
     return "";
   }
@@ -54,7 +55,8 @@ QString AOApplication::read_note(QString filename)
 void AOApplication::write_note(QString p_text, QString p_file)
 {
   QFile f_log(p_file);
-  if (f_log.open(QIODevice::WriteOnly | QFile::Text)) {
+  if (f_log.open(QIODevice::WriteOnly | QFile::Text))
+  {
     QTextStream out(&f_log);
 
     out << p_text;
@@ -67,7 +69,8 @@ void AOApplication::write_note(QString p_text, QString p_file)
 void AOApplication::append_note(QString p_line, QString p_file)
 {
   QFile f_log(p_file);
-  if (f_log.open(QIODevice::WriteOnly | QIODevice::Append)) {
+  if (f_log.open(QIODevice::WriteOnly | QIODevice::Append))
+  {
     QTextStream out(&f_log);
 
     out << p_line << "\r\n";
@@ -84,7 +87,8 @@ void AOApplication::write_to_serverlist_txt(QString p_line)
 
   serverlist_txt.setFileName(serverlist_txt_path);
 
-  if (!serverlist_txt.open(QIODevice::WriteOnly | QIODevice::Append)) {
+  if (!serverlist_txt.open(QIODevice::WriteOnly | QIODevice::Append))
+  {
     return;
   }
 
@@ -104,13 +108,15 @@ QVector<server_type> AOApplication::read_serverlist_txt()
 
   serverlist_txt.setFileName(serverlist_txt_path);
 
-  if (!serverlist_txt.open(QIODevice::ReadOnly)) {
+  if (!serverlist_txt.open(QIODevice::ReadOnly))
+  {
     return f_server_list;
   }
 
   QTextStream in(&serverlist_txt);
 
-  while (!in.atEnd()) {
+  while (!in.atEnd())
+  {
     QString line = in.readLine();
     server_type f_server;
     QStringList line_contents = line.split(":");
@@ -136,14 +142,16 @@ QString AOApplication::read_design_ini(QString p_identifier,
 
   design_ini.setFileName(p_design_path);
 
-  if (!design_ini.open(QIODevice::ReadOnly)) {
+  if (!design_ini.open(QIODevice::ReadOnly))
+  {
     return "";
   }
   QTextStream in(&design_ini);
 
   QString result = "";
 
-  while (!in.atEnd()) {
+  while (!in.atEnd())
+  {
     QString f_line = in.readLine().trimmed();
 
     if (!f_line.startsWith(p_identifier))
@@ -269,7 +277,8 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
   QStringList paths{get_theme_variant_path() + p_file,
                     get_theme_path() + p_file};
 
-  for (QString path : paths) {
+  for (QString path : paths)
+  {
     QFile design_ini;
     design_ini.setFileName(path);
     if (!design_ini.open(QIODevice::ReadOnly))
@@ -279,14 +288,17 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
     QString f_text;
     bool tag_found = false;
 
-    while (!in.atEnd()) {
+    while (!in.atEnd())
+    {
       QString line = in.readLine();
-      if (line.startsWith(target_tag, Qt::CaseInsensitive)) {
+      if (line.startsWith(target_tag, Qt::CaseInsensitive))
+      {
         tag_found = true;
         continue;
       }
 
-      if (tag_found) {
+      if (tag_found)
+      {
         if ((line.startsWith("[") && line.endsWith("]")))
           break;
         f_text.append(line);
@@ -308,7 +320,8 @@ QVector<QStringList> AOApplication::get_highlight_color()
   QStringList paths{get_theme_variant_path() + p_file,
                     get_theme_path() + p_file};
 
-  for (QString path : paths) {
+  for (QString path : paths)
+  {
     QVector<QStringList> f_vec;
 
     QFile design_ini;
@@ -319,15 +332,18 @@ QVector<QStringList> AOApplication::get_highlight_color()
     QTextStream in(&design_ini);
     bool tag_found = false;
 
-    while (!in.atEnd()) {
+    while (!in.atEnd())
+    {
       QString line = in.readLine();
 
-      if (line.startsWith("[HIGHLIGHTS]", Qt::CaseInsensitive)) {
+      if (line.startsWith("[HIGHLIGHTS]", Qt::CaseInsensitive))
+      {
         tag_found = true;
         continue;
       }
 
-      if (tag_found) {
+      if (tag_found)
+      {
         if ((line.startsWith("[") && line.endsWith("]")))
           break;
         // Syntax
@@ -361,7 +377,8 @@ QString AOApplication::get_spbutton(QString p_tag, int index)
   QStringList paths{get_theme_variant_path() + p_file,
                     get_theme_path() + p_file};
 
-  for (QString path : paths) {
+  for (QString path : paths)
+  {
     QString res = "";
 
     QFile design_ini;
@@ -372,15 +389,18 @@ QString AOApplication::get_spbutton(QString p_tag, int index)
     QTextStream in(&design_ini);
     bool tag_found = false;
 
-    while (!in.atEnd()) {
+    while (!in.atEnd())
+    {
       QString line = in.readLine();
 
-      if (line.startsWith(p_tag, Qt::CaseInsensitive)) {
+      if (line.startsWith(p_tag, Qt::CaseInsensitive))
+      {
         tag_found = true;
         continue;
       }
 
-      if (tag_found) {
+      if (tag_found)
+      {
         if ((line.startsWith("[") && line.endsWith("]")))
           break;
 
@@ -405,7 +425,8 @@ QStringList AOApplication::get_effect(int index)
   QStringList paths{get_theme_variant_path() + p_file,
                     get_theme_path() + p_file};
 
-  for (QString path : paths) {
+  for (QString path : paths)
+  {
     QStringList res;
 
     QFile design_ini;
@@ -416,15 +437,18 @@ QStringList AOApplication::get_effect(int index)
     QTextStream in(&design_ini);
     bool tag_found = false;
 
-    while (!in.atEnd()) {
+    while (!in.atEnd())
+    {
       QString line = in.readLine();
 
-      if (line.startsWith("[EFFECTS]", Qt::CaseInsensitive)) {
+      if (line.startsWith("[EFFECTS]", Qt::CaseInsensitive))
+      {
         tag_found = true;
         continue;
       }
 
-      if (tag_found) {
+      if (tag_found)
+      {
         if ((line.startsWith("[") && line.endsWith("]")))
           break;
 
@@ -458,19 +482,22 @@ QStringList AOApplication::get_sfx_list()
                                 "sounds.ini");
 
   if (!char_sfx_list_ini.open(QIODevice::ReadOnly) &&
-      !base_sfx_list_ini.open(QIODevice::ReadOnly)) {
+      !base_sfx_list_ini.open(QIODevice::ReadOnly))
+  {
     return return_value;
   }
 
   QTextStream in_a(&base_sfx_list_ini);
   QTextStream in_b(&char_sfx_list_ini);
 
-  while (!in_a.atEnd()) {
+  while (!in_a.atEnd())
+  {
     QString line = in_a.readLine();
     return_value.append(line);
   }
 
-  while (!in_b.atEnd()) {
+  while (!in_b.atEnd())
+  {
     QString line = in_b.readLine();
     return_value.append(line);
   }
@@ -479,8 +506,8 @@ QStringList AOApplication::get_sfx_list()
 }
 
 // returns whatever is to the right of "search_line =" within target_tag and
-// terminator_tag, trimmed returns the empty string if the search line couldnt be
-// found
+// terminator_tag, trimmed returns the empty string if the search line couldnt
+// be found
 QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
                                      QString target_tag, QString terminator_tag)
 {
@@ -497,13 +524,15 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
 
   bool tag_found = false;
 
-  while (!in.atEnd()) {
+  while (!in.atEnd())
+  {
     QString line = in.readLine();
 
     if (QString::compare(line, terminator_tag, Qt::CaseInsensitive) == 0)
       break;
 
-    if (line.startsWith(target_tag, Qt::CaseInsensitive)) {
+    if (line.startsWith(target_tag, Qt::CaseInsensitive))
+    {
       tag_found = true;
       continue;
     }
@@ -520,7 +549,8 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
     if (line_elements.size() < 2)
       continue;
 
-    if (tag_found) {
+    if (tag_found)
+    {
       char_ini.close();
       return line_elements.at(1).trimmed();
     }
@@ -556,13 +586,15 @@ QString AOApplication::read_showname(QString p_char)
 {
   QString f_filename = get_base_path() + "configs/shownames.ini";
   QFile f_file(f_filename);
-  if (!f_file.open(QIODevice::ReadOnly)) {
+  if (!f_file.open(QIODevice::ReadOnly))
+  {
     qDebug() << "Error reading" << f_filename;
     return "";
   }
 
   QTextStream in(&f_file);
-  while (!in.atEnd()) {
+  while (!in.atEnd())
+  {
     QString f_line = in.readLine();
     if (!f_line.startsWith(p_char))
       continue;
@@ -627,7 +659,8 @@ QString AOApplication::get_emote_comment(QString p_char, int p_emote)
 
   QStringList result_contents = f_result.split("#");
 
-  if (result_contents.size() < 4) {
+  if (result_contents.size() < 4)
+  {
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
@@ -642,7 +675,8 @@ QString AOApplication::get_pre_emote(QString p_char, int p_emote)
 
   QStringList result_contents = f_result.split("#");
 
-  if (result_contents.size() < 4) {
+  if (result_contents.size() < 4)
+  {
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "";
   }
@@ -657,7 +691,8 @@ QString AOApplication::get_emote(QString p_char, int p_emote)
 
   QStringList result_contents = f_result.split("#");
 
-  if (result_contents.size() < 4) {
+  if (result_contents.size() < 4)
+  {
     qDebug() << "W: misformatted char.ini: " << p_char << ", " << p_emote;
     return "normal";
   }
@@ -672,7 +707,8 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
 
   QStringList result_contents = f_result.split("#");
 
-  if (result_contents.size() < 4) {
+  if (result_contents.size() < 4)
+  {
     qDebug() << "W: misformatted char.ini: " << p_char << ", "
              << QString::number(p_emote);
     return 0;
@@ -768,7 +804,8 @@ QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
       get_default_theme_path() + p_file,
   };
 
-  for (QString path : paths) {
+  for (QString path : paths)
+  {
     QString f_result = read_design_ini(p_identifier, path);
     if (!f_result.isEmpty())
       return f_result;

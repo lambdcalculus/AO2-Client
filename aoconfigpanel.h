@@ -14,7 +14,8 @@
 #include "aoconfig.h"
 #include "aoguiloader.h"
 
-class AOConfigPanel : public QWidget {
+class AOConfigPanel : public QWidget
+{
   Q_OBJECT
 
   AOConfig *m_config = nullptr;

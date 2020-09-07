@@ -45,7 +45,8 @@ void Courtroom::on_add_button_clicked()
   f_notepicker->setLayout(f_layout);
   ui_note_area->m_layout->addWidget(f_notepicker);
 
-  if (contains_add_button) {
+  if (contains_add_button)
+  {
     ui_note_area->m_layout->removeWidget(ui_note_area->add_button);
     ui_note_area->m_layout->addWidget(ui_note_area->add_button);
     set_note_files();
@@ -65,7 +66,8 @@ void Courtroom::set_note_files()
   QString filename = ao_app->get_base_path() + "configs/filesabstract.ini";
   QFile config_file(filename);
 
-  if (!config_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+  if (!config_file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
     qDebug() << "Couldn't open" << filename;
     return;
   }
@@ -74,7 +76,8 @@ void Courtroom::set_note_files()
 
   QByteArray t = "";
 
-  for (int i = 0; i < ui_note_area->m_layout->count() - 1; ++i) {
+  for (int i = 0; i < ui_note_area->m_layout->count() - 1; ++i)
+  {
     AONotePicker *f_notepicker = static_cast<AONotePicker *>(
         ui_note_area->m_layout->itemAt(i)->widget());
     QString f_filestring = f_notepicker->real_file;
@@ -87,7 +90,8 @@ void Courtroom::set_note_files()
   config_file.close();
 
   QFile ex(filename);
-  if (!ex.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+  if (!ex.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+  {
     qDebug() << "Couldn't open" << filename;
     return;
   }

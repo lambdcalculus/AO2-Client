@@ -17,7 +17,8 @@ void AOMusicPlayer::play(QString p_file)
 
   m_file = f_file;
 
-  try { // create new song
+  try
+  { // create new song
     AOBassHandle *handle = new AOBassHandle(m_file, false, this);
     connect(this, &AOMusicPlayer::new_volume, handle,
             &AOBassHandle::set_volume);
@@ -31,7 +32,8 @@ void AOMusicPlayer::play(QString p_file)
     m_handle->set_volume(get_volume());
     m_handle->play();
   }
-  catch (const std::exception &e_exception) {
+  catch (const std::exception &e_exception)
+  {
     qDebug() << e_exception.what();
   }
 }

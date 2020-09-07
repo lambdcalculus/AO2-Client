@@ -13,14 +13,16 @@ void AOSfxPlayer::play(QString p_name)
 {
   QString f_file = ao_app->get_sounds_path() + p_name.toLower();
 
-  try {
+  try
+  {
     AOBassHandle *handle = new AOBassHandle(f_file, true, this);
     connect(this, &AOSfxPlayer::new_volume, handle, &AOBassHandle::set_volume);
     connect(this, &AOSfxPlayer::stopping, handle, &AOBassHandle::stop);
     handle->set_volume(get_volume());
     handle->play();
   }
-  catch (const std::exception &e_exception) {
+  catch (const std::exception &e_exception)
+  {
     qDebug() << e_exception.what();
   }
 }

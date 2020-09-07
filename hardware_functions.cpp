@@ -34,10 +34,12 @@ QString get_hdid()
 
   QTextStream in(&fstab_file);
 
-  while (!in.atEnd()) {
+  while (!in.atEnd())
+  {
     QString line = in.readLine();
 
-    if (line.startsWith("UUID")) {
+    if (line.startsWith("UUID"))
+    {
       QStringList line_elements = line.split("=");
 
       if (line_elements.size() > 1)

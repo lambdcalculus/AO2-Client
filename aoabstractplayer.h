@@ -7,7 +7,8 @@
 #include "aoapplication.h"
 #include "aobasshandle.h"
 
-class AOAbstractPlayer : public QObject {
+class AOAbstractPlayer : public QObject
+{
   Q_OBJECT
 
 public:

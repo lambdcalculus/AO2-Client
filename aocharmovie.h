@@ -9,7 +9,8 @@
 
 class AOApplication;
 
-class AOCharMovie : public QLabel {
+class AOCharMovie : public QLabel
+{
   Q_OBJECT
 
 public:

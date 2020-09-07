@@ -10,7 +10,8 @@
     but hey, when has ao2 ever cared?
     Wait, am I using the term wrong? Nice.
 */
-class AOConfigPrivate : public QObject {
+class AOConfigPrivate : public QObject
+{
   Q_OBJECT
 
   friend AOConfig;
@@ -224,7 +225,8 @@ private:
   void invoke_parents(QString p_method_name,
                       QGenericArgument p_arg1 = QGenericArgument(nullptr))
   {
-    for (QObject *i_parent : parents) {
+    for (QObject *i_parent : parents)
+    {
       QMetaObject::invokeMethod(i_parent, p_method_name.toStdString().c_str(),
                                 p_arg1);
     }
@@ -239,7 +241,8 @@ static AOConfigPrivate *d = nullptr;
 AOConfig::AOConfig(QObject *p_parent) : QObject(p_parent)
 {
   // init if not created yet
-  if (d == nullptr) {
+  if (d == nullptr)
+  {
     d = new AOConfigPrivate;
   }
 

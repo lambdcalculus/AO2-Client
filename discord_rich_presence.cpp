@@ -5,7 +5,8 @@
 
 #include <QDebug>
 
-namespace AttorneyOnline {
+namespace AttorneyOnline
+{
 
 Discord::Discord()
 {
@@ -53,8 +54,10 @@ void Discord::restart(const char *APPLICATION_ID)
 
 void Discord::toggle(int p_index)
 {
-  if (p_index >= 0 && p_index < 2) {
-    if (p_index != m_index) {
+  if (p_index >= 0 && p_index < 2)
+  {
+    if (p_index != m_index)
+    {
       restart(APPLICATION_ID[p_index]);
       m_index = p_index;
     }

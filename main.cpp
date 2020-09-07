@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
   AOApplication app(argc, argv);
 
   QPluginLoader apng("qapng");
-  if (!apng.load()) {
+  if (!apng.load())
+  {
 #ifdef QT_NO_DEBUG
     call_error("APNG plugin could not be loaded.");
 #endif

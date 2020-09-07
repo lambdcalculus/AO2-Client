@@ -22,7 +22,8 @@
 #include <QTime>
 #include <QTimer>
 
-class NetworkManager : public QObject {
+class NetworkManager : public QObject
+{
   Q_OBJECT
 
 public:

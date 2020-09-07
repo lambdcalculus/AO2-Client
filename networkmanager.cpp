@@ -64,10 +64,12 @@ void NetworkManager::disconnect_from_server()
 
 void NetworkManager::ship_ms_packet(QString p_packet)
 {
-  if (!ms_socket->isOpen()) {
+  if (!ms_socket->isOpen())
+  {
     retry_ms_connect();
   }
-  else {
+  else
+  {
     ms_socket->write(p_packet.toUtf8());
   }
 }
@@ -82,14 +84,17 @@ void NetworkManager::handle_ms_packet()
   QByteArray buffer = ms_socket->readAll();
   QString in_data = QString::fromUtf8(buffer, buffer.size());
 
-  if (!in_data.endsWith("%")) {
+  if (!in_data.endsWith("%"))
+  {
     ms_partial_packet = true;
     ms_temp_packet += in_data;
     return;
   }
 
-  else {
-    if (ms_partial_packet) {
+  else
+  {
+    if (ms_partial_packet)
+    {
       in_data = ms_temp_packet + in_data;
       ms_temp_packet = "";
       ms_partial_packet = false;
@@ -99,7 +104,8 @@ void NetworkManager::handle_ms_packet()
   QStringList packet_list =
       in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
 
-  for (QString packet : packet_list) {
+  for (QString packet : packet_list)
+  {
     AOPacket *f_packet = new AOPacket(packet);
 
     ao_app->ms_packet_received(f_packet);
@@ -120,27 +126,33 @@ void NetworkManager::on_srv_lookup()
 {
 #ifdef MS_FAILOVER_SUPPORTED
   bool connected = false;
-  if (ms_dns->error() != QDnsLookup::NoError) {
+  if (ms_dns->error() != QDnsLookup::NoError)
+  {
     qWarning("SRV lookup of the master server DNS failed.");
     ms_dns->deleteLater();
   }
-  else {
+  else
+  {
     const auto srv_records = ms_dns->serviceRecords();
 
-    for (const QDnsServiceRecord &record : srv_records) {
+    for (const QDnsServiceRecord &record : srv_records)
+    {
       qDebug() << "Connecting to " << record.target() << ":" << record.port();
       ms_socket->connectToHost(record.target(), record.port());
       QTime timer;
       timer.start();
-      do {
+      do
+      {
         ao_app->processEvents();
-        if (ms_socket->state() == QAbstractSocket::ConnectedState) {
+        if (ms_socket->state() == QAbstractSocket::ConnectedState)
+        {
           connected = true;
           break;
         }
         else if (ms_socket->state() != QAbstractSocket::ConnectingState &&
                  ms_socket->state() != QAbstractSocket::HostLookupState &&
-                 ms_socket->error() != -1) {
+                 ms_socket->error() != -1)
+        {
           qDebug() << ms_socket->error();
           qWarning() << "Error connecting to master server:"
                      << ms_socket->errorString();
@@ -151,7 +163,8 @@ void NetworkManager::on_srv_lookup()
       } while (timer.elapsed() <
                timeout_milliseconds); // Very expensive spin-wait loop - it will
                                       // bring CPU to 100%!
-      if (connected) {
+      if (connected)
+      {
         // Connect a one-shot signal in case the master server disconnects
         // randomly
         QObject::connect(
@@ -159,7 +172,8 @@ void NetworkManager::on_srv_lookup()
             SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
         break;
       }
-      else {
+      else
+      {
         ms_socket->abort();
         ms_socket->close();
       }
@@ -213,14 +227,17 @@ void NetworkManager::handle_server_packet()
   QByteArray buffer = server_socket->readAll();
   QString in_data = QString::fromUtf8(buffer, buffer.size());
 
-  if (!in_data.endsWith("%")) {
+  if (!in_data.endsWith("%"))
+  {
     partial_packet = true;
     temp_packet += in_data;
     return;
   }
 
-  else {
-    if (partial_packet) {
+  else
+  {
+    if (partial_packet)
+    {
       in_data = temp_packet + in_data;
       temp_packet = "";
       partial_packet = false;
@@ -230,7 +247,8 @@ void NetworkManager::handle_server_packet()
   QStringList packet_list =
       in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
 
-  for (QString packet : packet_list) {
+  for (QString packet : packet_list)
+  {
     AOPacket *f_packet = new AOPacket(packet);
 
     ao_app->server_packet_received(f_packet);

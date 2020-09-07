@@ -11,12 +11,14 @@ AOBassHandle::AOBassHandle(QString p_file, bool p_suicide,
 
 AOBassHandle::~AOBassHandle()
 {
-  if (m_handle && m_sync) {
+  if (m_handle && m_sync)
+  {
     BASS_ChannelRemoveSync(m_handle, m_sync);
   }
 
   // nothing will go wrong if the handle isn't initialized, I promise...!
-  if (m_handle) {
+  if (m_handle)
+  {
     BASS_StreamFree(m_handle);
   }
 }
@@ -50,7 +52,8 @@ void AOBassHandle::set_file(QString p_file, bool p_suicide) noexcept(false)
 
   m_sync = BASS_ChannelSetSync(m_handle, BASS_SYNC_END, 0,
                                &AOBassHandle::static_sync, this);
-  if (!m_sync) {
+  if (!m_sync)
+  {
     // free stream since we can't sync
     BASS_StreamFree(m_handle);
 
@@ -74,7 +77,8 @@ void AOBassHandle::stop() { BASS_ChannelStop(m_handle); }
 void CALLBACK AOBassHandle::static_sync(HSYNC handle, DWORD channel, DWORD data,
                                         void *user)
 {
-  if (auto self = static_cast<AOBassHandle *>(user)) {
+  if (auto self = static_cast<AOBassHandle *>(user))
+  {
     self->sync(data);
   }
 }

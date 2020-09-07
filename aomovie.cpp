@@ -48,12 +48,15 @@ void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
                       ao_app->get_theme_path() + "placeholder",
                       ao_app->get_default_theme_path() + "placeholder"};
 
-  for (auto &f_file : f_paths) {
+  for (auto &f_file : f_paths)
+  {
     bool found = false;
-    for (auto &ext : decltype(f_vec){".webp", ".apng", ".gif", ".png"}) {
+    for (auto &ext : decltype(f_vec){".webp", ".apng", ".gif", ".png"})
+    {
       QString fullPath = f_file + ext;
       found = file_exists(fullPath);
-      if (found) {
+      if (found)
+      {
         file_path = fullPath;
         break;
       }
@@ -79,7 +82,8 @@ void AOMovie::stop()
 
 void AOMovie::frame_change(int n_frame)
 {
-  if (n_frame == (m_movie->frameCount() - 1) && play_once) {
+  if (n_frame == (m_movie->frameCount() - 1) && play_once)
+  {
     // we need this or else the last frame wont show
     delay(m_movie->nextFrameDelay());
 

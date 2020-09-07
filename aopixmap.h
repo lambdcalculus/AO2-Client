@@ -3,7 +3,8 @@
 // qt
 #include <QPixmap>
 
-class AOPixmap {
+class AOPixmap
+{
 public:
   AOPixmap(QPixmap p_pixmap = QPixmap());
   AOPixmap(QString p_file_path);

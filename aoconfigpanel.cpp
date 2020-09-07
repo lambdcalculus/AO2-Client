@@ -169,7 +169,8 @@ void AOConfigPanel::refresh_theme_list()
 
   // themes
   for (QString i_folder :
-       QDir(QDir::currentPath() + "/base/themes").entryList(QDir::Dirs)) {
+       QDir(QDir::currentPath() + "/base/themes").entryList(QDir::Dirs))
+  {
     if (i_folder == "." || i_folder == "..")
       continue;
     w_theme->addItem(i_folder);
@@ -195,7 +196,8 @@ void AOConfigPanel::refresh_theme_variant_list()
   // themes
   for (QString i_folder : QDir(QDir::currentPath() + "/base/themes/" +
                                m_config->theme() + "/variants/")
-                              .entryList(QDir::Dirs)) {
+                              .entryList(QDir::Dirs))
+  {
     if (i_folder == "." || i_folder == "..")
       continue;
     w_theme_variant->addItem(i_folder, i_folder);

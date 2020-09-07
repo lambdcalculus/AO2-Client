@@ -55,7 +55,8 @@ void Courtroom::construct_evidence()
 
   max_evidence_on_page = evidence_columns * evidence_rows;
 
-  for (int n = 0; n < max_evidence_on_page; ++n) {
+  for (int n = 0; n < max_evidence_on_page; ++n)
+  {
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
@@ -75,7 +76,8 @@ void Courtroom::construct_evidence()
 
     ++x_mod_count;
 
-    if (x_mod_count == evidence_columns) {
+    if (x_mod_count == evidence_columns)
+    {
       ++y_mod_count;
       x_mod_count = 0;
     }
@@ -116,7 +118,8 @@ void Courtroom::set_evidence_page()
   ui_evidence_left->hide();
   ui_evidence_right->hide();
 
-  for (AOEvidenceButton *i_button : ui_evidence_list) {
+  for (AOEvidenceButton *i_button : ui_evidence_list)
+  {
     i_button->reset();
   }
 
@@ -126,7 +129,8 @@ void Courtroom::set_evidence_page()
   int total_pages = total_evidence / max_evidence_on_page;
   int evidence_on_page = 0;
 
-  if ((total_evidence % max_evidence_on_page) != 0) {
+  if ((total_evidence % max_evidence_on_page) != 0)
+  {
     ++total_pages;
     // i. e. not on the last page
     if (total_pages > current_evidence_page + 1)
@@ -144,7 +148,8 @@ void Courtroom::set_evidence_page()
     ui_evidence_left->show();
 
   for (int n_evidence_button = 0; n_evidence_button < evidence_on_page;
-       ++n_evidence_button) {
+       ++n_evidence_button)
+  {
     int n_real_evidence =
         n_evidence_button + current_evidence_page * max_evidence_on_page;
     AOEvidenceButton *f_evidence_button =
@@ -153,7 +158,8 @@ void Courtroom::set_evidence_page()
     // ie. the add evidence button
     if (n_real_evidence == (total_evidence - 1))
       f_evidence_button->set_theme_image("addevidence.png");
-    else if (n_real_evidence < (total_evidence - 1)) {
+    else if (n_real_evidence < (total_evidence - 1))
+    {
       f_evidence_button->set_image(
           local_evidence_list.at(n_real_evidence).image);
 
@@ -236,7 +242,8 @@ void Courtroom::on_evidence_clicked(int p_id)
 
   int f_real_id = p_id + max_evidence_on_page * current_evidence_page;
 
-  if (f_real_id == local_evidence_list.size()) {
+  if (f_real_id == local_evidence_list.size())
+  {
     ao_app->send_server_packet(
         new AOPacket("PE#<name>#<description>#empty.png#%"));
     return;
@@ -282,7 +289,8 @@ void Courtroom::on_evidence_hover(int p_id, bool p_state)
   ui_evidence_name->setReadOnly(true);
   int final_id = p_id + max_evidence_on_page * current_evidence_page;
 
-  if (p_state) {
+  if (p_state)
+  {
     if (final_id == local_evidence_list.size())
       ui_evidence_name->setText("Add new evidence...");
     else if (final_id < local_evidence_list.size())
