@@ -151,7 +151,7 @@ void Courtroom::create_widgets()
   ui_defense_bar = new AOImage(this, ao_app);
   ui_prosecution_bar = new  AOImage(this, ao_app);
 
-  load_shouts(); // Reads from theme, deletes old shouts if needed and creates new ones
+  load_shouts(); // Readds from theme, deletes old shouts if needed and creates new ones
 
   ui_shout_up = new AOButton(this, ao_app);
   ui_shout_up->setProperty("cycle_id", 1);
