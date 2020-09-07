@@ -1530,11 +1530,13 @@ void Courtroom::set_text_color()
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(218, 124, 128);
     break;
-    default:
+  default:
     qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
+    [[fallthrough]];
   case WHITE:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(213, 213, 213);
+    break;
   }
 }
 
