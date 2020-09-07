@@ -1,17 +1,16 @@
 #ifndef AOBLIPPLAYER_H
 #define AOBLIPPLAYER_H
 
-#include "bass.h"
 #include "aoapplication.h"
+#include "bass.h"
 
+#include <QDebug>
 #include <QWidget>
 #include <string.h>
-#include <QDebug>
 
 const int BLIP_COUNT = 5;
 
-class AOBlipPlayer
-{
+class AOBlipPlayer {
 public:
   AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app);
 

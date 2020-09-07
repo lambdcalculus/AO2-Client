@@ -5,9 +5,7 @@
 
 #include <QLabel>
 
-
-class AOLabel : public QLabel
-{
+class AOLabel : public QLabel {
 public:
   AOLabel(QWidget *parent, AOApplication *p_ao_app);
 

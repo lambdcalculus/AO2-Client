@@ -1,4 +1,4 @@
-//This class represents a static theme-dependent image
+// This class represents a static theme-dependent image
 
 #ifndef AOIMAGE_H
 #define AOIMAGE_H
@@ -8,8 +8,7 @@
 
 #include <QLabel>
 
-class AOImage : public QLabel
-{
+class AOImage : public QLabel {
 public:
   AOImage(QWidget *parent, AOApplication *p_ao_app);
 

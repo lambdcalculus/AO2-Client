@@ -7,8 +7,7 @@
 #include "aoapplication.h"
 #include "aobasshandle.h"
 
-class AOAbstractPlayer : public QObject
-{
+class AOAbstractPlayer : public QObject {
   Q_OBJECT
 
 public:
@@ -25,7 +24,7 @@ signals:
   void new_volume(int p_volume);
 
 protected:
-  AOApplication* ao_app = nullptr;
+  AOApplication *ao_app = nullptr;
 
 private:
   int m_volume = 0;

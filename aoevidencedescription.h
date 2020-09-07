@@ -3,8 +3,7 @@
 
 #include <QPlainTextEdit>
 
-class AOEvidenceDescription : public QPlainTextEdit
-{
+class AOEvidenceDescription : public QPlainTextEdit {
   Q_OBJECT
 public:
   AOEvidenceDescription(QWidget *parent);
@@ -17,7 +16,6 @@ signals:
 
 private slots:
   void on_enter_pressed();
-
 };
 
 #endif // AOEVIDENCEDESCRIPTION_H

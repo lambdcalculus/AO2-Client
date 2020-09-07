@@ -3,15 +3,14 @@
 
 #include "aoabstractplayer.h"
 
-class AOShoutPlayer : public AOAbstractPlayer
-{
-    Q_OBJECT
+class AOShoutPlayer : public AOAbstractPlayer {
+  Q_OBJECT
 
 public:
-    AOShoutPlayer(QObject *p_parent, AOApplication *p_ao_app);
+  AOShoutPlayer(QObject *p_parent, AOApplication *p_ao_app);
 
-    void play(QString p_name, QString p_char);
-    void stop();
+  void play(QString p_name, QString p_char);
+  void stop();
 };
 
 #endif // AOSHOUTPLAYER_HPP

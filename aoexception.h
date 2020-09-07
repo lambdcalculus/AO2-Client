@@ -5,17 +5,16 @@
 
 #include <QString>
 
-class AOException : public std::exception
-{
+class AOException : public std::exception {
 public:
-    AOException() = default;
-    AOException(QString p_msg);
-    virtual ~AOException() noexcept = default;
+  AOException() = default;
+  AOException(QString p_msg);
+  virtual ~AOException() noexcept = default;
 
-    virtual const char *what() const noexcept;
+  virtual const char *what() const noexcept;
 
 private:
-    QString m_msg;
+  QString m_msg;
 };
 
 #endif // AOEXCEPTION_HPP

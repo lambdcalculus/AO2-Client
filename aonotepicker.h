@@ -1,13 +1,12 @@
 #ifndef AONOTEPICKER_HPP
 #define AONOTEPICKER_HPP
 
+#include "aobutton.h"
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <QHBoxLayout>
-#include "aobutton.h"
 
-class AONotePicker : public QLabel
-{
+class AONotePicker : public QLabel {
   Q_OBJECT
 
 public:

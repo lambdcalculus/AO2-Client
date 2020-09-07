@@ -5,8 +5,7 @@
 
 #include "aoapplication.h"
 
-class AOEmoteButton : public QPushButton
-{
+class AOEmoteButton : public QPushButton {
   Q_OBJECT
 
 public:
@@ -14,8 +13,8 @@ public:
 
   void set_image(QString p_char, int p_emote, QString suffix);
 
-  void set_id(int p_id) {m_id = p_id;}
-  int get_id() {return m_id;}
+  void set_id(int p_id) { m_id = p_id; }
+  int get_id() { return m_id; }
 
 private:
   AOApplication *ao_app = nullptr;

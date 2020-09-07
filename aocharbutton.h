@@ -8,28 +8,27 @@
 #include <QString>
 #include <QWidget>
 
-class AOCharButton : public QPushButton
-{
-    Q_OBJECT
+class AOCharButton : public QPushButton {
+  Q_OBJECT
 
 public:
-    AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos);
-    AOApplication *ao_app = nullptr;
+  AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos);
+  AOApplication *ao_app = nullptr;
 
-    void reset();
-    void set_taken();
-    void set_image(QString p_character);
+  void reset();
+  void set_taken();
+  void set_image(QString p_character);
 
 signals:
-    void mouse_entered(AOCharButton *p_caller);
-    void mouse_left();
+  void mouse_entered(AOCharButton *p_caller);
+  void mouse_left();
 
 private:
-    AOImage *ui_taken      = nullptr;
+  AOImage *ui_taken = nullptr;
 
 protected:
-    void enterEvent(QEvent *e);
-    void leaveEvent(QEvent *e);
+  void enterEvent(QEvent *e);
+  void leaveEvent(QEvent *e);
 };
 
 #endif // AOCHARBUTTON_H
