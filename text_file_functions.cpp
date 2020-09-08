@@ -292,8 +292,7 @@ QString AOApplication::get_sfx(QString p_identifier)
 
 QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
 {
-  QStringList paths{get_theme_variant_path() + p_file,
-                    get_theme_path() + p_file};
+  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
 
   for (QString path : paths)
   {
@@ -335,8 +334,7 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
 QVector<QStringList> AOApplication::get_highlight_color()
 {
   QString p_file = "courtroom_config.ini";
-  QStringList paths{get_theme_variant_path() + p_file,
-                    get_theme_path() + p_file};
+  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
 
   for (QString path : paths)
   {
@@ -392,8 +390,7 @@ QVector<QStringList> AOApplication::get_highlight_color()
 QString AOApplication::get_spbutton(QString p_tag, int index)
 {
   QString p_file = "courtroom_config.ini";
-  QStringList paths{get_theme_variant_path() + p_file,
-                    get_theme_path() + p_file};
+  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
 
   for (QString path : paths)
   {
@@ -440,8 +437,7 @@ QString AOApplication::get_spbutton(QString p_tag, int index)
 QStringList AOApplication::get_effect(int index)
 {
   QString p_file = "courtroom_config.ini";
-  QStringList paths{get_theme_variant_path() + p_file,
-                    get_theme_path() + p_file};
+  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
 
   for (QString path : paths)
   {
@@ -496,8 +492,8 @@ QStringList AOApplication::get_sfx_list()
   QFile char_sfx_list_ini;
 
   base_sfx_list_ini.setFileName(get_base_path() + "configs/sounds.ini");
-  char_sfx_list_ini.setFileName(get_character_path(get_current_char()) +
-                                "sounds.ini");
+  char_sfx_list_ini.setFileName(
+      get_character_path(get_current_char(), "sounds.ini"));
 
   if (!char_sfx_list_ini.open(QIODevice::ReadOnly) &&
       !base_sfx_list_ini.open(QIODevice::ReadOnly))
@@ -529,7 +525,7 @@ QStringList AOApplication::get_sfx_list()
 QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
                                      QString target_tag, QString terminator_tag)
 {
-  QString char_ini_path = get_character_path(p_char) + "char.ini";
+  QString char_ini_path = get_character_path(p_char, "char.ini");
 
   QFile char_ini;
 
@@ -820,9 +816,9 @@ QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
   // Try to obtain a theme ini from either the current theme variant folder,
   // the current theme folder or the default theme folder
   QStringList paths{
-      get_theme_variant_path() + p_file,
-      get_theme_path() + p_file,
-      get_default_theme_path() + p_file,
+      get_theme_variant_path(p_file),
+      get_theme_path(p_file),
+      get_default_theme_path(p_file),
   };
 
   for (QString path : paths)
@@ -837,9 +833,9 @@ QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
 
 QString AOApplication::get_image_path(QString p_image)
 {
-  QString theme_variant_image_path = get_theme_variant_path() + p_image;
-  QString theme_image_path = get_theme_path() + p_image;
-  QString default_image_path = get_default_theme_path() + p_image;
+  QString theme_variant_image_path = get_theme_variant_path(p_image);
+  QString theme_image_path = get_theme_path(p_image);
+  QString default_image_path = get_default_theme_path(p_image);
 
   QString final_image_path;
 

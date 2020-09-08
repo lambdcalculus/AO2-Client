@@ -114,16 +114,47 @@ public:
   // implementation in path_functions.cpp
   QString get_base_path();
   QString get_data_path();
-  QString get_theme_path();
-  QString get_theme_variant_path();
-  QString get_default_theme_path();
-  QString get_character_path(QString p_character);
-  QString get_demothings_path();
-  QString get_sounds_path();
+  QString get_theme_path(QString p_file);
+  QString get_theme_variant_path(QString p_file);
+  QString get_default_theme_path(QString p_file);
+  QString get_character_path(QString p_character, QString p_file);
+  // QString get_demothings_path();
+  QString get_sounds_path(QString p_file);
   QString get_music_path(QString p_song);
-  QString get_background_path();
-  QString get_default_background_path();
-  QString get_evidence_path();
+  QString get_background_path(QString p_file);
+  QString get_default_background_path(QString p_file);
+  QString get_evidence_path(QString p_file);
+
+  /**
+   * @brief Searches for a file with any of the given extensions, and returns
+   * the first extension that actually matches to an existing file.
+   *
+   * @param p_file The path to the file, without extension.
+   * @param p_exts The potential extensions the file could have.
+   *
+   * @return The first extension with which a file exists, or an empty string,
+   * if not one does.
+   */
+  QString get_file_extension(QString p_file, QVector<QString> p_exts);
+
+  /**
+   * @brief Returns the 'correct' path for the file given as the parameter by
+   * trying to match the case of the actual path.
+   *
+   * @details This function is mostly used on case-sensitive file systems, like
+   * ext4, generally used on Linux. On FAT, there is no difference between
+   * "file" and "FILE". On ext4, those are two different files. This results in
+   * assets that are detected correctly on Windows not being detected on Linux.
+   *
+   * For this reason, the implementation of this function is system-dependent:
+   * on case-insensitive systems, it just returns the parameter itself.
+   *
+   * @param p_file The path whose casing must be checked against the actual
+   * directory structure.
+   *
+   * @return The parameter path with fixed casing.
+   */
+  QString get_case_sensitive_path(QString p_file);
 
   ////// Functions for accessing the config panel //////
 

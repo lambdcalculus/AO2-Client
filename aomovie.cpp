@@ -39,20 +39,21 @@ void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
 
   QString custom_path;
   if (p_file == "custom")
-    custom_path = ao_app->get_character_path(p_char) + p_file;
+    custom_path = ao_app->get_character_path(p_char, p_file);
   else
-    custom_path = ao_app->get_character_path(p_char) + p_file + "_bubble";
+    custom_path = ao_app->get_character_path(p_char, p_file + "_bubble");
 
-  QStringList f_paths{custom_path,
-                      ao_app->get_character_path(p_char) + "overlay/" + p_file,
-                      ao_app->get_base_path() + "themes/" + p_custom_theme +
-                          "/" + p_file,
-                      ao_app->get_theme_variant_path() + p_file,
-                      ao_app->get_theme_path() + p_file,
-                      ao_app->get_default_theme_path() + p_file,
-                      ao_app->get_theme_variant_path() + "placeholder",
-                      ao_app->get_theme_path() + "placeholder",
-                      ao_app->get_default_theme_path() + "placeholder"};
+  QStringList f_paths{
+      custom_path,
+      ao_app->get_character_path(p_char, "overlay/" + p_file),
+      ao_app->get_case_sensitive_path(ao_app->get_base_path() + "themes/" +
+                                      p_custom_theme + "/" + p_file),
+      ao_app->get_theme_variant_path(p_file),
+      ao_app->get_theme_path(p_file),
+      ao_app->get_default_theme_path(p_file),
+      ao_app->get_theme_variant_path("placeholder"),
+      ao_app->get_theme_path("placeholder"),
+      ao_app->get_default_theme_path("placeholder")};
 
   for (auto &f_file : f_paths)
   {

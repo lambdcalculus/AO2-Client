@@ -152,8 +152,7 @@ public:
   void set_ban(int p_cid);
 
   // implementations in path_functions.cpp
-  QString get_background_path();
-  QString get_default_background_path();
+  QString get_background_path(QString p_file);
 
   // cid = character id, returns the cid of the currently selected character
   int get_cid()

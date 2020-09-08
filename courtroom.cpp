@@ -184,7 +184,7 @@ void Courtroom::set_scene()
   QString f_desk_image = "stand";
   QString f_desk_mod = m_chatmessage[DESK_MOD];
   QString f_side = m_chatmessage[SIDE];
-  QString ini_path = ao_app->get_background_path() + "backgrounds.ini";
+  QString ini_path = ao_app->get_background_path("backgrounds.ini");
 
   if (file_exists(ini_path))
   {
@@ -228,15 +228,17 @@ void Courtroom::set_scene()
       f_desk_image = "stand";
     }
 
-    QString bg_path = get_background_path();
     QVector<QString> exts{".webp", ".apng", ".gif", ".png"};
 
     bool has_all_desks;
-    if (file_exists(bg_path + "defensedesk", exts) == "")
+    if (ao_app->get_file_extension(get_background_path("defensedesk"), exts) ==
+        "")
       has_all_desks = false;
-    else if (file_exists(bg_path + "prosecutiondesk", exts) == "")
+    else if (ao_app->get_file_extension(get_background_path("prosecutiondesk"),
+                                        exts) == "")
       has_all_desks = false;
-    else if (file_exists(bg_path + "stand", exts) == "")
+    else if (ao_app->get_file_extension(get_background_path("stand"), exts) ==
+             "")
       has_all_desks = false;
     else
       has_all_desks = true;
@@ -968,13 +970,13 @@ void Courtroom::handle_chatmessage_3()
   ui_vp_showname_image->show();
   QVector<QString> exts = {".png", ".jpg", ".bmp"};
 
-  QString ext =
-      file_exists(ao_app->get_character_path(f_char) + "showname", exts);
+  QString ext = ao_app->get_file_extension(
+      ao_app->get_character_path(f_char, "showname"), exts);
   if (ext != "" && !chatmessage_is_empty &&
       ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")
   {
     ui_vp_showname->hide();
-    QString path = ao_app->get_character_path(f_char) + "showname" + ext;
+    QString path = ao_app->get_character_path(f_char, "showname" + ext);
     ui_vp_showname_image->set_image_from_path(path);
     ui_vp_showname_image->show();
   }
@@ -1310,8 +1312,7 @@ void Courtroom::play_preanim()
 
   if (!m_msg_is_first_person)
   {
-    QString f_anim_path =
-        ao_app->get_character_path(f_char) + f_preanim.toLower();
+    QString f_anim_path = ao_app->get_character_path(f_char, f_preanim);
     if (ui_vp_player_char->play_pre(f_char, f_preanim, true))
     {
       if (text_delay >= 0)
@@ -1546,11 +1547,11 @@ void Courtroom::play_sfx()
     return;
 
   QVector<QString> extensions{"", ".ogg", ".wav", ".mp3"};
-  QString general_path = ao_app->get_base_path() + "/sounds/general/";
 
-  QString f_ext = file_exists(general_path + sfx_name, extensions);
+  QString f_file =
+      ao_app->get_file_extension(ao_app->get_sounds_path(sfx_name), extensions);
 
-  m_effects_player->play(sfx_name + f_ext);
+  m_effects_player->play(f_file);
 }
 
 void Courtroom::set_text_color()
