@@ -410,6 +410,7 @@ private:
 
   int current_clock = -1;
   int timer_number = 0;
+  int current_sfx_id = -1;
 
   QString current_background = "gs4";
 
