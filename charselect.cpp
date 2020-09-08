@@ -178,7 +178,7 @@ void Courtroom::char_clicked(int n_char)
   int n_real_char = n_char + current_char_page * max_chars_on_page;
 
   QString char_ini_path =
-      ao_app->get_character_path(char_list.at(n_real_char).name) + "char.ini";
+      ao_app->get_character_path(char_list.at(n_real_char).name, "char.ini");
   qDebug() << "char_ini_path" << char_ini_path;
 
   if (!file_exists(char_ini_path))

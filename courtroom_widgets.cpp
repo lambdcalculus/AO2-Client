@@ -492,9 +492,9 @@ void Courtroom::set_widget_names()
 void Courtroom::set_widget_layers()
 {
   QStringList paths{
-      ao_app->get_theme_variant_path() + "courtroom_layers.ini",
-      ao_app->get_theme_path() + "courtroom_layers.ini",
-      ao_app->get_default_theme_path() + "courtroom_layers.ini",
+      ao_app->get_theme_variant_path("courtroom_layers.ini"),
+      ao_app->get_theme_path("courtroom_layers.ini"),
+      ao_app->get_default_theme_path("courtroom_layers.ini"),
   };
 
   // needed to avoid cyclic parenting
@@ -1134,19 +1134,17 @@ int Courtroom::adapt_numbered_items(QVector<T *> &item_vector,
 
 void Courtroom::check_effects()
 {
-  QString char_path = ao_app->get_character_path(current_char);
-  QString theme_variant_path = ao_app->get_theme_variant_path();
-  QString theme_path = ao_app->get_theme_path();
   for (int i = 0; i < ui_effects.size(); ++i)
   {
-    QStringList paths{char_path + effect_names.at(i) + ".webp",
-                      char_path + effect_names.at(i) + ".gif",
-                      theme_variant_path + effect_names.at(i) + ".webp",
-                      theme_variant_path + effect_names.at(i) + ".gif",
-                      theme_variant_path + effect_names.at(i) + ".apng",
-                      theme_path + effect_names.at(i) + ".webp",
-                      theme_path + effect_names.at(i) + ".gif",
-                      theme_path + effect_names.at(i) + ".apng"};
+    QStringList paths{
+        ao_app->get_character_path(current_char, effect_names.at(i) + ".webp"),
+        ao_app->get_character_path(current_char, effect_names.at(i) + ".gif"),
+        ao_app->get_theme_variant_path(effect_names.at(i) + ".webp"),
+        ao_app->get_theme_variant_path(effect_names.at(i) + ".gif"),
+        ao_app->get_theme_variant_path(effect_names.at(i) + ".apng"),
+        ao_app->get_theme_path(effect_names.at(i) + ".webp"),
+        ao_app->get_theme_path(effect_names.at(i) + ".gif"),
+        ao_app->get_theme_path(effect_names.at(i) + ".apng")};
 
     // Assume the effect does not exist until a matching file is found
     effects_enabled[i] = false;
@@ -1163,19 +1161,19 @@ void Courtroom::check_effects()
 
 void Courtroom::check_free_blocks()
 {
-  QString char_path = ao_app->get_character_path(current_char);
-  QString theme_variant_path = ao_app->get_theme_variant_path();
-  QString theme_path = ao_app->get_theme_path();
   for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
-    QStringList paths{char_path + free_block_names.at(i) + ".webp",
-                      char_path + free_block_names.at(i) + ".gif",
-                      theme_variant_path + free_block_names.at(i) + ".webp",
-                      theme_variant_path + free_block_names.at(i) + ".gif",
-                      theme_variant_path + free_block_names.at(i) + ".apng",
-                      theme_path + free_block_names.at(i) + ".webp",
-                      theme_path + free_block_names.at(i) + ".gif",
-                      theme_path + free_block_names.at(i) + ".apng"};
+    QStringList paths{
+        ao_app->get_character_path(current_char,
+                                   free_block_names.at(i) + ".webp"),
+        ao_app->get_character_path(current_char,
+                                   free_block_names.at(i) + ".gif"),
+        ao_app->get_theme_variant_path(free_block_names.at(i) + ".webp"),
+        ao_app->get_theme_variant_path(free_block_names.at(i) + ".gif"),
+        ao_app->get_theme_variant_path(free_block_names.at(i) + ".apng"),
+        ao_app->get_theme_path(free_block_names.at(i) + ".webp"),
+        ao_app->get_theme_path(free_block_names.at(i) + ".gif"),
+        ao_app->get_theme_path(free_block_names.at(i) + ".apng")};
 
     // Assume the free block does not exist until a matching file is found
     free_blocks_enabled[i] = false;
@@ -1192,19 +1190,17 @@ void Courtroom::check_free_blocks()
 
 void Courtroom::check_shouts()
 {
-  QString char_path = ao_app->get_character_path(current_char);
-  QString theme_variant_path = ao_app->get_theme_variant_path();
-  QString theme_path = ao_app->get_theme_path();
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    QStringList paths{char_path + shout_names.at(i) + ".webp",
-                      char_path + shout_names.at(i) + ".gif",
-                      theme_variant_path + shout_names.at(i) + ".webp",
-                      theme_variant_path + shout_names.at(i) + ".gif",
-                      theme_variant_path + shout_names.at(i) + ".apng",
-                      theme_path + shout_names.at(i) + ".webp",
-                      theme_path + shout_names.at(i) + ".gif",
-                      theme_path + shout_names.at(i) + ".apng"};
+    QStringList paths{
+        ao_app->get_character_path(current_char, shout_names.at(i) + ".webp"),
+        ao_app->get_character_path(current_char, shout_names.at(i) + ".gif"),
+        ao_app->get_theme_variant_path(shout_names.at(i) + ".webp"),
+        ao_app->get_theme_variant_path(shout_names.at(i) + ".gif"),
+        ao_app->get_theme_variant_path(shout_names.at(i) + ".apng"),
+        ao_app->get_theme_path(shout_names.at(i) + ".webp"),
+        ao_app->get_theme_path(shout_names.at(i) + ".gif"),
+        ao_app->get_theme_path(shout_names.at(i) + ".apng")};
 
     // Assume the shout does not exist until a matching file is found
     shouts_enabled[i] = false;
@@ -1221,19 +1217,17 @@ void Courtroom::check_shouts()
 
 void Courtroom::check_wtce()
 {
-  QString char_path = ao_app->get_character_path(current_char);
-  QString theme_variant_path = ao_app->get_theme_variant_path();
-  QString theme_path = ao_app->get_theme_path();
   for (int i = 0; i < ui_wtce.size(); ++i)
   {
-    QStringList paths{char_path + wtce_names.at(i) + ".webp",
-                      char_path + wtce_names.at(i) + ".gif",
-                      theme_variant_path + wtce_names.at(i) + ".webp",
-                      theme_variant_path + wtce_names.at(i) + ".gif",
-                      theme_variant_path + wtce_names.at(i) + ".apng",
-                      theme_path + wtce_names.at(i) + ".webp",
-                      theme_path + wtce_names.at(i) + ".gif",
-                      theme_path + wtce_names.at(i) + ".apng"};
+    QStringList paths{
+        ao_app->get_character_path(current_char, wtce_names.at(i) + ".webp"),
+        ao_app->get_character_path(current_char, wtce_names.at(i) + ".gif"),
+        ao_app->get_theme_variant_path(wtce_names.at(i) + ".webp"),
+        ao_app->get_theme_variant_path(wtce_names.at(i) + ".gif"),
+        ao_app->get_theme_variant_path(wtce_names.at(i) + ".apng"),
+        ao_app->get_theme_path(wtce_names.at(i) + ".webp"),
+        ao_app->get_theme_path(wtce_names.at(i) + ".gif"),
+        ao_app->get_theme_path(wtce_names.at(i) + ".apng")};
 
     // Assume the judge button does not exist until a matching file is found
     wtce_enabled[i] = false;

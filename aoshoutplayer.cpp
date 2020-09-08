@@ -12,8 +12,8 @@ void AOShoutPlayer::play(QString p_name, QString p_char)
 {
   QString f_file;
 
-  QString char_path = ao_app->get_character_path(p_char) + p_name.toLower();
-  QString theme_path = ao_app->get_image_path(p_name.toLower());
+  QString char_path = ao_app->get_character_path(p_char, p_name);
+  QString theme_path = ao_app->get_image_path(p_name);
 
   qDebug() << char_path;
   qDebug() << theme_path;

@@ -28,12 +28,11 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
 {
   QString target_path;
   QStringList f_paths{
-      ao_app->get_character_path(p_char) + p_emote_prefix +
-          p_emote.toLower(),                                  // .gif
-      ao_app->get_character_path(p_char) + p_emote.toLower(), // .png
-      ao_app->get_theme_variant_path() + "placeholder",       // .gif
-      ao_app->get_theme_path() + "placeholder",               // .gif
-      ao_app->get_default_theme_path() + "placeholder"        // .gif
+      ao_app->get_character_path(p_char, p_emote_prefix + p_emote), // .gif
+      ao_app->get_character_path(p_char, p_emote),                  // .png
+      ao_app->get_theme_variant_path("placeholder"),                // .gif
+      ao_app->get_theme_path("placeholder"),                        // .gif
+      ao_app->get_default_theme_path("placeholder")                 // .gif
   };
 
   for (auto &f_file : f_paths)
@@ -77,12 +76,11 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
 
 bool AOCharMovie::play_pre(QString p_char, QString p_emote, bool show)
 {
-  QString f_file_path = ao_app->get_character_path(p_char) + p_emote.toLower();
+  QString f_file_path = ao_app->get_character_path(p_char, p_emote);
   bool f_file_exist = false;
 
   { // figure out what extension the animation is using
-    QString f_source_path =
-        ao_app->get_character_path(p_char) + p_emote.toLower();
+    QString f_source_path = ao_app->get_character_path(p_char, p_emote);
     for (QString &i_ext : QStringList{".webp", ".apng", ".gif", ".png"})
     {
       QString f_target_path = f_source_path + i_ext;
@@ -110,8 +108,7 @@ bool AOCharMovie::play_pre(QString p_char, QString p_emote, bool show)
 
 void AOCharMovie::play_talking(QString p_char, QString p_emote, bool p_visible)
 {
-  QString gif_path =
-      ao_app->get_character_path(p_char) + "(b)" + p_emote.toLower();
+  QString gif_path = ao_app->get_character_path(p_char, "(b)" + p_emote);
 
   m_reader->stop();
   this->clear();
@@ -122,8 +119,7 @@ void AOCharMovie::play_talking(QString p_char, QString p_emote, bool p_visible)
 
 void AOCharMovie::play_idle(QString p_char, QString p_emote, bool p_visible)
 {
-  QString gif_path =
-      ao_app->get_character_path(p_char) + "(a)" + p_emote.toLower();
+  QString gif_path = ao_app->get_character_path(p_char, "(a)" + p_emote);
 
   this->clear();
   m_reader->stop();

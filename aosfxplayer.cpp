@@ -11,7 +11,7 @@ AOSfxPlayer::AOSfxPlayer(QObject *p_parent, AOApplication *p_ao_app)
 
 void AOSfxPlayer::play(QString p_name)
 {
-  QString f_file = ao_app->get_sounds_path() + p_name.toLower();
+  QString f_file = ao_app->get_sounds_path(p_name);
 
   try
   {

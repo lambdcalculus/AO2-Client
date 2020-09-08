@@ -24,7 +24,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
 {
   this->reset();
 
-  QString f_evidence_path = ao_app->get_evidence_path() + p_evidence_image;
+  QString f_evidence_path = ao_app->get_evidence_path(p_evidence_image);
 
   AOPixmap f_pixmap(f_evidence_path);
 

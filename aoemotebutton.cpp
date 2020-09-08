@@ -18,13 +18,12 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app,
 void AOEmoteButton::set_image(QString p_char, int p_emote, QString suffix)
 {
   QString emotion_number = QString::number(p_emote + 1);
-  QString image_path = ao_app->get_character_path(p_char) +
-                       "emotions/ao2/button" + emotion_number + suffix;
-  QString alt_path = ao_app->get_character_path(p_char) + "emotions/button" +
-                     emotion_number + suffix;
-  QString hover_path = ao_app->get_character_path(p_char) +
-                       "emotions/hovers/button" + emotion_number + "_hover" +
-                       suffix;
+  QString image_path = ao_app->get_character_path(
+      p_char, "emotions/ao2/button" + emotion_number + suffix);
+  QString alt_path = ao_app->get_character_path(
+      p_char, "emotions/button" + emotion_number + suffix);
+  QString hover_path = ao_app->get_character_path(
+      p_char, "emotions/hovers/button" + emotion_number + "_hover" + suffix);
 
   if (file_exists(image_path))
   {
