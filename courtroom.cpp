@@ -827,7 +827,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     handle_chatmessage_2();
 }
 
-void Courtroom::objection_done() { handle_chatmessage_2(); }
+void Courtroom::objection_done()
+{
+  handle_chatmessage_2();
+}
 
 void Courtroom::handle_chatmessage_2() // handles IC
 {
@@ -1327,9 +1330,15 @@ void Courtroom::play_preanim()
   preanim_done();
 }
 
-void Courtroom::preanim_done() { handle_chatmessage_3(); }
+void Courtroom::preanim_done()
+{
+  handle_chatmessage_3();
+}
 
-void Courtroom::realization_done() { ui_vp_effect->stop(); }
+void Courtroom::realization_done()
+{
+  ui_vp_effect->stop();
+}
 
 void Courtroom::start_chat_ticking()
 {
@@ -1981,9 +1990,15 @@ void Courtroom::on_mute_list_clicked(QModelIndex p_index)
   */
 }
 
-void Courtroom::on_music_list_clicked() { ui_ic_chat_message->setFocus(); }
+void Courtroom::on_music_list_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
 
-void Courtroom::on_area_list_clicked() { ui_ic_chat_message->setFocus(); }
+void Courtroom::on_area_list_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
 
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 {
@@ -2331,11 +2346,20 @@ void Courtroom::on_switch_area_music_clicked()
   }
 }
 
-void Courtroom::on_pre_clicked() { ui_ic_chat_message->setFocus(); }
+void Courtroom::on_pre_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
 
-void Courtroom::on_flip_clicked() { ui_ic_chat_message->setFocus(); }
+void Courtroom::on_flip_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
 
-void Courtroom::on_hidden_clicked() { ui_ic_chat_message->setFocus(); }
+void Courtroom::on_hidden_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
 
 void Courtroom::on_evidence_button_clicked()
 {
@@ -2393,7 +2417,10 @@ void Courtroom::closeEvent(QCloseEvent *event)
   QMainWindow::closeEvent(event);
 }
 
-void Courtroom::on_sfx_list_clicked() { ui_ic_chat_message->setFocus(); }
+void Courtroom::on_sfx_list_clicked()
+{
+  ui_ic_chat_message->setFocus();
+}
 
 void Courtroom::on_set_notes_clicked()
 {

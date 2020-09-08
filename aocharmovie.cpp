@@ -132,7 +132,10 @@ void AOCharMovie::play_idle(QString p_char, QString p_emote, bool p_visible)
   play(p_char, p_emote, "(a)", p_visible);
 }
 
-void AOCharMovie::set_mirror_enabled(bool p_enable) { m_mirror = p_enable; }
+void AOCharMovie::set_mirror_enabled(bool p_enable)
+{
+  m_mirror = p_enable;
+}
 
 void AOCharMovie::stop()
 {
@@ -175,4 +178,7 @@ void AOCharMovie::on_frame_changed(int p_frame_num)
   }
 }
 
-void AOCharMovie::timer_done() { done(); }
+void AOCharMovie::timer_done()
+{
+  done();
+}

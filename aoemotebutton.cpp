@@ -51,4 +51,7 @@ void AOEmoteButton::set_image(QString p_char, int p_emote, QString suffix)
   }
 }
 
-void AOEmoteButton::on_clicked() { emote_clicked(m_id); }
+void AOEmoteButton::on_clicked()
+{
+  emote_clicked(m_id);
+}
