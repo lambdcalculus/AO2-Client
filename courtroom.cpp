@@ -462,9 +462,20 @@ void Courtroom::list_sfx()
       ui_sfx_list->item(ui_sfx_list->count() - 1)
           ->setStatusTip(QString::number(n_sfx + 2));
 
-      QString sfx_path = ao_app->get_sounds_path(i_sfx + ".wav");
+      bool found = false;
 
-      if (file_exists(sfx_path))
+      for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
+      {
+        QString r_sfx = i_sfx + ext;
+        QString sfx_path = ao_app->get_sounds_path(r_sfx);
+        if (file_exists(sfx_path))
+        {
+          found = true;
+          break;
+        }
+      }
+
+      if (found)
         ui_sfx_list->item(n_listed_sfxs)->setBackground(found_brush);
       else
         ui_sfx_list->item(n_listed_sfxs)->setBackground(missing_brush);
@@ -2426,10 +2437,20 @@ void Courtroom::on_sfx_list_clicked()
   {
     QListWidgetItem *old_sfx = ui_sfx_list->item(current_sfx_id);
 
-    QString sfx_path =
-        ao_app->get_sounds_path(sfx_names.at(current_sfx_id) + ".wav");
+    bool found = false;
 
-    if (file_exists(sfx_path))
+    for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
+    {
+      QString r_sfx = sfx_names.at(current_sfx_id) + ext;
+      QString sfx_path = ao_app->get_sounds_path(r_sfx);
+      if (file_exists(sfx_path))
+      {
+        found = true;
+        break;
+      }
+    }
+
+    if (found)
       old_sfx->setBackground(found_brush);
     else
       old_sfx->setBackground(missing_brush);
