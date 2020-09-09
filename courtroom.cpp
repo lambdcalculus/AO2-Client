@@ -366,8 +366,7 @@ void Courtroom::list_music()
     for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
     {
       QString r_song = i_song + ext;
-      QString song_path =
-          ao_app->get_base_path() + "sounds/music/" + r_song.toLower();
+      QString song_path = ao_app->get_music_path(r_song);
       if (file_exists(song_path))
       {
         found = true;
@@ -463,10 +462,20 @@ void Courtroom::list_sfx()
       ui_sfx_list->item(ui_sfx_list->count() - 1)
           ->setStatusTip(QString::number(n_sfx + 2));
 
-      QString sfx_path =
-          ao_app->get_base_path() + "sounds/general/" + i_sfx.toLower();
+      bool found = false;
 
-      if (file_exists(sfx_path))
+      for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
+      {
+        QString r_sfx = i_sfx + ext;
+        QString sfx_path = ao_app->get_sounds_path(r_sfx);
+        if (file_exists(sfx_path))
+        {
+          found = true;
+          break;
+        }
+      }
+
+      if (found)
         ui_sfx_list->item(n_listed_sfxs)->setBackground(found_brush);
       else
         ui_sfx_list->item(n_listed_sfxs)->setBackground(missing_brush);
@@ -625,6 +634,9 @@ void Courtroom::on_chat_return_pressed()
     qDebug() << ind;
     packet_contents.append(sfx_names.at(ind));
     //    packet_contents.append(sfx_names.at(row));
+
+    ui_sfx_list->clearSelection();
+    list_sfx();
   }
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
@@ -1551,7 +1563,7 @@ void Courtroom::play_sfx()
   QString f_file =
       ao_app->get_file_extension(ao_app->get_sounds_path(sfx_name), extensions);
 
-  m_effects_player->play(f_file);
+  m_effects_player->play(sfx_name + f_file);
 }
 
 void Courtroom::set_text_color()
@@ -1649,8 +1661,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
   {
     QString r_song = f_song + ext;
-    QString song_path =
-        ao_app->get_base_path() + "sounds/music/" + r_song.toLower();
+    QString song_path = ao_app->get_music_path(r_song);
     if (file_exists(song_path))
     {
       f_song = r_song;
@@ -2420,6 +2431,54 @@ void Courtroom::closeEvent(QCloseEvent *event)
 
 void Courtroom::on_sfx_list_clicked()
 {
+  QListWidgetItem *new_sfx = ui_sfx_list->currentItem();
+
+  QBrush found_brush(ao_app->get_color("found_song_color", design_ini));
+  QBrush missing_brush(ao_app->get_color("missing_song_color", design_ini));
+
+  if (-1 != current_sfx_id)
+  {
+    QListWidgetItem *old_sfx = ui_sfx_list->item(current_sfx_id);
+
+    bool found = false;
+
+    for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
+    {
+      QString r_sfx = sfx_names.at(current_sfx_id) + ext;
+      QString sfx_path = ao_app->get_sounds_path(r_sfx);
+      if (file_exists(sfx_path))
+      {
+        found = true;
+        break;
+      }
+    }
+
+    if (found)
+      old_sfx->setBackground(found_brush);
+    else
+      old_sfx->setBackground(missing_brush);
+  }
+
+  // Grab the colour of the selected row's brush.
+  QBrush selected_brush = new_sfx->background();
+  QColor selected_col = selected_brush.color();
+
+  // Calculate the amount of lightness it would take to light up the row. We
+  // also limit it to 1.0, as giving lightness values above 1.0 to QColor does
+  // nothing. +0.4 is just an arbitrarily chosen number.
+  double final_lightness = qMin(1.0, selected_col.lightnessF() + 0.4);
+
+  // This is just the reverse of the above, basically. We set the colour, and we
+  // set the brush to have that colour.
+  selected_col.setHslF(selected_col.hueF(), selected_col.saturationF(),
+                       final_lightness);
+  selected_brush.setColor(selected_col);
+
+  // Finally, we set the selected SFX's background to be the lightened-up brush.
+  new_sfx->setBackground(selected_brush);
+
+  current_sfx_id = ui_sfx_list->currentRow();
+
   ui_ic_chat_message->setFocus();
 }
 
