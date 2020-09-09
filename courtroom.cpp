@@ -634,6 +634,9 @@ void Courtroom::on_chat_return_pressed()
     qDebug() << ind;
     packet_contents.append(sfx_names.at(ind));
     //    packet_contents.append(sfx_names.at(row));
+
+    ui_sfx_list->clearSelection();
+    list_sfx();
   }
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
