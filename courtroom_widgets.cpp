@@ -273,8 +273,8 @@ void Courtroom::connect_widgets()
   connect(ui_pos_dropdown, SIGNAL(activated(int)), this,
           SLOT(on_pos_dropdown_changed(int)));
 
-  connect(ui_mute_list, SIGNAL(clicked(QModelIndex)), this,
-          SLOT(on_mute_list_clicked(QModelIndex)));
+  connect(ui_mute_list, SIGNAL(itemChanged(QListWidgetItem *)), this,
+          SLOT(on_mute_list_item_changed(QListWidgetItem *)));
 
   connect(ui_ic_chat_message, SIGNAL(returnPressed()), this,
           SLOT(on_chat_return_pressed()));
@@ -1590,9 +1590,10 @@ void Courtroom::set_mute_list()
 
   sorted_mute_list.sort();
 
-  for (QString i_name : sorted_mute_list)
+  for (QString i_chr_name : sorted_mute_list)
   {
-    // mute_map.insert(i_name, false);
-    ui_mute_list->addItem(i_name);
+    QListWidgetItem *i_item = new QListWidgetItem(i_chr_name, ui_mute_list);
+    i_item->setFlags(i_item->flags() | Qt::ItemFlag::ItemIsUserCheckable);
+    i_item->setCheckState(Qt::Unchecked);
   }
 }
