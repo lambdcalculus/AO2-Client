@@ -1948,58 +1948,30 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
   // ao_app->send_server_packet(new AOPacket("SP#" + f_pos + "#%"));
 }
 
-void Courtroom::on_mute_list_clicked(QModelIndex p_index)
+void Courtroom::on_mute_list_item_changed(QListWidgetItem *p_item)
 {
-  QListWidgetItem *f_item = ui_mute_list->item(p_index.row());
-  QString f_char = f_item->text();
-  QString real_char;
-
-  if (f_char.endsWith(" [x]"))
-    real_char = f_char.left(f_char.size() - 4);
-  else
-    real_char = f_char;
-
   int f_cid = -1;
 
   for (int n_char = 0; n_char < char_list.size(); n_char++)
   {
-    if (char_list.at(n_char).name == real_char)
+    if (char_list.at(n_char).name == p_item->text())
       f_cid = n_char;
   }
 
   if (f_cid < 0 || f_cid >= char_list.size())
   {
-    qDebug() << "W: " << real_char << " not present in char_list";
+    qDebug() << "W: " << p_item->text() << " not present in char_list";
     return;
   }
 
-  if (mute_map.value(f_cid))
-  {
-    mute_map.insert(f_cid, false);
-    f_item->setText(real_char);
-  }
-  else
+  if (Qt::CheckState::Checked == p_item->checkState())
   {
     mute_map.insert(f_cid, true);
-    f_item->setText(real_char + " [x]");
-  }
-
-  /*
-  if (f_char.endsWith(" [x]"))
-  {
-    real_char = f_char.left(f_char.size() - 4);
-    mute_map.remove(real_char);
-    mute_map.insert(real_char, false);
-    f_item->setText(real_char);
   }
   else
   {
-    real_char = f_char;
-    mute_map.remove(real_char);
-    mute_map.insert(real_char, true);
-    f_item->setText(real_char + " [x]");
+    mute_map.insert(f_cid, false);
   }
-  */
 }
 
 void Courtroom::on_music_list_clicked()

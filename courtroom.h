@@ -656,7 +656,7 @@ private slots:
 
   void chat_tick();
 
-  void on_mute_list_clicked(QModelIndex p_index);
+  void on_mute_list_item_changed(QListWidgetItem *p_item);
 
   void on_chat_return_pressed();
   void on_chat_config_changed();
