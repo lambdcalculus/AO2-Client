@@ -1590,11 +1590,10 @@ void Courtroom::set_mute_list()
 
   sorted_mute_list.sort();
 
-  for (int i = 0; i < sorted_mute_list.size(); ++i)
+  for (QString i_chr_name : sorted_mute_list)
   {
-    ui_mute_list->addItem(sorted_mute_list[i]);
-    ui_mute_list->item(i)->setFlags(ui_mute_list->item(i)->flags() |
-                                    Qt::ItemFlag::ItemIsUserCheckable);
-    ui_mute_list->item(i)->setCheckState(Qt::CheckState::Unchecked);
+    QListWidgetItem *i_item = new QListWidgetItem(i_chr_name, ui_mute_list);
+    i_item->setFlags(i_item->flags() | Qt::ItemFlag::ItemIsUserCheckable);
+    i_item->setCheckState(Qt::Unchecked);
   }
 }
