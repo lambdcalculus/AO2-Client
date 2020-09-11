@@ -69,6 +69,7 @@ private:
 
 private slots:
   void on_reload_theme_clicked();
+  void on_theme_variant_index_changed(QString p_text);
   void on_log_is_topdown_changed(bool p_enabled);
   void on_effects_value_changed(int p_num);
   void on_system_value_changed(int p_num);

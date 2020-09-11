@@ -99,8 +99,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(set_theme(QString)));
   connect(w_reload_theme, SIGNAL(clicked()), this,
           SLOT(on_reload_theme_clicked()));
-  connect(w_theme_variant, SIGNAL(currentIndexChanged(QString)), m_config,
-          SLOT(set_theme_variant(QString)));
+  connect(w_theme_variant, SIGNAL(currentIndexChanged(QString)), this,
+          SLOT(on_theme_variant_index_changed(QString)));
   connect(w_always_pre, SIGNAL(stateChanged(int)), m_config,
           SLOT(set_always_pre(int)));
   connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config,
@@ -194,7 +194,7 @@ void AOConfigPanel::refresh_theme_variant_list()
   w_theme_variant->clear();
 
   // add empty entry indicating no variant chosen
-  w_theme_variant->addItem("(default)");
+  w_theme_variant->addItem("<default>");
   // themes
   for (QString i_folder : QDir(QDir::currentPath() + "/base/themes/" +
                                m_config->theme() + "/variants/")
@@ -205,11 +205,6 @@ void AOConfigPanel::refresh_theme_variant_list()
     w_theme_variant->addItem(i_folder, i_folder);
   }
 
-  // if the current theme does not have a variant folder for the current folder,
-  // add the variant to the combobox anyway. Selecting it will not do anything
-  if (w_theme_variant->findText(m_config->theme_variant()) == -1)
-    w_theme_variant->addItem(m_config->theme_variant(),
-                             m_config->theme_variant());
   // restore previous selection
   w_theme_variant->setCurrentText(p_prev_text);
 
@@ -221,6 +216,12 @@ void AOConfigPanel::on_reload_theme_clicked()
 {
   qDebug() << "reload theme clicked";
   emit reload_theme();
+}
+
+void AOConfigPanel::on_theme_variant_index_changed(QString p_text)
+{
+  Q_UNUSED(p_text);
+  m_config->set_theme_variant(w_theme_variant->currentData().toString());
 }
 
 void AOConfigPanel::on_log_is_topdown_changed(bool p_enabled)

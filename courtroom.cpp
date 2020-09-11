@@ -85,7 +85,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   set_emote_page();
   set_emote_dropdown();
-  select_emote(current_emote);
+  ui_pre->setChecked(ui_pre || ao_config->always_pre_enabled());
 
   current_evidence_page = 0;
   current_evidence = 0;
