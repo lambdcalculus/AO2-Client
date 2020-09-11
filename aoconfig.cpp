@@ -29,7 +29,7 @@ class AOConfigPrivate : public QObject
   int chat_tick_interval;
   bool server_alerts;
   int log_max_lines;
-  bool log_goes_downward;
+  bool log_is_topdown;
   bool log_uses_newline;
   bool log_music;
   bool log_is_recording;
@@ -110,12 +110,12 @@ public slots:
     log_max_lines = p_number;
     invoke_parents("log_max_lines_changed", Q_ARG(int, p_number));
   }
-  void set_log_goes_downward(bool p_enabled)
+  void set_log_is_topdown(bool p_enabled)
   {
-    if (log_goes_downward == p_enabled)
+    if (log_is_topdown == p_enabled)
       return;
-    log_goes_downward = p_enabled;
-    invoke_parents("log_goes_downward_changed", Q_ARG(bool, p_enabled));
+    log_is_topdown = p_enabled;
+    invoke_parents("log_is_topdown_changed", Q_ARG(bool, p_enabled));
   }
   void set_log_uses_newline(bool p_enabled)
   {
@@ -190,7 +190,7 @@ public slots:
     chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
     server_alerts = cfg.value("server_alerts", true).toBool();
     log_max_lines = cfg.value("chatlog_limit", 200).toInt();
-    log_goes_downward = cfg.value("chatlog_scrolldown", true).toBool();
+    log_is_topdown = cfg.value("chatlog_scrolldown", true).toBool();
     log_uses_newline = cfg.value("chatlog_newline", false).toBool();
     log_music = cfg.value("music_change_log", true).toBool();
     log_is_recording = cfg.value("enable_logging", true).toBool();
@@ -211,7 +211,7 @@ public slots:
     cfg.setValue("chat_tick_interval", chat_tick_interval);
     cfg.setValue("server_alerts", server_alerts);
     cfg.setValue("chatlog_limit", log_max_lines);
-    cfg.setValue("chatlog_scrolldown", log_goes_downward);
+    cfg.setValue("chatlog_scrolldown", log_is_topdown);
     cfg.setValue("chatlog_newline", log_uses_newline);
     cfg.setValue("music_change_log", log_music);
     cfg.setValue("enable_logging", log_is_recording);
@@ -314,9 +314,9 @@ int AOConfig::log_max_lines()
   return d->log_max_lines;
 }
 
-bool AOConfig::log_goes_downward_enabled()
+bool AOConfig::log_is_topdown_enabled()
 {
-  return d->log_goes_downward;
+  return d->log_is_topdown;
 }
 
 bool AOConfig::log_uses_newline_enabled()
@@ -414,14 +414,14 @@ void AOConfig::set_log_max_lines(int p_number)
   d->set_log_max_lines(p_number);
 }
 
-void AOConfig::set_log_goes_downward(bool p_enabled)
+void AOConfig::set_log_is_topdown(bool p_enabled)
 {
-  d->set_log_goes_downward(p_enabled);
+  d->set_log_is_topdown(p_enabled);
 }
 
-void AOConfig::set_log_goes_downward(int p_state)
+void AOConfig::set_log_is_topdown(int p_state)
 {
-  set_log_goes_downward(p_state == Qt::Checked);
+  set_log_is_topdown(p_state == Qt::Checked);
 }
 
 void AOConfig::set_log_uses_newline(bool p_enabled)

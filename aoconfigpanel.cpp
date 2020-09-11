@@ -31,7 +31,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   // IC Chatlog
   w_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
   w_log_uses_newline = AO_GUI_WIDGET(QCheckBox, "log_newline");
-  w_log_goes_downward = AO_GUI_WIDGET(QCheckBox, "log_downward");
+  w_log_orientation_top_down = AO_GUI_WIDGET(QRadioButton, "log_orientation_top_down");
+  w_log_orientation_bottom_up = AO_GUI_WIDGET(QRadioButton, "log_orientation_bottom_up");
   w_log_music = AO_GUI_WIDGET(QCheckBox, "log_music");
   w_log_is_recording = AO_GUI_WIDGET(QCheckBox, "log_recording");
 
@@ -68,8 +69,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_max_lines_changed(int)), w_log_max_lines,
           SLOT(setValue(int)));
-  connect(m_config, SIGNAL(log_goes_downward_changed(bool)),
-          w_log_goes_downward, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_log_is_topdown_changed(bool)));
   connect(m_config, SIGNAL(log_uses_newline_changed(bool)), w_log_uses_newline,
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_music_changed(bool)), w_log_music,
@@ -109,8 +109,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(set_server_alerts(int)));
   connect(w_log_max_lines, SIGNAL(valueChanged(int)), m_config,
           SLOT(set_log_max_lines(int)));
-  connect(w_log_goes_downward, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_log_goes_downward(int)));
+  connect(w_log_orientation_top_down, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_topdown(bool)));
   connect(w_log_uses_newline, SIGNAL(stateChanged(int)), m_config,
           SLOT(set_log_uses_newline(int)));
   connect(w_log_music, SIGNAL(stateChanged(int)), m_config,
@@ -147,7 +146,10 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   w_chat_tick_interval->setValue(m_config->chat_tick_interval());
   w_server_alerts->setChecked(m_config->server_alerts_enabled());
   w_log_max_lines->setValue(m_config->log_max_lines());
-  w_log_goes_downward->setChecked(m_config->log_goes_downward_enabled());
+  if (m_config->log_is_topdown_enabled())
+    w_log_orientation_top_down->setChecked(true);
+  else
+    w_log_orientation_bottom_up->setChecked(true);
   w_log_uses_newline->setChecked(m_config->log_uses_newline_enabled());
   w_log_music->setChecked(m_config->log_music_enabled());
   w_log_is_recording->setChecked(m_config->log_is_recording_enabled());
@@ -192,7 +194,7 @@ void AOConfigPanel::refresh_theme_variant_list()
   w_theme_variant->clear();
 
   // add empty entry indicating no variant chosen
-  w_theme_variant->addItem("", "");
+  w_theme_variant->addItem("Default");
   // themes
   for (QString i_folder : QDir(QDir::currentPath() + "/base/themes/" +
                                m_config->theme() + "/variants/")
@@ -219,6 +221,12 @@ void AOConfigPanel::on_reload_theme_clicked()
 {
   qDebug() << "reload theme clicked";
   emit reload_theme();
+}
+
+void AOConfigPanel::on_log_is_topdown_changed(bool p_enabled)
+{
+  w_log_orientation_top_down->setChecked(p_enabled);
+  w_log_orientation_bottom_up->setChecked(!p_enabled);
 }
 
 void AOConfigPanel::on_effects_value_changed(int p_num)

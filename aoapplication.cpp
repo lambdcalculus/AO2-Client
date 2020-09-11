@@ -183,7 +183,7 @@ bool AOApplication::get_server_alerts_enabled()
 
 bool AOApplication::get_chatlog_scrolldown()
 {
-  return config->log_goes_downward_enabled();
+  return config->log_is_topdown_enabled();
 }
 
 int AOApplication::get_chatlog_max_lines()

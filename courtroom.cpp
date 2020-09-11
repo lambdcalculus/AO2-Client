@@ -85,6 +85,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   set_emote_page();
   set_emote_dropdown();
+  select_emote(current_emote);
 
   current_evidence_page = 0;
   current_evidence = 0;
@@ -1105,7 +1106,7 @@ void Courtroom::on_chat_config_changed()
     chatlog_changed = true;
   m_chatlog_limit = chatlog_limit;
 
-  bool chatlog_scrolldown = ao_config->log_goes_downward_enabled();
+  bool chatlog_scrolldown = ao_config->log_is_topdown_enabled();
   if (m_chatlog_scrolldown != chatlog_scrolldown)
     chatlog_changed = true;
   m_chatlog_scrolldown = chatlog_scrolldown;

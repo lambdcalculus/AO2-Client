@@ -9,6 +9,7 @@
 #include <QSlider>
 #include <QSpinBox>
 #include <QTabWidget>
+#include <QRadioButton>
 #include <QWidget>
 // src
 #include "aoconfig.h"
@@ -33,7 +34,8 @@ class AOConfigPanel : public QWidget
   // IC Chatlog
   QSpinBox *w_log_max_lines = nullptr;
   QCheckBox *w_log_uses_newline = nullptr;
-  QCheckBox *w_log_goes_downward = nullptr;
+  QRadioButton *w_log_orientation_top_down = nullptr;
+  QRadioButton *w_log_orientation_bottom_up = nullptr;
   QCheckBox *w_log_music = nullptr;
   QCheckBox *w_log_is_recording = nullptr;
 
@@ -67,6 +69,7 @@ private:
 
 private slots:
   void on_reload_theme_clicked();
+  void on_log_is_topdown_changed(bool p_enabled);
   void on_effects_value_changed(int p_num);
   void on_system_value_changed(int p_num);
   void on_music_value_changed(int p_num);

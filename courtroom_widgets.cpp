@@ -323,7 +323,7 @@ void Courtroom::connect_widgets()
 
   connect(ao_config, SIGNAL(log_max_lines_changed(int)), this,
           SLOT(on_chat_config_changed()));
-  connect(ao_config, SIGNAL(log_goes_downward_changed(bool)), this,
+  connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this,
           SLOT(on_chat_config_changed()));
   connect(ao_config, SIGNAL(log_uses_newline_changed(bool)), this,
           SLOT(on_chat_config_changed()));
