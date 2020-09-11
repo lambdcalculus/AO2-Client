@@ -353,7 +353,7 @@ void Courtroom::connect_widgets()
   connect(ui_hidden, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
   connect(ui_sfx_list, SIGNAL(clicked(QModelIndex)), this,
-          SLOT(on_sfx_list_clicked()));
+          SLOT(on_sfx_list_clicked(QModelIndex)));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this,
           SLOT(on_evidence_button_clicked()));

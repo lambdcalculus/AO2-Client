@@ -635,9 +635,6 @@ void Courtroom::on_chat_return_pressed()
     qDebug() << ind;
     packet_contents.append(sfx_names.at(ind));
     //    packet_contents.append(sfx_names.at(row));
-
-    ui_sfx_list->clearSelection();
-    list_sfx();
   }
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
@@ -716,6 +713,12 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(f_text_color);
 
   prev_emote = current_emote;
+
+  { // reset states
+    ui_pre->setChecked(ao_config->always_pre_enabled());
+    ui_sfx_list->clearSelection();
+    list_sfx();
+  }
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
@@ -2402,8 +2405,11 @@ void Courtroom::closeEvent(QCloseEvent *event)
   QMainWindow::closeEvent(event);
 }
 
-void Courtroom::on_sfx_list_clicked()
+void Courtroom::on_sfx_list_clicked(QModelIndex p_index)
 {
+  if (p_index.isValid())
+    ui_pre->setChecked(p_index.isValid());
+
   QListWidgetItem *new_sfx = ui_sfx_list->currentItem();
 
   QBrush found_brush(ao_app->get_color("found_song_color", design_ini));
