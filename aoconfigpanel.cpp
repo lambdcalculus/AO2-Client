@@ -194,7 +194,7 @@ void AOConfigPanel::refresh_theme_variant_list()
   w_theme_variant->clear();
 
   // add empty entry indicating no variant chosen
-  w_theme_variant->addItem("Default");
+  w_theme_variant->addItem("(default)");
   // themes
   for (QString i_folder : QDir(QDir::currentPath() + "/base/themes/" +
                                m_config->theme() + "/variants/")
