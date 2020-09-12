@@ -990,15 +990,35 @@ void Courtroom::handle_chatmessage_3()
   QString f_emote = m_chatmessage[EMOTE];
 
   ui_vp_showname_image->show();
-  QVector<QString> exts = {".png", ".jpg", ".bmp"};
 
-  QString ext = ao_app->get_file_extension(
-      ao_app->get_character_path(f_char, "showname"), exts);
-  if (ext != "" && !chatmessage_is_empty &&
+  // Check for any of 9 possible ways that showname images are
+  QVector<QString> exts = {".png", ".jpg", ".bmp"};
+  // 3 places (in order)
+  // 1. Character folder in variant folder in theme folder
+  // 2. Character folder in theme folder
+  // 3. Character folder
+  QStringList directories = {
+      ao_app->get_theme_variant_path("characters/" + f_char + "/showname"),
+      ao_app->get_theme_path("characters/" + f_char + "/showname"),
+      ao_app->get_character_path(f_char, "showname"),
+  };
+
+  qDebug() << directories;
+  QString ext, path;
+  for (QString directory : directories)
+  {
+    ext = ao_app->get_file_extension(directory, exts);
+    if (!ext.isEmpty())
+    {
+      path = directory + ext;
+      break;
+    }
+  }
+
+  if (!path.isEmpty() && !chatmessage_is_empty &&
       ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")
   {
     ui_vp_showname->hide();
-    QString path = ao_app->get_character_path(f_char, "showname" + ext);
     ui_vp_showname_image->set_image_from_path(path);
     ui_vp_showname_image->show();
   }
