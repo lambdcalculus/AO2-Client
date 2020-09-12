@@ -21,14 +21,6 @@ int main(int argc, char *argv[])
 #endif
   AOApplication app(argc, argv);
 
-  QPluginLoader apng("qapng");
-  if (!apng.load())
-  {
-#ifdef QT_NO_DEBUG
-    call_error("APNG plugin could not be loaded.");
-#endif
-  }
-
   app.construct_lobby();
 #ifdef QT_NO_DEBUG
   app.net_manager->connect_to_master();
