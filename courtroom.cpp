@@ -364,7 +364,7 @@ void Courtroom::list_music()
     QString i_song = music_list.at(n_song);
     bool found = false;
 
-    for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
+    for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
     {
       QString r_song = i_song + ext;
       QString song_path = ao_app->get_music_path(r_song);
@@ -465,7 +465,7 @@ void Courtroom::list_sfx()
 
       bool found = false;
 
-      for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
+      for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
       {
         QString r_sfx = i_sfx + ext;
         QString sfx_path = ao_app->get_sounds_path(r_sfx);
@@ -1562,7 +1562,7 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  QVector<QString> extensions{"", ".ogg", ".wav", ".mp3"};
+  QVector<QString> extensions{"", ".wav", ".ogg", ".opus", ".mp3"};
 
   QString f_file =
       ao_app->get_file_extension(ao_app->get_sounds_path(sfx_name), extensions);
@@ -1662,7 +1662,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   QString f_song = f_contents.at(0);
   int n_char = f_contents.at(1).toInt();
 
-  for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
+  for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
   {
     QString r_song = f_song + ext;
     QString song_path = ao_app->get_music_path(r_song);
@@ -2421,7 +2421,7 @@ void Courtroom::on_sfx_list_clicked(QModelIndex p_index)
 
     bool found = false;
 
-    for (auto &ext : QStringList{"", ".wav", ".ogg", ".mp3"})
+    for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
     {
       QString r_sfx = sfx_names.at(current_sfx_id) + ext;
       QString sfx_path = ao_app->get_sounds_path(r_sfx);
