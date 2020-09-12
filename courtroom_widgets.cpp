@@ -323,7 +323,7 @@ void Courtroom::connect_widgets()
 
   connect(ao_config, SIGNAL(log_max_lines_changed(int)), this,
           SLOT(on_chat_config_changed()));
-  connect(ao_config, SIGNAL(log_goes_downward_changed(bool)), this,
+  connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this,
           SLOT(on_chat_config_changed()));
   connect(ao_config, SIGNAL(log_uses_newline_changed(bool)), this,
           SLOT(on_chat_config_changed()));
@@ -353,7 +353,7 @@ void Courtroom::connect_widgets()
   connect(ui_hidden, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
   connect(ui_sfx_list, SIGNAL(clicked(QModelIndex)), this,
-          SLOT(on_sfx_list_clicked()));
+          SLOT(on_sfx_list_clicked(QModelIndex)));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this,
           SLOT(on_evidence_button_clicked()));

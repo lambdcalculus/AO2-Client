@@ -755,7 +755,7 @@ private slots:
   void on_flip_clicked();
   void on_hidden_clicked();
 
-  void on_sfx_list_clicked();
+  void on_sfx_list_clicked(QModelIndex p_index);
 
   void on_evidence_button_clicked();
 
