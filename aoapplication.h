@@ -353,9 +353,9 @@ signals:
   void reload_theme();
 
 private:
-  const int RELEASE = 2;
-  const int MAJOR_VERSION = 4;
-  const int MINOR_VERSION = 8;
+  const int RELEASE = 1;
+  const int MAJOR_VERSION = 0;
+  const int MINOR_VERSION = 0;
 
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;

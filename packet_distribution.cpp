@@ -72,7 +72,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
   }
   else if (header == "AO2CHECK")
   {
-    send_ms_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
+    send_ms_packet(new AOPacket("ID#DRO#" + get_version_string() + "#%"));
     send_ms_packet(new AOPacket("HI#" + get_hdid() + "#%"));
 
     if (f_contents.size() < 1)
@@ -165,7 +165,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     s_pv = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
-    send_server_packet(new AOPacket("ID#AO2#" + get_version_string() + "#%"));
+    send_server_packet(new AOPacket("ID#DRO#" + get_version_string() + "#%"));
   }
   else if (header == "CT")
   {
