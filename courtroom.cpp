@@ -790,7 +790,10 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   qDebug() << m_chatmessage[SHOWNAME]
            << ao_app->get_showname(char_list.at(f_char_id).name);
 
-  if (m_chatmessage[SHOWNAME].isEmpty())
+  // We actually DO wanna fail here if the showname is empty but the system is
+  // speaking.
+  // Having an empty showname for system is actually what we expect.
+  if (m_chatmessage[SHOWNAME].isEmpty() && !is_system_speaking)
   {
     f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
@@ -817,7 +820,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   ui_vp_effect->stop();
 
   if (is_system_speaking)
-    append_system_text(m_chatmessage[MESSAGE]);
+    append_system_text(f_showname, m_chatmessage[MESSAGE]);
   else
     append_ic_text(f_showname, m_chatmessage[MESSAGE], false, false);
 
@@ -1330,11 +1333,11 @@ void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system,
   update_ic_log(false);
 }
 
-void Courtroom::append_system_text(QString p_line)
+void Courtroom::append_system_text(QString p_showname, QString p_line)
 {
   if (chatmessage_is_empty)
     return;
-  append_ic_text("", p_line, true, false);
+  append_ic_text(p_showname, p_line, true, false);
 }
 
 void Courtroom::play_preanim()
