@@ -984,13 +984,12 @@ void Courtroom::handle_chatmessage_3()
   // Check for any of 9 possible ways that showname images are
   QVector<QString> exts = {".png", ".jpg", ".bmp"};
   // 3 places (in order)
-  // 1. Variant folder in character folder in theme folder
-  // 2. Character folder in folder folder
+  // 1. Character folder in variant folder in theme folder
+  // 2. Character folder in theme folder
   // 3. Character folder
   QStringList directories = {
-      ao_app->get_theme_variant_path("characters/" + f_char.toLower() +
-                                     "/showname"),
-      ao_app->get_theme_path("characters/" + f_char.toLower() + "/showname"),
+      ao_app->get_theme_variant_path("characters/" + f_char + "/showname"),
+      ao_app->get_theme_path("characters/" + f_char + "/showname"),
       ao_app->get_character_path(f_char, "showname"),
   };
 
