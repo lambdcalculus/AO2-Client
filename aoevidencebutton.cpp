@@ -79,20 +79,6 @@ void AOEvidenceButton::mouseDoubleClickEvent(QMouseEvent *e)
   evidence_double_clicked(m_id);
 }
 
-void AOEvidenceButton::dragLeaveEvent(QMouseEvent *e)
-{
-  // QWidget::dragLeaveEvent(e);
-
-  qDebug() << "drag leave event";
-}
-
-void AOEvidenceButton::dragEnterEvent(QMouseEvent *e)
-{
-  // QWidget::dragEnterEvent(e);
-
-  qDebug() << "drag enter event";
-}
-
 void AOEvidenceButton::enterEvent(QEvent *e)
 {
   ui_selector->show();
