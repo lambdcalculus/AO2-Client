@@ -204,7 +204,14 @@ public:
   void update_ic_log(bool p_reset_log);
   void append_ic_text(QString p_name, QString p_line, bool p_system,
                       bool p_music);
-  void append_system_text(QString p_line);
+
+  /**
+   * @brief Appends a message arriving from system to the IC chatlog.
+   *
+   * @param p_showname The showname used by the system. Can be an empty string.
+   * @param p_line The message that the system is sending.
+   */
+  void append_system_text(QString p_showname, QString p_line);
 
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
