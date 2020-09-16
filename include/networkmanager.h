@@ -1,13 +1,6 @@
 #ifndef NETWORKMANAGER_H
 #define NETWORKMANAGER_H
 
-// Qt for Android has stubbed QDnsLookup. This is not documented in any part of
-// their wiki. This prevents SRV lookup/failover behavior from functioning.
-// https://bugreports.qt.io/browse/QTBUG-56143
-#ifndef ANDROID
-#define MS_FAILOVER_SUPPORTED
-#endif
-
 //#define LOCAL_MS
 
 #ifdef LOCAL_MS
