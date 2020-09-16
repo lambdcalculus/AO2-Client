@@ -1,7 +1,8 @@
 #ifndef DISCORD_RICH_PRESENCE_H
 #define DISCORD_RICH_PRESENCE_H
-
+// 3rd
 #include <discord-rpc.h>
+// std
 #include <string>
 
 namespace AttorneyOnline

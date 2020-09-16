@@ -4,8 +4,6 @@
 *.dll
 *.so
 base_override.h
-
-base-full/
-bass.lib
-discord-rpc.lib
 send-presence.exe
+3rd/
+base-full/
