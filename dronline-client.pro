@@ -111,7 +111,7 @@ SOURCES += \
 # 2. You need to compile the Discord Rich Presence SDK separately and add the lib/headers
 #    in the same way as BASS. Discord RPC uses CMake, which does not play nicely with
 #    QMake, so this step must be manual.
-unix:LIBS += -L$$PWD -lbass -ldiscord-rpc
+unix:LIBS += -L$$PWD/3rd -lbass -ldiscord-rpc
 win32:LIBS += -L$$PWD/3rd -lbass -ldiscord-rpc #"$$PWD/discord-rpc.dll"
 android:LIBS += -L$$PWD\android\libs\armeabi-v7a\ -lbass
 
