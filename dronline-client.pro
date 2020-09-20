@@ -8,7 +8,7 @@ TARGET = dro-client
 
 RC_ICONS = icon.ico
 
-INCLUDEPATH += $$PWD/include $$PWD/3rd/include
+INCLUDEPATH += $$PWD/include $$PWD/3rd $$PWD/3rd/include
 DEPENDPATH += $$PWD/include
 
 HEADERS += \
