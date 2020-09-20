@@ -21,7 +21,8 @@
 #include <QTextCharFormat>
 #include <QTime>
 
-Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app)
+    : QMainWindow()
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -830,7 +831,6 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   QString f_char = m_chatmessage[CHAR_NAME];
-  QString f_custom_theme = ao_app->get_char_shouts(f_char);
 
   // if an objection is used
   if (objection_mod > 0)
@@ -843,8 +843,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     if (objection_mod >= 1 && objection_mod <= ui_shouts.size() &&
         ui_shouts.size() > 0) // check to prevent crashing
     {
-      ui_vp_objection->play(shout_names.at(objection_mod - 1), f_char,
-                            f_custom_theme);
+      ui_vp_objection->play_interjection(f_char, shout_names.at(objection_mod - 1));
       m_shouts_player->play(shout_names.at(objection_mod - 1) + ".wav", f_char);
     }
     else
