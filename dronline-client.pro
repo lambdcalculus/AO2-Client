@@ -1,6 +1,6 @@
-QT += core gui widgets uitools multimedia network
+QT += core gui widgets uitools network
 
-CONFIG += c++11
+CONFIG += c++17
 
 TEMPLATE = app
 VERSION = 1.0.0.0
@@ -111,7 +111,7 @@ SOURCES += \
 # 2. You need to compile the Discord Rich Presence SDK separately and add the lib/headers
 #    in the same way as BASS. Discord RPC uses CMake, which does not play nicely with
 #    QMake, so this step must be manual.
-LIBS += -L$$PWD/3rd/$${QMAKE_HOST.arch} -lbass -ldiscord-rpc
+LIBS += -L$$PWD/3rd/$${QT_ARCH} -lbass -ldiscord-rpc
 
 RESOURCES += \
   res.qrc
