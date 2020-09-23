@@ -649,13 +649,6 @@ QString AOApplication::get_chat(QString p_char)
   return f_result.toLower();
 }
 
-QString AOApplication::get_char_shouts(QString p_char)
-{
-  QString f_result = read_char_ini(p_char, "shouts", "[Options]", "[Time]");
-
-  return f_result.toLower();
-}
-
 int AOApplication::get_emote_number(QString p_char)
 {
   QString f_result = read_char_ini(p_char, "number", "[Emotions]", "[Offsets]");

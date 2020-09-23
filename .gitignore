@@ -1,9 +1,9 @@
+3rd/
+base/
+.qmake.conf
+.gitignore
 *~
 *.db
 *.user
 *.dll
 *.so
-base_override.h
-send-presence.exe
-3rd/
-base-full/

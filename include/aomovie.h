@@ -16,7 +16,12 @@ public:
   ~AOMovie();
 
   void set_play_once(bool p_play_once);
-  void play(QString p_file, QString p_char = "", QString p_custom_theme = "");
+  void play(QString p_file, QString p_char = "");
+
+  ///
+  /// \brief Searches and play the first interjection file it can find based on the provided character name and interjection name.
+  ///
+  void play_interjection(QString p_char_name, QString p_interjection_name);
   void combo_resize(int w, int h);
   void stop();
 

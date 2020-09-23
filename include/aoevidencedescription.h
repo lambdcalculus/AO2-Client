@@ -6,6 +6,7 @@
 class AOEvidenceDescription : public QPlainTextEdit
 {
   Q_OBJECT
+
 public:
   AOEvidenceDescription(QWidget *parent);
 

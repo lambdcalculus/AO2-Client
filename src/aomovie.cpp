@@ -4,7 +4,8 @@
 #include "file_functions.h"
 #include "misc_functions.h"
 
-AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
+AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app)
+    : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
@@ -25,7 +26,7 @@ void AOMovie::set_play_once(bool p_play_once)
   play_once = p_play_once;
 }
 
-void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
+void AOMovie::play(QString p_file, QString p_char)
 {
   m_movie->stop();
   QVector<QString> f_vec;
@@ -46,14 +47,13 @@ void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
   QStringList f_paths{
       custom_path,
       ao_app->get_character_path(p_char, "overlay/" + p_file),
-      ao_app->get_case_sensitive_path(ao_app->get_base_path() + "themes/" +
-                                      p_custom_theme + "/" + p_file),
       ao_app->get_theme_variant_path(p_file),
       ao_app->get_theme_path(p_file),
       ao_app->get_default_theme_path(p_file),
       ao_app->get_theme_variant_path("placeholder"),
       ao_app->get_theme_path("placeholder"),
-      ao_app->get_default_theme_path("placeholder")};
+      ao_app->get_default_theme_path("placeholder"),
+  };
 
   for (auto &f_file : f_paths)
   {
@@ -74,8 +74,74 @@ void AOMovie::play(QString p_file, QString p_char, QString p_custom_theme)
   }
 
   qDebug() << file_path;
+  qDebug() << "playing" << file_path;
   m_movie->setFileName(file_path);
 
+  this->show();
+  m_movie->setScaledSize(this->size());
+  m_movie->start();
+}
+
+void AOMovie::play_interjection(QString p_char_name,
+                                QString p_interjection_name)
+{
+  m_movie->stop();
+
+  QString chr_interjection;
+  {
+    QString interjection_suffix = "_bubble";
+
+    // FIXME there is no reason custom shouldn't have a suffix
+    if (p_interjection_name.toLower() == "custom")
+    {
+      interjection_suffix.clear();
+    }
+
+    chr_interjection = ao_app->get_character_path(
+        p_char_name, p_interjection_name + interjection_suffix);
+  }
+
+  QStringList possible_paths{
+      chr_interjection,
+      ao_app->get_theme_variant_path(p_interjection_name),
+      ao_app->get_theme_path(p_interjection_name),
+      ao_app->get_default_theme_path(p_interjection_name),
+  };
+
+  QString interjection_filepath;
+  for (QString &i_path : possible_paths)
+  {
+    bool skip = false;
+
+    for (QString &i_ext : QStringList{".webp", ".apng", ".gif"})
+    {
+      QString fullpath = ao_app->get_case_sensitive_path(i_path + i_ext);
+      if (file_exists(fullpath))
+      {
+        skip = true;
+        interjection_filepath = fullpath;
+        break;
+      }
+    }
+
+    if (skip)
+    {
+      break;
+    }
+  }
+
+  if (interjection_filepath.isEmpty())
+  {
+    emit done();
+    return;
+  }
+
+  qDebug() << "playing interjection"
+           << (p_interjection_name.isEmpty() ? "(none)" : p_interjection_name)
+           << "for character"
+           << (p_char_name.isEmpty() ? "(none)" : p_char_name) << "at"
+           << (interjection_filepath.isEmpty() ? "(not found)" : interjection_filepath);
+  m_movie->setFileName(interjection_filepath);
   this->show();
   m_movie->setScaledSize(this->size());
   m_movie->start();
