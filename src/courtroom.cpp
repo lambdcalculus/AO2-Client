@@ -560,15 +560,14 @@ void Courtroom::save_textlog(QString p_text)
 {
   QString f_file = ao_app->get_base_path() + icchatlogsfilename;
 
-  ao_app->append_note(p_text, f_file);
+  ao_app->append_note("[" + QTime::currentTime().toString() + "]" + p_text, f_file);
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
 {
   ui_server_chatlog->append_chatmessage(p_name, p_message);
   if (ao_config->log_is_recording_enabled())
-    save_textlog("(OOC)[" + QTime::currentTime().toString() + "] " + p_name +
-                 ": " + p_message);
+    save_textlog("(OOC)" + p_name + ": " + p_message);
 }
 
 void Courtroom::on_chat_return_pressed()
@@ -826,8 +825,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     append_ic_text(f_showname, m_chatmessage[MESSAGE], false, false);
 
   if (ao_config->log_is_recording_enabled())
-    save_textlog("[" + QTime::currentTime().toString() + "] " + f_showname +
-                 ": " + m_chatmessage[MESSAGE]);
+    save_textlog(f_showname + ": " + m_chatmessage[MESSAGE]);
 
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   QString f_char = m_chatmessage[CHAR_NAME];
@@ -1738,6 +1736,8 @@ void Courtroom::handle_song(QStringList *p_contents)
       if (ao_app->get_music_change_log_enabled())
       {
         append_ic_text(str_char, "has played a song: " + f_song, false, true);
+        if (ao_config->log_is_recording_enabled())
+          save_textlog(str_char + " has played a song: " + f_song);
       }
       m_music_player->play(f_song);
     }
