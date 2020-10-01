@@ -994,33 +994,17 @@ void Courtroom::handle_chatmessage_3()
 
   ui_vp_showname_image->show();
 
-  // Check for any of 9 possible ways that showname images are
+  // Asset lookup order
+  // 1. In the theme folder (variant/main/default), in the character folder,
+  // look for "showname" + extensions in `exts` in order
+  // 2. In the character folder, look for
+  // "showname" + extensions in `exts` in order
+
   QVector<QString> exts = {".png", ".jpg", ".bmp"};
-  // 2 places (in order)
-  // 1. Character folder in appropriate theme folder
-  // 3. Character folder
   QString path =
       ao_app->find_theme_asset_path("characters/" + f_char + "/showname");
   if (path.isEmpty())
     path = ao_app->get_character_path(f_char, "showname");
-  /*
-  QStringList directories = {
-      ao_app->get_theme_variant_path("characters/" + f_char + "/showname"),
-      ao_app->get_theme_path("characters/" + f_char + "/showname"),
-      ao_app->get_character_path(f_char, "showname"),
-  };
-
-  qDebug() << directories;
-  QString ext, path;
-  for (QString directory : directories)
-  {
-    ext = ao_app->get_file_extension(directory, exts);
-    if (!ext.isEmpty())
-    {
-      path = ao_app->get_case_sensitive_path(directory + ext);
-      break;
-    }
-  }*/
 
   if (!path.isEmpty() && !chatmessage_is_empty &&
       ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")

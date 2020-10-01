@@ -292,6 +292,9 @@ QString AOApplication::get_sfx(QString p_identifier)
 
 QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
 {
+  // File lookup order
+  // 1. In the theme folder (variant/main/default), look for `p_file`.
+
   QString path = find_theme_asset_path(p_file);
   if (path.isEmpty())
     return "";
@@ -323,50 +326,14 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
 
   design_ini.close();
   return f_text; // This is the empty string if no appends took place
-
-  /*
-  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
-
-  for (QString path : paths)
-  {
-    QFile design_ini;
-    design_ini.setFileName(path);
-    if (!design_ini.open(QIODevice::ReadOnly))
-      continue;
-
-    QTextStream in(&design_ini);
-    QString f_text;
-    bool tag_found = false;
-
-    while (!in.atEnd())
-    {
-      QString line = in.readLine();
-      if (line.startsWith(target_tag, Qt::CaseInsensitive))
-      {
-        tag_found = true;
-        continue;
-      }
-
-      if (tag_found)
-      {
-        if ((line.startsWith("[") && line.endsWith("]")))
-          break;
-        f_text.append(line);
-      }
-    }
-
-    design_ini.close();
-    if (!f_text.isEmpty())
-      return f_text;
-  }
-
-  // Default value in case everything fails, return an empty string
-  return "";
-  */
 }
 
 QVector<QStringList> AOApplication::get_highlight_color()
 {
+  // File lookup order
+  // 1. In the theme folder (variant/main/default), look for
+  // "courtroom_config.ini".
+
   QString path = find_theme_asset_path("courtroom_config.ini");
   if (path.isEmpty())
     return QVector<QStringList>();
@@ -410,66 +377,14 @@ QVector<QStringList> AOApplication::get_highlight_color()
 
   design_ini.close();
   return f_vec; // Could be an empty vector if no appends were made
-
-  /*
-
-  QString p_file = "courtroom_config.ini";
-  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
-
-  for (QString path : paths)
-  {
-    QVector<QStringList> f_vec;
-
-    QFile design_ini;
-    design_ini.setFileName(path);
-    if (!design_ini.open(QIODevice::ReadOnly))
-      continue;
-
-    QTextStream in(&design_ini);
-    bool tag_found = false;
-
-    while (!in.atEnd())
-    {
-      QString line = in.readLine();
-
-      if (line.startsWith("[HIGHLIGHTS]", Qt::CaseInsensitive))
-      {
-        tag_found = true;
-        continue;
-      }
-
-      if (tag_found)
-      {
-        if ((line.startsWith("[") && line.endsWith("]")))
-          break;
-        // Syntax
-        // OpenercharCloserchar = Color, Shown
-        // Shown is 1 if the character should be displayed in IC, 0 otherwise.
-        // If not present, assume 1.
-        QString chars = line.split("=")[0].trimmed();
-        QString chars_parameters = line.mid(line.indexOf("=") + 1);
-        QStringList parameters = chars_parameters.split(",");
-        for (int i = 0; i < parameters.size(); i++)
-          parameters[i] = parameters[i].trimmed();
-        if (parameters.size() == 1)
-          parameters.append("1");
-        f_vec.append({chars, parameters[0], parameters[1]});
-      }
-    }
-
-    design_ini.close();
-    if (!f_vec.isEmpty())
-      return f_vec;
-  }
-
-  // Default value in case everything fails, return an empty vector
-  QVector<QStringList> f_vec;
-  return f_vec;
-  */
 }
 
 QString AOApplication::get_spbutton(QString p_tag, int index)
 {
+  // File lookup order
+  // 1. In the theme folder (variant/main/default), look for
+  // "courtroom_config.ini".
+
   QString path = find_theme_asset_path("courtroom_config.ini");
   if (path.isEmpty())
     return "";
@@ -505,56 +420,14 @@ QString AOApplication::get_spbutton(QString p_tag, int index)
 
   design_ini.close();
   return res; // Could be the empty string if no matches were found.
-
-  /*
-  QString p_file = "courtroom_config.ini";
-  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
-
-  for (QString path : paths)
-  {
-    QString res = "";
-
-    QFile design_ini;
-    design_ini.setFileName(path);
-    if (!design_ini.open(QIODevice::ReadOnly))
-      continue;
-
-    QTextStream in(&design_ini);
-    bool tag_found = false;
-
-    while (!in.atEnd())
-    {
-      QString line = in.readLine();
-
-      if (line.startsWith(p_tag, Qt::CaseInsensitive))
-      {
-        tag_found = true;
-        continue;
-      }
-
-      if (tag_found)
-      {
-        if ((line.startsWith("[") && line.endsWith("]")))
-          break;
-
-        QStringList line_contents = line.split("=");
-        if (line_contents.at(0).trimmed() == QString::number(index))
-          res = line_contents.at(1);
-      }
-    }
-
-    design_ini.close();
-    if (!res.isEmpty())
-      return res;
-  }
-
-  // Default value in case everything fails, return an empty string
-  return "";
-  */
 }
 
 QStringList AOApplication::get_effect(int index)
 {
+  // File lookup order
+  // 1. In the theme folder (variant/main/default), look for
+  // "courtroom_config.ini".
+
   QString path = find_theme_asset_path("courtroom_config.ini");
   if (path.isEmpty())
     return QStringList();
@@ -593,56 +466,6 @@ QStringList AOApplication::get_effect(int index)
 
   design_ini.close();
   return res;
-
-  /*
-  QString p_file = "courtroom_config.ini";
-  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
-
-  for (QString path : paths)
-  {
-    QStringList res;
-
-    QFile design_ini;
-    design_ini.setFileName(path);
-    if (!design_ini.open(QIODevice::ReadOnly))
-      continue;
-
-    QTextStream in(&design_ini);
-    bool tag_found = false;
-
-    while (!in.atEnd())
-    {
-      QString line = in.readLine();
-
-      if (line.startsWith("[EFFECTS]", Qt::CaseInsensitive))
-      {
-        tag_found = true;
-        continue;
-      }
-
-      if (tag_found)
-      {
-        if ((line.startsWith("[") && line.endsWith("]")))
-          break;
-
-        QStringList line_contents = line.split("=");
-        if (line_contents.at(0).trimmed() == QString::number(index))
-          res = line_contents.at(1).split(",");
-
-        if (res.size() == 1)
-          res.append("1");
-      }
-    }
-
-    design_ini.close();
-    if (!res.isEmpty())
-      return res;
-  }
-
-  // Default value in case everything fails, return an empty string list
-  QStringList res;
-  return res;
-  */
 }
 
 QStringList AOApplication::get_sfx_list()
@@ -966,44 +789,20 @@ bool AOApplication::get_blank_blip()
 
 QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
 {
-  // Try to obtain a theme ini from any of the valid files
+  // File lookup order
+  // 1. In the theme folder (variant/main/default), look for
+  // `p_identifier`.
   QString path = find_theme_asset_path(p_file);
   if (path.isEmpty())
     return "";
 
   return read_design_ini(p_identifier, path); // Could be the empty string
-  /*
-  QStringList paths{
-      get_theme_variant_path(p_file),
-      get_theme_path(p_file),
-      get_default_theme_path(p_file),
-  };
-
-  for (QString path : paths)
-  {
-    QString f_result = read_design_ini(p_identifier, path);
-    if (!f_result.isEmpty())
-      return f_result;
-  }
-
-  return "";
-  */
 }
 
 QString AOApplication::get_image_path(QString p_image)
 {
+  // File lookup order
+  // 1. In the theme folder (variant/main/default), look for
+  // `p_image`.
   return find_theme_asset_path(p_image);
-  /*
-  QString theme_variant_image_path = get_theme_variant_path(p_image);
-  QString theme_image_path = get_theme_path(p_image);
-  QString default_image_path = get_default_theme_path(p_image);
-
-  QString final_image_path;
-
-  if (file_exists(theme_variant_image_path))
-    return theme_variant_image_path;
-  else if (file_exists(theme_image_path))
-    return theme_image_path;
-  return default_image_path;
-  */
 }

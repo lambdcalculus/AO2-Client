@@ -37,17 +37,29 @@ void AOMovie::play(QString p_file, QString p_char)
   if (p_file.length() > 0 && p_file.at(0) == "!")
     p_file = p_file.remove(0, 1);
 
-  QString custom_path;
-  if (p_file == "custom")
-    custom_path = ao_app->get_character_path(p_char, p_file);
+  QString char_p_file;
+  // FIXME: When looking in the character folder, append "_bubble" except for
+  // custom We probably should drop this
+  if (p_file != "custom")
+    char_p_file = p_file + "_bubble";
   else
-    custom_path = ao_app->get_character_path(p_char, p_file + "_bubble");
+    char_p_file = p_file;
+
+  // Asset lookup order
+  // 1. In the character folder, look for
+  // `char_p_file` + extensions in `exts` in order
+  // 2. In the character folder, look for
+  // `overlay/char_p_file` + extensions in `exts` in order
+  // 3. In the theme folder (variant/main/default), look for
+  // `p_file` + extensions in `exts` in order
+  // 4. In the theme folder (variant/main/default), look for
+  // "placeholder" + extensions in `exts` in order
 
   QStringList exts{".webp", ".apng", ".gif", ".png"};
   file_path = ao_app->find_asset_path(
       {
-          custom_path,
-          ao_app->get_character_path(p_char, "overlay/" + p_file),
+          ao_app->get_character_path(p_char, char_p_file),
+          ao_app->get_character_path(p_char, "overlay/" + char_p_file),
       },
       exts);
   if (file_path.isEmpty())
@@ -56,35 +68,7 @@ void AOMovie::play(QString p_file, QString p_char)
     if (file_path.isEmpty())
       file_path = ao_app->find_theme_asset_path("placeholder", exts);
   }
-  /*
-  QStringList f_paths{
-      ao_app->get_theme_variant_path(p_file),
-      ao_app->get_theme_path(p_file),
-      ao_app->get_default_theme_path(p_file),
-      ao_app->get_theme_variant_path("placeholder"),
-      ao_app->get_theme_path("placeholder"),
-      ao_app->get_default_theme_path("placeholder"),
-  };
 
-  for (auto &f_file : f_paths)
-  {
-    bool found = false;
-    for (auto &ext : decltype(f_vec){".webp", ".apng", ".gif", ".png"})
-    {
-      QString fullPath = ao_app->get_case_sensitive_path(f_file + ext);
-      found = file_exists(fullPath);
-      if (found)
-      {
-        file_path = fullPath;
-        break;
-      }
-    }
-
-    if (found)
-      break;
-  }*/
-
-  qDebug() << file_path;
   qDebug() << "playing" << file_path;
   m_movie->setFileName(file_path);
 
@@ -98,56 +82,24 @@ void AOMovie::play_interjection(QString p_char_name,
 {
   m_movie->stop();
 
-  QString chr_interjection;
-  {
-    QString interjection_suffix = "_bubble";
+  QString p_char_interjection_name;
+  // FIXME: When looking in the character folder, append "_bubble" except for
+  // custom We probably should drop this
+  if (p_interjection_name.toLower() != "custom")
+    p_char_interjection_name = p_interjection_name + "_bubble";
+  else
+    p_char_interjection_name = p_interjection_name;
 
-    // FIXME there is no reason custom shouldn't have a suffix
-    if (p_interjection_name.toLower() == "custom")
-    {
-      interjection_suffix.clear();
-    }
-
-    chr_interjection = ao_app->get_character_path(
-        p_char_name, p_interjection_name + interjection_suffix);
-  }
+  // Asset lookup order
+  // 1. In the character folder, look for `p_char_interjection_name`
+  // 2. In the theme folder (variant/main/default), look for `p_char_name`
 
   QStringList exts{".webp", ".apng", ".gif"};
   QString interjection_filepath =
-      ao_app->find_asset_path({chr_interjection}, exts);
+      ao_app->find_asset_path({p_char_interjection_name}, exts);
   if (interjection_filepath.isEmpty())
     interjection_filepath =
         ao_app->find_theme_asset_path(p_interjection_name, exts);
-
-  /*
-  QStringList possible_paths{
-      chr_interjection,
-      ao_app->get_theme_variant_path(p_interjection_name),
-      ao_app->get_theme_path(p_interjection_name),
-      ao_app->get_default_theme_path(p_interjection_name),
-  };
-
-  QString interjection_filepath;
-  for (QString &i_path : possible_paths)
-  {
-    bool skip = false;
-
-    for (QString &i_ext : QStringList{".webp", ".apng", ".gif"})
-    {
-      QString fullpath = ao_app->get_case_sensitive_path(i_path + i_ext);
-      if (file_exists(fullpath))
-      {
-        skip = true;
-        interjection_filepath = fullpath;
-        break;
-      }
-    }
-
-    if (skip)
-    {
-      break;
-    }
-  }*/
 
   if (interjection_filepath.isEmpty())
   {

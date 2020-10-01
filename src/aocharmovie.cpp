@@ -26,6 +26,14 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app)
 void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
                        bool p_visible)
 {
+  // Asset lookup order
+  // 1. In the character folder, look for
+  // `p_emote_prefix+p_emote` + extensions in `exts` in order
+  // 2. In the character folder, look for
+  // `p_emote` + extensions in `exts` in order
+  // 3. In the theme folder (variant/main/default), look for
+  // "placeholder" + extensions in `exts` in order
+
   QStringList exts{".webp", ".apng", ".gif", ".png"};
   QString target_path = ao_app->find_asset_path(
       {
@@ -35,34 +43,6 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
       exts);
   if (target_path.isEmpty())
     target_path = ao_app->find_theme_asset_path("placeholder", exts);
-
-  /*
-  QStringList f_paths{
-      ao_app->get_character_path(p_char, p_emote_prefix + p_emote), // .gif
-      ao_app->get_character_path(p_char, p_emote),                  // .png
-      ao_app->get_theme_variant_path("placeholder"),                // .gif
-      ao_app->get_theme_path("placeholder"),                        // .gif
-      ao_app->get_default_theme_path("placeholder")                 // .gif
-  };
-
-  for (auto &f_file : f_paths)
-  {
-    bool found = false;
-    for (auto &ext : QStringList{".webp", ".apng", ".gif", ".png"})
-    {
-      QString fullPath = ao_app->get_case_sensitive_path(f_file + ext);
-      found = file_exists(fullPath);
-      if (found)
-      {
-        target_path = fullPath;
-        break;
-      }
-    }
-
-    if (found)
-      break;
-  }
-  */
 
   show();
   if (!p_visible)
