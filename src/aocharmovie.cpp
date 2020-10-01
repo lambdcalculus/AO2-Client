@@ -26,7 +26,17 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app)
 void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
                        bool p_visible)
 {
-  QString target_path;
+  QStringList exts{".webp", ".apng", ".gif", ".png"};
+  QString target_path = ao_app->find_asset_path(
+      {
+          ao_app->get_character_path(p_char, p_emote_prefix + p_emote),
+          ao_app->get_character_path(p_char, p_emote),
+      },
+      exts);
+  if (target_path.isEmpty())
+    target_path = ao_app->find_theme_asset_path("placeholder", exts);
+
+  /*
   QStringList f_paths{
       ao_app->get_character_path(p_char, p_emote_prefix + p_emote), // .gif
       ao_app->get_character_path(p_char, p_emote),                  // .png
@@ -52,6 +62,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
     if (found)
       break;
   }
+  */
 
   show();
   if (!p_visible)

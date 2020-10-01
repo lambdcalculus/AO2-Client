@@ -491,6 +491,77 @@ void Courtroom::set_widget_names()
 
 void Courtroom::set_widget_layers()
 {
+  QString path = ao_app->find_theme_asset_path("courtroom_layers.ini");
+  QFile layer_ini(path);
+  // needed to avoid cyclic parenting
+  QStringList recorded_widgets;
+
+  // Given the purpose of find_theme_asset_path, this step failing would be
+  // weird
+  if (layer_ini.open(QFile::ReadOnly))
+  {
+    QTextStream in(&layer_ini);
+
+    // current parent's name
+    QString parent_name = "courtroom";
+    // the courtroom is ALWAYS going to be recorded
+    recorded_widgets.append(parent_name);
+
+    while (!in.atEnd())
+    {
+      QString line = in.readLine().trimmed();
+
+      // skip if line is empty
+      if (line.isEmpty())
+        continue;
+
+      // revert to default parent if we encounter an end scope
+      if (line.startsWith("[\\"))
+      {
+        parent_name = "courtroom";
+      }
+      // is this a parent?
+      else if (line.startsWith("["))
+      {
+        // update the current parent
+        parent_name = line.remove(0, 1).chopped(1).trimmed();
+      }
+      // if this is not a parent, it's a child
+      else
+      {
+        // if the child is already known, skip
+        if (recorded_widgets.contains(line))
+          continue;
+        // make the child known
+        recorded_widgets.append(line);
+
+        // attach the children to the parents'
+        QWidget *child = widget_names[line];
+        // if child is null, then it does not exist
+        if (!child)
+          continue;
+
+        QWidget *parent = widget_names[parent_name];
+        // if parent is null, attach main parent
+        if (!parent)
+          parent = widget_names["courtroom"];
+
+        // set child to parent
+        bool was_visible = child->isVisible();
+        child->setParent(parent);
+        child->raise();
+
+        // Readjust visibility in case this changed after the widget changed
+        // parent I don't know why, I don't want to know why, I shouldn't have
+        // to wonder why, but for whatever reason these stupid panels aren't
+        // laying out correctly unless we do this terribleness
+        if (child->isVisible() != was_visible)
+          child->setVisible(was_visible);
+      }
+    }
+  }
+
+  /*
   QStringList paths{
       ao_app->get_theme_variant_path("courtroom_layers.ini"),
       ao_app->get_theme_path("courtroom_layers.ini"),
@@ -571,6 +642,8 @@ void Courtroom::set_widget_layers()
       break;
     }
   }
+  */
+
   // do special logic if config panel was not found in courtroom_layers. In
   // particular, make it visible and raise it in front of all assets. This can
   // help assist a theme designer who accidentally missed config_panel and would
@@ -1134,8 +1207,15 @@ int Courtroom::adapt_numbered_items(QVector<T *> &item_vector,
 
 void Courtroom::check_effects()
 {
+  QStringList exts{".webp", ".gif", ".apng"};
   for (int i = 0; i < ui_effects.size(); ++i)
   {
+    QString path = ao_app->find_asset_path(
+        {ao_app->get_character_path(current_char, effect_names.at(i))}, exts);
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(effect_names.at(i), exts);
+    effects_enabled[i] = (!path.isEmpty());
+    /*
     QStringList paths{
         ao_app->get_character_path(current_char, effect_names.at(i) + ".webp"),
         ao_app->get_character_path(current_char, effect_names.at(i) + ".gif"),
@@ -1156,13 +1236,23 @@ void Courtroom::check_effects()
         break;
       }
     }
+    */
   }
 }
 
 void Courtroom::check_free_blocks()
 {
+  QStringList exts{".webp", ".gif", ".apng"};
   for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
+    QString path = ao_app->find_asset_path(
+        {ao_app->get_character_path(current_char, free_block_names.at(i))},
+        exts);
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(free_block_names.at(i), exts);
+    free_blocks_enabled[i] = (!path.isEmpty());
+
+    /*
     QStringList paths{
         ao_app->get_character_path(current_char,
                                    free_block_names.at(i) + ".webp"),
@@ -1185,60 +1275,81 @@ void Courtroom::check_free_blocks()
         break;
       }
     }
+    */
   }
 }
 
 void Courtroom::check_shouts()
 {
+  QStringList exts{".webp", ".gif", ".apng"};
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    QStringList paths{
-        ao_app->get_character_path(current_char, shout_names.at(i) + ".webp"),
-        ao_app->get_character_path(current_char, shout_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(shout_names.at(i) + ".webp"),
-        ao_app->get_theme_variant_path(shout_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(shout_names.at(i) + ".apng"),
-        ao_app->get_theme_path(shout_names.at(i) + ".webp"),
-        ao_app->get_theme_path(shout_names.at(i) + ".gif"),
-        ao_app->get_theme_path(shout_names.at(i) + ".apng")};
+    QString path = ao_app->find_asset_path(
+        {ao_app->get_character_path(current_char, shout_names.at(i))}, exts);
 
-    // Assume the shout does not exist until a matching file is found
-    shouts_enabled[i] = false;
-    for (QString path : paths)
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(shout_names.at(i), exts);
+
+    call_notice("Final path " + path);
+    shouts_enabled[i] = (!path.isEmpty());
+    /*
+  QStringList paths{
+      ao_app->get_character_path(current_char, shout_names.at(i) + ".webp"),
+      ao_app->get_character_path(current_char, shout_names.at(i) + ".gif"),
+      ao_app->get_theme_variant_path(shout_names.at(i) + ".webp"),
+      ao_app->get_theme_variant_path(shout_names.at(i) + ".gif"),
+      ao_app->get_theme_variant_path(shout_names.at(i) + ".apng"),
+      ao_app->get_theme_path(shout_names.at(i) + ".webp"),
+      ao_app->get_theme_path(shout_names.at(i) + ".gif"),
+      ao_app->get_theme_path(shout_names.at(i) + ".apng")};
+
+  // Assume the shout does not exist until a matching file is found
+  shouts_enabled[i] = false;
+  for (QString path : paths)
+  {
+    if (file_exists(path))
     {
-      if (file_exists(path))
-      {
-        shouts_enabled[i] = true;
-        break;
-      }
+      shouts_enabled[i] = true;
+      break;
     }
+  }
+  */
   }
 }
 
 void Courtroom::check_wtce()
 {
+  QStringList exts{".webp", ".gif", ".apng"};
   for (int i = 0; i < ui_wtce.size(); ++i)
   {
-    QStringList paths{
-        ao_app->get_character_path(current_char, wtce_names.at(i) + ".webp"),
-        ao_app->get_character_path(current_char, wtce_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(wtce_names.at(i) + ".webp"),
-        ao_app->get_theme_variant_path(wtce_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(wtce_names.at(i) + ".apng"),
-        ao_app->get_theme_path(wtce_names.at(i) + ".webp"),
-        ao_app->get_theme_path(wtce_names.at(i) + ".gif"),
-        ao_app->get_theme_path(wtce_names.at(i) + ".apng")};
+    QString path = ao_app->find_asset_path(
+        {ao_app->get_character_path(current_char, wtce_names.at(i))}, exts);
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(wtce_names.at(i), exts);
+    wtce_enabled[i] = (!path.isEmpty());
 
-    // Assume the judge button does not exist until a matching file is found
-    wtce_enabled[i] = false;
-    for (QString path : paths)
+    /*
+  QStringList paths{
+      ao_app->get_character_path(current_char, wtce_names.at(i) + ".webp"),
+      ao_app->get_character_path(current_char, wtce_names.at(i) + ".gif"),
+      ao_app->get_theme_variant_path(wtce_names.at(i) + ".webp"),
+      ao_app->get_theme_variant_path(wtce_names.at(i) + ".gif"),
+      ao_app->get_theme_variant_path(wtce_names.at(i) + ".apng"),
+      ao_app->get_theme_path(wtce_names.at(i) + ".webp"),
+      ao_app->get_theme_path(wtce_names.at(i) + ".gif"),
+      ao_app->get_theme_path(wtce_names.at(i) + ".apng")};
+
+  // Assume the judge button does not exist until a matching file is found
+  wtce_enabled[i] = false;
+  for (QString path : paths)
+  {
+    if (file_exists(path))
     {
-      if (file_exists(path))
-      {
-        wtce_enabled[i] = true;
-        break;
-      }
+      wtce_enabled[i] = true;
+      break;
     }
+  }
+  */
   }
 }
 

@@ -21,8 +21,7 @@
 #include <QTextCharFormat>
 #include <QTime>
 
-Courtroom::Courtroom(AOApplication *p_ao_app)
-    : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -113,6 +112,7 @@ void Courtroom::enter_courtroom(int p_cid)
   // This will also handle showing the correct shouts, effects and wtce buttons,
   // and cycling through them if the buttons that are supposed to be displayed
   // do not exist It will also take care of free blocks
+
   set_widgets();
 
   check_shouts();
@@ -843,7 +843,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     if (objection_mod >= 1 && objection_mod <= ui_shouts.size() &&
         ui_shouts.size() > 0) // check to prevent crashing
     {
-      ui_vp_objection->play_interjection(f_char, shout_names.at(objection_mod - 1));
+      ui_vp_objection->play_interjection(f_char,
+                                         shout_names.at(objection_mod - 1));
       m_shouts_player->play(shout_names.at(objection_mod - 1) + ".wav", f_char);
     }
     else
@@ -995,10 +996,14 @@ void Courtroom::handle_chatmessage_3()
 
   // Check for any of 9 possible ways that showname images are
   QVector<QString> exts = {".png", ".jpg", ".bmp"};
-  // 3 places (in order)
-  // 1. Character folder in variant folder in theme folder
-  // 2. Character folder in theme folder
+  // 2 places (in order)
+  // 1. Character folder in appropriate theme folder
   // 3. Character folder
+  QString path =
+      ao_app->find_theme_asset_path("characters/" + f_char + "/showname");
+  if (path.isEmpty())
+    path = ao_app->get_character_path(f_char, "showname");
+  /*
   QStringList directories = {
       ao_app->get_theme_variant_path("characters/" + f_char + "/showname"),
       ao_app->get_theme_path("characters/" + f_char + "/showname"),
@@ -1015,7 +1020,7 @@ void Courtroom::handle_chatmessage_3()
       path = ao_app->get_case_sensitive_path(directory + ext);
       break;
     }
-  }
+  }*/
 
   if (!path.isEmpty() && !chatmessage_is_empty &&
       ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")
@@ -2107,6 +2112,23 @@ void Courtroom::on_cycle_clicked()
 void Courtroom::cycle_shout(int p_index)
 {
   int n = ui_shouts.size();
+
+  // Check if any shout button is available to begin with
+  int i;
+  for (i = 0; i < n; i++)
+  {
+    if (shouts_enabled[i])
+      break;
+  }
+  if (i == n)
+  {
+    call_notice(
+        "Fatal error: no shout button images found in current theme folder.");
+    exit(1);
+  }
+
+  // By performing this check beforehand, the do while loop here is guaranteed
+  // to terminate.
   do
   {
     m_shout_state = (m_shout_state - p_index + n) % n;
@@ -2118,6 +2140,22 @@ void Courtroom::cycle_shout(int p_index)
 void Courtroom::cycle_effect(int p_index)
 {
   int n = ui_effects.size();
+  // Check if any effect button is available to begin with
+  int i;
+  for (i = 0; i < n; i++)
+  {
+    if (effects_enabled[i])
+      break;
+  }
+  if (i == n)
+  {
+    call_notice(
+        "Fatal error: no effect button images found in current theme folder.");
+    exit(1);
+  }
+
+  // By performing this check beforehand, the do while loop here is guaranteed
+  // to terminate.
   do
   {
     m_effect_current = (m_effect_current - p_index + n) % n;
@@ -2129,6 +2167,22 @@ void Courtroom::cycle_effect(int p_index)
 void Courtroom::cycle_wtce(int p_index)
 {
   int n = ui_wtce.size();
+  // Check if any splash button is available to begin with
+  int i;
+  for (i = 0; i < n; i++)
+  {
+    if (wtce_enabled[i])
+      break;
+  }
+  if (i == n)
+  {
+    call_notice(
+        "Fatal error: no splash button images found in current theme folder.");
+    exit(1);
+  }
+
+  // By performing this check beforehand, the do while loop here is guaranteed
+  // to terminate.
   do
   {
     m_wtce_current = (m_wtce_current - p_index + n) % n;

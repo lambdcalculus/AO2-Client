@@ -44,36 +44,11 @@ QString AOApplication::get_theme_path(QString p_file)
   return get_case_sensitive_path(path);
 }
 
-QString AOApplication::get_theme_variant_path(QString p_file)
-{
-  QString path = get_base_path() + "themes/" + get_theme().toLower() +
-                 "/variants/" + get_theme_variant() + "/" + p_file;
-  return get_case_sensitive_path(path);
-}
-
-QString AOApplication::get_default_theme_path(QString p_file)
-{
-  QString path = get_base_path() + "themes/default/" + p_file;
-
-  return get_case_sensitive_path(path);
-}
-
 QString AOApplication::get_character_path(QString p_character, QString p_file)
 {
   QString path = get_base_path() + "characters/" + p_character + "/" + p_file;
   return get_case_sensitive_path(path);
 }
-
-// QString AOApplication::get_demothings_path() {
-//  QString default_path = "misc/demothings/";
-//  QString alt_path = "misc/RosterImages";
-//  if (dir_exists(default_path))
-//    return get_base_path() + default_path;
-//  else if (dir_exists(alt_path))
-//    return get_base_path() + alt_path;
-//  else
-//    return get_base_path() + default_path;
-//}
 
 QString AOApplication::get_sounds_path(QString p_file)
 {
@@ -173,3 +148,41 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
   return file_parent_dir + "/" + file_basename;
 }
 #endif
+
+QString AOApplication::find_asset_path(QStringList possible_paths)
+{
+  return find_asset_path(possible_paths, {""});
+}
+
+QString AOApplication::find_asset_path(QStringList possible_roots,
+                                       QStringList possible_exts)
+{
+  for (QString root : possible_roots)
+  {
+    for (QString ext : possible_exts)
+    {
+      QString full_path = get_case_sensitive_path(root + ext);
+      qDebug() << full_path;
+      if (file_exists(full_path))
+        return full_path;
+    }
+  }
+  return "";
+}
+
+QString AOApplication::find_theme_asset_path(QString p_file)
+{
+  return find_theme_asset_path(p_file, {""});
+}
+
+QString AOApplication::find_theme_asset_path(QString p_file, QStringList exts)
+{
+  QStringList paths{
+      get_base_path() + "themes/" + get_theme().toLower() + "/variants" +
+          get_theme_variant() + "/" + p_file,
+      get_base_path() + "themes/" + get_theme() + "/" + p_file,
+      get_base_path() + "themes/default/" + p_file,
+  };
+
+  return find_asset_path(paths, exts);
+}

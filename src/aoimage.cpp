@@ -24,7 +24,7 @@ void AOImage::set_image(QString p_image)
 
 void AOImage::set_image_from_path(QString p_path)
 {
-  QString default_path = ao_app->get_default_theme_path("chatmed.png");
+  QString default_path = ao_app->find_theme_asset_path("chatmed.png");
 
   QString final_path;
 

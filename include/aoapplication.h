@@ -115,8 +115,8 @@ public:
   QString get_base_path();
   QString get_data_path();
   QString get_theme_path(QString p_file);
-  QString get_theme_variant_path(QString p_file);
-  QString get_default_theme_path(QString p_file);
+  // Get the theme variant
+  QString get_theme_variant();
   QString get_character_path(QString p_character, QString p_file);
   // QString get_demothings_path();
   QString get_sounds_path(QString p_file);
@@ -124,6 +124,12 @@ public:
   QString get_background_path(QString p_file);
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
+
+  QString find_asset_path(QStringList possible_paths);
+  QString find_asset_path(QStringList possible_paths,
+                          QStringList possible_exts);
+  QString find_theme_asset_path(QString p_file);
+  QString find_theme_asset_path(QString p_root, QStringList p_exts);
 
   /**
    * @brief Searches for a file with any of the given extensions, and returns
@@ -170,9 +176,9 @@ public:
   // variable
   QString get_theme();
 
-  // Reads the theme variant from config.ini and loads it into the current theme
-  // variant variable
-  QString get_theme_variant();
+  // Reads the gamemode from config.ini and loads it into the current_gamemode
+  // variable
+  QString get_gamemode();
 
   // Returns the blip rate from config.ini
   int read_blip_rate();

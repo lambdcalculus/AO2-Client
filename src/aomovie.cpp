@@ -4,8 +4,7 @@
 #include "file_functions.h"
 #include "misc_functions.h"
 
-AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app)
-    : QLabel(p_parent)
+AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
@@ -44,9 +43,21 @@ void AOMovie::play(QString p_file, QString p_char)
   else
     custom_path = ao_app->get_character_path(p_char, p_file + "_bubble");
 
+  QStringList exts{".webp", ".apng", ".gif", ".png"};
+  file_path = ao_app->find_asset_path(
+      {
+          custom_path,
+          ao_app->get_character_path(p_char, "overlay/" + p_file),
+      },
+      exts);
+  if (file_path.isEmpty())
+  {
+    file_path = ao_app->find_theme_asset_path(p_file, exts);
+    if (file_path.isEmpty())
+      file_path = ao_app->find_theme_asset_path("placeholder", exts);
+  }
+  /*
   QStringList f_paths{
-      custom_path,
-      ao_app->get_character_path(p_char, "overlay/" + p_file),
       ao_app->get_theme_variant_path(p_file),
       ao_app->get_theme_path(p_file),
       ao_app->get_default_theme_path(p_file),
@@ -71,7 +82,7 @@ void AOMovie::play(QString p_file, QString p_char)
 
     if (found)
       break;
-  }
+  }*/
 
   qDebug() << file_path;
   qDebug() << "playing" << file_path;
@@ -101,6 +112,14 @@ void AOMovie::play_interjection(QString p_char_name,
         p_char_name, p_interjection_name + interjection_suffix);
   }
 
+  QStringList exts{".webp", ".apng", ".gif"};
+  QString interjection_filepath =
+      ao_app->find_asset_path({chr_interjection}, exts);
+  if (interjection_filepath.isEmpty())
+    interjection_filepath =
+        ao_app->find_theme_asset_path(p_interjection_name, exts);
+
+  /*
   QStringList possible_paths{
       chr_interjection,
       ao_app->get_theme_variant_path(p_interjection_name),
@@ -128,7 +147,7 @@ void AOMovie::play_interjection(QString p_char_name,
     {
       break;
     }
-  }
+  }*/
 
   if (interjection_filepath.isEmpty())
   {
@@ -140,7 +159,8 @@ void AOMovie::play_interjection(QString p_char_name,
            << (p_interjection_name.isEmpty() ? "(none)" : p_interjection_name)
            << "for character"
            << (p_char_name.isEmpty() ? "(none)" : p_char_name) << "at"
-           << (interjection_filepath.isEmpty() ? "(not found)" : interjection_filepath);
+           << (interjection_filepath.isEmpty() ? "(not found)"
+                                               : interjection_filepath);
   m_movie->setFileName(interjection_filepath);
   this->show();
   m_movie->setScaledSize(this->size());
