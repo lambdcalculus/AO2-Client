@@ -176,10 +176,6 @@ public:
   // variable
   QString get_theme();
 
-  // Reads the gamemode from config.ini and loads it into the current_gamemode
-  // variable
-  QString get_gamemode();
-
   // Returns the blip rate from config.ini
   int read_blip_rate();
 

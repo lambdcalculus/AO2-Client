@@ -95,8 +95,9 @@ void AOMovie::play_interjection(QString p_char_name,
   // 2. In the theme folder (variant/main/default), look for `p_char_name`
 
   QStringList exts{".webp", ".apng", ".gif"};
-  QString interjection_filepath =
-      ao_app->find_asset_path({p_char_interjection_name}, exts);
+  QString interjection_filepath = ao_app->find_asset_path(
+      {ao_app->get_character_path(p_char_name, p_char_interjection_name)},
+      exts);
   if (interjection_filepath.isEmpty())
     interjection_filepath =
         ao_app->find_theme_asset_path(p_interjection_name, exts);

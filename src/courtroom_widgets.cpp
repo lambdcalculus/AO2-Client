@@ -1185,7 +1185,6 @@ void Courtroom::check_shouts()
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(shout_names.at(i), exts);
 
-    call_notice("Final path " + path);
     shouts_enabled[i] = (!path.isEmpty());
   }
 }

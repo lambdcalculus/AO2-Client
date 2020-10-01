@@ -162,7 +162,6 @@ QString AOApplication::find_asset_path(QStringList possible_roots,
     for (QString ext : possible_exts)
     {
       QString full_path = get_case_sensitive_path(root + ext);
-      qDebug() << full_path;
       if (file_exists(full_path))
         return full_path;
     }
@@ -178,7 +177,7 @@ QString AOApplication::find_theme_asset_path(QString p_file)
 QString AOApplication::find_theme_asset_path(QString p_file, QStringList exts)
 {
   QStringList paths{
-      get_base_path() + "themes/" + get_theme().toLower() + "/variants" +
+      get_base_path() + "themes/" + get_theme() + "/variants/" +
           get_theme_variant() + "/" + p_file,
       get_base_path() + "themes/" + get_theme() + "/" + p_file,
       get_base_path() + "themes/default/" + p_file,
