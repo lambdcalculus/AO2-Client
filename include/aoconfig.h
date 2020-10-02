@@ -21,9 +21,10 @@ public:
   QString callwords();
   QString theme();
   QString gamemode();
+  bool manual_gamemode_enabled();
+  bool server_alerts_enabled();
   bool always_pre_enabled();
   int chat_tick_interval();
-  bool server_alerts_enabled();
   int log_max_lines();
   bool log_is_topdown_enabled();
   bool log_uses_newline_enabled();
@@ -46,6 +47,8 @@ public slots:
   void set_callwords(QString p_string);
   void set_theme(QString p_string);
   void set_gamemode(QString p_string);
+  void set_manual_gamemode(bool p_enabled);
+  void set_manual_gamemode(int p_state);
   void set_server_alerts(bool p_enabled);
   void set_server_alerts(int p_state);
   void set_always_pre(bool p_enabled);
@@ -74,6 +77,7 @@ signals:
   void callwords_changed(QString);
   void theme_changed(QString);
   void gamemode_changed(QString);
+  void manual_gamemode_changed(bool);
   void server_alerts_changed(bool);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);

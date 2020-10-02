@@ -114,7 +114,6 @@ public:
   // implementation in path_functions.cpp
   QString get_base_path();
   QString get_data_path();
-  QString get_gamemode();
   QString get_character_path(QString p_character, QString p_file);
   // QString get_demothings_path();
   QString get_sounds_path(QString p_file);
@@ -231,15 +230,22 @@ public:
   // returns a list of call words
   QStringList get_callwords();
 
+  // returns the current gamemode
+  QString get_gamemode();
+
+  // returns whether the player is able to change gamemodes manually while
+  // ignoring server orders for it
+  bool get_manual_gamemode_enabled();
+
+  // returns whether server alerts (ones that trigger a client alert other than
+  // callwords) should actually tigger a server alert or not
+  bool get_server_alerts_enabled();
+
   // returns whatever preanimations should always play or not
   bool get_always_pre_enabled();
 
   // returns whatever the client should simulate first person dialog
   bool get_first_person_enabled();
-
-  // returns whether server alerts (ones that trigger a client alert other than
-  // callwords) should actually tigger a server alert or not
-  bool get_server_alerts_enabled();
 
   // returns if chatlog goes downward
   bool get_chatlog_scrolldown();

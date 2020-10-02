@@ -24,11 +24,12 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   w_theme = AO_GUI_WIDGET(QComboBox, "theme");
   w_gamemode = AO_GUI_WIDGET(QComboBox, "gamemode");
   w_reload_theme = AO_GUI_WIDGET(QPushButton, "theme_reload");
-  w_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
-  w_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
+  w_manual_gamemode = AO_GUI_WIDGET(QCheckBox, "manual_gamemode");
   w_server_alerts = AO_GUI_WIDGET(QCheckBox, "server_alerts");
 
   // IC Chatlog
+  w_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
+  w_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
   w_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
   w_log_uses_newline = AO_GUI_WIDGET(QCheckBox, "log_newline");
   w_log_orientation_top_down =
@@ -63,12 +64,14 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(gamemode_changed(QString)), w_gamemode,
           SLOT(setCurrentText(QString)));
+  connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_manual_gamemode,
+          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre,
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(chat_tick_interval_changed(int)),
           w_chat_tick_interval, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts,
-          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_max_lines_changed(int)), w_log_max_lines,
           SLOT(setValue(int)));
   connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this,
@@ -104,12 +107,14 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(on_reload_theme_clicked()));
   connect(w_gamemode, SIGNAL(currentIndexChanged(QString)), this,
           SLOT(on_gamemode_index_changed(QString)));
+  connect(w_manual_gamemode, SIGNAL(stateChanged(int)), m_config,
+          SLOT(set_manual_gamemode(int)));
+  connect(w_server_alerts, SIGNAL(stateChanged(int)), m_config,
+          SLOT(set_server_alerts(int)));
   connect(w_always_pre, SIGNAL(stateChanged(int)), m_config,
           SLOT(set_always_pre(int)));
   connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config,
           SLOT(set_chat_tick_interval(int)));
-  connect(w_server_alerts, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_server_alerts(int)));
   connect(w_log_max_lines, SIGNAL(valueChanged(int)), m_config,
           SLOT(set_log_max_lines(int)));
   connect(w_log_orientation_top_down, SIGNAL(toggled(bool)), m_config,
@@ -146,9 +151,10 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   w_callwords->setText(m_config->callwords());
   w_theme->setCurrentText(m_config->theme());
   w_gamemode->setCurrentText(m_config->gamemode());
+  w_manual_gamemode->setChecked(m_config->manual_gamemode_enabled());
+  w_server_alerts->setChecked(m_config->server_alerts_enabled());
   w_always_pre->setChecked(m_config->always_pre_enabled());
   w_chat_tick_interval->setValue(m_config->chat_tick_interval());
-  w_server_alerts->setChecked(m_config->server_alerts_enabled());
   w_log_max_lines->setValue(m_config->log_max_lines());
   if (m_config->log_is_topdown_enabled())
     w_log_orientation_top_down->setChecked(true);
@@ -163,6 +169,12 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   w_blips->setValue(m_config->blips_volume());
   w_blip_rate->setValue(m_config->blip_rate());
   w_blank_blips->setChecked(m_config->blank_blips_enabled());
+
+  // Widget enabling connections
+  w_gamemode->setEnabled(m_config->manual_gamemode_enabled());
+  // The manual gamemode checkbox enables browsing the gamemode combox
+  connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_gamemode,
+          SLOT(setEnabled(bool)));
 }
 
 void AOConfigPanel::refresh_theme_list()

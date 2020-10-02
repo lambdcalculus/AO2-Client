@@ -27,11 +27,12 @@ class AOConfigPanel : public QWidget
   QComboBox *w_theme = nullptr;
   QPushButton *w_reload_theme = nullptr;
   QComboBox *w_gamemode = nullptr;
-  QCheckBox *w_always_pre = nullptr;
-  QSpinBox *w_chat_tick_interval = nullptr;
+  QCheckBox *w_manual_gamemode = nullptr;
   QCheckBox *w_server_alerts = nullptr;
 
   // IC Chatlog
+  QCheckBox *w_always_pre = nullptr;
+  QSpinBox *w_chat_tick_interval = nullptr;
   QSpinBox *w_log_max_lines = nullptr;
   QCheckBox *w_log_uses_newline = nullptr;
   QRadioButton *w_log_orientation_top_down = nullptr;

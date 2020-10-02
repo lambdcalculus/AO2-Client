@@ -38,12 +38,6 @@ QString AOApplication::get_data_path()
   return get_base_path() + "data/";
 }
 
-QString AOApplication::get_theme_path(QString p_file)
-{
-  QString path = get_base_path() + "themes/" + get_theme() + "/" + p_file;
-  return get_case_sensitive_path(path);
-}
-
 QString AOApplication::get_character_path(QString p_character, QString p_file)
 {
   QString path = get_base_path() + "characters/" + p_character + "/" + p_file;
@@ -96,17 +90,6 @@ QString Courtroom::get_background_path(QString p_file)
 {
   return ao_app->get_base_path() + "background/" + current_background + "/" +
          p_file;
-}
-
-QString AOApplication::get_file_extension(QString p_file,
-                                          QVector<QString> p_exts)
-{
-  for (auto &ext : p_exts)
-  {
-    if (file_exists(get_case_sensitive_path(p_file + ext)))
-      return ext;
-  }
-  return "";
 }
 
 #ifndef CASE_SENSITIVE_FILESYSTEM

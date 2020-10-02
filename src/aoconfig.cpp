@@ -25,9 +25,10 @@ class AOConfigPrivate : public QObject
   QString callwords;
   QString theme;
   QString gamemode;
+  bool manual_gamemode;
+  bool server_alerts;
   bool always_pre;
   int chat_tick_interval;
-  bool server_alerts;
   int log_max_lines;
   bool log_is_topdown;
   bool log_uses_newline;
@@ -82,6 +83,20 @@ public slots:
     gamemode = p_string;
     invoke_parents("gamemode_changed", Q_ARG(QString, p_string));
   }
+  void set_manual_gamemode(bool p_enabled)
+  {
+    if (manual_gamemode == p_enabled)
+      return;
+    manual_gamemode = p_enabled;
+    invoke_parents("manual_gamemode_changed", Q_ARG(bool, p_enabled));
+  }
+  void set_server_alerts(bool p_enabled)
+  {
+    if (server_alerts == p_enabled)
+      return;
+    server_alerts = p_enabled;
+    invoke_parents("server_alerts_changed", Q_ARG(bool, p_enabled));
+  }
   void set_always_pre(bool p_enabled)
   {
     if (always_pre == p_enabled)
@@ -95,13 +110,6 @@ public slots:
       return;
     chat_tick_interval = p_number;
     invoke_parents("chat_tick_interval_changed", Q_ARG(int, p_number));
-  }
-  void set_server_alerts(bool p_enabled)
-  {
-    if (server_alerts == p_enabled)
-      return;
-    server_alerts = p_enabled;
-    invoke_parents("server_alerts_changed", Q_ARG(bool, p_enabled));
   }
   void set_log_max_lines(int p_number)
   {
@@ -186,9 +194,10 @@ public slots:
     callwords = cfg.value("callwords").toString();
     theme = cfg.value("theme", "default").toString();
     gamemode = cfg.value("gamemode", "").toString();
+    manual_gamemode = cfg.value("manual_gamemode", false).toBool();
+    server_alerts = cfg.value("server_alerts", true).toBool();
     always_pre = cfg.value("always_pre", true).toBool();
     chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
-    server_alerts = cfg.value("server_alerts", true).toBool();
     log_max_lines = cfg.value("chatlog_limit", 200).toInt();
     log_is_topdown = cfg.value("chatlog_scrolldown", true).toBool();
     log_uses_newline = cfg.value("chatlog_newline", false).toBool();
@@ -207,9 +216,10 @@ public slots:
     cfg.setValue("callwords", callwords);
     cfg.setValue("theme", theme);
     cfg.setValue("gamemode", gamemode);
+    cfg.setValue("manual_gamemode", manual_gamemode);
+    cfg.setValue("server_alerts", server_alerts);
     cfg.setValue("always_pre", always_pre);
     cfg.setValue("chat_tick_interval", chat_tick_interval);
-    cfg.setValue("server_alerts", server_alerts);
     cfg.setValue("chatlog_limit", log_max_lines);
     cfg.setValue("chatlog_scrolldown", log_is_topdown);
     cfg.setValue("chatlog_newline", log_uses_newline);
@@ -294,6 +304,16 @@ QString AOConfig::gamemode()
   return d->gamemode;
 }
 
+bool AOConfig::manual_gamemode_enabled()
+{
+  return d->manual_gamemode;
+}
+
+bool AOConfig::server_alerts_enabled()
+{
+  return d->server_alerts;
+}
+
 bool AOConfig::always_pre_enabled()
 {
   return d->always_pre;
@@ -303,12 +323,6 @@ int AOConfig::chat_tick_interval()
 {
   return d->chat_tick_interval;
 }
-
-bool AOConfig::server_alerts_enabled()
-{
-  return d->server_alerts;
-}
-
 int AOConfig::log_max_lines()
 {
   return d->log_max_lines;
@@ -384,6 +398,26 @@ void AOConfig::set_gamemode(QString p_string)
   d->set_gamemode(p_string);
 }
 
+void AOConfig::set_manual_gamemode(int p_state)
+{
+  set_manual_gamemode(p_state == Qt::Checked);
+}
+
+void AOConfig::set_manual_gamemode(bool p_enabled)
+{
+  d->set_manual_gamemode(p_enabled);
+}
+
+void AOConfig::set_server_alerts(int p_state)
+{
+  set_server_alerts(p_state == Qt::Checked);
+}
+
+void AOConfig::set_server_alerts(bool p_enabled)
+{
+  d->set_server_alerts(p_enabled);
+}
+
 void AOConfig::set_always_pre(int p_state)
 {
   set_always_pre(p_state == Qt::Checked);
@@ -397,16 +431,6 @@ void AOConfig::set_always_pre(bool p_enabled)
 void AOConfig::set_chat_tick_interval(int p_number)
 {
   d->set_chat_tick_interval(p_number);
-}
-
-void AOConfig::set_server_alerts(int p_state)
-{
-  set_server_alerts(p_state == Qt::Checked);
-}
-
-void AOConfig::set_server_alerts(bool p_enabled)
-{
-  d->set_server_alerts(p_enabled);
 }
 
 void AOConfig::set_log_max_lines(int p_number)

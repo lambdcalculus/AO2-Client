@@ -354,6 +354,10 @@ void Courtroom::handle_clock(QString time)
 
 void Courtroom::handle_gamemode(QString gamemode)
 {
+  // First check if only manual gamemode changes are allowed
+  // If so, ignore order.
+  if (ao_app->get_manual_gamemode_enabled())
+    return;
   ao_app->set_gamemode(gamemode);
   on_app_reload_theme_requested();
 }

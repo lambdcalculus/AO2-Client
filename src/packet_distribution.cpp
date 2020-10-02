@@ -683,9 +683,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "GM")
   {
     if (courtroom_constructed)
-    {
-      w_courtroom->handle_gamemode(f_contents.at(0));
-    }
+      goto end;
+    w_courtroom->handle_gamemode(f_contents.at(0));
   }
   else if (header == "TR")
   {

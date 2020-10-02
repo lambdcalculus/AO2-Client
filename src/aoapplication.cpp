@@ -166,6 +166,16 @@ void AOApplication::toggle_config_panel()
   }
 }
 
+bool AOApplication::get_server_alerts_enabled()
+{
+  return config->server_alerts_enabled();
+}
+
+bool AOApplication::get_manual_gamemode_enabled()
+{
+  return config->manual_gamemode_enabled();
+}
+
 bool AOApplication::get_always_pre_enabled()
 {
   return config->always_pre_enabled();
@@ -175,12 +185,6 @@ bool AOApplication::get_first_person_enabled()
 {
   return config->get_bool("first_person", false);
 }
-
-bool AOApplication::get_server_alerts_enabled()
-{
-  return config->server_alerts_enabled();
-}
-
 bool AOApplication::get_chatlog_scrolldown()
 {
   return config->log_is_topdown_enabled();
