@@ -236,17 +236,19 @@ void Courtroom::set_scene()
       f_desk_image = "stand";
     }
 
-    QVector<QString> exts{".webp", ".apng", ".gif", ".png"};
+    QStringList exts{".webp", ".apng", ".gif", ".png"};
 
     bool has_all_desks;
-    if (ao_app->get_file_extension(get_background_path("defensedesk"), exts) ==
-        "")
+    if (ao_app->find_asset_path({get_background_path("defensedesk")}, exts)
+            .isEmpty())
       has_all_desks = false;
-    else if (ao_app->get_file_extension(get_background_path("prosecutiondesk"),
-                                        exts) == "")
+    else if (ao_app
+                 ->find_asset_path({get_background_path("prosecutiondesk")},
+                                   exts)
+                 .isEmpty())
       has_all_desks = false;
-    else if (ao_app->get_file_extension(get_background_path("stand"), exts) ==
-             "")
+    else if (ao_app->find_asset_path({get_background_path("stand")}, exts)
+                 .isEmpty())
       has_all_desks = false;
     else
       has_all_desks = true;
@@ -1581,12 +1583,11 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  QVector<QString> extensions{"", ".wav", ".ogg", ".opus", ".mp3"};
-
+  QStringList exts{"", ".wav", ".ogg", ".opus", ".mp3"};
   QString f_file =
-      ao_app->get_file_extension(ao_app->get_sounds_path(sfx_name), extensions);
+      ao_app->find_asset_path({ao_app->get_sounds_path(sfx_name)}, exts);
 
-  m_effects_player->play(sfx_name + f_file);
+  m_effects_player->play(f_file);
 }
 
 void Courtroom::set_text_color()

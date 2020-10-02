@@ -114,7 +114,6 @@ public:
   // implementation in path_functions.cpp
   QString get_base_path();
   QString get_data_path();
-  QString get_theme_path(QString p_file);
   QString get_gamemode();
   QString get_character_path(QString p_character, QString p_file);
   // QString get_demothings_path();
@@ -124,23 +123,67 @@ public:
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
 
+  /**
+   * @brief Searches for a file in any of the given paths, and returns
+   * the first path that actually matches to an existing file.
+   *
+   * @param possible_paths Paths to check. Case-insensitive.
+   *
+   * @return The first case-sensitive path that corresponds to an actual file,
+   * or an empty string, if not one does.
+   */
   QString find_asset_path(QStringList possible_paths);
-  QString find_asset_path(QStringList possible_paths,
+  /**
+   * @brief Searches for a file with any of the given root and extensions, and
+   * returns the first path that actually matches to an existing file. A root is
+   * matched to all given extensions in order before continuing to the next
+   * root.
+   *
+   * @param possible_roots The potential roots the filepath could have.
+   * Case-insensitive.
+   * @param possible_exts The potential extensions the filepath could have.
+   * Case-insensitive.
+   *
+   * @return The first case-sensitive  root+extension path for which a file
+   * exists, or an empty string, if not one does.
+   */
+  QString find_asset_path(QStringList possible_roots,
                           QStringList possible_exts);
-  QString find_theme_asset_path(QString p_file);
-  QString find_theme_asset_path(QString p_root, QStringList p_exts);
 
   /**
-   * @brief Searches for a file with any of the given extensions, and returns
-   * the first extension that actually matches to an existing file.
+   * @brief Searches for a file in the current theme folder, and returns
+   * the first path that actually matches to an existing file.
+   * If `theme_folder = get_base_path() + "themes/"`
+   * the paths checked are (in order)
    *
-   * @param p_file The path to the file, without extension.
-   * @param p_exts The potential extensions the file could have.
+   * 1. theme_folder + get_gamemode() + "/" + p_file
+   * 2. theme_folder + p_file
    *
-   * @return The first extension with which a file exists, or an empty string,
-   * if not one does.
+   * @param possible_paths Paths to check. Case-insensitive.
+   *
+   * @return The first case-sensitive path that corresponds to an actual file,
+   * or an empty string, if not one does.
    */
-  QString get_file_extension(QString p_file, QVector<QString> p_exts);
+  QString find_theme_asset_path(QString p_file);
+
+  /**
+   * @brief Searches for a root+extension path in the current theme folder, and
+   * returns the first path that actually matches to an existing file.
+   *
+   * If `theme_folder = get_base_path() + "themes/"`, `p_ext`
+   * is an extension, the paths checked are (in order)
+   *
+   * 1. theme_folder + get_gamemode() + "/" + p_root + p_ext
+   * 2. theme_folder + p_root + p_ext
+   *
+   * @param p_root The root the filepath could have. Case-insensitive.
+   * @param p_exts The potential extensions the filepath could have.
+   * Case-insensitive.
+   *
+   * @return The first case-sensitive root+extension path that corresponds to an
+   * actual file, or an empty string, if not one does.
+   */
+  QString find_theme_asset_path(QString p_root, QStringList p_exts);
 
   /**
    * @brief Returns the 'correct' path for the file given as the parameter by
