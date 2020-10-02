@@ -23,8 +23,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   config = new AOConfig(this);
   connect(config, SIGNAL(theme_changed(QString)), this,
           SLOT(on_config_theme_changed()));
-  connect(config, SIGNAL(theme_variant_changed(QString)), this,
-          SLOT(on_config_theme_variant_changed()));
+  connect(config, SIGNAL(gamemode_changed(QString)), this,
+          SLOT(on_config_gamemode_changed()));
 
   config_panel = new AOConfigPanel;
   connect(config_panel, SIGNAL(reload_theme()), this,
@@ -118,9 +118,9 @@ QString AOApplication::get_version_string()
          QString::number(MINOR_VERSION);
 }
 
-void AOApplication::set_theme_variant(QString p_variant)
+void AOApplication::set_gamemode(QString p_gamemode)
 {
-  config->set_theme_variant(p_variant);
+  config->set_gamemode(p_gamemode);
   emit reload_theme();
 }
 
@@ -134,7 +134,7 @@ void AOApplication::on_config_reload_theme_requested()
   emit reload_theme();
 }
 
-void AOApplication::on_config_theme_variant_changed()
+void AOApplication::on_config_gamemode_changed()
 {
   emit reload_theme();
 }

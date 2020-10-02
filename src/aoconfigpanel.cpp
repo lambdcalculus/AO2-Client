@@ -22,7 +22,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   w_username = AO_GUI_WIDGET(QLineEdit, "username");
   w_callwords = AO_GUI_WIDGET(QLineEdit, "callwords");
   w_theme = AO_GUI_WIDGET(QComboBox, "theme");
-  w_theme_variant = AO_GUI_WIDGET(QComboBox, "theme_variant");
+  w_gamemode = AO_GUI_WIDGET(QComboBox, "gamemode");
   w_reload_theme = AO_GUI_WIDGET(QPushButton, "theme_reload");
   w_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
   w_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
@@ -31,8 +31,10 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   // IC Chatlog
   w_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
   w_log_uses_newline = AO_GUI_WIDGET(QCheckBox, "log_newline");
-  w_log_orientation_top_down = AO_GUI_WIDGET(QRadioButton, "log_orientation_top_down");
-  w_log_orientation_bottom_up = AO_GUI_WIDGET(QRadioButton, "log_orientation_bottom_up");
+  w_log_orientation_top_down =
+      AO_GUI_WIDGET(QRadioButton, "log_orientation_top_down");
+  w_log_orientation_bottom_up =
+      AO_GUI_WIDGET(QRadioButton, "log_orientation_bottom_up");
   w_log_music = AO_GUI_WIDGET(QCheckBox, "log_music");
   w_log_is_recording = AO_GUI_WIDGET(QCheckBox, "log_recording");
 
@@ -50,7 +52,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
 
   // themes
   refresh_theme_list();
-  refresh_theme_variant_list();
+  refresh_gamemode_list();
 
   // input
   connect(m_config, SIGNAL(username_changed(QString)), w_username,
@@ -59,7 +61,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(setText(QString)));
   connect(m_config, SIGNAL(theme_changed(QString)), w_theme,
           SLOT(setCurrentText(QString)));
-  connect(m_config, SIGNAL(theme_variant_changed(QString)), w_theme_variant,
+  connect(m_config, SIGNAL(gamemode_changed(QString)), w_gamemode,
           SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre,
           SLOT(setChecked(bool)));
@@ -69,7 +71,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_max_lines_changed(int)), w_log_max_lines,
           SLOT(setValue(int)));
-  connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_log_is_topdown_changed(bool)));
+  connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this,
+          SLOT(on_log_is_topdown_changed(bool)));
   connect(m_config, SIGNAL(log_uses_newline_changed(bool)), w_log_uses_newline,
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_music_changed(bool)), w_log_music,
@@ -99,8 +102,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(set_theme(QString)));
   connect(w_reload_theme, SIGNAL(clicked()), this,
           SLOT(on_reload_theme_clicked()));
-  connect(w_theme_variant, SIGNAL(currentIndexChanged(QString)), this,
-          SLOT(on_theme_variant_index_changed(QString)));
+  connect(w_gamemode, SIGNAL(currentIndexChanged(QString)), this,
+          SLOT(on_gamemode_index_changed(QString)));
   connect(w_always_pre, SIGNAL(stateChanged(int)), m_config,
           SLOT(set_always_pre(int)));
   connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config,
@@ -109,7 +112,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(set_server_alerts(int)));
   connect(w_log_max_lines, SIGNAL(valueChanged(int)), m_config,
           SLOT(set_log_max_lines(int)));
-  connect(w_log_orientation_top_down, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_topdown(bool)));
+  connect(w_log_orientation_top_down, SIGNAL(toggled(bool)), m_config,
+          SLOT(set_log_is_topdown(bool)));
   connect(w_log_uses_newline, SIGNAL(stateChanged(int)), m_config,
           SLOT(set_log_uses_newline(int)));
   connect(w_log_music, SIGNAL(stateChanged(int)), m_config,
@@ -141,7 +145,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   w_username->setText(m_config->username());
   w_callwords->setText(m_config->callwords());
   w_theme->setCurrentText(m_config->theme());
-  w_theme_variant->setCurrentText(m_config->theme_variant());
+  w_gamemode->setCurrentText(m_config->gamemode());
   w_always_pre->setChecked(m_config->always_pre_enabled());
   w_chat_tick_interval->setValue(m_config->chat_tick_interval());
   w_server_alerts->setChecked(m_config->server_alerts_enabled());
@@ -185,31 +189,31 @@ void AOConfigPanel::refresh_theme_list()
   w_theme->blockSignals(false);
 }
 
-void AOConfigPanel::refresh_theme_variant_list()
+void AOConfigPanel::refresh_gamemode_list()
 {
-  const QString p_prev_text = w_theme_variant->currentText();
+  const QString p_prev_text = w_gamemode->currentText();
 
   // block signals
-  w_theme_variant->blockSignals(true);
-  w_theme_variant->clear();
+  w_gamemode->blockSignals(true);
+  w_gamemode->clear();
 
-  // add empty entry indicating no variant chosen
-  w_theme_variant->addItem("<default>");
+  // add empty entry indicating no gamemode chosen
+  w_gamemode->addItem("<default>");
   // themes
   for (QString i_folder : QDir(QDir::currentPath() + "/base/themes/" +
-                               m_config->theme() + "/variants/")
+                               m_config->theme() + "/gamemodes/")
                               .entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
       continue;
-    w_theme_variant->addItem(i_folder, i_folder);
+    w_gamemode->addItem(i_folder, i_folder);
   }
 
   // restore previous selection
-  w_theme_variant->setCurrentText(p_prev_text);
+  w_gamemode->setCurrentText(p_prev_text);
 
   // unblock
-  w_theme_variant->blockSignals(false);
+  w_gamemode->blockSignals(false);
 }
 
 void AOConfigPanel::on_reload_theme_clicked()
@@ -218,10 +222,10 @@ void AOConfigPanel::on_reload_theme_clicked()
   emit reload_theme();
 }
 
-void AOConfigPanel::on_theme_variant_index_changed(QString p_text)
+void AOConfigPanel::on_gamemode_index_changed(QString p_text)
 {
   Q_UNUSED(p_text);
-  m_config->set_theme_variant(w_theme_variant->currentData().toString());
+  m_config->set_gamemode(w_gamemode->currentData().toString());
 }
 
 void AOConfigPanel::on_log_is_topdown_changed(bool p_enabled)
@@ -253,5 +257,5 @@ void AOConfigPanel::on_blips_value_changed(int p_num)
 void AOConfigPanel::on_config_reload_theme_requested()
 {
   refresh_theme_list();
-  refresh_theme_variant_list();
+  refresh_gamemode_list();
 }

@@ -350,11 +350,12 @@ void Courtroom::handle_clock(QString time)
   ui_vp_clock->play(string);
 }
 
-void Courtroom::handle_theme_variant(QString theme_variant)
+void Courtroom::handle_gamemode(QString gamemode)
 {
-  ao_app->set_theme_variant(theme_variant);
+  ao_app->set_gamemode(gamemode);
   on_app_reload_theme_requested();
 }
+
 void Courtroom::list_music()
 {
   ui_music_list->clear();
@@ -995,16 +996,17 @@ void Courtroom::handle_chatmessage_3()
   ui_vp_showname_image->show();
 
   // Asset lookup order
-  // 1. In the theme folder (variant/main/default), in the character folder,
+  // 1. In the theme folder (gamemode/main/default), in the character folder,
   // look for "showname" + extensions in `exts` in order
   // 2. In the character folder, look for
   // "showname" + extensions in `exts` in order
 
-  QVector<QString> exts = {".png", ".jpg", ".bmp"};
+  QStringList exts = {".png", ".jpg", ".bmp"};
   QString path =
-      ao_app->find_theme_asset_path("characters/" + f_char + "/showname");
+      ao_app->find_theme_asset_path("characters/" + f_char + "/showname", exts);
   if (path.isEmpty())
-    path = ao_app->get_character_path(f_char, "showname");
+    path = ao_app->find_asset_path(
+        {ao_app->get_character_path(f_char, "showname")}, exts);
 
   if (!path.isEmpty() && !chatmessage_is_empty &&
       ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")

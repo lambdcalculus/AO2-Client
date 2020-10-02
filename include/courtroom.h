@@ -225,8 +225,8 @@ public:
   // handle server-side clock animation and display
   void handle_clock(QString time);
 
-  // handle request to change theme variant
-  void handle_theme_variant(QString theme_variant);
+  // handle request to change gamemode
+  void handle_gamemode(QString gamemode);
 
   void play_preanim();
 
@@ -563,8 +563,8 @@ private:
   QVector<QCheckBox *> ui_checks; // 0 = pre, 1 = flip, 2 = hidden
   QVector<AOLabel *> ui_labels;   // 0 = music, 1 = sfx, 2 = blip
   QVector<AOImage *> ui_label_images;
-  QVector<QString> label_images = {"Pre", "Flip", "Hidden",
-                                   "Music", "SFX", "Blip"};
+  QVector<QString> label_images = {"Pre",   "Flip", "Hidden",
+                                   "Music", "SFX",  "Blip"};
 
   AOButton *ui_effect_flash = nullptr;
   AOButton *ui_effect_gloom = nullptr;

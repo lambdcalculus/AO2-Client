@@ -20,7 +20,7 @@ public:
   QString username();
   QString callwords();
   QString theme();
-  QString theme_variant();
+  QString gamemode();
   bool always_pre_enabled();
   int chat_tick_interval();
   bool server_alerts_enabled();
@@ -45,7 +45,7 @@ public slots:
   void set_username(QString p_string);
   void set_callwords(QString p_string);
   void set_theme(QString p_string);
-  void set_theme_variant(QString p_string);
+  void set_gamemode(QString p_string);
   void set_server_alerts(bool p_enabled);
   void set_server_alerts(int p_state);
   void set_always_pre(bool p_enabled);
@@ -73,7 +73,7 @@ signals:
   void username_changed(QString);
   void callwords_changed(QString);
   void theme_changed(QString);
-  void theme_variant_changed(QString);
+  void gamemode_changed(QString);
   void server_alerts_changed(bool);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);

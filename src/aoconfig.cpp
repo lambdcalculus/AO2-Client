@@ -24,7 +24,7 @@ class AOConfigPrivate : public QObject
   QString username;
   QString callwords;
   QString theme;
-  QString theme_variant;
+  QString gamemode;
   bool always_pre;
   int chat_tick_interval;
   bool server_alerts;
@@ -75,12 +75,12 @@ public slots:
     theme = p_string;
     invoke_parents("theme_changed", Q_ARG(QString, p_string));
   }
-  void set_theme_variant(QString p_string)
+  void set_gamemode(QString p_string)
   {
-    if (theme_variant == p_string)
+    if (gamemode == p_string)
       return;
-    theme_variant = p_string;
-    invoke_parents("theme_variant_changed", Q_ARG(QString, p_string));
+    gamemode = p_string;
+    invoke_parents("gamemode_changed", Q_ARG(QString, p_string));
   }
   void set_always_pre(bool p_enabled)
   {
@@ -185,7 +185,7 @@ public slots:
     username = cfg.value("username").toString();
     callwords = cfg.value("callwords").toString();
     theme = cfg.value("theme", "default").toString();
-    theme_variant = cfg.value("theme_variant", "").toString();
+    gamemode = cfg.value("gamemode", "").toString();
     always_pre = cfg.value("always_pre", true).toBool();
     chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
     server_alerts = cfg.value("server_alerts", true).toBool();
@@ -206,7 +206,7 @@ public slots:
     cfg.setValue("username", username);
     cfg.setValue("callwords", callwords);
     cfg.setValue("theme", theme);
-    cfg.setValue("theme_variant", theme_variant);
+    cfg.setValue("gamemode", gamemode);
     cfg.setValue("always_pre", always_pre);
     cfg.setValue("chat_tick_interval", chat_tick_interval);
     cfg.setValue("server_alerts", server_alerts);
@@ -289,9 +289,9 @@ QString AOConfig::theme()
   return d->theme;
 }
 
-QString AOConfig::theme_variant()
+QString AOConfig::gamemode()
 {
-  return d->theme_variant;
+  return d->gamemode;
 }
 
 bool AOConfig::always_pre_enabled()
@@ -379,9 +379,9 @@ void AOConfig::set_theme(QString p_string)
   d->set_theme(p_string);
 }
 
-void AOConfig::set_theme_variant(QString p_string)
+void AOConfig::set_gamemode(QString p_string)
 {
-  d->set_theme_variant(p_string);
+  d->set_gamemode(p_string);
 }
 
 void AOConfig::set_always_pre(int p_state)

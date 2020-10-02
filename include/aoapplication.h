@@ -115,8 +115,7 @@ public:
   QString get_base_path();
   QString get_data_path();
   QString get_theme_path(QString p_file);
-  // Get the theme variant
-  QString get_theme_variant();
+  QString get_gamemode();
   QString get_character_path(QString p_character, QString p_file);
   // QString get_demothings_path();
   QString get_sounds_path(QString p_file);
@@ -240,8 +239,8 @@ public:
   // Overwrites config.ini with new theme
   void write_theme(QString theme);
 
-  // Set the theme variant
-  void set_theme_variant(QString m_theme_variant);
+  // Set the gamemode
+  void set_gamemode(QString m_gamemode);
 
   // Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
@@ -249,7 +248,7 @@ public:
   // Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, QString p_design_path);
 
-  // Returns the value of p_identifier from p_file in either a theme variant
+  // Returns the value of p_identifier from p_file in either a theme gamemode
   // subfolder, a theme folder, or default theme folder
   QString read_theme_ini(QString p_identifier, QString p_file);
 
@@ -344,7 +343,7 @@ public:
   // Returns p_char's gender
   QString get_gender(QString p_char);
 
-  // Get the location of p_image, which is either in a theme variant subfolder,
+  // Get the location of p_image, which is either in a theme gamemode subfolder,
   // a theme folder, or default theme folder
   QString get_image_path(QString p_image);
 
@@ -365,7 +364,7 @@ private slots:
   void on_courtroom_destroyed();
   void on_config_theme_changed();
   void on_config_reload_theme_requested();
-  void on_config_theme_variant_changed();
+  void on_config_gamemode_changed();
 
 public slots:
   void server_disconnected();

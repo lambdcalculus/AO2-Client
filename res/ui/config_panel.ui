@@ -118,14 +118,14 @@
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QLabel" name="theme_variant_label">
+        <widget class="QLabel" name="gamemode_label">
          <property name="text">
-          <string>Theme variant:</string>
+          <string>Gamemode:</string>
          </property>
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QComboBox" name="theme_variant"/>
+        <widget class="QComboBox" name="gamemode"/>
        </item>
        <item row="5" column="1">
         <widget class="Line" name="line_3">

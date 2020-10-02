@@ -492,7 +492,7 @@ void Courtroom::set_widget_names()
 void Courtroom::set_widget_layers()
 {
   // File lookup order
-  // 1. In the theme folder (variant/main/default), look for
+  // 1. In the theme folder (gamemode/main/default), look for
   // "courtroom_layers.ini".
 
   QString path = ao_app->find_theme_asset_path("courtroom_layers.ini");
@@ -849,7 +849,7 @@ void Courtroom::set_widgets()
   if (ao_app->read_theme_ini("enable_button_images", cc_config_ini) == "true")
   {
     // Set files, ask questions later
-    // set_image first tries the theme variant folder, then the theme folder,
+    // set_image first tries the gamemode folder, then the theme folder,
     // then falls back to the default theme
     ui_change_character->set_image("changecharacter.png");
     if (ui_change_character->image_path.isEmpty())
@@ -1131,7 +1131,7 @@ void Courtroom::check_effects()
   // Asset lookup order
   // 1. In the character folder, look for
   // `effect_names.at(i)` + extensions in `exts` in order
-  // 2. In the theme folder (variant/main/default), look for
+  // 2. In the theme folder (gamemode/main/default), look for
   // `effect_names.at(i)` + extensions in `exts` in order
   // Only enable buttons where a file was found
 
@@ -1151,7 +1151,7 @@ void Courtroom::check_free_blocks()
   // Asset lookup order
   // 1. In the character folder, look for
   // `free_block_names.at(i)` + extensions in `exts` in order
-  // 2. In the theme folder (variant/main/default), look for
+  // 2. In the theme folder (gamemode/main/default), look for
   // `free_block_names.at(i)` + extensions in `exts` in order
   // Only enable buttons where a file was found
 
@@ -1172,7 +1172,7 @@ void Courtroom::check_shouts()
   // Asset lookup order
   // 1. In the character folder, look for
   // `shout_names.at(i)` + extensions in `exts` in order
-  // 2. In the theme folder (variant/main/default), look for
+  // 2. In the theme folder (gamemode/main/default), look for
   // `shout_names.at(i)` + extensions in `exts` in order
   // Only enable buttons where a file was found
 
@@ -1194,7 +1194,7 @@ void Courtroom::check_wtce()
   // Asset lookup order
   // 1. In the character folder, look for
   // `wtce_names.at(i)` + extensions in `exts` in order
-  // 2. In the theme folder (variant/main/default), look for
+  // 2. In the theme folder (gamemode/main/default), look for
   // `wtce_names.at(i)` + extensions in `exts` in order
   // Only enable buttons where a file was found
 
@@ -1300,7 +1300,6 @@ void Courtroom::load_free_blocks()
       ui_free_blocks[i - 1]->setObjectName(name);
     }
   }
-  qDebug() << "FREE BLOCKS HERE " << free_block_names;
 }
 
 void Courtroom::load_shouts()

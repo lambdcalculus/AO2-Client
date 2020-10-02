@@ -31,7 +31,7 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
   // `p_emote_prefix+p_emote` + extensions in `exts` in order
   // 2. In the character folder, look for
   // `p_emote` + extensions in `exts` in order
-  // 3. In the theme folder (variant/main/default), look for
+  // 3. In the theme folder (gamemode/main/default), look for
   // "placeholder" + extensions in `exts` in order
 
   QStringList exts{".webp", ".apng", ".gif", ".png"};

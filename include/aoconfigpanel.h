@@ -6,10 +6,10 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QSlider>
 #include <QSpinBox>
 #include <QTabWidget>
-#include <QRadioButton>
 #include <QWidget>
 // src
 #include "aoconfig.h"
@@ -26,7 +26,7 @@ class AOConfigPanel : public QWidget
   QLineEdit *w_callwords = nullptr;
   QComboBox *w_theme = nullptr;
   QPushButton *w_reload_theme = nullptr;
-  QComboBox *w_theme_variant = nullptr;
+  QComboBox *w_gamemode = nullptr;
   QCheckBox *w_always_pre = nullptr;
   QSpinBox *w_chat_tick_interval = nullptr;
   QCheckBox *w_server_alerts = nullptr;
@@ -65,11 +65,11 @@ signals:
 
 private:
   void refresh_theme_list();
-  void refresh_theme_variant_list();
+  void refresh_gamemode_list();
 
 private slots:
   void on_reload_theme_clicked();
-  void on_theme_variant_index_changed(QString p_text);
+  void on_gamemode_index_changed(QString p_text);
   void on_log_is_topdown_changed(bool p_enabled);
   void on_effects_value_changed(int p_num);
   void on_system_value_changed(int p_num);
