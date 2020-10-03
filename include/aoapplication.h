@@ -237,12 +237,16 @@ public:
   // returns the current gamemode
   QString get_gamemode();
 
+  // returns whether the player is able to change gamemodes manually and
+  // ignore server orders for it
+  bool get_manual_gamemode_enabled();
+
   // returns the current time of day
   QString get_timeofday();
 
-  // returns whether the player is able to change gamemodes manually while
-  // ignoring server orders for it
-  bool get_manual_gamemode_enabled();
+  // returns whether the player is able to change time of day manually and
+  // ignore server orders for it
+  bool get_manual_timeofday_enabled();
 
   // returns whether server alerts (ones that trigger a client alert other than
   // callwords) should actually tigger a server alert or not

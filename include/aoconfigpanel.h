@@ -30,8 +30,9 @@ class AOConfigPanel : public QWidget
   QComboBox *w_theme = nullptr;
   QPushButton *w_reload_theme = nullptr;
   QComboBox *w_gamemode = nullptr;
-  QComboBox *w_timeofday = nullptr;
   QCheckBox *w_manual_gamemode = nullptr;
+  QComboBox *w_timeofday = nullptr;
+  QCheckBox *w_manual_timeofday = nullptr;
   QCheckBox *w_always_pre = nullptr;
   QSpinBox *w_chat_tick_interval = nullptr;
 

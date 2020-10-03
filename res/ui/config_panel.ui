@@ -308,6 +308,19 @@
          <item>
           <widget class="QComboBox" name="timeofday"/>
          </item>
+         <item>
+          <widget class="QCheckBox" name="manual_timeofday">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Manual</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>

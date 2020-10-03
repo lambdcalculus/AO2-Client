@@ -22,8 +22,9 @@ public:
   bool server_alerts_enabled();
   QString theme();
   QString gamemode();
-  QString timeofday();
   bool manual_gamemode_enabled();
+  QString timeofday();
+  bool manual_timeofday_enabled();
   bool always_pre_enabled();
   int chat_tick_interval();
   int log_max_lines();
@@ -52,9 +53,11 @@ public slots:
   void set_always_pre(int p_state);
   void set_theme(QString p_string);
   void set_gamemode(QString p_string);
-  void set_timeofday(QString p_string);
   void set_manual_gamemode(bool p_enabled);
   void set_manual_gamemode(int p_state);
+  void set_timeofday(QString p_string);
+  void set_manual_timeofday(bool p_enabled);
+  void set_manual_timeofday(int p_state);
   void set_chat_tick_interval(int p_number);
   void set_log_max_lines(int p_number);
   void set_log_is_topdown(bool p_enabled);
@@ -80,8 +83,9 @@ signals:
   void server_alerts_changed(bool);
   void theme_changed(QString);
   void gamemode_changed(QString);
-  void timeofday_changed(QString);
   void manual_gamemode_changed(bool);
+  void timeofday_changed(QString);
+  void manual_timeofday_changed(bool);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);
   void log_max_lines_changed(int);

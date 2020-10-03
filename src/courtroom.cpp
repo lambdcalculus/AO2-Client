@@ -364,6 +364,10 @@ void Courtroom::handle_gamemode(QString gamemode)
 
 void Courtroom::handle_timeofday(QString timeofday)
 {
+  // First check if only manual time of day changes are allowed
+  // If so, ignore order.
+  if (ao_app->get_manual_timeofday_enabled())
+    return;
   ao_app->set_timeofday(timeofday);
   on_app_reload_theme_requested();
 }

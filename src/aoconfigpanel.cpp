@@ -29,6 +29,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   w_gamemode = AO_GUI_WIDGET(QComboBox, "gamemode");
   w_manual_gamemode = AO_GUI_WIDGET(QCheckBox, "manual_gamemode");
   w_timeofday = AO_GUI_WIDGET(QComboBox, "timeofday");
+  w_manual_timeofday = AO_GUI_WIDGET(QCheckBox, "manual_timeofday");
   w_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
   w_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
 
@@ -74,6 +75,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(timeofday_changed(QString)), w_timeofday,
           SLOT(setCurrentText(QString)));
+  connect(m_config, SIGNAL(manual_timeofday_changed(bool)), w_manual_timeofday,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre,
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(chat_tick_interval_changed(int)),
@@ -119,6 +122,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(set_manual_gamemode(int)));
   connect(w_timeofday, SIGNAL(currentIndexChanged(QString)), this,
           SLOT(on_timeofday_index_changed(QString)));
+  connect(w_manual_timeofday, SIGNAL(stateChanged(int)), m_config,
+          SLOT(set_manual_timeofday(int)));
   connect(w_always_pre, SIGNAL(stateChanged(int)), m_config,
           SLOT(set_always_pre(int)));
   connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config,
@@ -162,6 +167,7 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   w_gamemode->setCurrentText(m_config->gamemode());
   w_manual_gamemode->setChecked(m_config->manual_gamemode_enabled());
   w_timeofday->setCurrentText(m_config->timeofday());
+  w_manual_timeofday->setChecked(m_config->manual_timeofday_enabled());
   w_always_pre->setChecked(m_config->always_pre_enabled());
   w_chat_tick_interval->setValue(m_config->chat_tick_interval());
   w_log_max_lines->setValue(m_config->log_max_lines());
@@ -181,8 +187,12 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
 
   // Widget enabling connections
   w_gamemode->setEnabled(m_config->manual_gamemode_enabled());
+  w_timeofday->setEnabled(m_config->manual_timeofday_enabled());
   // The manual gamemode checkbox enables browsing the gamemode combox
+  // similarly with time of day
   connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_gamemode,
+          SLOT(setEnabled(bool)));
+  connect(m_config, SIGNAL(manual_timeofday_changed(bool)), w_timeofday,
           SLOT(setEnabled(bool)));
 }
 
