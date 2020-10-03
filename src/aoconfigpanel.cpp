@@ -196,6 +196,19 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(setEnabled(bool)));
 }
 
+void AOConfigPanel::showEvent(QShowEvent *event)
+{
+  QWidget::showEvent(event);
+
+  if (isVisible())
+  {
+    // refresh theme, gamemode and time of day comboboxes
+    refresh_theme_list();
+    refresh_gamemode_list();
+    refresh_timeofday_list();
+  }
+}
+
 void AOConfigPanel::refresh_theme_list()
 {
   const QString p_prev_text = w_theme->currentText();

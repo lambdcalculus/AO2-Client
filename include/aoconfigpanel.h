@@ -65,6 +65,9 @@ public:
 public slots:
   void on_config_reload_theme_requested();
 
+protected:
+  void showEvent(QShowEvent *event);
+
 signals:
   void reload_theme();
 
