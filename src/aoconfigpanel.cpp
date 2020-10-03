@@ -22,8 +22,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   w_username = AO_GUI_WIDGET(QLineEdit, "username");
   w_callwords = AO_GUI_WIDGET(QLineEdit, "callwords");
   w_theme = AO_GUI_WIDGET(QComboBox, "theme");
-  w_gamemode = AO_GUI_WIDGET(QComboBox, "gamemode");
   w_reload_theme = AO_GUI_WIDGET(QPushButton, "theme_reload");
+  w_gamemode = AO_GUI_WIDGET(QComboBox, "gamemode");
   w_manual_gamemode = AO_GUI_WIDGET(QCheckBox, "manual_gamemode");
   w_server_alerts = AO_GUI_WIDGET(QCheckBox, "server_alerts");
 
