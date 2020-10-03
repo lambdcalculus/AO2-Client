@@ -228,6 +228,9 @@ public:
   // handle request to change gamemode
   void handle_gamemode(QString gamemode);
 
+  // handle request to change time of day
+  void handle_timeofday(QString timeofday);
+
   void play_preanim();
 
   // plays the witness testimony or cross examination animation based on

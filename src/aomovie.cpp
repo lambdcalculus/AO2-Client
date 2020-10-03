@@ -33,7 +33,7 @@ void AOMovie::play(QString p_file, QString p_char)
 
   // Remove ! at the beginning of p_file if needed
   // This is an indicator that the file is not selectable in the current theme
-  // (gamemode) but is still usable by other people
+  // (gamemode-timeofday) but is still usable by other people
   if (p_file.length() > 0 && p_file.at(0) == "!")
     p_file = p_file.remove(0, 1);
 
@@ -50,9 +50,9 @@ void AOMovie::play(QString p_file, QString p_char)
   // `char_p_file` + extensions in `exts` in order
   // 2. In the character folder, look for
   // `overlay/char_p_file` + extensions in `exts` in order
-  // 3. In the theme folder (gamemode/main/default), look for
+  // 3. In the theme folder (gamemode-timeofday/main/default), look for
   // `p_file` + extensions in `exts` in order
-  // 4. In the theme folder (gamemode/main/default), look for
+  // 4. In the theme folder (gamemode-timeofday/main/default), look for
   // "placeholder" + extensions in `exts` in order
 
   QStringList exts{".webp", ".apng", ".gif", ".png"};
@@ -91,8 +91,10 @@ void AOMovie::play_interjection(QString p_char_name,
     p_char_interjection_name = p_interjection_name;
 
   // Asset lookup order
-  // 1. In the character folder, look for `p_char_interjection_name`
-  // 2. In the theme folder (gamemode/main/default), look for `p_char_name`
+  // 1. In the character folder, look for
+  // `p_char_interjection_name`
+  // 2. In the theme folder (gamemode-timeofday/main/default), look for
+  // `p_char_name`
 
   QStringList exts{".webp", ".apng", ".gif"};
   QString interjection_filepath = ao_app->find_asset_path(

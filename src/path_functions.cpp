@@ -161,7 +161,11 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList exts)
 {
   QStringList paths{
       get_base_path() + "themes/" + get_theme() + "/gamemodes/" +
+          get_gamemode() + "/times/" + get_timeofday() + "/" + p_file,
+      get_base_path() + "themes/" + get_theme() + "/gamemodes/" +
           get_gamemode() + "/" + p_file,
+      get_base_path() + "themes/" + get_theme() + "/times/" + get_timeofday() +
+          "/" + p_file,
       get_base_path() + "themes/" + get_theme() + "/" + p_file,
       get_base_path() + "themes/default/" + p_file,
   };

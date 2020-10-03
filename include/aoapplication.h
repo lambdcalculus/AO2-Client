@@ -155,8 +155,10 @@ public:
    * If `theme_folder = get_base_path() + "themes/"`
    * the paths checked are (in order)
    *
-   * 1. theme_folder + get_gamemode() + "/" + p_file
-   * 2. theme_folder + p_file
+   * 1. theme_folder + get_gamemode() + "/" + get_timeofday() + "/" + p_file
+   * 2. theme_folder + get_gamemode() + "/" + p_file
+   * 3. theme_folder + get_timeofday() + "/" + p_file
+   * 4. theme_folder + p_file
    *
    * @param possible_paths Paths to check. Case-insensitive.
    *
@@ -172,8 +174,11 @@ public:
    * If `theme_folder = get_base_path() + "themes/"`, `p_ext`
    * is an extension, the paths checked are (in order)
    *
-   * 1. theme_folder + get_gamemode() + "/" + p_root + p_ext
-   * 2. theme_folder + p_root + p_ext
+   * 1. theme_folder + get_gamemode() + "/" + get_timeofday() + "/" + p_root +
+   * p_ext
+   * 2. theme_folder + get_gamemode() + "/" + p_root + p_ext
+   * 3. theme_folder + get_timeofday() + "/" + p_root + p_ext
+   * 4. theme_folder + p_root + p_ext
    *
    * @param p_root The root the filepath could have. Case-insensitive.
    * @param p_exts The potential extensions the filepath could have.
@@ -213,10 +218,6 @@ public:
   // Returns text from note file
   QString read_note(QString filename);
 
-  // Reads the theme from config.ini and loads it into the current_theme
-  // variable
-  QString get_theme();
-
   // Returns the blip rate from config.ini
   int read_blip_rate();
 
@@ -230,8 +231,14 @@ public:
   // returns a list of call words
   QStringList get_callwords();
 
+  // returns the current theme
+  QString get_theme();
+
   // returns the current gamemode
   QString get_gamemode();
+
+  // returns the current time of day
+  QString get_timeofday();
 
   // returns whether the player is able to change gamemodes manually while
   // ignoring server orders for it
@@ -291,14 +298,21 @@ public:
   // Set the gamemode
   void set_gamemode(QString m_gamemode);
 
+  // Set the time of day
+  void set_timeofday(QString m_timeofday);
+
   // Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
 
   // Returns the value of p_identifier in the design.ini file in p_design_path
   QString read_design_ini(QString p_identifier, QString p_design_path);
 
-  // Returns the value of p_identifier from p_file in either a theme gamemode
-  // subfolder, a theme folder, or default theme folder
+  // Returns the value of p_identifier from p_file in either
+  // 1. theme gamemode + timeofday subfolder,
+  // 2. theme gamemode subfolder,
+  // 3. theme timeofday subfolder,
+  // 4. theme folder,
+  // 5. default theme folder
   QString read_theme_ini(QString p_identifier, QString p_file);
 
   // Helper function for returning an int in a file inside of the theme folder
@@ -392,8 +406,12 @@ public:
   // Returns p_char's gender
   QString get_gender(QString p_char);
 
-  // Get the location of p_image, which is either in a theme gamemode subfolder,
-  // a theme folder, or default theme folder
+  // Get the location of p_image, which is either in a
+  // 1. theme gamemode + timeofday subfolder,
+  // 2. theme gamemode subfolder,
+  // 3. theme timeofday subfolder,
+  // 4. theme folder,
+  // 5. default theme folder
   QString get_image_path(QString p_image);
 
 signals:
@@ -414,6 +432,7 @@ private slots:
   void on_config_theme_changed();
   void on_config_reload_theme_requested();
   void on_config_gamemode_changed();
+  void on_config_timeofday_changed();
 
 public slots:
   void server_disconnected();

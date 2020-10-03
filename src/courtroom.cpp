@@ -362,6 +362,12 @@ void Courtroom::handle_gamemode(QString gamemode)
   on_app_reload_theme_requested();
 }
 
+void Courtroom::handle_timeofday(QString timeofday)
+{
+  ao_app->set_timeofday(timeofday);
+  on_app_reload_theme_requested();
+}
+
 void Courtroom::list_music()
 {
   ui_music_list->clear();
@@ -1002,8 +1008,8 @@ void Courtroom::handle_chatmessage_3()
   ui_vp_showname_image->show();
 
   // Asset lookup order
-  // 1. In the theme folder (gamemode/main/default), in the character folder,
-  // look for "showname" + extensions in `exts` in order
+  // 1. In the theme folder (gamemode-timeofday/main/default), in the character
+  // folder, look for "showname" + extensions in `exts` in order
   // 2. In the character folder, look for
   // "showname" + extensions in `exts` in order
 

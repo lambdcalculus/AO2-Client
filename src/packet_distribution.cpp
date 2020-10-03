@@ -686,6 +686,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
     w_courtroom->handle_gamemode(f_contents.at(0));
   }
+  else if (header == "TD")
+  {
+    if (courtroom_constructed)
+      goto end;
+    w_courtroom->handle_timeofday(f_contents.at(0));
+  }
   else if (header == "TR")
   {
     // Timer resume

@@ -19,10 +19,11 @@ public:
   // getters
   QString username();
   QString callwords();
+  bool server_alerts_enabled();
   QString theme();
   QString gamemode();
+  QString timeofday();
   bool manual_gamemode_enabled();
-  bool server_alerts_enabled();
   bool always_pre_enabled();
   int chat_tick_interval();
   int log_max_lines();
@@ -45,14 +46,15 @@ public slots:
 public slots:
   void set_username(QString p_string);
   void set_callwords(QString p_string);
-  void set_theme(QString p_string);
-  void set_gamemode(QString p_string);
-  void set_manual_gamemode(bool p_enabled);
-  void set_manual_gamemode(int p_state);
   void set_server_alerts(bool p_enabled);
   void set_server_alerts(int p_state);
   void set_always_pre(bool p_enabled);
   void set_always_pre(int p_state);
+  void set_theme(QString p_string);
+  void set_gamemode(QString p_string);
+  void set_timeofday(QString p_string);
+  void set_manual_gamemode(bool p_enabled);
+  void set_manual_gamemode(int p_state);
   void set_chat_tick_interval(int p_number);
   void set_log_max_lines(int p_number);
   void set_log_is_topdown(bool p_enabled);
@@ -75,10 +77,11 @@ public slots:
 signals:
   void username_changed(QString);
   void callwords_changed(QString);
+  void server_alerts_changed(bool);
   void theme_changed(QString);
   void gamemode_changed(QString);
+  void timeofday_changed(QString);
   void manual_gamemode_changed(bool);
-  void server_alerts_changed(bool);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);
   void log_max_lines_changed(int);

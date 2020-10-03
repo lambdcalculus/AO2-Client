@@ -21,15 +21,18 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   // general
   w_username = AO_GUI_WIDGET(QLineEdit, "username");
   w_callwords = AO_GUI_WIDGET(QLineEdit, "callwords");
+  w_server_alerts = AO_GUI_WIDGET(QCheckBox, "server_alerts");
+
+  // game
   w_theme = AO_GUI_WIDGET(QComboBox, "theme");
   w_reload_theme = AO_GUI_WIDGET(QPushButton, "theme_reload");
   w_gamemode = AO_GUI_WIDGET(QComboBox, "gamemode");
   w_manual_gamemode = AO_GUI_WIDGET(QCheckBox, "manual_gamemode");
-  w_server_alerts = AO_GUI_WIDGET(QCheckBox, "server_alerts");
-
-  // IC Chatlog
+  w_timeofday = AO_GUI_WIDGET(QComboBox, "timeofday");
   w_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
   w_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
+
+  // IC Chatlog
   w_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
   w_log_uses_newline = AO_GUI_WIDGET(QCheckBox, "log_newline");
   w_log_orientation_top_down =
@@ -54,20 +57,23 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   // themes
   refresh_theme_list();
   refresh_gamemode_list();
+  refresh_timeofday_list();
 
   // input
   connect(m_config, SIGNAL(username_changed(QString)), w_username,
           SLOT(setText(QString)));
   connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords,
           SLOT(setText(QString)));
+  connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(theme_changed(QString)), w_theme,
           SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(gamemode_changed(QString)), w_gamemode,
           SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_manual_gamemode,
           SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts,
-          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(timeofday_changed(QString)), w_timeofday,
+          SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre,
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(chat_tick_interval_changed(int)),
@@ -101,6 +107,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(set_username(QString)));
   connect(w_callwords, SIGNAL(textEdited(QString)), m_config,
           SLOT(set_callwords(QString)));
+  connect(w_server_alerts, SIGNAL(stateChanged(int)), m_config,
+          SLOT(set_server_alerts(int)));
   connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config,
           SLOT(set_theme(QString)));
   connect(w_reload_theme, SIGNAL(clicked()), this,
@@ -109,8 +117,8 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
           SLOT(on_gamemode_index_changed(QString)));
   connect(w_manual_gamemode, SIGNAL(stateChanged(int)), m_config,
           SLOT(set_manual_gamemode(int)));
-  connect(w_server_alerts, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_server_alerts(int)));
+  connect(w_timeofday, SIGNAL(currentIndexChanged(QString)), this,
+          SLOT(on_timeofday_index_changed(QString)));
   connect(w_always_pre, SIGNAL(stateChanged(int)), m_config,
           SLOT(set_always_pre(int)));
   connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config,
@@ -149,10 +157,11 @@ AOConfigPanel::AOConfigPanel(QWidget *p_parent)
   // set values
   w_username->setText(m_config->username());
   w_callwords->setText(m_config->callwords());
+  w_server_alerts->setChecked(m_config->server_alerts_enabled());
   w_theme->setCurrentText(m_config->theme());
   w_gamemode->setCurrentText(m_config->gamemode());
   w_manual_gamemode->setChecked(m_config->manual_gamemode_enabled());
-  w_server_alerts->setChecked(m_config->server_alerts_enabled());
+  w_timeofday->setCurrentText(m_config->timeofday());
   w_always_pre->setChecked(m_config->always_pre_enabled());
   w_chat_tick_interval->setValue(m_config->chat_tick_interval());
   w_log_max_lines->setValue(m_config->log_max_lines());
@@ -211,10 +220,10 @@ void AOConfigPanel::refresh_gamemode_list()
 
   // add empty entry indicating no gamemode chosen
   w_gamemode->addItem("<default>");
-  // themes
-  for (QString i_folder : QDir(QDir::currentPath() + "/base/themes/" +
-                               m_config->theme() + "/gamemodes/")
-                              .entryList(QDir::Dirs))
+  // gamemodes
+  QString path =
+      QDir::currentPath() + "/base/themes/" + m_config->theme() + "/gamemodes/";
+  for (QString i_folder : QDir(path).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
       continue;
@@ -228,6 +237,42 @@ void AOConfigPanel::refresh_gamemode_list()
   w_gamemode->blockSignals(false);
 }
 
+void AOConfigPanel::refresh_timeofday_list()
+{
+  const QString p_prev_text = w_timeofday->currentText();
+
+  // block signals
+  w_timeofday->blockSignals(true);
+  w_timeofday->clear();
+
+  // add empty entry indicating no time of day chosen
+  w_timeofday->addItem("<default>");
+
+  // decide path to look for times of day. This differs whether there is a
+  // gamemode chosen or not
+  QString path;
+  if (m_config->gamemode().isEmpty())
+    path =
+        QDir::currentPath() + "/base/themes/" + m_config->theme() + "/times/";
+  else
+    path = QDir::currentPath() + "/base/themes/" + m_config->theme() +
+           "/gamemodes/" + m_config->gamemode() + "/times/";
+
+  // times of day
+  for (QString i_folder : QDir(path).entryList(QDir::Dirs))
+  {
+    if (i_folder == "." || i_folder == "..")
+      continue;
+    w_timeofday->addItem(i_folder, i_folder);
+  }
+
+  // restore previous selection
+  w_timeofday->setCurrentText(p_prev_text);
+
+  // unblock
+  w_timeofday->blockSignals(false);
+}
+
 void AOConfigPanel::on_reload_theme_clicked()
 {
   qDebug() << "reload theme clicked";
@@ -238,6 +283,12 @@ void AOConfigPanel::on_gamemode_index_changed(QString p_text)
 {
   Q_UNUSED(p_text);
   m_config->set_gamemode(w_gamemode->currentData().toString());
+}
+
+void AOConfigPanel::on_timeofday_index_changed(QString p_text)
+{
+  Q_UNUSED(p_text);
+  m_config->set_timeofday(w_timeofday->currentData().toString());
 }
 
 void AOConfigPanel::on_log_is_topdown_changed(bool p_enabled)
@@ -270,4 +321,5 @@ void AOConfigPanel::on_config_reload_theme_requested()
 {
   refresh_theme_list();
   refresh_gamemode_list();
+  refresh_timeofday_list();
 }

@@ -25,6 +25,7 @@ class AOConfigPrivate : public QObject
   QString callwords;
   QString theme;
   QString gamemode;
+  QString timeofday;
   bool manual_gamemode;
   bool server_alerts;
   bool always_pre;
@@ -69,6 +70,13 @@ public slots:
     callwords = p_string;
     invoke_parents("callwords_changed", Q_ARG(QString, p_string));
   }
+  void set_server_alerts(bool p_enabled)
+  {
+    if (server_alerts == p_enabled)
+      return;
+    server_alerts = p_enabled;
+    invoke_parents("server_alerts_changed", Q_ARG(bool, p_enabled));
+  }
   void set_theme(QString p_string)
   {
     if (theme == p_string)
@@ -83,19 +91,19 @@ public slots:
     gamemode = p_string;
     invoke_parents("gamemode_changed", Q_ARG(QString, p_string));
   }
+  void set_timeofday(QString p_string)
+  {
+    if (timeofday == p_string)
+      return;
+    timeofday = p_string;
+    invoke_parents("timeofday_changed", Q_ARG(QString, p_string));
+  }
   void set_manual_gamemode(bool p_enabled)
   {
     if (manual_gamemode == p_enabled)
       return;
     manual_gamemode = p_enabled;
     invoke_parents("manual_gamemode_changed", Q_ARG(bool, p_enabled));
-  }
-  void set_server_alerts(bool p_enabled)
-  {
-    if (server_alerts == p_enabled)
-      return;
-    server_alerts = p_enabled;
-    invoke_parents("server_alerts_changed", Q_ARG(bool, p_enabled));
   }
   void set_always_pre(bool p_enabled)
   {
@@ -192,10 +200,11 @@ public slots:
   {
     username = cfg.value("username").toString();
     callwords = cfg.value("callwords").toString();
+    server_alerts = cfg.value("server_alerts", true).toBool();
     theme = cfg.value("theme", "default").toString();
     gamemode = cfg.value("gamemode", "").toString();
+    timeofday = cfg.value("timeofday", "").toString();
     manual_gamemode = cfg.value("manual_gamemode", false).toBool();
-    server_alerts = cfg.value("server_alerts", true).toBool();
     always_pre = cfg.value("always_pre", true).toBool();
     chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
     log_max_lines = cfg.value("chatlog_limit", 200).toInt();
@@ -214,10 +223,11 @@ public slots:
   {
     cfg.setValue("username", username);
     cfg.setValue("callwords", callwords);
+    cfg.setValue("server_alerts", server_alerts);
     cfg.setValue("theme", theme);
     cfg.setValue("gamemode", gamemode);
+    cfg.setValue("timeofday", timeofday);
     cfg.setValue("manual_gamemode", manual_gamemode);
-    cfg.setValue("server_alerts", server_alerts);
     cfg.setValue("always_pre", always_pre);
     cfg.setValue("chat_tick_interval", chat_tick_interval);
     cfg.setValue("chatlog_limit", log_max_lines);
@@ -302,6 +312,11 @@ QString AOConfig::theme()
 QString AOConfig::gamemode()
 {
   return d->gamemode;
+}
+
+QString AOConfig::timeofday()
+{
+  return d->timeofday;
 }
 
 bool AOConfig::manual_gamemode_enabled()
@@ -396,6 +411,11 @@ void AOConfig::set_theme(QString p_string)
 void AOConfig::set_gamemode(QString p_string)
 {
   d->set_gamemode(p_string);
+}
+
+void AOConfig::set_timeofday(QString p_string)
+{
+  d->set_timeofday(p_string);
 }
 
 void AOConfig::set_manual_gamemode(int p_state)

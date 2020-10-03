@@ -25,6 +25,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
           SLOT(on_config_theme_changed()));
   connect(config, SIGNAL(gamemode_changed(QString)), this,
           SLOT(on_config_gamemode_changed()));
+  connect(config, SIGNAL(timeofday_changed(QString)), this,
+          SLOT(on_config_timeofday_changed()));
 
   config_panel = new AOConfigPanel;
   connect(config_panel, SIGNAL(reload_theme()), this,
@@ -124,6 +126,12 @@ void AOApplication::set_gamemode(QString p_gamemode)
   emit reload_theme();
 }
 
+void AOApplication::set_timeofday(QString p_timeofday)
+{
+  config->set_timeofday(p_timeofday);
+  emit reload_theme();
+}
+
 void AOApplication::on_config_theme_changed()
 {
   emit reload_theme();
@@ -135,6 +143,11 @@ void AOApplication::on_config_reload_theme_requested()
 }
 
 void AOApplication::on_config_gamemode_changed()
+{
+  emit reload_theme();
+}
+
+void AOApplication::on_config_timeofday_changed()
 {
   emit reload_theme();
 }

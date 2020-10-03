@@ -24,15 +24,18 @@ class AOConfigPanel : public QWidget
   // general
   QLineEdit *w_username = nullptr;
   QLineEdit *w_callwords = nullptr;
+  QCheckBox *w_server_alerts = nullptr;
+
+  // game
   QComboBox *w_theme = nullptr;
   QPushButton *w_reload_theme = nullptr;
   QComboBox *w_gamemode = nullptr;
+  QComboBox *w_timeofday = nullptr;
   QCheckBox *w_manual_gamemode = nullptr;
-  QCheckBox *w_server_alerts = nullptr;
-
-  // IC Chatlog
   QCheckBox *w_always_pre = nullptr;
   QSpinBox *w_chat_tick_interval = nullptr;
+
+  // IC Chatlog
   QSpinBox *w_log_max_lines = nullptr;
   QCheckBox *w_log_uses_newline = nullptr;
   QRadioButton *w_log_orientation_top_down = nullptr;
@@ -67,10 +70,12 @@ signals:
 private:
   void refresh_theme_list();
   void refresh_gamemode_list();
+  void refresh_timeofday_list();
 
 private slots:
   void on_reload_theme_clicked();
   void on_gamemode_index_changed(QString p_text);
+  void on_timeofday_index_changed(QString p_text);
   void on_log_is_topdown_changed(bool p_enabled);
   void on_effects_value_changed(int p_num);
   void on_system_value_changed(int p_num);

@@ -20,6 +20,11 @@ QString AOApplication::get_gamemode()
   return config->gamemode();
 }
 
+QString AOApplication::get_timeofday()
+{
+  return config->timeofday();
+}
+
 int AOApplication::read_blip_rate()
 {
   return config->blip_rate();
@@ -293,7 +298,8 @@ QString AOApplication::get_sfx(QString p_identifier)
 QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
 {
   // File lookup order
-  // 1. In the theme folder (gamemode/main/default), look for `p_file`.
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
+  // `p_file`.
 
   QString path = find_theme_asset_path(p_file);
   if (path.isEmpty())
@@ -331,7 +337,7 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
 QVector<QStringList> AOApplication::get_highlight_color()
 {
   // File lookup order
-  // 1. In the theme folder (gamemode/main/default), look for
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
   // "courtroom_config.ini".
 
   QString path = find_theme_asset_path("courtroom_config.ini");
@@ -382,7 +388,7 @@ QVector<QStringList> AOApplication::get_highlight_color()
 QString AOApplication::get_spbutton(QString p_tag, int index)
 {
   // File lookup order
-  // 1. In the theme folder (gamemode/main/default), look for
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
   // "courtroom_config.ini".
 
   QString path = find_theme_asset_path("courtroom_config.ini");
@@ -425,7 +431,7 @@ QString AOApplication::get_spbutton(QString p_tag, int index)
 QStringList AOApplication::get_effect(int index)
 {
   // File lookup order
-  // 1. In the theme folder (gamemode/main/default), look for
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
   // "courtroom_config.ini".
 
   QString path = find_theme_asset_path("courtroom_config.ini");
@@ -790,7 +796,7 @@ bool AOApplication::get_blank_blip()
 QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
 {
   // File lookup order
-  // 1. In the theme folder (gamemode/main/default), look for
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
   // `p_identifier`.
   QString path = find_theme_asset_path(p_file);
   if (path.isEmpty())
@@ -802,7 +808,7 @@ QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
 QString AOApplication::get_image_path(QString p_image)
 {
   // File lookup order
-  // 1. In the theme folder (gamemode/main/default), look for
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
   // `p_image`.
   return find_theme_asset_path(p_image);
 }
