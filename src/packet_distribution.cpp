@@ -682,13 +682,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "GM")
   {
-    if (courtroom_constructed)
+    if (!courtroom_constructed)
       goto end;
     w_courtroom->handle_gamemode(f_contents.at(0));
   }
   else if (header == "TOD")
   {
-    if (courtroom_constructed)
+    if (!courtroom_constructed)
       goto end;
     w_courtroom->handle_timeofday(f_contents.at(0));
   }
