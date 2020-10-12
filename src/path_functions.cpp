@@ -132,11 +132,6 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
 }
 #endif
 
-QString AOApplication::find_asset_path(QStringList possible_paths)
-{
-  return find_asset_path(possible_paths, {""});
-}
-
 QString AOApplication::find_asset_path(QStringList possible_roots,
                                        QStringList possible_exts)
 {
@@ -150,11 +145,6 @@ QString AOApplication::find_asset_path(QStringList possible_roots,
     }
   }
   return "";
-}
-
-QString AOApplication::find_theme_asset_path(QString p_file)
-{
-  return find_theme_asset_path(p_file, {""});
 }
 
 QString AOApplication::find_theme_asset_path(QString p_file, QStringList exts)

@@ -123,16 +123,6 @@ public:
   QString get_evidence_path(QString p_file);
 
   /**
-   * @brief Searches for a file in any of the given paths, and returns
-   * the first case-sensitive path that actually matches to an existing file.
-   *
-   * @param possible_paths Paths to check. Case-insensitive.
-   *
-   * @return The first case-sensitive path that corresponds to an actual file,
-   * or an empty string, if not one does.
-   */
-  QString find_asset_path(QStringList possible_paths);
-  /**
    * @brief Returns the first case-sensitive file that is the combination of one
    * of the given root and extensions, or empty string if no combination exists.
    *
@@ -148,26 +138,7 @@ public:
    * exists, or an empty string, if not one does.
    */
   QString find_asset_path(QStringList possible_roots,
-                          QStringList possible_exts);
-
-  /**
-   * @brief Searches for a file in the current theme folder and returns the
-   * first case-sensitive path that matches to a file, or empty if it fails.
-   *
-   * @details In the current theme folder, p_file is checked for in these paths
-   * 1. The current time of day folder in the current gamemode folder
-   * 2. The current gamemode folder
-   * 3. The current time of day folder
-   * 4. The current theme folder.
-   * The first path that is matched is the one that is returned. If p_file is
-   * not found in any path, it returns an empty string.
-   *
-   * @param p_file File name+extension to look for. Case-insensitive.
-   *
-   * @return The first case-sensitive path that corresponds to an actual file,
-   * or an empty string, if not one does.
-   */
-  QString find_theme_asset_path(QString p_file);
+                          QStringList possible_exts = {""});
 
   /**
    * @brief Returns the first case-sensitive file in the theme folder that is
@@ -190,7 +161,7 @@ public:
    * @return The first case-sensitive root+extension path that corresponds to an
    * actual file, or an empty string, if not one does.
    */
-  QString find_theme_asset_path(QString p_root, QStringList p_exts);
+  QString find_theme_asset_path(QString p_root, QStringList p_exts = {""});
 
   /**
    * @brief Returns the 'correct' path for the file given as the parameter by
