@@ -11,7 +11,7 @@ AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 
 void AOImage::set_image(QString p_image)
 {
-  QString f_path = ao_app->get_image_path(p_image);
+  QString f_path = ao_app->find_theme_asset_path(p_image);
   AOPixmap f_pixmap(f_path);
   this->setPixmap(f_pixmap.scale_to_size(size()));
 

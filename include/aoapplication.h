@@ -124,7 +124,7 @@ public:
 
   /**
    * @brief Searches for a file in any of the given paths, and returns
-   * the first path that actually matches to an existing file.
+   * the first case-sensitive path that actually matches to an existing file.
    *
    * @param possible_paths Paths to check. Case-insensitive.
    *
@@ -133,34 +133,36 @@ public:
    */
   QString find_asset_path(QStringList possible_paths);
   /**
-   * @brief Searches for a file with any of the given root and extensions, and
-   * returns the first path that actually matches to an existing file. A root is
-   * matched to all given extensions in order before continuing to the next
-   * root.
+   * @brief Returns the first case-sensitive file that is the combination of one
+   * of the given root and extensions, or empty string if no combination exists.
+   *
+   * @details A root is matched to all given extensions in order before
+   * continuing to the next root.
    *
    * @param possible_roots The potential roots the filepath could have.
    * Case-insensitive.
    * @param possible_exts The potential extensions the filepath could have.
    * Case-insensitive.
    *
-   * @return The first case-sensitive  root+extension path for which a file
+   * @return The first case-sensitive root+extension path for which a file
    * exists, or an empty string, if not one does.
    */
   QString find_asset_path(QStringList possible_roots,
                           QStringList possible_exts);
 
   /**
-   * @brief Searches for a file in the current theme folder, and returns
-   * the first path that actually matches to an existing file.
-   * If `theme_folder = get_base_path() + "themes/"`
-   * the paths checked are (in order)
+   * @brief Searches for a file in the current theme folder and returns the
+   * first case-sensitive path that matches to a file, or empty if it fails.
    *
-   * 1. theme_folder + get_gamemode() + "/" + get_timeofday() + "/" + p_file
-   * 2. theme_folder + get_gamemode() + "/" + p_file
-   * 3. theme_folder + get_timeofday() + "/" + p_file
-   * 4. theme_folder + p_file
+   * @details In the current theme folder, p_file is checked for in these paths
+   * 1. The current time of day folder in the current gamemode folder
+   * 2. The current gamemode folder
+   * 3. The current time of day folder
+   * 4. The current theme folder.
+   * The first path that is matched is the one that is returned. If p_file is
+   * not found in any path, it returns an empty string.
    *
-   * @param possible_paths Paths to check. Case-insensitive.
+   * @param p_file File name+extension to look for. Case-insensitive.
    *
    * @return The first case-sensitive path that corresponds to an actual file,
    * or an empty string, if not one does.
@@ -168,19 +170,20 @@ public:
   QString find_theme_asset_path(QString p_file);
 
   /**
-   * @brief Searches for a root+extension path in the current theme folder, and
-   * returns the first path that actually matches to an existing file.
+   * @brief Returns the first case-sensitive file in the theme folder that is
+   * of the form name+extension, or empty string if it fails.
    *
-   * If `theme_folder = get_base_path() + "themes/"`, `p_ext`
-   * is an extension, the paths checked are (in order)
+   * @details The p_exts list is browsed in order. A name+extension file is
+   * searched in order in the following directories before checking the next
+   * extension:
+   * 1. The current time of day folder in the current gamemode folder
+   * 2. The current gamemode folder
+   * 3. The current time of day folder
+   * 4. The current theme folder.
+   * The first path that is matched is the one that is returned. If no file
+   * is found at all, it returns an empty string.
    *
-   * 1. theme_folder + get_gamemode() + "/" + get_timeofday() + "/" + p_root +
-   * p_ext
-   * 2. theme_folder + get_gamemode() + "/" + p_root + p_ext
-   * 3. theme_folder + get_timeofday() + "/" + p_root + p_ext
-   * 4. theme_folder + p_root + p_ext
-   *
-   * @param p_root The root the filepath could have. Case-insensitive.
+   * @param p_name Name of the file to look for. Case-insensitive.
    * @param p_exts The potential extensions the filepath could have.
    * Case-insensitive.
    *
@@ -231,21 +234,50 @@ public:
   // returns a list of call words
   QStringList get_callwords();
 
-  // returns the current theme
+  /**
+   * @brief Return the current theme name.
+   * @return Name of current theme.
+   */
   QString get_theme();
 
-  // returns the current gamemode
+  /**
+   * @brief Return the current gamemode. If no gamemode is set, return the
+   * empty string.
+   *
+   * @return Current gamemode, or empty string if not set.
+   */
   QString get_gamemode();
 
-  // returns whether the player is able to change gamemodes manually and
-  // ignore server orders for it
+  /**
+   * @brief Returns the current manual gamemode status.
+   *
+   * @details If true, a player can change gamemodes manually and their client
+   * will ignore orders to change gamemode from the server. If false, neither is
+   * possible and the client will follow orders from the server to change
+   * gamemode.
+   *
+   * @return Current manual gamemode status.
+   */
   bool get_manual_gamemode_enabled();
 
-  // returns the current time of day
+  /**
+   * @brief Returns the current time of day. If no time of day is set, return
+   * the empty string.
+   *
+   * @return Current gamemode, or empty string if not set.
+   */
   QString get_timeofday();
 
-  // returns whether the player is able to change time of day manually and
-  // ignore server orders for it
+  /**
+   * @brief Returns the current manual time of day status.
+   *
+   * @details If true, a player can change time of day manually and their client
+   * will ignore orders to change time of day from the server. If false, neither
+   * is possible and the client will follow orders from the server to change
+   * time of day.
+   *
+   * @return Current manual time of day status.
+   */
   bool get_manual_timeofday_enabled();
 
   // returns whether server alerts (ones that trigger a client alert other than
@@ -308,19 +340,33 @@ public:
   // Returns the contents of serverlist.txt
   QVector<server_type> read_serverlist_txt();
 
-  // Returns the value of p_identifier in the design.ini file in p_design_path
-  QString read_design_ini(QString p_identifier, QString p_design_path);
+  /**
+   * @brief Reads p_path and returns the value associated with key
+   * p_identifier. If the file or key do not exist, return empty.
+   *
+   * @param p_identifier Key to look for.
+   * @param p_path Full path to ini file
+   * @return Value associated with key, or empty if not found.
+   */
+  QString read_ini(QString p_identifier, QString p_path);
 
-  // Returns the value of p_identifier from p_file in either
-  // 1. theme gamemode + timeofday subfolder,
-  // 2. theme gamemode subfolder,
-  // 3. theme timeofday subfolder,
-  // 4. theme folder,
-  // 5. default theme folder
+  /**
+   * @brief Searches p_file in theme folder and returns the value associated
+   * with key p_identifier. If the file or key do not exist, return empty.
+   *
+   * @details p_file is looked for in the following directories. The earliest
+   * directory where it is found is the one that is considered.
+   * 1. The current time of day folder in the current gamemode folder
+   * 2. The current gamemode folder
+   * 3. The current time of day folder
+   * 4. The current theme folder.
+   * 5. The default theme folder.
+   *
+   * @param p_identifier Key to look for.
+   * @param p_file Name of file+ini to look for.
+   * @return Value associated with key, or empty if not found.
+   */
   QString read_theme_ini(QString p_identifier, QString p_file);
-
-  // Helper function for returning an int in a file inside of the theme folder
-  int get_design_ini_value(QString p_identifier, QString p_design_file);
 
   // Returns the coordinates of widget with p_identifier from p_file
   QPoint get_button_spacing(QString p_identifier, QString p_file);
@@ -409,14 +455,6 @@ public:
 
   // Returns p_char's gender
   QString get_gender(QString p_char);
-
-  // Get the location of p_image, which is either in a
-  // 1. theme gamemode + timeofday subfolder,
-  // 2. theme gamemode subfolder,
-  // 3. theme timeofday subfolder,
-  // 4. theme folder,
-  // 5. default theme folder
-  QString get_image_path(QString p_image);
 
 signals:
   void reload_theme();

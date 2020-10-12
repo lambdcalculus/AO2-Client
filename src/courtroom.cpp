@@ -196,8 +196,8 @@ void Courtroom::set_scene()
 
   if (file_exists(ini_path))
   {
-    f_background = ao_app->read_design_ini(f_side, ini_path);
-    f_desk_image = ao_app->read_design_ini(f_side + "_desk", ini_path);
+    f_background = ao_app->read_ini(f_side, ini_path);
+    f_desk_image = ao_app->read_ini(f_side + "_desk", ini_path);
 
     if (f_desk_mod == "0") // keeping a bit of the functionality for now
     {

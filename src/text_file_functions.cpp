@@ -158,21 +158,15 @@ QVector<server_type> AOApplication::read_serverlist_txt()
   return f_server_list;
 }
 
-QString AOApplication::read_design_ini(QString p_identifier,
-                                       QString p_design_path)
+QString AOApplication::read_ini(QString p_identifier, QString p_path)
 {
-  QFile design_ini;
-
-  design_ini.setFileName(p_design_path);
-
-  if (!design_ini.open(QIODevice::ReadOnly))
-  {
+  QFile ini;
+  ini.setFileName(p_path);
+  if (!ini.open(QIODevice::ReadOnly))
     return "";
-  }
-  QTextStream in(&design_ini);
 
+  QTextStream in(&ini);
   QString result = "";
-
   while (!in.atEnd())
   {
     QString f_line = in.readLine().trimmed();
@@ -184,25 +178,14 @@ QString AOApplication::read_design_ini(QString p_identifier,
 
     if (line_elements.at(0).trimmed() != p_identifier)
       continue;
-
     if (line_elements.size() < 2)
       continue;
-
     result = line_elements.at(1).trimmed();
     break;
   }
 
-  design_ini.close();
-
+  ini.close();
   return result;
-}
-
-int AOApplication::get_design_ini_value(QString p_identifier, QString p_file)
-{
-  QString result = read_theme_ini(p_identifier, p_file);
-  if (result.isEmpty())
-    return 0;
-  return result.toInt();
 }
 
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
@@ -802,13 +785,5 @@ QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
   if (path.isEmpty())
     return "";
 
-  return read_design_ini(p_identifier, path); // Could be the empty string
-}
-
-QString AOApplication::get_image_path(QString p_image)
-{
-  // File lookup order
-  // 1. In the theme folder (gamemode-timeofday/main/default), look for
-  // `p_image`.
-  return find_theme_asset_path(p_image);
+  return read_ini(p_identifier, path); // Could be the empty string
 }

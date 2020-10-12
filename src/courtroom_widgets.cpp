@@ -1238,7 +1238,7 @@ void Courtroom::load_effects()
 
   // And create new effects
   int effect_number =
-      ao_app->get_design_ini_value("effect_number", cc_config_ini);
+      ao_app->read_theme_ini("effect_number", cc_config_ini).toInt();
   effects_enabled.resize(effect_number);
   ui_effects.resize(effect_number);
 
@@ -1275,7 +1275,7 @@ void Courtroom::load_free_blocks()
 
   // And create new free block buttons
   int free_block_number =
-      ao_app->get_design_ini_value("free_block_number", cc_config_ini);
+      ao_app->read_theme_ini("free_block_number", cc_config_ini).toInt();
   free_blocks_enabled.resize(free_block_number);
   ui_free_blocks.resize(free_block_number);
 
@@ -1309,7 +1309,7 @@ void Courtroom::load_shouts()
 
   // And create new shouts
   int shout_number =
-      ao_app->get_design_ini_value("shout_number", cc_config_ini);
+      ao_app->read_theme_ini("shout_number", cc_config_ini).toInt();
   shouts_enabled.resize(shout_number);
   ui_shouts.resize(shout_number);
 
@@ -1347,7 +1347,8 @@ void Courtroom::load_wtce()
     delete_widget(widget);
 
   // And create new wtce buttons
-  int wtce_number = ao_app->get_design_ini_value("wtce_number", cc_config_ini);
+  int wtce_number =
+      ao_app->read_theme_ini("wtce_number", cc_config_ini).toInt();
   wtce_enabled.resize(wtce_number);
   ui_wtce.resize(wtce_number);
 

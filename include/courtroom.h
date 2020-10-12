@@ -225,10 +225,18 @@ public:
   // handle server-side clock animation and display
   void handle_clock(QString time);
 
-  // handle request to change gamemode
+  /**
+   * @brief Handle server request to change to given gamemode. If manual
+   * gamemode configuration is on, this method does nothing.
+   * @param gamemode Gamemode to change to.
+   */
   void handle_gamemode(QString gamemode);
 
-  // handle request to change time of day
+  /**
+   * @brief Handle server request to change to given time of day. If manual
+   * time of day configuration is on, this method does nothing.
+   * @param timeofday Time of day to change to.
+   */
   void handle_timeofday(QString timeofday);
 
   void play_preanim();

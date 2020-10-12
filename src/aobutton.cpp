@@ -13,10 +13,11 @@ AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)
 
 void AOButton::set_image(QString p_image)
 {
-  image_path = ao_app->get_image_path(p_image);
+  image_path = ao_app->find_theme_asset_path(p_image);
   // Get the path of the found image without the extension
   QString image_name = p_image.left(p_image.lastIndexOf(QChar('.')));
-  QString hover_image_path = ao_app->get_image_path(image_name + "_hover.png");
+  QString hover_image_path =
+      ao_app->find_theme_asset_path(image_name + "_hover.png");
 
   if (file_exists(image_path))
   {
