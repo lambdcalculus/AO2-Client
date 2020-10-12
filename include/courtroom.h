@@ -182,11 +182,29 @@ public:
 
   void move_widget(QWidget *p_widget, QString p_identifier);
 
+  /**
+   * @brief Show the currently selected shout button, hide the remaining ones.
+   * If no shouts exist, this method does nothing.
+   */
   void set_shouts();
+
+  /**
+   * @brief Show the currently selected effect button, hide the remaining ones.
+   * If no effects exist, this method does nothing.
+   */
   void set_effects();
-  void set_judge_enabled(bool p_enabled);
+
+  /**
+   * @brief Show the currently selected splash button, hide the remaining ones.
+   * If no splashes exist, this method does nothing.
+   */
   void set_judge_wtce();
+
+  /**
+   * @brief Show all free blocks and restart their animations.
+   */
   void set_free_blocks();
+  void set_judge_enabled(bool p_enabled);
 
   // these are for OOC chat
   void append_server_chatmessage(QString p_name, QString p_message);
@@ -714,9 +732,24 @@ private slots:
 
   void on_cycle_clicked();
 
-  void cycle_shout(int p_index);
-  void cycle_effect(int p_index);
-  void cycle_wtce(int p_index);
+  /**
+   * @brief Selects the shout p_delta slots ahead of the current one, wrapping
+   * around if needed. If p_delta is negative, look -p_delta slots behind.
+   * @param Shout slots to advance. May be negative.
+   */
+  void cycle_shout(int p_delta);
+  /**
+   * @brief Selects the effect p_delta slots ahead of the current one, wrapping
+   * around if needed. If p_delta is negative, look -p_delta slots behind.
+   * @param Shout slots to advance. May be negative.
+   */
+  void cycle_effect(int p_delta);
+  /**
+   * @brief Selects the splash p_delta slots ahead of the current one, wrapping
+   * around if needed. If p_delta is negative, look -p_delta slots behind.
+   * @param Shout slots to advance. May be negative.
+   */
+  void cycle_wtce(int p_delta);
 
   void on_add_button_clicked();
   void on_delete_button_clicked();
@@ -730,17 +763,27 @@ private slots:
   void load_wtce();
   void load_free_blocks();
   /**
-   * @brief reset the shout button's texture to default
-   * DOES NOT MODIFY OBJECTION_STATE
+   * @brief Set the sprites of the shout buttons, and mark the currently
+   * selected shout as such.
+   *
+   * @details If a sprite cannot be found for a shout button, a regular
+   * push button is displayed for it with its shout name instead.
    */
-  void reset_shout_buttons();
+  void draw_shout_buttons();
 
   /**
    * @brief a general purpose function to toggle button selection
    */
   void on_shout_clicked();
 
-  void reset_effect_buttons();
+  /**
+   * @brief Set the sprites of the effect buttons, and mark the currently
+   * selected effect as such.
+   *
+   * @details If a sprite cannot be found for a shout button, a regular
+   * push button is displayed for it with its shout name instead.
+   */
+  void draw_effect_buttons();
   void on_effect_button_clicked();
 
   void on_mute_clicked();
@@ -754,7 +797,13 @@ private slots:
 
   void on_witness_testimony_clicked();
   void on_cross_examination_clicked();
-  void reset_judge_wtce_buttons();
+  /**
+   * @brief Set the sprites of the splash buttons.
+   *
+   * @details If a sprite cannot be found for a shout button, a regular
+   * push button is displayed for it with its shout name instead.
+   */
+  void draw_judge_wtce_buttons();
   void on_wtce_clicked();
 
   void on_change_character_clicked();

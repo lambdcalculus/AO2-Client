@@ -745,7 +745,7 @@ void Courtroom::set_widgets()
   //  ui_shouts[0]->show();
   //  ui_shouts[1]->show();
   //  ui_shouts[2]->show();
-  reset_shout_buttons();
+  draw_shout_buttons();
 
   set_size_and_pos(ui_shout_up, "shout_up");
   ui_shout_up->set_image("shoutup.png");
@@ -775,7 +775,7 @@ void Courtroom::set_widgets()
   {
     set_size_and_pos(ui_effects[i], effect_names[i]);
   }
-  reset_effect_buttons();
+  draw_effect_buttons();
 
   set_size_and_pos(ui_effect_up, "effect_up");
   ui_effect_up->set_image("effectup.png");
@@ -816,9 +816,7 @@ void Courtroom::set_widgets()
     qDebug() << "AA: single wtce";
   }
   set_judge_wtce();
-
-  // this will reset the image
-  reset_judge_wtce_buttons();
+  draw_judge_wtce_buttons();
 
   for (int i = 0; i < free_block_names.size(); ++i)
   {

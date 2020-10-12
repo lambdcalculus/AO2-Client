@@ -92,7 +92,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   m_shout_state = 0;
   m_wtce_current = 0;
-  reset_judge_wtce_buttons();
+  draw_judge_wtce_buttons();
 
   // setup chat
   on_chat_config_changed();
@@ -789,13 +789,13 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_sfx_list->setCurrentItem(ui_sfx_list->item(0));
 
     m_objection_state = 0;
-    reset_shout_buttons();
+    draw_shout_buttons();
 
     m_effect_state = 0;
-    reset_effect_buttons();
+    draw_effect_buttons();
 
     m_wtce_current = 0;
-    reset_judge_wtce_buttons();
+    draw_judge_wtce_buttons();
 
     is_presenting_evidence = false;
     ui_evidence_present->set_image("present_disabled.png");
@@ -2047,13 +2047,20 @@ void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::reset_shout_buttons()
+void Courtroom::draw_shout_buttons()
 {
   for (int i = 0; i < ui_shouts.size(); ++i)
-    ui_shouts[i]->set_image(shout_names.at(i) + ".png");
+  {
+    QString shout_file = shout_names.at(i) + ".png";
+    ui_shouts[i]->set_image(shout_file);
+    if (ao_app->find_theme_asset_path(shout_file).isEmpty())
+      ui_shouts[i]->setText(shout_names.at(i));
+    else
+      ui_shouts[i]->setText("");
+  }
 
-  if (m_objection_state != 0 &&
-      ui_shouts.size() > 0) // check to prevent crashing
+  // Mark selected button as such
+  if (m_objection_state != 0 && ui_shouts.size() > 0)
     ui_shouts.at(m_objection_state - 1)
         ->set_image(shout_names.at(m_objection_state - 1) + "_selected.png");
 }
@@ -2069,7 +2076,7 @@ void Courtroom::on_shout_clicked()
   else
     m_objection_state = f_shout_id;
 
-  reset_shout_buttons();
+  draw_shout_buttons();
 
   ui_ic_chat_message->setFocus();
 }
@@ -2110,98 +2117,41 @@ void Courtroom::on_cycle_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::cycle_shout(int p_index)
+void Courtroom::cycle_shout(int p_delta)
 {
   int n = ui_shouts.size();
-
-  // Check if any shout button is available to begin with
-  int i;
-  for (i = 0; i < n; i++)
-  {
-    if (shouts_enabled[i])
-      break;
-  }
-  if (i == n)
-  {
-    call_notice(
-        "Fatal error: no shout button images found in current theme folder.");
-    exit(1);
-  }
-
-  // By performing this check beforehand, the do while loop here is guaranteed
-  // to terminate.
-  do
-  {
-    m_shout_state = (m_shout_state - p_index + n) % n;
-  } while (!shouts_enabled[m_shout_state]);
-
+  m_shout_state = (m_shout_state - p_delta + n) % n;
   set_shouts();
 }
 
-void Courtroom::cycle_effect(int p_index)
+void Courtroom::cycle_effect(int p_delta)
 {
   int n = ui_effects.size();
-  // Check if any effect button is available to begin with
-  int i;
-  for (i = 0; i < n; i++)
-  {
-    if (effects_enabled[i])
-      break;
-  }
-  if (i == n)
-  {
-    call_notice(
-        "Fatal error: no effect button images found in current theme folder.");
-    exit(1);
-  }
-
-  // By performing this check beforehand, the do while loop here is guaranteed
-  // to terminate.
-  do
-  {
-    m_effect_current = (m_effect_current - p_index + n) % n;
-  } while (!effects_enabled[m_effect_current]);
-
+  m_effect_current = (m_effect_current - p_delta + n) % n;
   set_effects();
 }
 
-void Courtroom::cycle_wtce(int p_index)
+void Courtroom::cycle_wtce(int p_delta)
 {
   int n = ui_wtce.size();
-  // Check if any splash button is available to begin with
-  int i;
-  for (i = 0; i < n; i++)
-  {
-    if (wtce_enabled[i])
-      break;
-  }
-  if (i == n)
-  {
-    call_notice(
-        "Fatal error: no splash button images found in current theme folder.");
-    exit(1);
-  }
-
-  // By performing this check beforehand, the do while loop here is guaranteed
-  // to terminate.
-  do
-  {
-    m_wtce_current = (m_wtce_current - p_index + n) % n;
-  } while (!wtce_enabled[m_wtce_current]);
-
+  m_wtce_current = (m_wtce_current - p_delta + n) % n;
   set_judge_wtce();
 }
 
-void Courtroom::reset_effect_buttons()
+void Courtroom::draw_effect_buttons()
 {
-  // effect names does not necessarily have the same size as ui effects
   for (int i = 0; i < effect_names.size(); ++i)
   {
-    // qDebug() << effect_names << i;
-    ui_effects[i]->set_image(effect_names.at(i) + ".png");
+    QString effect_file = effect_names.at(i) + ".png";
+    ui_effects[i]->set_image(effect_file);
+    if (ao_app->find_theme_asset_path(effect_file).isEmpty())
+      ui_effects[i]->setText(effect_names.at(i));
+    else
+      ui_effects[i]->setText("");
   }
 
-  if (m_effect_state != 0 && ui_effects.size() > 0) // check to prevent crashing
+  // Mark selected button as such
+  if (m_effect_state != 0 && ui_effects.size() > 0)
     ui_effects[m_effect_state - 1]->set_image(
         effect_names.at(m_effect_state - 1) + "_pressed.png");
 }
@@ -2216,7 +2166,7 @@ void Courtroom::on_effect_button_clicked()
   else
     m_effect_state = f_effect_id;
 
-  reset_effect_buttons();
+  draw_effect_buttons();
 
   ui_ic_chat_message->setFocus();
 }
@@ -2297,15 +2247,22 @@ void Courtroom::on_cross_examination_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::reset_judge_wtce_buttons() // kind of an unnecessary function,
-                                           // but I added it just in case
+void Courtroom::draw_judge_wtce_buttons()
 {
-  for (int i = 0; i < wtce_names.size();
-       ++i) // effect names does not necessarily have the same size as ui
-            // effects
+  for (int i = 0; i < wtce_names.size(); ++i)
   {
-    ui_wtce[i]->set_image(wtce_names.at(i) + ".png");
+    QString wtce_file = wtce_names.at(i) + ".png";
+    ui_wtce[i]->set_image(wtce_file);
+    if (ao_app->find_theme_asset_path(wtce_file).isEmpty())
+      ui_wtce[i]->setText(wtce_names.at(i));
+    else
+      ui_wtce[i]->setText("");
   }
+
+  // Unlike the other reset functions, the judge buttons are of immediate
+  // action and thus are immediately unpressed after being pressed.
+  // Therefore, we do not need to handle displaying a "_selected.png"
+  // when appropriate, because there is no appropriate situation
 }
 
 void Courtroom::on_wtce_clicked()
