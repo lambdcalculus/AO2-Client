@@ -1,5 +1,6 @@
 3rd/
 base/
+docs/
 .qmake.conf
 .gitignore
 *~
