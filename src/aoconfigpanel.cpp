@@ -1,11 +1,17 @@
 #include "aoconfigpanel.h"
+
 // qt
 #include <QDebug>
 #include <QDir>
 
-AOConfigPanel::AOConfigPanel(QWidget *p_parent)
+// src
+#include "aoapplication.h" // ruined
+
+AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
     : QWidget(p_parent), m_config(new AOConfig(this))
 {
+  ao_app = p_ao_app;
+
   setWindowTitle(tr("Config"));
   setWindowFlag(Qt::WindowMinMaxButtonsHint, false);
 
@@ -218,8 +224,9 @@ void AOConfigPanel::refresh_theme_list()
   w_theme->clear();
 
   // themes
+  const QString path = QDir::currentPath() + "/base/themes";
   for (QString i_folder :
-       QDir(QDir::currentPath() + "/base/themes").entryList(QDir::Dirs))
+       QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
       continue;
@@ -246,7 +253,8 @@ void AOConfigPanel::refresh_gamemode_list()
   // gamemodes
   QString path =
       QDir::currentPath() + "/base/themes/" + m_config->theme() + "/gamemodes/";
-  for (QString i_folder : QDir(path).entryList(QDir::Dirs))
+  for (QString i_folder :
+       QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
       continue;
@@ -282,7 +290,8 @@ void AOConfigPanel::refresh_timeofday_list()
            "/gamemodes/" + m_config->gamemode() + "/times/";
 
   // times of day
-  for (QString i_folder : QDir(path).entryList(QDir::Dirs))
+  for (QString i_folder :
+       QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
       continue;

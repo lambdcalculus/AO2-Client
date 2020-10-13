@@ -1,5 +1,6 @@
 #ifndef AOGUILOADER_H
 #define AOGUILOADER_H
+
 // qt
 #include <QUiLoader>
 #include <QWidget>

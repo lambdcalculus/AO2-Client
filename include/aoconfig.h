@@ -1,5 +1,6 @@
 #ifndef AOCONFIG_H
 #define AOCONFIG_H
+
 // qt
 #include <QObject>
 

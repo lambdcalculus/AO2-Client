@@ -1,4 +1,5 @@
 #include "aoconfig.h"
+
 // qt
 #include <QApplication>
 #include <QDir>

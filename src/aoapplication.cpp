@@ -28,7 +28,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   connect(config, SIGNAL(timeofday_changed(QString)), this,
           SLOT(on_config_timeofday_changed()));
 
-  config_panel = new AOConfigPanel;
+  config_panel = new AOConfigPanel(this);
   connect(config_panel, SIGNAL(reload_theme()), this,
           SLOT(on_config_reload_theme_requested()));
   connect(this, SIGNAL(reload_theme()), config_panel,
