@@ -91,6 +91,9 @@ void Courtroom::enter_courtroom(int p_cid)
   current_evidence = 0;
 
   m_shout_state = 0;
+  m_shout_current = 0;
+  m_effect_state = 0;
+  m_effect_current = 0;
   m_wtce_current = 0;
   draw_judge_wtce_buttons();
 
@@ -116,7 +119,7 @@ void Courtroom::enter_courtroom(int p_cid)
   set_widgets();
 
   check_shouts();
-  if (!shouts_enabled[m_shout_state])
+  if (!shouts_enabled[m_shout_current])
     cycle_shout(1);
 
   check_effects();
@@ -593,7 +596,7 @@ void Courtroom::on_chat_return_pressed()
   if (ui_ic_chat_message->text() == "" || is_client_muted)
     return;
 
-  if ((anim_state < 3 || text_state < 2) && m_objection_state == 0)
+  if ((anim_state < 3 || text_state < 2) && m_shout_state == 0)
     return;
 
   //  qDebug() << "prev_emote = " << prev_emote << "current_emote = " <<
@@ -664,7 +667,7 @@ void Courtroom::on_chat_return_pressed()
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
   // needed or else legacy won't understand what we're saying
-  if (m_objection_state > 0)
+  if (m_shout_state > 0)
   {
     if (f_emote_mod == 5)
       f_emote_mod = 6;
@@ -694,11 +697,11 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_obj_state;
 
-  if (m_objection_state < 0 ||
-      (!ao_app->custom_objection_enabled && m_objection_state > 3))
+  if (m_shout_state < 0 ||
+      (!ao_app->custom_objection_enabled && m_shout_state > 3))
     f_obj_state = "0";
   else
-    f_obj_state = QString::number(m_objection_state);
+    f_obj_state = QString::number(m_shout_state);
 
   packet_contents.append(f_obj_state);
 
@@ -788,7 +791,7 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_ic_chat_message->clear();
     ui_sfx_list->setCurrentItem(ui_sfx_list->item(0));
 
-    m_objection_state = 0;
+    m_shout_state = 0;
     draw_shout_buttons();
 
     m_effect_state = 0;
@@ -2060,9 +2063,9 @@ void Courtroom::draw_shout_buttons()
   }
 
   // Mark selected button as such
-  if (m_objection_state != 0 && ui_shouts.size() > 0)
-    ui_shouts.at(m_objection_state - 1)
-        ->set_image(shout_names.at(m_objection_state - 1) + "_selected.png");
+  if (m_shout_state != 0 && ui_shouts.size() > 0)
+    ui_shouts.at(m_shout_state - 1)
+        ->set_image(shout_names.at(m_shout_state - 1) + "_selected.png");
 }
 
 void Courtroom::on_shout_clicked()
@@ -2071,10 +2074,10 @@ void Courtroom::on_shout_clicked()
   int f_shout_id = f_shout_button->property("shout_id").toInt();
 
   // update based on current button selected
-  if (f_shout_id == m_objection_state)
-    m_objection_state = 0;
+  if (f_shout_id == m_shout_state)
+    m_shout_state = 0;
   else
-    m_objection_state = f_shout_id;
+    m_shout_state = f_shout_id;
 
   draw_shout_buttons();
 
@@ -2120,7 +2123,7 @@ void Courtroom::on_cycle_clicked()
 void Courtroom::cycle_shout(int p_delta)
 {
   int n = ui_shouts.size();
-  m_shout_state = (m_shout_state - p_delta + n) % n;
+  m_shout_current = (m_shout_current - p_delta + n) % n;
   set_shouts();
 }
 

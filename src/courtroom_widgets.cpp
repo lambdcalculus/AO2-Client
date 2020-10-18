@@ -1381,7 +1381,7 @@ void Courtroom::set_shouts()
   for (auto &shout : ui_shouts)
     shout->hide();
   if (ui_shouts.size() > 0)
-    ui_shouts[m_shout_state]->show(); // check to prevent crashing
+    ui_shouts[m_shout_current]->show(); // check to prevent crashing
 }
 
 void Courtroom::set_effects()

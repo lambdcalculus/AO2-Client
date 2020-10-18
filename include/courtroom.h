@@ -406,10 +406,10 @@ private:
 
   QString current_file = "";
 
-  int m_objection_state = 0;
+  int m_shout_state = 0;
   int m_effect_state = 0;
   int m_text_color = 0;
-  int m_shout_state = 0;
+  int m_shout_current = 0;
   int m_effect_current = 0;
   int m_wtce_current = 0;
   bool is_presenting_evidence = false;
