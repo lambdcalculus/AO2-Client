@@ -239,22 +239,18 @@ void Courtroom::set_scene()
       f_desk_image = "stand";
     }
 
-    QStringList exts{".webp", ".apng", ".gif", ".png"};
-
-    bool has_all_desks;
-    if (ao_app->find_asset_path({get_background_path("defensedesk")}, exts)
-            .isEmpty())
-      has_all_desks = false;
-    else if (ao_app
-                 ->find_asset_path({get_background_path("prosecutiondesk")},
-                                   exts)
-                 .isEmpty())
-      has_all_desks = false;
-    else if (ao_app->find_asset_path({get_background_path("stand")}, exts)
-                 .isEmpty())
-      has_all_desks = false;
-    else
-      has_all_desks = true;
+    bool has_all_desks = true;
+    QStringList alldesks{"defensedesk", "prosecutiondesk", "stand"};
+    for (QString desk : alldesks)
+    {
+      QString full_path = ao_app->find_asset_path(
+          {get_background_path(desk)}, animated_or_static_extensions());
+      if (full_path.isEmpty())
+      {
+        has_all_desks = false;
+        break;
+      }
+    }
 
     if (f_desk_mod == "0" ||
         (f_desk_mod != "1" &&
@@ -391,7 +387,7 @@ void Courtroom::list_music()
     QString i_song = music_list.at(n_song);
     bool found = false;
 
-    for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
+    for (auto &ext : audio_extensions())
     {
       QString r_song = i_song + ext;
       QString song_path = ao_app->get_music_path(r_song);
@@ -492,7 +488,7 @@ void Courtroom::list_sfx()
 
       bool found = false;
 
-      for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
+      for (auto &ext : audio_extensions())
       {
         QString r_sfx = i_sfx + ext;
         QString sfx_path = ao_app->get_sounds_path(r_sfx);
@@ -915,17 +911,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
 
   if (chatbox == "")
-    if (ao_app->read_theme_ini("daynight_theme", cc_config_ini) == "true")
-    {
-      if (current_clock < 0)
-        ui_vp_chatbox->set_image("chatmed.png");
-      else if (current_clock >= 7 && current_clock < 22)
-        ui_vp_chatbox->set_image("chatmed_day.png");
-      else
-        ui_vp_chatbox->set_image("chatmed_night.png");
-    }
-    else
-      ui_vp_chatbox->set_image("chatmed.png");
+    ui_vp_chatbox->set_image("chatmed.png");
   else
   {
     QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
@@ -1020,12 +1006,11 @@ void Courtroom::handle_chatmessage_3()
   // 2. In the character folder, look for
   // "showname" + extensions in `exts` in order
 
-  QStringList exts = {".png", ".jpg", ".bmp"};
-  QString path =
-      ao_app->find_theme_asset_path("characters/" + f_char + "/showname", exts);
+  QString path = ao_app->find_theme_asset_path(
+      "characters/" + f_char + "/showname", {".png"});
   if (path.isEmpty())
     path = ao_app->find_asset_path(
-        {ao_app->get_character_path(f_char, "showname")}, exts);
+        {ao_app->get_character_path(f_char, "showname")}, {".png"});
 
   if (!path.isEmpty() && !chatmessage_is_empty &&
       ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")
@@ -1600,11 +1585,7 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  QStringList exts{"", ".wav", ".ogg", ".opus", ".mp3"};
-  QString f_file =
-      ao_app->find_asset_path({ao_app->get_sounds_path(sfx_name)}, exts);
-
-  m_effects_player->play(f_file);
+  m_effects_player->play(sfx_name);
 }
 
 void Courtroom::set_text_color()
@@ -1699,7 +1680,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   QString f_song = f_contents.at(0);
   int n_char = f_contents.at(1).toInt();
 
-  for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
+  for (auto &ext : audio_extensions())
   {
     QString r_song = f_song + ext;
     QString song_path = ao_app->get_music_path(r_song);
@@ -2464,7 +2445,7 @@ void Courtroom::on_sfx_list_clicked(QModelIndex p_index)
 
     bool found = false;
 
-    for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
+    for (auto &ext : audio_extensions())
     {
       QString r_sfx = sfx_names.at(current_sfx_id) + ext;
       QString sfx_path = ao_app->get_sounds_path(r_sfx);

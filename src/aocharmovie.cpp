@@ -34,15 +34,15 @@ void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
   // 3. In the theme folder (gamemode-timeofday/main/default), look for
   // "placeholder" + extensions in `exts` in order
 
-  QStringList exts{".webp", ".apng", ".gif", ".png"};
   QString target_path = ao_app->find_asset_path(
       {
           ao_app->get_character_path(p_char, p_emote_prefix + p_emote),
           ao_app->get_character_path(p_char, p_emote),
       },
-      exts);
+      animated_or_static_extensions());
   if (target_path.isEmpty())
-    target_path = ao_app->find_theme_asset_path("placeholder", exts);
+    target_path =
+        ao_app->find_theme_asset_path("placeholder", animated_extensions());
 
   show();
   if (!p_visible)
@@ -72,7 +72,7 @@ bool AOCharMovie::play_pre(QString p_char, QString p_emote, bool show)
 
   { // figure out what extension the animation is using
     QString f_source_path = ao_app->get_character_path(p_char, p_emote);
-    for (QString &i_ext : QStringList{".webp", ".apng", ".gif", ".png"})
+    for (QString &i_ext : animated_or_static_extensions())
     {
       QString f_target_path =
           ao_app->get_case_sensitive_path(f_source_path + i_ext);

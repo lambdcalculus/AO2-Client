@@ -55,18 +55,19 @@ void AOMovie::play(QString p_file, QString p_char)
   // 4. In the theme folder (gamemode-timeofday/main/default), look for
   // "placeholder" + extensions in `exts` in order
 
-  QStringList exts{".webp", ".apng", ".gif", ".png"};
   file_path = ao_app->find_asset_path(
       {
           ao_app->get_character_path(p_char, char_p_file),
           ao_app->get_character_path(p_char, "overlay/" + char_p_file),
       },
-      exts);
+      animated_or_static_extensions());
   if (file_path.isEmpty())
   {
-    file_path = ao_app->find_theme_asset_path(p_file, exts);
+    file_path =
+        ao_app->find_theme_asset_path(p_file, animated_or_static_extensions());
     if (file_path.isEmpty())
-      file_path = ao_app->find_theme_asset_path("placeholder", exts);
+      file_path = ao_app->find_theme_asset_path(
+          "placeholder", animated_or_static_extensions());
   }
 
   qDebug() << "playing" << file_path;
@@ -96,13 +97,12 @@ void AOMovie::play_interjection(QString p_char_name,
   // 2. In the theme folder (gamemode-timeofday/main/default), look for
   // `p_char_name`
 
-  QStringList exts{".webp", ".apng", ".gif"};
   QString interjection_filepath = ao_app->find_asset_path(
       {ao_app->get_character_path(p_char_name, p_char_interjection_name)},
-      exts);
+      animated_extensions());
   if (interjection_filepath.isEmpty())
-    interjection_filepath =
-        ao_app->find_theme_asset_path(p_interjection_name, exts);
+    interjection_filepath = ao_app->find_theme_asset_path(
+        p_interjection_name, animated_extensions());
 
   if (interjection_filepath.isEmpty())
   {

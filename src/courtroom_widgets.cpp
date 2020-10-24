@@ -1133,13 +1133,14 @@ void Courtroom::check_effects()
   // `effect_names.at(i)` + extensions in `exts` in order
   // Only enable buttons where a file was found
 
-  QStringList exts{".webp", ".gif", ".apng"};
   for (int i = 0; i < ui_effects.size(); ++i)
   {
     QString path = ao_app->find_asset_path(
-        {ao_app->get_character_path(current_char, effect_names.at(i))}, exts);
+        {ao_app->get_character_path(current_char, effect_names.at(i))},
+        animated_extensions());
     if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(effect_names.at(i), exts);
+      path = ao_app->find_theme_asset_path(effect_names.at(i),
+                                           animated_extensions());
     effects_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1153,14 +1154,14 @@ void Courtroom::check_free_blocks()
   // `free_block_names.at(i)` + extensions in `exts` in order
   // Only enable buttons where a file was found
 
-  QStringList exts{".webp", ".gif", ".apng"};
   for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
     QString path = ao_app->find_asset_path(
         {ao_app->get_character_path(current_char, free_block_names.at(i))},
-        exts);
+        animated_extensions());
     if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(free_block_names.at(i), exts);
+      path = ao_app->find_theme_asset_path(free_block_names.at(i),
+                                           animated_extensions());
     free_blocks_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1174,14 +1175,15 @@ void Courtroom::check_shouts()
   // `shout_names.at(i)` + extensions in `exts` in order
   // Only enable buttons where a file was found
 
-  QStringList exts{".webp", ".gif", ".apng"};
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
     QString path = ao_app->find_asset_path(
-        {ao_app->get_character_path(current_char, shout_names.at(i))}, exts);
+        {ao_app->get_character_path(current_char, shout_names.at(i))},
+        animated_extensions());
 
     if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(shout_names.at(i), exts);
+      path = ao_app->find_theme_asset_path(shout_names.at(i),
+                                           animated_extensions());
 
     shouts_enabled[i] = (!path.isEmpty());
   }
@@ -1196,13 +1198,14 @@ void Courtroom::check_wtce()
   // `wtce_names.at(i)` + extensions in `exts` in order
   // Only enable buttons where a file was found
 
-  QStringList exts{".webp", ".gif", ".apng"};
   for (int i = 0; i < ui_wtce.size(); ++i)
   {
     QString path = ao_app->find_asset_path(
-        {ao_app->get_character_path(current_char, wtce_names.at(i))}, exts);
+        {ao_app->get_character_path(current_char, wtce_names.at(i))},
+        animated_extensions());
     if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(wtce_names.at(i), exts);
+      path = ao_app->find_theme_asset_path(wtce_names.at(i),
+                                           animated_extensions());
     wtce_enabled[i] = (!path.isEmpty());
   }
 }
