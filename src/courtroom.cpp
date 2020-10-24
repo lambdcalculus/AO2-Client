@@ -385,24 +385,16 @@ void Courtroom::list_music()
   for (int n_song = 0; n_song < music_list.size(); ++n_song)
   {
     QString i_song = music_list.at(n_song);
-    bool found = false;
-
-    for (auto &ext : audio_extensions())
-    {
-      QString r_song = i_song + ext;
-      QString song_path = ao_app->get_music_path(r_song);
-      if (file_exists(song_path))
-      {
-        found = true;
-        break;
-      }
-    }
 
     if (i_song.toLower().contains(ui_music_search->text().toLower()))
     {
       ui_music_list->addItem(i_song);
 
-      if (found)
+      QString song_root = ao_app->get_music_path(i_song);
+      QString song_path =
+          ao_app->find_asset_path({song_root}, audio_extensions());
+
+      if (!song_path.isEmpty())
         ui_music_list->item(n_listed_songs)->setBackground(found_brush);
       else
         ui_music_list->item(n_listed_songs)->setBackground(missing_brush);
@@ -459,14 +451,29 @@ void Courtroom::list_sfx()
   QBrush found_brush(ao_app->get_color("found_song_color", f_file));
   QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
 
+  // Add hardcoded items
+  // FIXME: Rewrite
   ui_sfx_list->addItem("Default");
   ui_sfx_list->addItem("Silence");
 
   sfx_names.append("1"); // Default
   sfx_names.append("1"); // Silence
 
-  int n_listed_sfxs = 0;
+  QString default_sfx_root = ao_app->get_sounds_path("1");
+  QString default_sfx_path =
+      ao_app->find_asset_path({default_sfx_root}, audio_extensions());
+  if (!default_sfx_path.isEmpty())
+  {
+    ui_sfx_list->item(0)->setBackground(found_brush);
+    ui_sfx_list->item(1)->setBackground(found_brush);
+  }
+  else
+  {
+    ui_sfx_list->item(0)->setBackground(missing_brush);
+    ui_sfx_list->item(1)->setBackground(missing_brush);
+  }
 
+  // Now add the other SFXs given by the character's sound.ini
   for (int n_sfx = 0; n_sfx < sfx_list.size(); ++n_sfx)
   {
     QStringList sfx = sfx_list.at(n_sfx).split("=");
@@ -478,33 +485,21 @@ void Courtroom::list_sfx()
     else
       d_sfx = sfx.at(1).trimmed();
 
-    //    qDebug() << "isfx=" << i_sfx << "dsfx=" << d_sfx << "sfx=" << sfx;
-
     if (i_sfx.toLower().contains(ui_sfx_search->text().toLower()))
     {
       ui_sfx_list->addItem(d_sfx);
-      ui_sfx_list->item(ui_sfx_list->count() - 1)
-          ->setStatusTip(QString::number(n_sfx + 2));
+      int last_index = ui_sfx_list->count() - 1;
+      ui_sfx_list->item(last_index)->setStatusTip(QString::number(n_sfx + 2));
 
-      bool found = false;
+      // Apply appropriate color whether SFX exists or not
+      QString sfx_root = ao_app->get_sounds_path(i_sfx);
+      QString sfx_path =
+          ao_app->find_asset_path({sfx_root}, audio_extensions());
 
-      for (auto &ext : audio_extensions())
-      {
-        QString r_sfx = i_sfx + ext;
-        QString sfx_path = ao_app->get_sounds_path(r_sfx);
-        if (file_exists(sfx_path))
-        {
-          found = true;
-          break;
-        }
-      }
-
-      if (found)
-        ui_sfx_list->item(n_listed_sfxs)->setBackground(found_brush);
+      if (!sfx_path.isEmpty())
+        ui_sfx_list->item(last_index)->setBackground(found_brush);
       else
-        ui_sfx_list->item(n_listed_sfxs)->setBackground(missing_brush);
-
-      ++n_listed_sfxs;
+        ui_sfx_list->item(last_index)->setBackground(missing_brush);
     }
   }
 }
@@ -2439,24 +2434,15 @@ void Courtroom::on_sfx_list_clicked(QModelIndex p_index)
   QBrush found_brush(ao_app->get_color("found_song_color", design_ini));
   QBrush missing_brush(ao_app->get_color("missing_song_color", design_ini));
 
-  if (-1 != current_sfx_id)
+  if (current_sfx_id != -1)
   {
     QListWidgetItem *old_sfx = ui_sfx_list->item(current_sfx_id);
 
-    bool found = false;
+    // Apply appropriate color whether SFX exists or not
+    QString sfx_root = ao_app->get_sounds_path(sfx_names.at(current_sfx_id));
+    QString sfx_path = ao_app->find_asset_path({sfx_root}, audio_extensions());
 
-    for (auto &ext : audio_extensions())
-    {
-      QString r_sfx = sfx_names.at(current_sfx_id) + ext;
-      QString sfx_path = ao_app->get_sounds_path(r_sfx);
-      if (file_exists(sfx_path))
-      {
-        found = true;
-        break;
-      }
-    }
-
-    if (found)
+    if (!sfx_path.isEmpty())
       old_sfx->setBackground(found_brush);
     else
       old_sfx->setBackground(missing_brush);
