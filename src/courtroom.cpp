@@ -449,6 +449,7 @@ void Courtroom::list_sfx()
 {
   ui_sfx_list->clear();
   sfx_names.clear();
+  current_sfx_id = -1; // Restart current SFX, because it may no longer be valid
 
   QString f_file = design_ini;
 
@@ -735,14 +736,12 @@ void Courtroom::on_chat_return_pressed()
     f_text_color = QString::number(m_text_color);
 
   packet_contents.append(f_text_color);
-
   prev_emote = current_emote;
 
-  { // reset states
-    ui_pre->setChecked(ao_config->always_pre_enabled());
-    ui_sfx_list->clearSelection();
-    list_sfx();
-  }
+  // reset states
+  ui_pre->setChecked(ao_config->always_pre_enabled());
+  ui_sfx_list->clearSelection();
+  list_sfx();
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
