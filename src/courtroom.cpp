@@ -353,11 +353,9 @@ void Courtroom::handle_clock(QString time)
 
 void Courtroom::handle_gamemode(QString gamemode)
 {
-  // First check if only manual gamemode changes are allowed
-  // If so, ignore order.
+  // only manual gamemode changes are allowed
   if (ao_app->get_manual_gamemode_enabled())
     return;
-  // If already in this gamemode, do nothing
   if (ao_app->get_gamemode() == gamemode)
     return;
   ao_app->set_gamemode(gamemode);
@@ -366,11 +364,9 @@ void Courtroom::handle_gamemode(QString gamemode)
 
 void Courtroom::handle_timeofday(QString timeofday)
 {
-  // First check if only manual time of day changes are allowed
-  // If so, ignore order.
+  // only manual gamemode changes are allowed
   if (ao_app->get_manual_timeofday_enabled())
     return;
-  // If already in this time of day, do nothing
   if (ao_app->get_timeofday() == timeofday)
     return;
   ao_app->set_timeofday(timeofday);
