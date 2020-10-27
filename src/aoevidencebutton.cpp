@@ -55,7 +55,7 @@ void AOEvidenceButton::set_image(QString p_image)
 
 void AOEvidenceButton::set_theme_image(QString p_image)
 {
-  QString path = ao_app->get_image_path(p_image);
+  QString path = ao_app->find_theme_asset_path(p_image);
   this->setText("");
   this->setStyleSheet("border-image:url(\"" + path + "\")");
 }

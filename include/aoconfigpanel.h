@@ -1,35 +1,76 @@
 #ifndef AOCONFIGPANEL_H
 #define AOCONFIGPANEL_H
+
 // qt
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QSlider>
 #include <QSpinBox>
 #include <QTabWidget>
-#include <QRadioButton>
 #include <QWidget>
+
 // src
 #include "aoconfig.h"
 #include "aoguiloader.h"
+
+class AOApplication;
 
 class AOConfigPanel : public QWidget
 {
   Q_OBJECT
 
+public:
+  AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent = nullptr);
+
+public slots:
+  void on_config_reload_theme_requested();
+
+protected:
+  void showEvent(QShowEvent *event);
+
+signals:
+  void reload_theme();
+
+private:
+  void refresh_theme_list();
+  void refresh_gamemode_list();
+  void refresh_timeofday_list();
+
+private slots:
+  void on_reload_theme_clicked();
+  void on_gamemode_index_changed(QString p_text);
+  void on_timeofday_index_changed(QString p_text);
+  void on_log_is_topdown_changed(bool p_enabled);
+  void on_effects_value_changed(int p_num);
+  void on_system_value_changed(int p_num);
+  void on_music_value_changed(int p_num);
+  void on_blips_value_changed(int p_num);
+
+private:
+  // FIXME This dependency shouldn't have come to exist.
+  AOApplication *ao_app = nullptr;
+
+  // driver
   AOConfig *m_config = nullptr;
 
   // general
   QLineEdit *w_username = nullptr;
   QLineEdit *w_callwords = nullptr;
+  QCheckBox *w_server_alerts = nullptr;
+
+  // game
   QComboBox *w_theme = nullptr;
   QPushButton *w_reload_theme = nullptr;
-  QComboBox *w_theme_variant = nullptr;
+  QComboBox *w_gamemode = nullptr;
+  QCheckBox *w_manual_gamemode = nullptr;
+  QComboBox *w_timeofday = nullptr;
+  QCheckBox *w_manual_timeofday = nullptr;
   QCheckBox *w_always_pre = nullptr;
   QSpinBox *w_chat_tick_interval = nullptr;
-  QCheckBox *w_server_alerts = nullptr;
 
   // IC Chatlog
   QSpinBox *w_log_max_lines = nullptr;
@@ -53,28 +94,6 @@ class AOConfigPanel : public QWidget
 
   // save
   QPushButton *w_save = nullptr;
-
-public:
-  AOConfigPanel(QWidget *p_parent = nullptr);
-
-public slots:
-  void on_config_reload_theme_requested();
-
-signals:
-  void reload_theme();
-
-private:
-  void refresh_theme_list();
-  void refresh_theme_variant_list();
-
-private slots:
-  void on_reload_theme_clicked();
-  void on_theme_variant_index_changed(QString p_text);
-  void on_log_is_topdown_changed(bool p_enabled);
-  void on_effects_value_changed(int p_num);
-  void on_system_value_changed(int p_num);
-  void on_music_value_changed(int p_num);
-  void on_blips_value_changed(int p_num);
 };
 
 #endif // AOCONFIGPANEL_H

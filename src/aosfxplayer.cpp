@@ -1,4 +1,5 @@
 #include "aosfxplayer.h"
+#include "file_functions.h"
 
 #include <string.h>
 
@@ -11,7 +12,8 @@ AOSfxPlayer::AOSfxPlayer(QObject *p_parent, AOApplication *p_ao_app)
 
 void AOSfxPlayer::play(QString p_name)
 {
-  QString f_file = ao_app->get_sounds_path(p_name);
+  QString f_root = ao_app->get_sounds_path(p_name);
+  QString f_file = ao_app->find_asset_path({f_root}, audio_extensions());
 
   try
   {

@@ -491,86 +491,80 @@ void Courtroom::set_widget_names()
 
 void Courtroom::set_widget_layers()
 {
-  QStringList paths{
-      ao_app->get_theme_variant_path("courtroom_layers.ini"),
-      ao_app->get_theme_path("courtroom_layers.ini"),
-      ao_app->get_default_theme_path("courtroom_layers.ini"),
-  };
+  // File lookup order
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
+  // "courtroom_layers.ini".
 
+  QString path = ao_app->find_theme_asset_path("courtroom_layers.ini");
+  QFile layer_ini(path);
   // needed to avoid cyclic parenting
   QStringList recorded_widgets;
 
-  // read the entire thing
-  for (QString path : paths)
+  // Given the purpose of find_theme_asset_path, this step failing would be
+  // weird
+  if (layer_ini.open(QFile::ReadOnly))
   {
-    QFile layer_ini(path);
+    QTextStream in(&layer_ini);
 
-    if (layer_ini.open(QFile::ReadOnly))
+    // current parent's name
+    QString parent_name = "courtroom";
+    // the courtroom is ALWAYS going to be recorded
+    recorded_widgets.append(parent_name);
+
+    while (!in.atEnd())
     {
-      QTextStream in(&layer_ini);
+      QString line = in.readLine().trimmed();
 
-      // current parent's name
-      QString parent_name = "courtroom";
-      // the courtroom is ALWAYS going to be recorded
-      recorded_widgets.append(parent_name);
+      // skip if line is empty
+      if (line.isEmpty())
+        continue;
 
-      while (!in.atEnd())
+      // revert to default parent if we encounter an end scope
+      if (line.startsWith("[\\"))
       {
-        QString line = in.readLine().trimmed();
+        parent_name = "courtroom";
+      }
+      // is this a parent?
+      else if (line.startsWith("["))
+      {
+        // update the current parent
+        parent_name = line.remove(0, 1).chopped(1).trimmed();
+      }
+      // if this is not a parent, it's a child
+      else
+      {
+        // if the child is already known, skip
+        if (recorded_widgets.contains(line))
+          continue;
+        // make the child known
+        recorded_widgets.append(line);
 
-        // skip if line is empty
-        if (line.isEmpty())
+        // attach the children to the parents'
+        QWidget *child = widget_names[line];
+        // if child is null, then it does not exist
+        if (!child)
           continue;
 
-        // revert to default parent if we encounter an end scope
-        if (line.startsWith("[\\"))
-        {
-          parent_name = "courtroom";
-        }
-        // is this a parent?
-        else if (line.startsWith("["))
-        {
-          // update the current parent
-          parent_name = line.remove(0, 1).chopped(1).trimmed();
-        }
-        // if this is not a parent, it's a child
-        else
-        {
-          // if the child is already known, skip
-          if (recorded_widgets.contains(line))
-            continue;
-          // make the child known
-          recorded_widgets.append(line);
+        QWidget *parent = widget_names[parent_name];
+        // if parent is null, attach main parent
+        if (!parent)
+          parent = widget_names["courtroom"];
 
-          // attach the children to the parents'
-          QWidget *child = widget_names[line];
-          // if child is null, then it does not exist
-          if (!child)
-            continue;
+        // set child to parent
+        bool was_visible = child->isVisible();
+        child->setParent(parent);
+        child->raise();
 
-          QWidget *parent = widget_names[parent_name];
-          // if parent is null, attach main parent
-          if (!parent)
-            parent = widget_names["courtroom"];
-
-          // set child to parent
-          bool was_visible = child->isVisible();
-          child->setParent(parent);
-          child->raise();
-
-          // Readjust visibility in case this changed after the widget changed
-          // parent I don't know why, I don't want to know why, I shouldn't have
-          // to wonder why, but for whatever reason these stupid panels aren't
-          // laying out correctly unless we do this terribleness
-          if (child->isVisible() != was_visible)
-            child->setVisible(was_visible);
-        }
+        // Readjust visibility in case this changed after the widget changed
+        // parent I don't know why, I don't want to know why, I shouldn't have
+        // to wonder why, but for whatever reason these stupid panels aren't
+        // laying out correctly unless we do this terribleness
+        if (child->isVisible() != was_visible)
+          child->setVisible(was_visible);
       }
-
-      // break the loop, we have found a proper file
-      break;
     }
   }
+
   // do special logic if config panel was not found in courtroom_layers. In
   // particular, make it visible and raise it in front of all assets. This can
   // help assist a theme designer who accidentally missed config_panel and would
@@ -751,7 +745,7 @@ void Courtroom::set_widgets()
   //  ui_shouts[0]->show();
   //  ui_shouts[1]->show();
   //  ui_shouts[2]->show();
-  reset_shout_buttons();
+  draw_shout_buttons();
 
   set_size_and_pos(ui_shout_up, "shout_up");
   ui_shout_up->set_image("shoutup.png");
@@ -781,7 +775,7 @@ void Courtroom::set_widgets()
   {
     set_size_and_pos(ui_effects[i], effect_names[i]);
   }
-  reset_effect_buttons();
+  draw_effect_buttons();
 
   set_size_and_pos(ui_effect_up, "effect_up");
   ui_effect_up->set_image("effectup.png");
@@ -822,9 +816,7 @@ void Courtroom::set_widgets()
     qDebug() << "AA: single wtce";
   }
   set_judge_wtce();
-
-  // this will reset the image
-  reset_judge_wtce_buttons();
+  draw_judge_wtce_buttons();
 
   for (int i = 0; i < free_block_names.size(); ++i)
   {
@@ -855,8 +847,8 @@ void Courtroom::set_widgets()
   if (ao_app->read_theme_ini("enable_button_images", cc_config_ini) == "true")
   {
     // Set files, ask questions later
-    // set_image first tries the theme variant folder, then the theme folder,
-    // then falls back to the default theme
+    // set_image first tries the gamemode-timeofday folder, then the theme
+    // folder, then falls back to the default theme
     ui_change_character->set_image("changecharacter.png");
     if (ui_change_character->image_path.isEmpty())
       ui_change_character->setText("Change Character");
@@ -1134,111 +1126,87 @@ int Courtroom::adapt_numbered_items(QVector<T *> &item_vector,
 
 void Courtroom::check_effects()
 {
+  // Asset lookup order
+  // 1. In the character folder, look for
+  // `effect_names.at(i)` + extensions in `exts` in order
+  // 2. In the theme folder (gamemode-timeofday/main/default), look for
+  // `effect_names.at(i)` + extensions in `exts` in order
+  // Only enable buttons where a file was found
+
   for (int i = 0; i < ui_effects.size(); ++i)
   {
-    QStringList paths{
-        ao_app->get_character_path(current_char, effect_names.at(i) + ".webp"),
-        ao_app->get_character_path(current_char, effect_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(effect_names.at(i) + ".webp"),
-        ao_app->get_theme_variant_path(effect_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(effect_names.at(i) + ".apng"),
-        ao_app->get_theme_path(effect_names.at(i) + ".webp"),
-        ao_app->get_theme_path(effect_names.at(i) + ".gif"),
-        ao_app->get_theme_path(effect_names.at(i) + ".apng")};
-
-    // Assume the effect does not exist until a matching file is found
-    effects_enabled[i] = false;
-    for (QString path : paths)
-    {
-      if (file_exists(path))
-      {
-        effects_enabled[i] = true;
-        break;
-      }
-    }
+    QString path = ao_app->find_asset_path(
+        {ao_app->get_character_path(current_char, effect_names.at(i))},
+        animated_extensions());
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(effect_names.at(i),
+                                           animated_extensions());
+    effects_enabled[i] = (!path.isEmpty());
   }
 }
 
 void Courtroom::check_free_blocks()
 {
+  // Asset lookup order
+  // 1. In the character folder, look for
+  // `free_block_names.at(i)` + extensions in `exts` in order
+  // 2. In the theme folder (gamemode-timeofday/main/default), look for
+  // `free_block_names.at(i)` + extensions in `exts` in order
+  // Only enable buttons where a file was found
+
   for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
-    QStringList paths{
-        ao_app->get_character_path(current_char,
-                                   free_block_names.at(i) + ".webp"),
-        ao_app->get_character_path(current_char,
-                                   free_block_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(free_block_names.at(i) + ".webp"),
-        ao_app->get_theme_variant_path(free_block_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(free_block_names.at(i) + ".apng"),
-        ao_app->get_theme_path(free_block_names.at(i) + ".webp"),
-        ao_app->get_theme_path(free_block_names.at(i) + ".gif"),
-        ao_app->get_theme_path(free_block_names.at(i) + ".apng")};
-
-    // Assume the free block does not exist until a matching file is found
-    free_blocks_enabled[i] = false;
-    for (QString path : paths)
-    {
-      if (file_exists(path))
-      {
-        free_blocks_enabled[i] = true;
-        break;
-      }
-    }
+    QString path = ao_app->find_asset_path(
+        {ao_app->get_character_path(current_char, free_block_names.at(i))},
+        animated_extensions());
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(free_block_names.at(i),
+                                           animated_extensions());
+    free_blocks_enabled[i] = (!path.isEmpty());
   }
 }
 
 void Courtroom::check_shouts()
 {
+  // Asset lookup order
+  // 1. In the character folder, look for
+  // `shout_names.at(i)` + extensions in `exts` in order
+  // 2. In the theme folder (gamemode-timeofday/main/default), look for
+  // `shout_names.at(i)` + extensions in `exts` in order
+  // Only enable buttons where a file was found
+
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    QStringList paths{
-        ao_app->get_character_path(current_char, shout_names.at(i) + ".webp"),
-        ao_app->get_character_path(current_char, shout_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(shout_names.at(i) + ".webp"),
-        ao_app->get_theme_variant_path(shout_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(shout_names.at(i) + ".apng"),
-        ao_app->get_theme_path(shout_names.at(i) + ".webp"),
-        ao_app->get_theme_path(shout_names.at(i) + ".gif"),
-        ao_app->get_theme_path(shout_names.at(i) + ".apng")};
+    QString path = ao_app->find_asset_path(
+        {ao_app->get_character_path(current_char, shout_names.at(i))},
+        animated_extensions());
 
-    // Assume the shout does not exist until a matching file is found
-    shouts_enabled[i] = false;
-    for (QString path : paths)
-    {
-      if (file_exists(path))
-      {
-        shouts_enabled[i] = true;
-        break;
-      }
-    }
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(shout_names.at(i),
+                                           animated_extensions());
+
+    shouts_enabled[i] = (!path.isEmpty());
   }
 }
 
 void Courtroom::check_wtce()
 {
+  // Asset lookup order
+  // 1. In the character folder, look for
+  // `wtce_names.at(i)` + extensions in `exts` in order
+  // 2. In the theme folder (gamemode-timeofday/main/default), look for
+  // `wtce_names.at(i)` + extensions in `exts` in order
+  // Only enable buttons where a file was found
+
   for (int i = 0; i < ui_wtce.size(); ++i)
   {
-    QStringList paths{
-        ao_app->get_character_path(current_char, wtce_names.at(i) + ".webp"),
-        ao_app->get_character_path(current_char, wtce_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(wtce_names.at(i) + ".webp"),
-        ao_app->get_theme_variant_path(wtce_names.at(i) + ".gif"),
-        ao_app->get_theme_variant_path(wtce_names.at(i) + ".apng"),
-        ao_app->get_theme_path(wtce_names.at(i) + ".webp"),
-        ao_app->get_theme_path(wtce_names.at(i) + ".gif"),
-        ao_app->get_theme_path(wtce_names.at(i) + ".apng")};
-
-    // Assume the judge button does not exist until a matching file is found
-    wtce_enabled[i] = false;
-    for (QString path : paths)
-    {
-      if (file_exists(path))
-      {
-        wtce_enabled[i] = true;
-        break;
-      }
-    }
+    QString path = ao_app->find_asset_path(
+        {ao_app->get_character_path(current_char, wtce_names.at(i))},
+        animated_extensions());
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(wtce_names.at(i),
+                                           animated_extensions());
+    wtce_enabled[i] = (!path.isEmpty());
   }
 }
 
@@ -1271,7 +1239,7 @@ void Courtroom::load_effects()
 
   // And create new effects
   int effect_number =
-      ao_app->get_design_ini_value("effect_number", cc_config_ini);
+      ao_app->read_theme_ini("effect_number", cc_config_ini).toInt();
   effects_enabled.resize(effect_number);
   ui_effects.resize(effect_number);
 
@@ -1308,7 +1276,7 @@ void Courtroom::load_free_blocks()
 
   // And create new free block buttons
   int free_block_number =
-      ao_app->get_design_ini_value("free_block_number", cc_config_ini);
+      ao_app->read_theme_ini("free_block_number", cc_config_ini).toInt();
   free_blocks_enabled.resize(free_block_number);
   ui_free_blocks.resize(free_block_number);
 
@@ -1333,7 +1301,6 @@ void Courtroom::load_free_blocks()
       ui_free_blocks[i - 1]->setObjectName(name);
     }
   }
-  qDebug() << "FREE BLOCKS HERE " << free_block_names;
 }
 
 void Courtroom::load_shouts()
@@ -1343,7 +1310,7 @@ void Courtroom::load_shouts()
 
   // And create new shouts
   int shout_number =
-      ao_app->get_design_ini_value("shout_number", cc_config_ini);
+      ao_app->read_theme_ini("shout_number", cc_config_ini).toInt();
   shouts_enabled.resize(shout_number);
   ui_shouts.resize(shout_number);
 
@@ -1381,7 +1348,8 @@ void Courtroom::load_wtce()
     delete_widget(widget);
 
   // And create new wtce buttons
-  int wtce_number = ao_app->get_design_ini_value("wtce_number", cc_config_ini);
+  int wtce_number =
+      ao_app->read_theme_ini("wtce_number", cc_config_ini).toInt();
   wtce_enabled.resize(wtce_number);
   ui_wtce.resize(wtce_number);
 
@@ -1416,7 +1384,7 @@ void Courtroom::set_shouts()
   for (auto &shout : ui_shouts)
     shout->hide();
   if (ui_shouts.size() > 0)
-    ui_shouts[m_shout_state]->show(); // check to prevent crashing
+    ui_shouts[m_shout_current]->show(); // check to prevent crashing
 }
 
 void Courtroom::set_effects()

@@ -1,5 +1,6 @@
 3rd/
 base/
+docs/
 .qmake.conf
 .gitignore
 *~
@@ -7,3 +8,4 @@ base/
 *.user
 *.dll
 *.so
+*.autosave

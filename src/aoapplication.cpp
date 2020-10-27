@@ -23,10 +23,12 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   config = new AOConfig(this);
   connect(config, SIGNAL(theme_changed(QString)), this,
           SLOT(on_config_theme_changed()));
-  connect(config, SIGNAL(theme_variant_changed(QString)), this,
-          SLOT(on_config_theme_variant_changed()));
+  connect(config, SIGNAL(gamemode_changed(QString)), this,
+          SLOT(on_config_gamemode_changed()));
+  connect(config, SIGNAL(timeofday_changed(QString)), this,
+          SLOT(on_config_timeofday_changed()));
 
-  config_panel = new AOConfigPanel;
+  config_panel = new AOConfigPanel(this);
   connect(config_panel, SIGNAL(reload_theme()), this,
           SLOT(on_config_reload_theme_requested()));
   connect(this, SIGNAL(reload_theme()), config_panel,
@@ -118,9 +120,15 @@ QString AOApplication::get_version_string()
          QString::number(MINOR_VERSION);
 }
 
-void AOApplication::set_theme_variant(QString p_variant)
+void AOApplication::set_gamemode(QString p_gamemode)
 {
-  config->set_theme_variant(p_variant);
+  config->set_gamemode(p_gamemode);
+  emit reload_theme();
+}
+
+void AOApplication::set_timeofday(QString p_timeofday)
+{
+  config->set_timeofday(p_timeofday);
   emit reload_theme();
 }
 
@@ -134,7 +142,12 @@ void AOApplication::on_config_reload_theme_requested()
   emit reload_theme();
 }
 
-void AOApplication::on_config_theme_variant_changed()
+void AOApplication::on_config_gamemode_changed()
+{
+  emit reload_theme();
+}
+
+void AOApplication::on_config_timeofday_changed()
 {
   emit reload_theme();
 }
@@ -166,6 +179,21 @@ void AOApplication::toggle_config_panel()
   }
 }
 
+bool AOApplication::get_server_alerts_enabled()
+{
+  return config->server_alerts_enabled();
+}
+
+bool AOApplication::get_manual_gamemode_enabled()
+{
+  return config->manual_gamemode_enabled();
+}
+
+bool AOApplication::get_manual_timeofday_enabled()
+{
+  return config->manual_timeofday_enabled();
+}
+
 bool AOApplication::get_always_pre_enabled()
 {
   return config->always_pre_enabled();
@@ -175,12 +203,6 @@ bool AOApplication::get_first_person_enabled()
 {
   return config->get_bool("first_person", false);
 }
-
-bool AOApplication::get_server_alerts_enabled()
-{
-  return config->server_alerts_enabled();
-}
-
 bool AOApplication::get_chatlog_scrolldown()
 {
   return config->log_is_topdown_enabled();

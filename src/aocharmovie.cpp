@@ -26,32 +26,23 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app)
 void AOCharMovie::play(QString p_char, QString p_emote, QString p_emote_prefix,
                        bool p_visible)
 {
-  QString target_path;
-  QStringList f_paths{
-      ao_app->get_character_path(p_char, p_emote_prefix + p_emote), // .gif
-      ao_app->get_character_path(p_char, p_emote),                  // .png
-      ao_app->get_theme_variant_path("placeholder"),                // .gif
-      ao_app->get_theme_path("placeholder"),                        // .gif
-      ao_app->get_default_theme_path("placeholder")                 // .gif
-  };
+  // Asset lookup order
+  // 1. In the character folder, look for
+  // `p_emote_prefix+p_emote` + extensions in `exts` in order
+  // 2. In the character folder, look for
+  // `p_emote` + extensions in `exts` in order
+  // 3. In the theme folder (gamemode-timeofday/main/default), look for
+  // "placeholder" + extensions in `exts` in order
 
-  for (auto &f_file : f_paths)
-  {
-    bool found = false;
-    for (auto &ext : QStringList{".webp", ".apng", ".gif", ".png"})
-    {
-      QString fullPath = ao_app->get_case_sensitive_path(f_file + ext);
-      found = file_exists(fullPath);
-      if (found)
+  QString target_path = ao_app->find_asset_path(
       {
-        target_path = fullPath;
-        break;
-      }
-    }
-
-    if (found)
-      break;
-  }
+          ao_app->get_character_path(p_char, p_emote_prefix + p_emote),
+          ao_app->get_character_path(p_char, p_emote),
+      },
+      animated_or_static_extensions());
+  if (target_path.isEmpty())
+    target_path =
+        ao_app->find_theme_asset_path("placeholder", animated_extensions());
 
   show();
   if (!p_visible)
@@ -81,7 +72,7 @@ bool AOCharMovie::play_pre(QString p_char, QString p_emote, bool show)
 
   { // figure out what extension the animation is using
     QString f_source_path = ao_app->get_character_path(p_char, p_emote);
-    for (QString &i_ext : QStringList{".webp", ".apng", ".gif", ".png"})
+    for (QString &i_ext : animated_or_static_extensions())
     {
       QString f_target_path =
           ao_app->get_case_sensitive_path(f_source_path + i_ext);

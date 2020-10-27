@@ -3,6 +3,21 @@
 
 #include "file_functions.h"
 
+QStringList animated_or_static_extensions()
+{
+  return QStringList{".webp", ".apng", ".gif", ".png"};
+}
+
+QStringList animated_extensions()
+{
+  return QStringList{".webp", ".apng", ".gif"};
+}
+
+QStringList audio_extensions()
+{
+  return QStringList{"", ".wav", ".ogg", ".opus", ".mp3"};
+}
+
 bool file_exists(QString file_path)
 {
   QFileInfo check_file(file_path);

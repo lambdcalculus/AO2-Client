@@ -15,9 +15,14 @@ QString AOApplication::get_theme()
   return config->theme();
 }
 
-QString AOApplication::get_theme_variant()
+QString AOApplication::get_gamemode()
 {
-  return config->theme_variant();
+  return config->gamemode();
+}
+
+QString AOApplication::get_timeofday()
+{
+  return config->timeofday();
 }
 
 int AOApplication::read_blip_rate()
@@ -153,21 +158,15 @@ QVector<server_type> AOApplication::read_serverlist_txt()
   return f_server_list;
 }
 
-QString AOApplication::read_design_ini(QString p_identifier,
-                                       QString p_design_path)
+QString AOApplication::read_ini(QString p_identifier, QString p_path)
 {
-  QFile design_ini;
-
-  design_ini.setFileName(p_design_path);
-
-  if (!design_ini.open(QIODevice::ReadOnly))
-  {
+  QFile ini;
+  ini.setFileName(p_path);
+  if (!ini.open(QIODevice::ReadOnly))
     return "";
-  }
-  QTextStream in(&design_ini);
 
+  QTextStream in(&ini);
   QString result = "";
-
   while (!in.atEnd())
   {
     QString f_line = in.readLine().trimmed();
@@ -179,25 +178,14 @@ QString AOApplication::read_design_ini(QString p_identifier,
 
     if (line_elements.at(0).trimmed() != p_identifier)
       continue;
-
     if (line_elements.size() < 2)
       continue;
-
     result = line_elements.at(1).trimmed();
     break;
   }
 
-  design_ini.close();
-
+  ini.close();
   return result;
-}
-
-int AOApplication::get_design_ini_value(QString p_identifier, QString p_file)
-{
-  QString result = read_theme_ini(p_identifier, p_file);
-  if (result.isEmpty())
-    return 0;
-  return result.toInt();
 }
 
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
@@ -292,196 +280,180 @@ QString AOApplication::get_sfx(QString p_identifier)
 
 QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
 {
-  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
+  // File lookup order
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
+  // `p_file`.
 
-  for (QString path : paths)
+  QString path = find_theme_asset_path(p_file);
+  if (path.isEmpty())
+    return "";
+
+  QFile design_ini(path);
+  if (!design_ini.open(QIODevice::ReadOnly))
+    return "";
+
+  QTextStream in(&design_ini);
+  QString f_text;
+  bool tag_found = false;
+
+  while (!in.atEnd())
   {
-    QFile design_ini;
-    design_ini.setFileName(path);
-    if (!design_ini.open(QIODevice::ReadOnly))
-      continue;
-
-    QTextStream in(&design_ini);
-    QString f_text;
-    bool tag_found = false;
-
-    while (!in.atEnd())
+    QString line = in.readLine();
+    if (line.startsWith(target_tag, Qt::CaseInsensitive))
     {
-      QString line = in.readLine();
-      if (line.startsWith(target_tag, Qt::CaseInsensitive))
-      {
-        tag_found = true;
-        continue;
-      }
-
-      if (tag_found)
-      {
-        if ((line.startsWith("[") && line.endsWith("]")))
-          break;
-        f_text.append(line);
-      }
+      tag_found = true;
+      continue;
     }
 
-    design_ini.close();
-    if (!f_text.isEmpty())
-      return f_text;
+    if (tag_found)
+    {
+      if ((line.startsWith("[") && line.endsWith("]")))
+        break;
+      f_text.append(line);
+    }
   }
 
-  // Default value in case everything fails, return an empty string
-  return "";
+  design_ini.close();
+  return f_text; // This is the empty string if no appends took place
 }
 
 QVector<QStringList> AOApplication::get_highlight_color()
 {
-  QString p_file = "courtroom_config.ini";
-  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
+  // File lookup order
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
+  // "courtroom_config.ini".
 
-  for (QString path : paths)
+  QString path = find_theme_asset_path("courtroom_config.ini");
+  if (path.isEmpty())
+    return QVector<QStringList>();
+
+  QFile design_ini(path);
+  if (!design_ini.open(QIODevice::ReadOnly))
+    return QVector<QStringList>();
+
+  QTextStream in(&design_ini);
+  bool tag_found = false;
+  QVector<QStringList> f_vec;
+
+  while (!in.atEnd())
   {
-    QVector<QStringList> f_vec;
+    QString line = in.readLine();
 
-    QFile design_ini;
-    design_ini.setFileName(path);
-    if (!design_ini.open(QIODevice::ReadOnly))
-      continue;
-
-    QTextStream in(&design_ini);
-    bool tag_found = false;
-
-    while (!in.atEnd())
+    if (line.startsWith("[HIGHLIGHTS]", Qt::CaseInsensitive))
     {
-      QString line = in.readLine();
-
-      if (line.startsWith("[HIGHLIGHTS]", Qt::CaseInsensitive))
-      {
-        tag_found = true;
-        continue;
-      }
-
-      if (tag_found)
-      {
-        if ((line.startsWith("[") && line.endsWith("]")))
-          break;
-        // Syntax
-        // OpenercharCloserchar = Color, Shown
-        // Shown is 1 if the character should be displayed in IC, 0 otherwise.
-        // If not present, assume 1.
-        QString chars = line.split("=")[0].trimmed();
-        QString chars_parameters = line.mid(line.indexOf("=") + 1);
-        QStringList parameters = chars_parameters.split(",");
-        for (int i = 0; i < parameters.size(); i++)
-          parameters[i] = parameters[i].trimmed();
-        if (parameters.size() == 1)
-          parameters.append("1");
-        f_vec.append({chars, parameters[0], parameters[1]});
-      }
+      tag_found = true;
+      continue;
     }
 
-    design_ini.close();
-    if (!f_vec.isEmpty())
-      return f_vec;
+    if (tag_found)
+    {
+      if ((line.startsWith("[") && line.endsWith("]")))
+        break;
+      // Syntax
+      // OpenercharCloserchar = Color, Shown
+      // Shown is 1 if the character should be displayed in IC, 0 otherwise.
+      // If not present, assume 1.
+      QString chars = line.split("=")[0].trimmed();
+      QString chars_parameters = line.mid(line.indexOf("=") + 1);
+      QStringList parameters = chars_parameters.split(",");
+      for (int i = 0; i < parameters.size(); i++)
+        parameters[i] = parameters[i].trimmed();
+      if (parameters.size() == 1)
+        parameters.append("1");
+      f_vec.append({chars, parameters[0], parameters[1]});
+    }
   }
 
-  // Default value in case everything fails, return an empty vector
-  QVector<QStringList> f_vec;
-  return f_vec;
+  design_ini.close();
+  return f_vec; // Could be an empty vector if no appends were made
 }
 
 QString AOApplication::get_spbutton(QString p_tag, int index)
 {
-  QString p_file = "courtroom_config.ini";
-  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
+  // File lookup order
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
+  // "courtroom_config.ini".
 
-  for (QString path : paths)
+  QString path = find_theme_asset_path("courtroom_config.ini");
+  if (path.isEmpty())
+    return "";
+
+  QFile design_ini(path);
+  if (!design_ini.open(QIODevice::ReadOnly))
+    return "";
+
+  QTextStream in(&design_ini);
+  bool tag_found = false;
+  QString res;
+
+  while (!in.atEnd())
   {
-    QString res = "";
+    QString line = in.readLine();
 
-    QFile design_ini;
-    design_ini.setFileName(path);
-    if (!design_ini.open(QIODevice::ReadOnly))
-      continue;
-
-    QTextStream in(&design_ini);
-    bool tag_found = false;
-
-    while (!in.atEnd())
+    if (line.startsWith(p_tag, Qt::CaseInsensitive))
     {
-      QString line = in.readLine();
-
-      if (line.startsWith(p_tag, Qt::CaseInsensitive))
-      {
-        tag_found = true;
-        continue;
-      }
-
-      if (tag_found)
-      {
-        if ((line.startsWith("[") && line.endsWith("]")))
-          break;
-
-        QStringList line_contents = line.split("=");
-        if (line_contents.at(0).trimmed() == QString::number(index))
-          res = line_contents.at(1);
-      }
+      tag_found = true;
+      continue;
     }
 
-    design_ini.close();
-    if (!res.isEmpty())
-      return res;
+    if (tag_found)
+    {
+      if ((line.startsWith("[") && line.endsWith("]")))
+        break;
+
+      QStringList line_contents = line.split("=");
+      if (line_contents.at(0).trimmed() == QString::number(index))
+        res = line_contents.at(1);
+    }
   }
 
-  // Default value in case everything fails, return an empty string
-  return "";
+  design_ini.close();
+  return res; // Could be the empty string if no matches were found.
 }
 
 QStringList AOApplication::get_effect(int index)
 {
-  QString p_file = "courtroom_config.ini";
-  QStringList paths{get_theme_variant_path(p_file), get_theme_path(p_file)};
+  // File lookup order
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
+  // "courtroom_config.ini".
 
-  for (QString path : paths)
+  QString path = find_theme_asset_path("courtroom_config.ini");
+  if (path.isEmpty())
+    return QStringList();
+
+  QFile design_ini(path);
+  if (!design_ini.open(QIODevice::ReadOnly))
+    return QStringList();
+
+  QTextStream in(&design_ini);
+  bool tag_found = false;
+  QStringList res;
+
+  while (!in.atEnd())
   {
-    QStringList res;
+    QString line = in.readLine();
 
-    QFile design_ini;
-    design_ini.setFileName(path);
-    if (!design_ini.open(QIODevice::ReadOnly))
-      continue;
-
-    QTextStream in(&design_ini);
-    bool tag_found = false;
-
-    while (!in.atEnd())
+    if (line.startsWith("[EFFECTS]", Qt::CaseInsensitive))
     {
-      QString line = in.readLine();
-
-      if (line.startsWith("[EFFECTS]", Qt::CaseInsensitive))
-      {
-        tag_found = true;
-        continue;
-      }
-
-      if (tag_found)
-      {
-        if ((line.startsWith("[") && line.endsWith("]")))
-          break;
-
-        QStringList line_contents = line.split("=");
-        if (line_contents.at(0).trimmed() == QString::number(index))
-          res = line_contents.at(1).split(",");
-
-        if (res.size() == 1)
-          res.append("1");
-      }
+      tag_found = true;
+      continue;
     }
 
-    design_ini.close();
-    if (!res.isEmpty())
-      return res;
+    if (tag_found)
+    {
+      if ((line.startsWith("[") && line.endsWith("]")))
+        break;
+
+      QStringList line_contents = line.split("=");
+      if (line_contents.at(0).trimmed() == QString::number(index))
+        res = line_contents.at(1).split(",");
+
+      if (res.size() == 1)
+        res.append("1");
+    }
   }
 
-  // Default value in case everything fails, return an empty string list
-  QStringList res;
+  design_ini.close();
   return res;
 }
 
@@ -806,35 +778,12 @@ bool AOApplication::get_blank_blip()
 
 QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
 {
-  // Try to obtain a theme ini from either the current theme variant folder,
-  // the current theme folder or the default theme folder
-  QStringList paths{
-      get_theme_variant_path(p_file),
-      get_theme_path(p_file),
-      get_default_theme_path(p_file),
-  };
+  // File lookup order
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
+  // `p_identifier`.
+  QString path = find_theme_asset_path(p_file);
+  if (path.isEmpty())
+    return "";
 
-  for (QString path : paths)
-  {
-    QString f_result = read_design_ini(p_identifier, path);
-    if (!f_result.isEmpty())
-      return f_result;
-  }
-
-  return "";
-}
-
-QString AOApplication::get_image_path(QString p_image)
-{
-  QString theme_variant_image_path = get_theme_variant_path(p_image);
-  QString theme_image_path = get_theme_path(p_image);
-  QString default_image_path = get_default_theme_path(p_image);
-
-  QString final_image_path;
-
-  if (file_exists(theme_variant_image_path))
-    return theme_variant_image_path;
-  else if (file_exists(theme_image_path))
-    return theme_image_path;
-  return default_image_path;
+  return read_ini(p_identifier, path); // Could be the empty string
 }

@@ -21,8 +21,7 @@
 #include <QTextCharFormat>
 #include <QTime>
 
-Courtroom::Courtroom(AOApplication *p_ao_app)
-    : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -92,8 +91,11 @@ void Courtroom::enter_courtroom(int p_cid)
   current_evidence = 0;
 
   m_shout_state = 0;
+  m_shout_current = 0;
+  m_effect_state = 0;
+  m_effect_current = 0;
   m_wtce_current = 0;
-  reset_judge_wtce_buttons();
+  draw_judge_wtce_buttons();
 
   // setup chat
   on_chat_config_changed();
@@ -113,10 +115,11 @@ void Courtroom::enter_courtroom(int p_cid)
   // This will also handle showing the correct shouts, effects and wtce buttons,
   // and cycling through them if the buttons that are supposed to be displayed
   // do not exist It will also take care of free blocks
+
   set_widgets();
 
   check_shouts();
-  if (!shouts_enabled[m_shout_state])
+  if (!shouts_enabled[m_shout_current])
     cycle_shout(1);
 
   check_effects();
@@ -196,8 +199,8 @@ void Courtroom::set_scene()
 
   if (file_exists(ini_path))
   {
-    f_background = ao_app->read_design_ini(f_side, ini_path);
-    f_desk_image = ao_app->read_design_ini(f_side + "_desk", ini_path);
+    f_background = ao_app->read_ini(f_side, ini_path);
+    f_desk_image = ao_app->read_ini(f_side + "_desk", ini_path);
 
     if (f_desk_mod == "0") // keeping a bit of the functionality for now
     {
@@ -236,20 +239,18 @@ void Courtroom::set_scene()
       f_desk_image = "stand";
     }
 
-    QVector<QString> exts{".webp", ".apng", ".gif", ".png"};
-
-    bool has_all_desks;
-    if (ao_app->get_file_extension(get_background_path("defensedesk"), exts) ==
-        "")
-      has_all_desks = false;
-    else if (ao_app->get_file_extension(get_background_path("prosecutiondesk"),
-                                        exts) == "")
-      has_all_desks = false;
-    else if (ao_app->get_file_extension(get_background_path("stand"), exts) ==
-             "")
-      has_all_desks = false;
-    else
-      has_all_desks = true;
+    bool has_all_desks = true;
+    QStringList alldesks{"defensedesk", "prosecutiondesk", "stand"};
+    for (QString desk : alldesks)
+    {
+      QString full_path = ao_app->find_asset_path(
+          {get_background_path(desk)}, animated_or_static_extensions());
+      if (full_path.isEmpty())
+      {
+        has_all_desks = false;
+        break;
+      }
+    }
 
     if (f_desk_mod == "0" ||
         (f_desk_mod != "1" &&
@@ -350,11 +351,28 @@ void Courtroom::handle_clock(QString time)
   ui_vp_clock->play(string);
 }
 
-void Courtroom::handle_theme_variant(QString theme_variant)
+void Courtroom::handle_gamemode(QString gamemode)
 {
-  ao_app->set_theme_variant(theme_variant);
+  // only manual gamemode changes are allowed
+  if (ao_app->get_manual_gamemode_enabled())
+    return;
+  if (ao_app->get_gamemode() == gamemode)
+    return;
+  ao_app->set_gamemode(gamemode);
   on_app_reload_theme_requested();
 }
+
+void Courtroom::handle_timeofday(QString timeofday)
+{
+  // only manual gamemode changes are allowed
+  if (ao_app->get_manual_timeofday_enabled())
+    return;
+  if (ao_app->get_timeofday() == timeofday)
+    return;
+  ao_app->set_timeofday(timeofday);
+  on_app_reload_theme_requested();
+}
+
 void Courtroom::list_music()
 {
   ui_music_list->clear();
@@ -369,24 +387,16 @@ void Courtroom::list_music()
   for (int n_song = 0; n_song < music_list.size(); ++n_song)
   {
     QString i_song = music_list.at(n_song);
-    bool found = false;
-
-    for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
-    {
-      QString r_song = i_song + ext;
-      QString song_path = ao_app->get_music_path(r_song);
-      if (file_exists(song_path))
-      {
-        found = true;
-        break;
-      }
-    }
 
     if (i_song.toLower().contains(ui_music_search->text().toLower()))
     {
       ui_music_list->addItem(i_song);
 
-      if (found)
+      QString song_root = ao_app->get_music_path(i_song);
+      QString song_path =
+          ao_app->find_asset_path({song_root}, audio_extensions());
+
+      if (!song_path.isEmpty())
         ui_music_list->item(n_listed_songs)->setBackground(found_brush);
       else
         ui_music_list->item(n_listed_songs)->setBackground(missing_brush);
@@ -435,6 +445,7 @@ void Courtroom::list_sfx()
 {
   ui_sfx_list->clear();
   sfx_names.clear();
+  current_sfx_id = -1; // Restart current SFX, because it may no longer be valid
 
   QString f_file = design_ini;
 
@@ -443,14 +454,29 @@ void Courtroom::list_sfx()
   QBrush found_brush(ao_app->get_color("found_song_color", f_file));
   QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
 
+  // Add hardcoded items
+  // FIXME: Rewrite
   ui_sfx_list->addItem("Default");
   ui_sfx_list->addItem("Silence");
 
   sfx_names.append("1"); // Default
   sfx_names.append("1"); // Silence
 
-  int n_listed_sfxs = 0;
+  QString default_sfx_root = ao_app->get_sounds_path("1");
+  QString default_sfx_path =
+      ao_app->find_asset_path({default_sfx_root}, audio_extensions());
+  if (!default_sfx_path.isEmpty())
+  {
+    ui_sfx_list->item(0)->setBackground(found_brush);
+    ui_sfx_list->item(1)->setBackground(found_brush);
+  }
+  else
+  {
+    ui_sfx_list->item(0)->setBackground(missing_brush);
+    ui_sfx_list->item(1)->setBackground(missing_brush);
+  }
 
+  // Now add the other SFXs given by the character's sound.ini
   for (int n_sfx = 0; n_sfx < sfx_list.size(); ++n_sfx)
   {
     QStringList sfx = sfx_list.at(n_sfx).split("=");
@@ -462,33 +488,21 @@ void Courtroom::list_sfx()
     else
       d_sfx = sfx.at(1).trimmed();
 
-    //    qDebug() << "isfx=" << i_sfx << "dsfx=" << d_sfx << "sfx=" << sfx;
-
     if (i_sfx.toLower().contains(ui_sfx_search->text().toLower()))
     {
       ui_sfx_list->addItem(d_sfx);
-      ui_sfx_list->item(ui_sfx_list->count() - 1)
-          ->setStatusTip(QString::number(n_sfx + 2));
+      int last_index = ui_sfx_list->count() - 1;
+      ui_sfx_list->item(last_index)->setStatusTip(QString::number(n_sfx + 2));
 
-      bool found = false;
+      // Apply appropriate color whether SFX exists or not
+      QString sfx_root = ao_app->get_sounds_path(i_sfx);
+      QString sfx_path =
+          ao_app->find_asset_path({sfx_root}, audio_extensions());
 
-      for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
-      {
-        QString r_sfx = i_sfx + ext;
-        QString sfx_path = ao_app->get_sounds_path(r_sfx);
-        if (file_exists(sfx_path))
-        {
-          found = true;
-          break;
-        }
-      }
-
-      if (found)
-        ui_sfx_list->item(n_listed_sfxs)->setBackground(found_brush);
+      if (!sfx_path.isEmpty())
+        ui_sfx_list->item(last_index)->setBackground(found_brush);
       else
-        ui_sfx_list->item(n_listed_sfxs)->setBackground(missing_brush);
-
-      ++n_listed_sfxs;
+        ui_sfx_list->item(last_index)->setBackground(missing_brush);
     }
   }
 }
@@ -575,7 +589,7 @@ void Courtroom::on_chat_return_pressed()
   if (ui_ic_chat_message->text() == "" || is_client_muted)
     return;
 
-  if ((anim_state < 3 || text_state < 2) && m_objection_state == 0)
+  if ((anim_state < 3 || text_state < 2) && m_shout_state == 0)
     return;
 
   //  qDebug() << "prev_emote = " << prev_emote << "current_emote = " <<
@@ -646,7 +660,7 @@ void Courtroom::on_chat_return_pressed()
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
   // needed or else legacy won't understand what we're saying
-  if (m_objection_state > 0)
+  if (m_shout_state > 0)
   {
     if (f_emote_mod == 5)
       f_emote_mod = 6;
@@ -676,11 +690,11 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_obj_state;
 
-  if (m_objection_state < 0 ||
-      (!ao_app->custom_objection_enabled && m_objection_state > 3))
+  if (m_shout_state < 0 ||
+      (!ao_app->custom_objection_enabled && m_shout_state > 3))
     f_obj_state = "0";
   else
-    f_obj_state = QString::number(m_objection_state);
+    f_obj_state = QString::number(m_shout_state);
 
   packet_contents.append(f_obj_state);
 
@@ -717,14 +731,12 @@ void Courtroom::on_chat_return_pressed()
     f_text_color = QString::number(m_text_color);
 
   packet_contents.append(f_text_color);
-
   prev_emote = current_emote;
 
-  { // reset states
-    ui_pre->setChecked(ao_config->always_pre_enabled());
-    ui_sfx_list->clearSelection();
-    list_sfx();
-  }
+  // reset states
+  ui_pre->setChecked(ao_config->always_pre_enabled());
+  ui_sfx_list->clearSelection();
+  list_sfx();
 
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
@@ -770,14 +782,14 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     ui_ic_chat_message->clear();
     ui_sfx_list->setCurrentItem(ui_sfx_list->item(0));
 
-    m_objection_state = 0;
-    reset_shout_buttons();
+    m_shout_state = 0;
+    draw_shout_buttons();
 
     m_effect_state = 0;
-    reset_effect_buttons();
+    draw_effect_buttons();
 
     m_wtce_current = 0;
-    reset_judge_wtce_buttons();
+    draw_judge_wtce_buttons();
 
     is_presenting_evidence = false;
     ui_evidence_present->set_image("present_disabled.png");
@@ -841,7 +853,8 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
     if (objection_mod >= 1 && objection_mod <= ui_shouts.size() &&
         ui_shouts.size() > 0) // check to prevent crashing
     {
-      ui_vp_objection->play_interjection(f_char, shout_names.at(objection_mod - 1));
+      ui_vp_objection->play_interjection(f_char,
+                                         shout_names.at(objection_mod - 1));
       m_shouts_player->play(shout_names.at(objection_mod - 1) + ".wav", f_char);
     }
     else
@@ -892,17 +905,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
 
   if (chatbox == "")
-    if (ao_app->read_theme_ini("daynight_theme", cc_config_ini) == "true")
-    {
-      if (current_clock < 0)
-        ui_vp_chatbox->set_image("chatmed.png");
-      else if (current_clock >= 7 && current_clock < 22)
-        ui_vp_chatbox->set_image("chatmed_day.png");
-      else
-        ui_vp_chatbox->set_image("chatmed_night.png");
-    }
-    else
-      ui_vp_chatbox->set_image("chatmed.png");
+    ui_vp_chatbox->set_image("chatmed.png");
   else
   {
     QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
@@ -991,29 +994,17 @@ void Courtroom::handle_chatmessage_3()
 
   ui_vp_showname_image->show();
 
-  // Check for any of 9 possible ways that showname images are
-  QVector<QString> exts = {".png", ".jpg", ".bmp"};
-  // 3 places (in order)
-  // 1. Character folder in variant folder in theme folder
-  // 2. Character folder in theme folder
-  // 3. Character folder
-  QStringList directories = {
-      ao_app->get_theme_variant_path("characters/" + f_char + "/showname"),
-      ao_app->get_theme_path("characters/" + f_char + "/showname"),
-      ao_app->get_character_path(f_char, "showname"),
-  };
+  // Asset lookup order
+  // 1. In the theme folder (gamemode-timeofday/main/default), in the character
+  // folder, look for "showname" + extensions in `exts` in order
+  // 2. In the character folder, look for
+  // "showname" + extensions in `exts` in order
 
-  qDebug() << directories;
-  QString ext, path;
-  for (QString directory : directories)
-  {
-    ext = ao_app->get_file_extension(directory, exts);
-    if (!ext.isEmpty())
-    {
-      path = ao_app->get_case_sensitive_path(directory + ext);
-      break;
-    }
-  }
+  QString path = ao_app->find_theme_asset_path(
+      "characters/" + f_char + "/showname", {".png"});
+  if (path.isEmpty())
+    path = ao_app->find_asset_path(
+        {ao_app->get_character_path(f_char, "showname")}, {".png"});
 
   if (!path.isEmpty() && !chatmessage_is_empty &&
       ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")
@@ -1588,12 +1579,7 @@ void Courtroom::play_sfx()
   if (sfx_name == "1")
     return;
 
-  QVector<QString> extensions{"", ".wav", ".ogg", ".opus", ".mp3"};
-
-  QString f_file =
-      ao_app->get_file_extension(ao_app->get_sounds_path(sfx_name), extensions);
-
-  m_effects_player->play(sfx_name + f_file);
+  m_effects_player->play(sfx_name);
 }
 
 void Courtroom::set_text_color()
@@ -1688,7 +1674,7 @@ void Courtroom::handle_song(QStringList *p_contents)
   QString f_song = f_contents.at(0);
   int n_char = f_contents.at(1).toInt();
 
-  for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
+  for (auto &ext : audio_extensions())
   {
     QString r_song = f_song + ext;
     QString song_path = ao_app->get_music_path(r_song);
@@ -2041,15 +2027,22 @@ void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::reset_shout_buttons()
+void Courtroom::draw_shout_buttons()
 {
   for (int i = 0; i < ui_shouts.size(); ++i)
-    ui_shouts[i]->set_image(shout_names.at(i) + ".png");
+  {
+    QString shout_file = shout_names.at(i) + ".png";
+    ui_shouts[i]->set_image(shout_file);
+    if (ao_app->find_theme_asset_path(shout_file).isEmpty())
+      ui_shouts[i]->setText(shout_names.at(i));
+    else
+      ui_shouts[i]->setText("");
+  }
 
-  if (m_objection_state != 0 &&
-      ui_shouts.size() > 0) // check to prevent crashing
-    ui_shouts.at(m_objection_state - 1)
-        ->set_image(shout_names.at(m_objection_state - 1) + "_selected.png");
+  // Mark selected button as such
+  if (m_shout_state != 0 && ui_shouts.size() > 0)
+    ui_shouts.at(m_shout_state - 1)
+        ->set_image(shout_names.at(m_shout_state - 1) + "_selected.png");
 }
 
 void Courtroom::on_shout_clicked()
@@ -2058,12 +2051,12 @@ void Courtroom::on_shout_clicked()
   int f_shout_id = f_shout_button->property("shout_id").toInt();
 
   // update based on current button selected
-  if (f_shout_id == m_objection_state)
-    m_objection_state = 0;
+  if (f_shout_id == m_shout_state)
+    m_shout_state = 0;
   else
-    m_objection_state = f_shout_id;
+    m_shout_state = f_shout_id;
 
-  reset_shout_buttons();
+  draw_shout_buttons();
 
   ui_ic_chat_message->setFocus();
 }
@@ -2104,49 +2097,41 @@ void Courtroom::on_cycle_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::cycle_shout(int p_index)
+void Courtroom::cycle_shout(int p_delta)
 {
   int n = ui_shouts.size();
-  do
-  {
-    m_shout_state = (m_shout_state - p_index + n) % n;
-  } while (!shouts_enabled[m_shout_state]);
-
+  m_shout_current = (m_shout_current - p_delta + n) % n;
   set_shouts();
 }
 
-void Courtroom::cycle_effect(int p_index)
+void Courtroom::cycle_effect(int p_delta)
 {
   int n = ui_effects.size();
-  do
-  {
-    m_effect_current = (m_effect_current - p_index + n) % n;
-  } while (!effects_enabled[m_effect_current]);
-
+  m_effect_current = (m_effect_current - p_delta + n) % n;
   set_effects();
 }
 
-void Courtroom::cycle_wtce(int p_index)
+void Courtroom::cycle_wtce(int p_delta)
 {
   int n = ui_wtce.size();
-  do
-  {
-    m_wtce_current = (m_wtce_current - p_index + n) % n;
-  } while (!wtce_enabled[m_wtce_current]);
-
+  m_wtce_current = (m_wtce_current - p_delta + n) % n;
   set_judge_wtce();
 }
 
-void Courtroom::reset_effect_buttons()
+void Courtroom::draw_effect_buttons()
 {
-  // effect names does not necessarily have the same size as ui effects
   for (int i = 0; i < effect_names.size(); ++i)
   {
-    // qDebug() << effect_names << i;
-    ui_effects[i]->set_image(effect_names.at(i) + ".png");
+    QString effect_file = effect_names.at(i) + ".png";
+    ui_effects[i]->set_image(effect_file);
+    if (ao_app->find_theme_asset_path(effect_file).isEmpty())
+      ui_effects[i]->setText(effect_names.at(i));
+    else
+      ui_effects[i]->setText("");
   }
 
-  if (m_effect_state != 0 && ui_effects.size() > 0) // check to prevent crashing
+  // Mark selected button as such
+  if (m_effect_state != 0 && ui_effects.size() > 0)
     ui_effects[m_effect_state - 1]->set_image(
         effect_names.at(m_effect_state - 1) + "_pressed.png");
 }
@@ -2161,7 +2146,7 @@ void Courtroom::on_effect_button_clicked()
   else
     m_effect_state = f_effect_id;
 
-  reset_effect_buttons();
+  draw_effect_buttons();
 
   ui_ic_chat_message->setFocus();
 }
@@ -2242,15 +2227,22 @@ void Courtroom::on_cross_examination_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::reset_judge_wtce_buttons() // kind of an unnecessary function,
-                                           // but I added it just in case
+void Courtroom::draw_judge_wtce_buttons()
 {
-  for (int i = 0; i < wtce_names.size();
-       ++i) // effect names does not necessarily have the same size as ui
-            // effects
+  for (int i = 0; i < wtce_names.size(); ++i)
   {
-    ui_wtce[i]->set_image(wtce_names.at(i) + ".png");
+    QString wtce_file = wtce_names.at(i) + ".png";
+    ui_wtce[i]->set_image(wtce_file);
+    if (ao_app->find_theme_asset_path(wtce_file).isEmpty())
+      ui_wtce[i]->setText(wtce_names.at(i));
+    else
+      ui_wtce[i]->setText("");
   }
+
+  // Unlike the other reset functions, the judge buttons are of immediate
+  // action and thus are immediately unpressed after being pressed.
+  // Therefore, we do not need to handle displaying a "_selected.png"
+  // when appropriate, because there is no appropriate situation
 }
 
 void Courtroom::on_wtce_clicked()
@@ -2443,24 +2435,15 @@ void Courtroom::on_sfx_list_clicked(QModelIndex p_index)
   QBrush found_brush(ao_app->get_color("found_song_color", design_ini));
   QBrush missing_brush(ao_app->get_color("missing_song_color", design_ini));
 
-  if (-1 != current_sfx_id)
+  if (current_sfx_id != -1)
   {
     QListWidgetItem *old_sfx = ui_sfx_list->item(current_sfx_id);
 
-    bool found = false;
+    // Apply appropriate color whether SFX exists or not
+    QString sfx_root = ao_app->get_sounds_path(sfx_names.at(current_sfx_id));
+    QString sfx_path = ao_app->find_asset_path({sfx_root}, audio_extensions());
 
-    for (auto &ext : QStringList{"", ".wav", ".ogg", ".opus", ".mp3"})
-    {
-      QString r_sfx = sfx_names.at(current_sfx_id) + ext;
-      QString sfx_path = ao_app->get_sounds_path(r_sfx);
-      if (file_exists(sfx_path))
-      {
-        found = true;
-        break;
-      }
-    }
-
-    if (found)
+    if (!sfx_path.isEmpty())
       old_sfx->setBackground(found_brush);
     else
       old_sfx->setBackground(missing_brush);
