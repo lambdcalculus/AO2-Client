@@ -344,11 +344,27 @@ void Courtroom::handle_music_anim()
 
 void Courtroom::handle_clock(QString time)
 {
+  qDebug() << time;
   current_clock = time.toInt();
 
   QString string = "hours\\" + time; // expected to be 0, 1, 2...
-  qDebug() << "hours:" << string;
-  ui_vp_clock->play(string);
+  qDebug() << current_clock << string
+           << ao_app->find_theme_asset_path(string,
+                                            animated_or_static_extensions());
+  // If the new hour file exists, use it and show the clock
+  if (!ao_app->find_theme_asset_path(string, animated_or_static_extensions())
+           .isEmpty())
+  {
+    ui_vp_clock->show();
+    ui_vp_clock->play(string);
+  }
+  // Otherwise, keep showing whatever was last shown...
+  // except if time is now -1. If so, that means the time is unknown, and there
+  // are no files for it. In that case, hide the clock and stop the movie
+  else if (current_clock == -1)
+  {
+    ui_vp_clock->hide();
+  }
 }
 
 void Courtroom::handle_gamemode(QString gamemode)
@@ -574,7 +590,8 @@ void Courtroom::save_textlog(QString p_text)
 {
   QString f_file = ao_app->get_base_path() + icchatlogsfilename;
 
-  ao_app->append_note("[" + QTime::currentTime().toString() + "]" + p_text, f_file);
+  ao_app->append_note("[" + QTime::currentTime().toString() + "]" + p_text,
+                      f_file);
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
