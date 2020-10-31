@@ -92,13 +92,13 @@ void Courtroom::reset_emote_page()
 
 void Courtroom::set_emote_page()
 {
+  ui_emote_left->hide();
+  ui_emote_right->hide();
+
   if (m_cid == -1)
     return;
 
   int total_emotes = ao_app->get_emote_number(current_char);
-
-  ui_emote_left->hide();
-  ui_emote_right->hide();
 
   for (AOEmoteButton *i_button : ui_emote_list)
   {
