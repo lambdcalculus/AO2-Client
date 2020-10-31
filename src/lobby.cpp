@@ -82,13 +82,20 @@ void Lobby::set_widgets()
   {
     qDebug() << "W: did not find lobby width or height in " << filename;
 
-    // Most common symptom of bad config files and missing assets.
-    call_notice("It doesn't look like your client is set up correctly "
-                "at " +
-                QDir::currentPath() +
-                "\n"
-                "Did you download all resources correctly from the DRO Discord "
-                "including the large 'base' folder?");
+    // Most common symptom of bad config files, missing assets, or misnamed
+    // theme folder
+    call_notice(
+        "It doesn't look like your client is set up correctly. This can be "
+        "due to the following reasons: \n"
+        "1. Check you downloaded and extracted the resources correctly from "
+        "the DRO Discord including the large 'base' folder.\n"
+        "2. If you did, check that the base folder is in the same folder "
+        "where you launched Danganronpa Online from: " +
+        QDir::currentPath() +
+        "\n"
+        "3. If it is there, check that your current theme folder exists in "
+        "base/themes. According to base/config.ini, your current theme is " +
+        ao_app->get_theme());
 
     this->resize(517, 666);
   }
