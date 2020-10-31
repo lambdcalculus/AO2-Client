@@ -20,15 +20,10 @@ public:
   }
   QString to_string();
 
-  void encrypt_header(unsigned int p_key);
-  void decrypt_header(unsigned int p_key);
-
   void net_encode();
   void net_decode();
 
 private:
-  bool encrypted = false;
-
   QString m_header;
   QStringList m_contents;
 };

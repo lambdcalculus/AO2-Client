@@ -2,7 +2,6 @@
 
 #include "courtroom.h"
 #include "debug_functions.h"
-#include "encryption_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
@@ -131,11 +130,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
   if (header == "decryptor")
   {
+    // This packet is maintained as is for legacy purposes,
+    // even though its sole argument is no longer used for anything
+    // productive
     if (f_contents.size() == 0)
       goto end;
-
-    // you may ask where 322 comes from. that would be a good question.
-    s_decryptor = fanta_decrypt(f_contents.at(0), 322).toUInt();
 
     QString f_hdid;
     f_hdid = get_hdid();
