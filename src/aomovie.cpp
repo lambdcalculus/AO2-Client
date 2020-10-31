@@ -125,6 +125,9 @@ void AOMovie::play_interjection(QString p_char_name,
 void AOMovie::stop()
 {
   m_movie->stop();
+  m_movie->setFileName(""); // Properly free up resources
+  // This fixes a memory leak for movie implementations that don't clean
+  // after themselves once stopped (which is.. all so far)
   this->hide();
 }
 
@@ -134,7 +137,6 @@ void AOMovie::frame_change(int n_frame)
   {
     // we need this or else the last frame wont show
     delay(m_movie->nextFrameDelay());
-
     this->stop();
 
     // signal connected to courtroom object, let it figure out what to do
