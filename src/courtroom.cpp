@@ -574,7 +574,8 @@ void Courtroom::save_textlog(QString p_text)
 {
   QString f_file = ao_app->get_base_path() + icchatlogsfilename;
 
-  ao_app->append_note("[" + QTime::currentTime().toString() + "]" + p_text, f_file);
+  ao_app->append_note("[" + QTime::currentTime().toString() + "]" + p_text,
+                      f_file);
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
@@ -1215,6 +1216,8 @@ void Courtroom::update_ic_log(bool p_reset_log)
   {
     // move cursor
     cursor.movePosition(move_type);
+    QString record_end = (QString(QChar::LineFeed) +
+                          (m_chatlog_newline ? QString(QChar::LineFeed) : ""));
 
     if (record->system)
     {
@@ -1230,9 +1233,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
       else
         separator = " ";
       cursor.insertText(record->name + separator, name_format);
-      cursor.insertText(record->line + QChar::LineFeed +
-                            (m_chatlog_newline ? QChar::LineFeed : QChar()),
-                        line_format);
+      cursor.insertText(record->line + record_end, line_format);
     }
   }
 
@@ -1325,6 +1326,7 @@ void Courtroom::append_system_text(QString p_showname, QString p_line)
 {
   if (chatmessage_is_empty)
     return;
+
   append_ic_text(p_showname, p_line, true, false);
 }
 
