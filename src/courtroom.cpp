@@ -1221,7 +1221,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
 
     if (record->system)
     {
-      cursor.insertText(record->line + QChar::LineFeed, system_format);
+      cursor.insertText(record->line + record_end, system_format);
     }
     else
     {
