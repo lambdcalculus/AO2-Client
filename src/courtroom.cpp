@@ -132,10 +132,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   check_free_blocks();
 
-  if (ao_app->flipping_enabled)
-    ui_flip->show();
-  else
-    ui_flip->hide();
+  ui_flip->show();
 
   list_music();
   list_areas();
@@ -574,7 +571,8 @@ void Courtroom::save_textlog(QString p_text)
 {
   QString f_file = ao_app->get_base_path() + icchatlogsfilename;
 
-  ao_app->append_note("[" + QTime::currentTime().toString() + "]" + p_text, f_file);
+  ao_app->append_note("[" + QTime::currentTime().toString() + "]" + p_text,
+                      f_file);
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
@@ -619,13 +617,10 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_desk_mod = "chat";
 
-  if (ao_app->desk_mod_enabled)
-  {
-    f_desk_mod =
-        QString::number(ao_app->get_desk_mod(current_char, current_emote));
-    if (f_desk_mod == "-1")
-      f_desk_mod = "chat";
-  }
+  f_desk_mod =
+      QString::number(ao_app->get_desk_mod(current_char, current_emote));
+  if (f_desk_mod == "-1")
+    f_desk_mod = "chat";
 
   packet_contents.append(f_desk_mod);
 
@@ -671,8 +666,6 @@ void Courtroom::on_chat_return_pressed()
   {
     if (f_emote_mod == 0)
       f_emote_mod = 1;
-    else if (f_emote_mod == 5 && ao_app->prezoom_enabled)
-      f_emote_mod = 4;
   }
   else
   {
@@ -690,8 +683,7 @@ void Courtroom::on_chat_return_pressed()
 
   QString f_obj_state;
 
-  if (m_shout_state < 0 ||
-      (!ao_app->custom_objection_enabled && m_shout_state > 3))
+  if (m_shout_state < 0)
     f_obj_state = "0";
   else
     f_obj_state = QString::number(m_shout_state);
@@ -705,18 +697,7 @@ void Courtroom::on_chat_return_pressed()
   else
     packet_contents.append("0");
 
-  QString f_flip;
-
-  if (ao_app->flipping_enabled)
-  {
-    if (ui_flip->isChecked())
-      f_flip = "1";
-    else
-      f_flip = "0";
-  }
-  else
-    f_flip = QString::number(m_cid);
-
+  QString f_flip = ui_flip->isChecked() ? "1" : "0";
   packet_contents.append(f_flip);
 
   packet_contents.append(QString::number(m_effect_state));
@@ -725,7 +706,7 @@ void Courtroom::on_chat_return_pressed()
 
   if (m_text_color < 0)
     f_text_color = "0";
-  else if (m_text_color > 4 && !ao_app->yellow_text_enabled)
+  else if (m_text_color > 4)
     f_text_color = "0";
   else
     f_text_color = QString::number(m_text_color);
@@ -921,7 +902,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
 
-  if (ao_app->flipping_enabled && m_chatmessage[FLIP].toInt() == 1)
+  if (m_chatmessage[FLIP].toInt() == 1)
     ui_vp_player_char->set_mirror_enabled(true);
   else
     ui_vp_player_char->set_mirror_enabled(false);
@@ -1824,8 +1805,7 @@ void Courtroom::on_ooc_return_pressed()
 
     ao_config->set_username(ooc_name);
   }
-  else if (ooc_message.startsWith("/rainbow") && ao_app->yellow_text_enabled &&
-           !rainbow_appended)
+  else if (ooc_message.startsWith("/rainbow") && !rainbow_appended)
   {
     ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
