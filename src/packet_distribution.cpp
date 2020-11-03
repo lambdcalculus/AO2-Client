@@ -161,9 +161,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->append_server_chatmessage(f_contents.at(0),
                                              f_contents.at(1));
   }
+  // FIXME Should the FL packet acknowledgement removed?
   else if (header == "FL")
   {
-    // This section deliberately left empty
+    // The packet is acknowledged but is of no use to the client
   }
   else if (header == "PN")
   {
