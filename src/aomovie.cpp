@@ -126,8 +126,9 @@ void AOMovie::stop()
 {
   m_movie->stop();
   m_movie->setFileName(""); // Properly free up resources
-  // This fixes a memory leak for movie implementations that don't clean
-  // after themselves once stopped (which is.. all so far)
+  // If the file is not cleared after the movie is stopped, the movie will
+  // continue using as much memory as it requested, which leads to invisible
+  // memory hogging.
   this->hide();
 }
 
