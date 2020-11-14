@@ -210,8 +210,12 @@ public slots:
     username = cfg.value("username").toString();
     callwords = cfg.value("callwords").toString();
     server_alerts = cfg.value("server_alerts", true).toBool();
-    theme = cfg.value("theme", "default").toString();
-    gamemode = cfg.value("gamemode", "").toString();
+
+    theme = cfg.value("theme").toString();
+    if (theme.trimmed().isEmpty())
+      theme = "default";
+
+    gamemode = cfg.value("gamemode").toString();
     manual_gamemode = cfg.value("manual_gamemode", false).toBool();
     timeofday = cfg.value("timeofday", "").toString();
     manual_timeofday = cfg.value("manual_timeofday", false).toBool();
