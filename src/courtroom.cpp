@@ -1216,7 +1216,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
   {
     // move cursor
     cursor.movePosition(move_type);
-    QString record_end = (QString(QChar::LineFeed) +
+    const QString record_end = (QString(QChar::LineFeed) +
                           (m_chatlog_newline ? QString(QChar::LineFeed) : ""));
 
     if (record->system)
