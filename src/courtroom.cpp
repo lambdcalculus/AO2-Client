@@ -839,7 +839,9 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   if (ao_config->log_is_recording_enabled() &&
       (!chatmessage_is_empty || !is_system_speaking))
+  {
     save_textlog(f_showname + ": " + m_chatmessage[MESSAGE]);
+  }
 
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   QString f_char = m_chatmessage[CHAR_NAME];
