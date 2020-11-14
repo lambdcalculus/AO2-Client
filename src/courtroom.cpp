@@ -574,7 +574,8 @@ void Courtroom::save_textlog(QString p_text)
 {
   QString f_file = ao_app->get_base_path() + icchatlogsfilename;
 
-  ao_app->append_note("[" + QTime::currentTime().toString() + "]" + p_text, f_file);
+  ao_app->append_note("[" + QTime::currentTime().toString() + "]" + p_text,
+                      f_file);
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
@@ -836,8 +837,11 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   else
     append_ic_text(f_showname, m_chatmessage[MESSAGE], false, false);
 
-  if (ao_config->log_is_recording_enabled())
+  if (ao_config->log_is_recording_enabled() &&
+      (!chatmessage_is_empty || !is_system_speaking))
+  {
     save_textlog(f_showname + ": " + m_chatmessage[MESSAGE]);
+  }
 
   int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
   QString f_char = m_chatmessage[CHAR_NAME];
