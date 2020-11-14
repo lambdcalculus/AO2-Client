@@ -1,7 +1,5 @@
 #include "aopacket.h"
 
-#include "encryption_functions.h"
-
 #include <QDebug>
 
 AOPacket::AOPacket(QString p_packet_string)
@@ -33,24 +31,7 @@ QString AOPacket::to_string()
 
   f_string += "#%";
 
-  if (encrypted)
-    return "#" + f_string;
-  else
-    return f_string;
-}
-
-void AOPacket::encrypt_header(unsigned int p_key)
-{
-  m_header = fanta_encrypt(m_header, p_key);
-
-  encrypted = true;
-}
-
-void AOPacket::decrypt_header(unsigned int p_key)
-{
-  m_header = fanta_decrypt(m_header, p_key);
-
-  encrypted = false;
+  return f_string;
 }
 
 void AOPacket::net_encode()

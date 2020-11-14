@@ -2,7 +2,6 @@
 
 #include "courtroom.h"
 #include "debug_functions.h"
-#include "encryption_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
@@ -131,25 +130,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
   if (header == "decryptor")
   {
+    // This packet is maintained as is for legacy purposes,
+    // even though its sole argument is no longer used for anything
+    // productive
     if (f_contents.size() == 0)
       goto end;
-
-    // you may ask where 322 comes from. that would be a good question.
-    s_decryptor = fanta_decrypt(f_contents.at(0), 322).toUInt();
-
-    // default(legacy) values
-    encryption_needed = true;
-    yellow_text_enabled = false;
-    prezoom_enabled = false;
-    flipping_enabled = false;
-    custom_objection_enabled = false;
-    improved_loading_enabled = false;
-    desk_mod_enabled = false;
-    evidence_enabled = false;
-
-    // workaround for tsuserver4
-    if (f_contents.at(0) == "NOENCRYPT")
-      encryption_needed = false;
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -176,22 +161,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->append_server_chatmessage(f_contents.at(0),
                                              f_contents.at(1));
   }
+  // FIXME Should the FL packet acknowledgement removed?
   else if (header == "FL")
   {
-    if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
-      yellow_text_enabled = true;
-    if (f_packet.contains("flipping", Qt::CaseInsensitive))
-      flipping_enabled = true;
-    if (f_packet.contains("customobjections", Qt::CaseInsensitive))
-      custom_objection_enabled = true;
-    if (f_packet.contains("fastloading", Qt::CaseInsensitive))
-      improved_loading_enabled = true;
-    if (f_packet.contains("noencryption", Qt::CaseInsensitive))
-      encryption_needed = false;
-    if (f_packet.contains("deskmod", Qt::CaseInsensitive))
-      desk_mod_enabled = true;
-    if (f_packet.contains("evidence", Qt::CaseInsensitive))
-      evidence_enabled = true;
+    // The packet is acknowledged but is of no use to the client
   }
   else if (header == "PN")
   {
@@ -254,11 +227,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     AOPacket *f_packet;
 
-    if (improved_loading_enabled)
-      f_packet = new AOPacket("RC#%");
-    else
-      f_packet = new AOPacket("askchar2#%");
-
+    f_packet = new AOPacket("RC#%");
     send_server_packet(f_packet);
 
     QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
@@ -307,14 +276,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         (loaded_chars / static_cast<double>(total_loading_size)) * 100;
     w_lobby->set_loading_value(loading_value);
 
-    if (improved_loading_enabled)
-      send_server_packet(new AOPacket("RE#%"));
-    else
-    {
-      QString next_packet_number =
-          QString::number(((loaded_chars - 1) / 10) + 1);
-      send_server_packet(new AOPacket("AN#" + next_packet_number + "#%"));
-    }
+    send_server_packet(new AOPacket("RE#%"));
   }
   else if (header == "EI")
   {
@@ -776,18 +738,7 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
 
   QString f_packet = p_packet->to_string();
 
-  if (encryption_needed)
-  {
-    qDebug() << "S(e):" << f_packet;
-
-    p_packet->encrypt_header(s_decryptor);
-    f_packet = p_packet->to_string();
-  }
-  else
-  {
-    qDebug() << "S:" << f_packet;
-  }
-
+  qDebug() << "S:" << f_packet;
   net_manager->ship_server_packet(f_packet);
 
   delete p_packet;

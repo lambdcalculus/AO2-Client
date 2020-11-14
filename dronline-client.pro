@@ -46,7 +46,6 @@ HEADERS += \
   include/datatypes.h \
   include/debug_functions.h \
   include/discord_rich_presence.h \
-  include/encryption_functions.h \
   include/file_functions.h \
   include/hardware_functions.h \
   include/hex_functions.h \
@@ -92,7 +91,6 @@ SOURCES += \
   src/debug_functions.cpp \
   src/discord_rich_presence.cpp \
   src/emotes.cpp \
-  src/encryption_functions.cpp \
   src/evidence.cpp \
   src/file_functions.cpp \
   src/hardware_functions.cpp \
