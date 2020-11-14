@@ -658,11 +658,11 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_mute_list, "mute_list");
   ui_mute_list->hide();
 
-  set_size_and_pos(ui_area_list, "area_list");
-  ui_area_list->hide();
-  //  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
-
   set_size_and_pos(ui_music_list, "music_list");
+  set_size_and_pos(ui_area_list, "area_list");
+  if (ui_music_list->isVisible())
+    ui_area_list->hide();
+  //  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_sfx_list, "sfx_list");
 
