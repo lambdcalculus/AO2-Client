@@ -505,8 +505,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       int total_loading_size =
           char_list_size + evidence_list_size + music_list_size;
-      int loading_value =
-          (loaded_chars / static_cast<double>(total_loading_size)) * 100;
+      int loading_value = ((loaded_chars + loaded_evidence + loaded_music) /
+                           static_cast<double>(total_loading_size)) *
+                          100;
       w_lobby->set_loading_value(loading_value);
     }
 
