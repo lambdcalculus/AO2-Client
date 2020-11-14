@@ -1177,7 +1177,11 @@ void Courtroom::update_ic_log(bool p_reset_log)
   QColor not_found_color = QColor(255, 255, 255);
 
   QTextCharFormat name_format = ui_ic_chatlog->currentCharFormat();
-  name_format.setFontWeight(QFont::Bold);
+  if (ao_app->get_font_property("ic_chatlog_bold", fonts_ini))
+    name_format.setFontWeight(QFont::Bold);
+  else
+    name_format.setFontWeight(QFont::Normal);
+
   QColor showname_color =
       ao_app->get_color("ic_chatlog_showname_color", fonts_ini);
   if (showname_color == not_found_color)
