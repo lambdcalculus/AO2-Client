@@ -1223,10 +1223,12 @@ void Courtroom::update_ic_log(bool p_reset_log)
   {
     // move cursor
     cursor.movePosition(move_type);
+    const QString record_end = (QString(QChar::LineFeed) +
+                          (m_chatlog_newline ? QString(QChar::LineFeed) : ""));
 
     if (record->system)
     {
-      cursor.insertText(record->line + QChar::LineFeed, system_format);
+      cursor.insertText(record->line + record_end, system_format);
     }
     else
     {
@@ -1238,9 +1240,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
       else
         separator = " ";
       cursor.insertText(record->name + separator, name_format);
-      cursor.insertText(record->line + QChar::LineFeed +
-                            (m_chatlog_newline ? QChar::LineFeed : QChar()),
-                        line_format);
+      cursor.insertText(record->line + record_end, line_format);
     }
   }
 
@@ -1333,6 +1333,7 @@ void Courtroom::append_system_text(QString p_showname, QString p_line)
 {
   if (chatmessage_is_empty)
     return;
+
   append_ic_text(p_showname, p_line, true, false);
 }
 
