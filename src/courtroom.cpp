@@ -345,10 +345,28 @@ void Courtroom::handle_music_anim()
 void Courtroom::handle_clock(QString time)
 {
   current_clock = time.toInt();
+  if (current_clock < 0 || current_clock > 23)
+    current_clock = -1;
+  qInfo() << QString("Clock time changed to %1").arg(current_clock);
 
-  QString string = "hours\\" + time; // expected to be 0, 1, 2...
-  qDebug() << "hours:" << string;
-  ui_vp_clock->play(string);
+  ui_vp_clock->hide();
+
+  if (current_clock == -1)
+  {
+    qInfo() << "Unknown time; no asset to be used.";
+    return;
+  }
+
+  qDebug() << "Displaying clock asset...";
+  const QString asset_path = ao_app->find_theme_asset_path("hours/" + QString::number(current_clock), animated_or_static_extensions());
+  if (asset_path.isEmpty())
+  {
+    qDebug() << "Asset not found; aborting.";
+    return;
+  }
+
+  ui_vp_clock->play(asset_path);
+  ui_vp_clock->show();
 }
 
 void Courtroom::handle_gamemode(QString gamemode)

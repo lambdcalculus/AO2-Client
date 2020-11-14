@@ -682,7 +682,7 @@ void Courtroom::set_widgets()
   ui_vp_music_display_b->show();
 
   set_size_and_pos(ui_vp_clock, "clock");
-  ui_vp_clock->show();
+  ui_vp_clock->hide();
 
   ui_ic_chat_message->setStyleSheet(
       "QLineEdit{background-color: rgba(100, 100, 100, 255);}");
