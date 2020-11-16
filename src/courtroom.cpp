@@ -355,7 +355,9 @@ void Courtroom::handle_clock(QString time)
   }
 
   qDebug() << "Displaying clock asset...";
-  const QString asset_path = ao_app->find_theme_asset_path("hours/" + QString::number(current_clock), animated_or_static_extensions());
+  const QString asset_path =
+      ao_app->find_theme_asset_path("hours/" + QString::number(current_clock),
+                                    animated_or_static_extensions());
   if (asset_path.isEmpty())
   {
     qDebug() << "Asset not found; aborting.";
@@ -732,11 +734,6 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(f_text_color);
   prev_emote = current_emote;
 
-  // reset states
-  ui_pre->setChecked(ao_config->always_pre_enabled());
-  ui_sfx_list->clearSelection();
-  list_sfx();
-
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -775,11 +772,16 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
       m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
   m_msg_is_first_person = false;
 
-  // reset our ui state
+  // reset our ui state if client just spoke
   if (m_cid == f_char_id && !is_system_speaking)
   {
     ui_ic_chat_message->clear();
-    ui_sfx_list->setCurrentItem(ui_sfx_list->item(0));
+
+    // reset states
+    ui_pre->setChecked(ao_config->always_pre_enabled());
+    list_sfx();
+    ui_sfx_list->setCurrentItem(
+        ui_sfx_list->item(0)); // prevents undefined errors
 
     m_shout_state = 0;
     draw_shout_buttons();
@@ -1221,8 +1223,9 @@ void Courtroom::update_ic_log(bool p_reset_log)
   {
     // move cursor
     cursor.movePosition(move_type);
-    const QString record_end = (QString(QChar::LineFeed) +
-                          (m_chatlog_newline ? QString(QChar::LineFeed) : ""));
+    const QString record_end =
+        (QString(QChar::LineFeed) +
+         (m_chatlog_newline ? QString(QChar::LineFeed) : ""));
 
     if (record->system)
     {
