@@ -27,7 +27,7 @@ HEADERS += \
   include/aoevidencedisplay.h \
   include/aoexception.h \
   include/aoguiloader.h \
-  include/aoimage.h \
+  include/aoimagedisplay.h \
   include/aolabel.h \
   include/aolineedit.h \
   include/aomovie.h \

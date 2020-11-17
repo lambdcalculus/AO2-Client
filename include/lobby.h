@@ -2,7 +2,7 @@
 #define LOBBY_H
 
 #include "aobutton.h"
-#include "aoimage.h"
+#include "aoimagedisplay.h"
 #include "aopacket.h"
 #include "aotextarea.h"
 
@@ -54,7 +54,7 @@ public:
 private:
   AOApplication *ao_app = nullptr;
 
-  AOImage *ui_background;
+  AOImageDisplay *ui_background;
 
   AOButton *ui_public_servers;
   AOButton *ui_favorites;
@@ -76,7 +76,7 @@ private:
   QLineEdit *ui_chatname;
   QLineEdit *ui_chatmessage;
 
-  AOImage *ui_loading_background;
+  AOImageDisplay *ui_loading_background;
   QTextEdit *ui_loading_text;
   QProgressBar *ui_progress_bar;
   AOButton *ui_cancel;

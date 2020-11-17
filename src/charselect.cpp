@@ -7,11 +7,11 @@
 
 void Courtroom::construct_char_select()
 {
-  ui_char_select_background = new AOImage(this, ao_app);
+  ui_char_select_background = new AOImageDisplay(this, ao_app);
 
   ui_char_buttons = new QWidget(ui_char_select_background);
 
-  ui_char_button_selector = new AOImage(ui_char_buttons, ao_app);
+  ui_char_button_selector = new AOImageDisplay(ui_char_buttons, ao_app);
   ui_char_button_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_char_button_selector->resize(62, 62);
 

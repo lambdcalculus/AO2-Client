@@ -2,7 +2,7 @@
 #define AOCHARBUTTON_H
 
 #include "aoapplication.h"
-#include "aoimage.h"
+#include "aoimagedisplay.h"
 
 #include <QPushButton>
 #include <QString>
@@ -25,7 +25,7 @@ signals:
   void mouse_left();
 
 private:
-  AOImage *ui_taken = nullptr;
+  AOImageDisplay *ui_taken = nullptr;
 
 protected:
   void enterEvent(QEvent *e);

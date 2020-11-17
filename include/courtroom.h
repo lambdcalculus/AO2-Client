@@ -12,7 +12,7 @@
 #include "aoevidencebutton.h"
 #include "aoevidencedescription.h"
 #include "aoevidencedisplay.h"
-#include "aoimage.h"
+#include "aoimagedisplay.h"
 #include "aolabel.h"
 #include "aolineedit.h"
 #include "aomovie.h"
@@ -451,7 +451,7 @@ private:
 
   QString current_background = "gs4";
 
-  AOImage *ui_background;
+  AOImageDisplay *ui_background;
 
   QWidget *ui_viewport;
   AOScene *ui_vp_background;
@@ -467,21 +467,21 @@ private:
   // note that since it's hardcoded, it won't be of much use in other servers
   QVector<QString> rpc_char_list;
 
-  AOImage *ui_vp_notepad_image;
+  AOImageDisplay *ui_vp_notepad_image;
   QTextEdit *ui_vp_notepad;
 
-  AOImage *ui_vp_chatbox = nullptr;
+  AOImageDisplay *ui_vp_chatbox = nullptr;
   QTextEdit *ui_vp_showname = nullptr;
   QTextEdit *ui_vp_message = nullptr;
-  AOImage *ui_vp_testimony = nullptr;
+  AOImageDisplay *ui_vp_testimony = nullptr;
   AOMovie *ui_vp_effect = nullptr;
   AOMovie *ui_vp_wtce = nullptr;
   AOMovie *ui_vp_objection = nullptr;
 
-  AOImage *ui_vp_music_display_a = nullptr;
-  AOImage *ui_vp_music_display_b = nullptr;
+  AOImageDisplay *ui_vp_music_display_a = nullptr;
+  AOImageDisplay *ui_vp_music_display_b = nullptr;
 
-  AOImage *ui_vp_showname_image = nullptr;
+  AOImageDisplay *ui_vp_showname_image = nullptr;
 
   QTextEdit *ui_vp_music_name = nullptr;
   QPropertyAnimation *music_anim = nullptr;
@@ -518,8 +518,8 @@ private:
   QComboBox *ui_emote_dropdown;
   QComboBox *ui_pos_dropdown;
 
-  AOImage *ui_defense_bar;
-  AOImage *ui_prosecution_bar;
+  AOImageDisplay *ui_defense_bar;
+  AOImageDisplay *ui_prosecution_bar;
 
   // buttons to cycle through shouts
   AOButton *ui_shout_up = nullptr;
@@ -591,7 +591,7 @@ private:
 
   QVector<QCheckBox *> ui_checks; // 0 = pre, 1 = flip, 2 = hidden
   QVector<AOLabel *> ui_labels;   // 0 = music, 1 = sfx, 2 = blip
-  QVector<AOImage *> ui_label_images;
+  QVector<AOImageDisplay *> ui_label_images;
   QVector<QString> label_images = {"Pre",   "Flip", "Hidden",
                                    "Music", "SFX",  "Blip"};
 
@@ -608,30 +608,30 @@ private:
 
   QComboBox *ui_text_color;
 
-  AOImage *ui_muted;
+  AOImageDisplay *ui_muted;
 
   AOButton *ui_note_button;
 
   AOButton *ui_evidence_button;
-  AOImage *ui_evidence;
+  AOImageDisplay *ui_evidence;
   AOLineEdit *ui_evidence_name;
   QWidget *ui_evidence_buttons;
   QVector<AOEvidenceButton *> ui_evidence_list;
   AOButton *ui_evidence_left;
   AOButton *ui_evidence_right;
   AOButton *ui_evidence_present;
-  AOImage *ui_evidence_overlay;
+  AOImageDisplay *ui_evidence_overlay;
   AOButton *ui_evidence_delete;
   AOLineEdit *ui_evidence_image_name;
   AOButton *ui_evidence_image_button;
   AOButton *ui_evidence_x;
   AOEvidenceDescription *ui_evidence_description;
 
-  AOImage *ui_char_select_background;
+  AOImageDisplay *ui_char_select_background;
 
   // abstract widget to hold char buttons
   QWidget *ui_char_buttons = nullptr;
-  AOImage *ui_char_button_selector = nullptr;
+  AOImageDisplay *ui_char_button_selector = nullptr;
   QVector<AOCharButton *> ui_char_button_list;
 
   AOButton *ui_back_to_lobby;

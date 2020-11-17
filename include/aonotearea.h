@@ -7,12 +7,12 @@
 #include <QVBoxLayout>
 #include <QVector>
 #include <aobutton.h>
-#include <aoimage.h>
+#include <aoimagedisplay.h>
 #include <aonotepicker.h>
 
 #include "aoapplication.h"
 
-class AONoteArea : public AOImage
+class AONoteArea : public AOImageDisplay
 {
   Q_OBJECT
 

@@ -18,7 +18,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
   this->setWindowTitle("Danganronpa Online");
 
-  ui_background = new AOImage(this, ao_app);
+  ui_background = new AOImageDisplay(this, ao_app);
   ui_public_servers = new AOButton(this, ao_app);
   ui_favorites = new AOButton(this, ao_app);
   ui_refresh = new AOButton(this, ao_app);
@@ -42,7 +42,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
   ui_chatmessage = new QLineEdit(this);
-  ui_loading_background = new AOImage(this, ao_app);
+  ui_loading_background = new AOImageDisplay(this, ao_app);
   ui_loading_text = new QTextEdit(ui_loading_background);
   ui_progress_bar = new QProgressBar(ui_loading_background);
   ui_progress_bar->setMinimum(0);

@@ -148,7 +148,7 @@ void AOCharMovie::on_frame_changed(int p_frame_num)
   if (movie_frames.size() > p_frame_num)
   {
     AOPixmap f_pixmap = QPixmap::fromImage(movie_frames.at(p_frame_num));
-    this->setPixmap(f_pixmap.scale_to_size(this->size()));
+    this->setPixmap(f_pixmap.scale_to_height(this->size()));
   }
 
   // pre-anim only
