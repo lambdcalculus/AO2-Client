@@ -366,10 +366,10 @@ private:
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
-  QString previous_ic_message = "";
+  QString previous_ic_message;
 
   QColor m_base_string_color;
-  QString m_string_color = "";
+  QString m_string_color;
 
   QStack<QString> m_color_stack;
 
@@ -402,9 +402,9 @@ private:
   bool m_msg_is_first_person = false;
 
   // cid and this may differ in cases of ini-editing
-  QString current_char = "";
+  QString current_char;
 
-  QString current_file = "";
+  QString current_file;
 
   int m_shout_state = 0;
   int m_effect_state = 0;

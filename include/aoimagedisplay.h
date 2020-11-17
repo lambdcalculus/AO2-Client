@@ -17,7 +17,7 @@ public:
   void set_size_and_pos(QString identifier);
 
   AOApplication *ao_app = nullptr;
-  QString image_path = "";
+  QString image_path;
 };
 
 #endif // AOIMAGEDISPLAY_H

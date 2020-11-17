@@ -18,7 +18,7 @@ public:
   AOButton *m_delete_button = nullptr;
   AOButton *m_hover = nullptr;
   QHBoxLayout *m_layout = nullptr;
-  QString real_file = "";
+  QString real_file;
 
 private:
   AOApplication *ao_app = nullptr;

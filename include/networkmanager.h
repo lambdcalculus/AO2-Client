@@ -42,10 +42,10 @@ public:
   static const int ms_reconnect_delay_ms = 7000;
 
   bool ms_partial_packet = false;
-  QString ms_temp_packet = "";
+  QString ms_temp_packet;
 
   bool partial_packet = false;
-  QString temp_packet = "";
+  QString temp_packet;
 
   unsigned int s_decryptor = 5;
 

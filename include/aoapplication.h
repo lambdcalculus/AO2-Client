@@ -50,7 +50,7 @@ public:
   // player number, it's hardly used but might be needed for some old servers
   int s_pv = 0;
 
-  QString server_software = "";
+  QString server_software;
 
   int char_list_size = 0;
   int loaded_chars = 0;
