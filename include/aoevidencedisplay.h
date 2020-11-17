@@ -21,9 +21,9 @@ public:
 
 private:
   AOApplication *ao_app = nullptr;
-  QMovie *evidence_movie;
-  QLabel *evidence_icon;
-  AOSfxPlayer *sfx_player;
+  QMovie *evidence_movie = nullptr;
+  QLabel *evidence_icon = nullptr;
+  AOSfxPlayer *sfx_player = nullptr;
 
 private slots:
   void frame_change(int p_frame);

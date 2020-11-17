@@ -1,13 +1,12 @@
-// This class represents a static theme-dependent image
-
-#ifndef AOIMAGE_H
-#define AOIMAGE_H
+#ifndef AOIMAGEDISPLAY_H
+#define AOIMAGEDISPLAY_H
 
 #include "aoapplication.h"
 #include "aopixmap.h"
 
 #include <QLabel>
 
+// This class represents a static theme-dependent image
 class AOImageDisplay : public QLabel
 {
 public:
@@ -21,4 +20,4 @@ public:
   QString image_path = "";
 };
 
-#endif // AOIMAGE_H
+#endif // AOIMAGEDISPLAY_H

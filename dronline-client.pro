@@ -69,7 +69,7 @@ SOURCES += \
   src/aoevidencedisplay.cpp \
   src/aoexception.cpp \
   src/aoguiloader.cpp \
-  src/aoimage.cpp \
+  src/aoimagedisplay.cpp \
   src/aolabel.cpp \
   src/aolineedit.cpp \
   src/aomovie.cpp \

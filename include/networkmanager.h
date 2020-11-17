@@ -24,10 +24,10 @@ public:
   ~NetworkManager();
 
   AOApplication *ao_app = nullptr;
-  QTcpSocket *ms_socket;
-  QTcpSocket *server_socket;
-  QDnsLookup *ms_dns;
-  QTimer *ms_reconnect_timer;
+  QTcpSocket *ms_socket = nullptr;
+  QTcpSocket *server_socket = nullptr;
+  QDnsLookup *ms_dns = nullptr;
+  QTimer *ms_reconnect_timer = nullptr;
 
   const QString ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
 #ifdef LOCAL_MS

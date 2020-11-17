@@ -28,8 +28,8 @@ public:
 private:
   AOApplication *ao_app = nullptr;
 
-  AOImageDisplay *ui_selected;
-  AOImageDisplay *ui_selector;
+  AOImageDisplay *ui_selected = nullptr;
+  AOImageDisplay *ui_selector = nullptr;
 
   int m_id = 0;
 

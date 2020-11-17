@@ -225,7 +225,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     w_lobby->set_loading_text("Loading");
     w_lobby->set_loading_value(0);
 
-    AOPacket *f_packet;
+    AOPacket *f_packet = nullptr;
 
     f_packet = new AOPacket("RC#%");
     send_server_packet(f_packet);
