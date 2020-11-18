@@ -27,9 +27,9 @@ public:
 private:
   AOApplication *ao_app = nullptr;
 
-  QMovie *m_reader;
+  QMovie *m_reader = nullptr;
   QVector<QImage> movie_frames;
-  QTimer *m_frame_timer;
+  QTimer *m_frame_timer = nullptr;
 
   bool m_mirror = false;
   bool m_play_once = false;

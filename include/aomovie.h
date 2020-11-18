@@ -26,7 +26,7 @@ public:
   void stop();
 
 private:
-  QMovie *m_movie;
+  QMovie *m_movie = nullptr;
   AOApplication *ao_app = nullptr;
   bool play_once = true;
 

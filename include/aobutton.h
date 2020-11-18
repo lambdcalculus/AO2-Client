@@ -14,7 +14,7 @@ public:
   void set_image(QString p_image);
 
   AOApplication *ao_app = nullptr;
-  QString image_path = "";
+  QString image_path;
 };
 
 #endif // AOBUTTON_H

@@ -24,8 +24,8 @@ public:
   int m_cycle = 0;
 
 private:
-  QWidget *m_parent;
-  AOApplication *ao_app;
+  QWidget *m_parent = nullptr;
+  AOApplication *ao_app = nullptr;
 
   int m_volume;
   HSTREAM m_stream_list[BLIP_COUNT];

@@ -5,7 +5,7 @@
 
 void Courtroom::construct_evidence()
 {
-  ui_evidence = new AOImage(this, ao_app);
+  ui_evidence = new AOImageDisplay(this, ao_app);
 
   // ui_evidence_name = new QLabel(ui_evidence);
   ui_evidence_name = new AOLineEdit(ui_evidence);
@@ -20,7 +20,7 @@ void Courtroom::construct_evidence()
   ui_evidence_right = new AOButton(ui_evidence, ao_app);
   ui_evidence_present = new AOButton(ui_evidence, ao_app);
 
-  ui_evidence_overlay = new AOImage(ui_evidence, ao_app);
+  ui_evidence_overlay = new AOImageDisplay(ui_evidence, ao_app);
 
   ui_evidence_delete = new AOButton(ui_evidence_overlay, ao_app);
   ui_evidence_image_name = new AOLineEdit(ui_evidence_overlay);

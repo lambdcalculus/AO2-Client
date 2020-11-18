@@ -7,23 +7,23 @@
 #include <QVBoxLayout>
 #include <QVector>
 #include <aobutton.h>
-#include <aoimage.h>
+#include <aoimagedisplay.h>
 #include <aonotepicker.h>
 
 #include "aoapplication.h"
 
-class AONoteArea : public AOImage
+class AONoteArea : public AOImageDisplay
 {
   Q_OBJECT
 
 public:
   AONoteArea(QWidget *p_parent, AOApplication *p_ao_app);
 
-  AOButton *add_button;
-  QVBoxLayout *m_layout;
+  AOButton *add_button = nullptr;
+  QVBoxLayout *m_layout = nullptr;
 
 private:
-  AOApplication *ao_app;
+  AOApplication *ao_app = nullptr;
   void set_layout();
 };
 

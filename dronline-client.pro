@@ -27,7 +27,7 @@ HEADERS += \
   include/aoevidencedisplay.h \
   include/aoexception.h \
   include/aoguiloader.h \
-  include/aoimage.h \
+  include/aoimagedisplay.h \
   include/aolabel.h \
   include/aolineedit.h \
   include/aomovie.h \
@@ -69,7 +69,7 @@ SOURCES += \
   src/aoevidencedisplay.cpp \
   src/aoexception.cpp \
   src/aoguiloader.cpp \
-  src/aoimage.cpp \
+  src/aoimagedisplay.cpp \
   src/aolabel.cpp \
   src/aolineedit.cpp \
   src/aomovie.cpp \

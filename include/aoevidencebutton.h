@@ -2,7 +2,7 @@
 #define AOEVIDENCEBUTTON_H
 
 #include "aoapplication.h"
-#include "aoimage.h"
+#include "aoimagedisplay.h"
 
 #include <QPushButton>
 #include <QString>
@@ -28,8 +28,8 @@ public:
 private:
   AOApplication *ao_app = nullptr;
 
-  AOImage *ui_selected;
-  AOImage *ui_selector;
+  AOImageDisplay *ui_selected = nullptr;
+  AOImageDisplay *ui_selector = nullptr;
 
   int m_id = 0;
 

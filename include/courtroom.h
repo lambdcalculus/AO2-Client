@@ -12,7 +12,7 @@
 #include "aoevidencebutton.h"
 #include "aoevidencedescription.h"
 #include "aoevidencedisplay.h"
-#include "aoimage.h"
+#include "aoimagedisplay.h"
 #include "aolabel.h"
 #include "aolineedit.h"
 #include "aomovie.h"
@@ -309,13 +309,13 @@ private:
   QVector<QString> area_names;
   QVector<QString> note_list;
 
-  QSignalMapper *char_button_mapper;
+  QSignalMapper *char_button_mapper = nullptr;
 
   // triggers ping_server() every 60 seconds
-  QTimer *keepalive_timer;
+  QTimer *keepalive_timer = nullptr;
 
   // maintains a timer for how fast messages tick onto screen
-  QTimer *chat_tick_timer;
+  QTimer *chat_tick_timer = nullptr;
   // which tick position(character in chat message) we are at
   int tick_pos = 0;
   // used to determine how often blips sound
@@ -326,23 +326,23 @@ private:
   bool contains_add_button = false;
 
   //////////////
-  QScrollArea *note_scroll_area;
+  QScrollArea *note_scroll_area = nullptr;
 
   // delay before chat messages starts ticking
-  QTimer *text_delay_timer;
+  QTimer *text_delay_timer = nullptr;
 
   // delay before sfx plays
-  QTimer *sfx_delay_timer;
+  QTimer *sfx_delay_timer = nullptr;
 
   // keeps track of how long realization is visible(it's just a white square and
   // should be visible less than a second)
-  QTimer *realization_timer;
+  QTimer *realization_timer = nullptr;
 
   // times how long the blinking testimony should be shown(green one in the
   // corner)
-  QTimer *testimony_show_timer;
+  QTimer *testimony_show_timer = nullptr;
   // times how long the blinking testimony should be hidden
-  QTimer *testimony_hide_timer;
+  QTimer *testimony_hide_timer = nullptr;
 
   // Generate a File Name based on the time you launched the client
   QString icchatlogsfilename = QDateTime::currentDateTime().toString(
@@ -366,10 +366,10 @@ private:
   QString m_chatmessage[chatmessage_size];
   bool chatmessage_is_empty = false;
 
-  QString previous_ic_message = "";
+  QString previous_ic_message;
 
   QColor m_base_string_color;
-  QString m_string_color = "";
+  QString m_string_color;
 
   QStack<QString> m_color_stack;
 
@@ -402,9 +402,9 @@ private:
   bool m_msg_is_first_person = false;
 
   // cid and this may differ in cases of ini-editing
-  QString current_char = "";
+  QString current_char;
 
-  QString current_file = "";
+  QString current_file;
 
   int m_shout_state = 0;
   int m_effect_state = 0;
@@ -451,75 +451,75 @@ private:
 
   QString current_background = "gs4";
 
-  AOImage *ui_background;
+  AOImageDisplay *ui_background = nullptr;
 
-  QWidget *ui_viewport;
-  AOScene *ui_vp_background;
-  AOMovie *ui_vp_speedlines;
-  AOCharMovie *ui_vp_player_char;
-  AOScene *ui_vp_desk;
-  AOEvidenceDisplay *ui_vp_evidence_display;
+  QWidget *ui_viewport = nullptr;
+  AOScene *ui_vp_background = nullptr;
+  AOMovie *ui_vp_speedlines = nullptr;
+  AOCharMovie *ui_vp_player_char = nullptr;
+  AOScene *ui_vp_desk = nullptr;
+  AOEvidenceDisplay *ui_vp_evidence_display = nullptr;
 
-  AONoteArea *ui_note_area;
+  AONoteArea *ui_note_area = nullptr;
 
-  //  AONotepad *ui_vp_notepad;
+  //  AONotepad *ui_vp_notepad = nullptr;
   // list of characters that require a second application ID
   // note that since it's hardcoded, it won't be of much use in other servers
   QVector<QString> rpc_char_list;
 
-  AOImage *ui_vp_notepad_image;
-  QTextEdit *ui_vp_notepad;
+  AOImageDisplay *ui_vp_notepad_image = nullptr;
+  QTextEdit *ui_vp_notepad = nullptr;
 
-  AOImage *ui_vp_chatbox = nullptr;
+  AOImageDisplay *ui_vp_chatbox = nullptr;
   QTextEdit *ui_vp_showname = nullptr;
   QTextEdit *ui_vp_message = nullptr;
-  AOImage *ui_vp_testimony = nullptr;
+  AOImageDisplay *ui_vp_testimony = nullptr;
   AOMovie *ui_vp_effect = nullptr;
   AOMovie *ui_vp_wtce = nullptr;
   AOMovie *ui_vp_objection = nullptr;
 
-  AOImage *ui_vp_music_display_a = nullptr;
-  AOImage *ui_vp_music_display_b = nullptr;
+  AOImageDisplay *ui_vp_music_display_a = nullptr;
+  AOImageDisplay *ui_vp_music_display_b = nullptr;
 
-  AOImage *ui_vp_showname_image = nullptr;
+  AOImageDisplay *ui_vp_showname_image = nullptr;
 
   QTextEdit *ui_vp_music_name = nullptr;
   QPropertyAnimation *music_anim = nullptr;
 
-  QWidget *ui_vp_music_area;
+  QWidget *ui_vp_music_area = nullptr;
 
-  AOMovie *ui_vp_clock;
+  AOMovie *ui_vp_clock = nullptr;
   QVector<AOTimer *> ui_timers;
 
   QTextEdit *ui_ic_chatlog = nullptr;
   record_type_array m_ic_records;
 
-  AOTextArea *ui_server_chatlog;
+  AOTextArea *ui_server_chatlog = nullptr;
 
-  QListWidget *ui_mute_list;
-  QListWidget *ui_area_list;
-  QListWidget *ui_music_list;
-  QListWidget *ui_sfx_list;
+  QListWidget *ui_mute_list = nullptr;
+  QListWidget *ui_area_list = nullptr;
+  QListWidget *ui_music_list = nullptr;
+  QListWidget *ui_sfx_list = nullptr;
 
-  QLineEdit *ui_ic_chat_message;
+  QLineEdit *ui_ic_chat_message = nullptr;
 
-  QLineEdit *ui_ooc_chat_message;
-  QLineEdit *ui_ooc_chat_name;
+  QLineEdit *ui_ooc_chat_message = nullptr;
+  QLineEdit *ui_ooc_chat_name = nullptr;
 
-  QLineEdit *ui_music_search;
+  QLineEdit *ui_music_search = nullptr;
 
-  QLineEdit *ui_sfx_search;
+  QLineEdit *ui_sfx_search = nullptr;
 
   QWidget *ui_emotes = nullptr;
   QVector<AOEmoteButton *> ui_emote_list;
-  AOButton *ui_emote_left;
-  AOButton *ui_emote_right;
+  AOButton *ui_emote_left = nullptr;
+  AOButton *ui_emote_right = nullptr;
 
-  QComboBox *ui_emote_dropdown;
-  QComboBox *ui_pos_dropdown;
+  QComboBox *ui_emote_dropdown = nullptr;
+  QComboBox *ui_pos_dropdown = nullptr;
 
-  AOImage *ui_defense_bar;
-  AOImage *ui_prosecution_bar;
+  AOImageDisplay *ui_defense_bar = nullptr;
+  AOImageDisplay *ui_prosecution_bar = nullptr;
 
   // buttons to cycle through shouts
   AOButton *ui_shout_up = nullptr;
@@ -572,26 +572,26 @@ private:
   //  AOButton* ui_shout_cross_swords = nullptr; // 6
   //  AOButton* ui_shout_counter_alt  = nullptr; // 7
 
-  AOButton *ui_witness_testimony;
-  AOButton *ui_cross_examination;
-  AOButton *ui_investigation;
-  AOButton *ui_nonstop;
+  AOButton *ui_witness_testimony = nullptr;
+  AOButton *ui_cross_examination = nullptr;
+  AOButton *ui_investigation = nullptr;
+  AOButton *ui_nonstop = nullptr;
 
-  AOButton *ui_change_character;
-  AOButton *ui_call_mod;
-  AOButton *ui_switch_area_music;
+  AOButton *ui_change_character = nullptr;
+  AOButton *ui_call_mod = nullptr;
+  AOButton *ui_switch_area_music = nullptr;
 
-  AOButton *ui_config_panel;
+  AOButton *ui_config_panel = nullptr;
 
-  AOButton *ui_set_notes;
+  AOButton *ui_set_notes = nullptr;
 
-  QCheckBox *ui_pre;
-  QCheckBox *ui_flip;
-  QCheckBox *ui_hidden;
+  QCheckBox *ui_pre = nullptr;
+  QCheckBox *ui_flip = nullptr;
+  QCheckBox *ui_hidden = nullptr;
 
   QVector<QCheckBox *> ui_checks; // 0 = pre, 1 = flip, 2 = hidden
   QVector<AOLabel *> ui_labels;   // 0 = music, 1 = sfx, 2 = blip
-  QVector<AOImage *> ui_label_images;
+  QVector<AOImageDisplay *> ui_label_images;
   QVector<QString> label_images = {"Pre",   "Flip", "Hidden",
                                    "Music", "SFX",  "Blip"};
 
@@ -600,46 +600,46 @@ private:
 
   AOButton *ui_mute = nullptr;
 
-  AOButton *ui_defense_plus;
-  AOButton *ui_defense_minus;
+  AOButton *ui_defense_plus = nullptr;
+  AOButton *ui_defense_minus = nullptr;
 
-  AOButton *ui_prosecution_plus;
-  AOButton *ui_prosecution_minus;
+  AOButton *ui_prosecution_plus = nullptr;
+  AOButton *ui_prosecution_minus = nullptr;
 
-  QComboBox *ui_text_color;
+  QComboBox *ui_text_color = nullptr;
 
-  AOImage *ui_muted;
+  AOImageDisplay *ui_muted = nullptr;
 
-  AOButton *ui_note_button;
+  AOButton *ui_note_button = nullptr;
 
-  AOButton *ui_evidence_button;
-  AOImage *ui_evidence;
-  AOLineEdit *ui_evidence_name;
-  QWidget *ui_evidence_buttons;
+  AOButton *ui_evidence_button = nullptr;
+  AOImageDisplay *ui_evidence = nullptr;
+  AOLineEdit *ui_evidence_name = nullptr;
+  QWidget *ui_evidence_buttons = nullptr;
   QVector<AOEvidenceButton *> ui_evidence_list;
-  AOButton *ui_evidence_left;
-  AOButton *ui_evidence_right;
-  AOButton *ui_evidence_present;
-  AOImage *ui_evidence_overlay;
-  AOButton *ui_evidence_delete;
-  AOLineEdit *ui_evidence_image_name;
-  AOButton *ui_evidence_image_button;
-  AOButton *ui_evidence_x;
-  AOEvidenceDescription *ui_evidence_description;
+  AOButton *ui_evidence_left = nullptr;
+  AOButton *ui_evidence_right = nullptr;
+  AOButton *ui_evidence_present = nullptr;
+  AOImageDisplay *ui_evidence_overlay = nullptr;
+  AOButton *ui_evidence_delete = nullptr;
+  AOLineEdit *ui_evidence_image_name = nullptr;
+  AOButton *ui_evidence_image_button = nullptr;
+  AOButton *ui_evidence_x = nullptr;
+  AOEvidenceDescription *ui_evidence_description = nullptr;
 
-  AOImage *ui_char_select_background;
+  AOImageDisplay *ui_char_select_background = nullptr;
 
   // abstract widget to hold char buttons
   QWidget *ui_char_buttons = nullptr;
-  AOImage *ui_char_button_selector = nullptr;
+  AOImageDisplay *ui_char_button_selector = nullptr;
   QVector<AOCharButton *> ui_char_button_list;
 
-  AOButton *ui_back_to_lobby;
+  AOButton *ui_back_to_lobby = nullptr;
 
-  AOButton *ui_char_select_left;
-  AOButton *ui_char_select_right;
+  AOButton *ui_char_select_left = nullptr;
+  AOButton *ui_char_select_right = nullptr;
 
-  AOButton *ui_spectator;
+  AOButton *ui_spectator = nullptr;
 
   QHash<QString, QWidget *> widget_names;
 

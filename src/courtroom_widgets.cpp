@@ -63,7 +63,7 @@ void Courtroom::create_widgets()
   connect(ao_config, SIGNAL(blips_volume_changed(int)), this,
           SLOT(on_config_blips_volume_changed(int)));
 
-  ui_background = new AOImage(this, ao_app);
+  ui_background = new AOImageDisplay(this, ao_app);
 
   ui_viewport = new QWidget(this);
   ui_vp_background = new AOScene(ui_viewport, ao_app);
@@ -72,8 +72,8 @@ void Courtroom::create_widgets()
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
 
-  ui_vp_music_display_a = new AOImage(this, ao_app);
-  ui_vp_music_display_b = new AOImage(this, ao_app);
+  ui_vp_music_display_a = new AOImageDisplay(this, ao_app);
+  ui_vp_music_display_b = new AOImageDisplay(this, ao_app);
   ui_vp_music_area = new QWidget(ui_vp_music_display_a);
   ui_vp_music_name = new QTextEdit(ui_vp_music_area);
   ui_vp_music_name->setText("DANGANRONPA ONLINE");
@@ -88,7 +88,7 @@ void Courtroom::create_widgets()
 
   ui_vp_evidence_display = new AOEvidenceDisplay(this, ao_app);
 
-  ui_vp_chatbox = new AOImage(this, ao_app);
+  ui_vp_chatbox = new AOImageDisplay(this, ao_app);
   ui_vp_showname = new QTextEdit(ui_vp_chatbox);
   ui_vp_showname->setFrameStyle(QFrame::NoFrame);
   ui_vp_showname->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -100,9 +100,9 @@ void Courtroom::create_widgets()
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setReadOnly(true);
 
-  ui_vp_showname_image = new AOImage(this, ao_app);
+  ui_vp_showname_image = new AOImageDisplay(this, ao_app);
 
-  ui_vp_testimony = new AOImage(this, ao_app);
+  ui_vp_testimony = new AOImageDisplay(this, ao_app);
   ui_vp_effect = new AOMovie(this, ao_app);
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
@@ -122,7 +122,7 @@ void Courtroom::create_widgets()
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
 
-  ui_muted = new AOImage(ui_ic_chat_message, ao_app);
+  ui_muted = new AOImageDisplay(ui_ic_chat_message, ao_app);
   ui_muted->hide();
 
   ui_ooc_chat_message = new QLineEdit(this);
@@ -152,8 +152,8 @@ void Courtroom::create_widgets()
 
   construct_emotes();
 
-  ui_defense_bar = new AOImage(this, ao_app);
-  ui_prosecution_bar = new AOImage(this, ao_app);
+  ui_defense_bar = new AOImageDisplay(this, ao_app);
+  ui_prosecution_bar = new AOImageDisplay(this, ao_app);
 
   load_shouts(); // Readds from theme, deletes old shouts if needed and creates
                  // new ones
@@ -187,7 +187,7 @@ void Courtroom::create_widgets()
   ui_label_images.resize(label_images.size());
   for (int i = 0; i < ui_label_images.size(); ++i)
   {
-    ui_label_images[i] = new AOImage(this, ao_app);
+    ui_label_images[i] = new AOImageDisplay(this, ao_app);
   }
 
   ui_pre = new QCheckBox(this);
@@ -223,7 +223,7 @@ void Courtroom::create_widgets()
 
   ui_evidence_button = new AOButton(this, ao_app);
 
-  ui_vp_notepad_image = new AOImage(this, ao_app);
+  ui_vp_notepad_image = new AOImageDisplay(this, ao_app);
   ui_vp_notepad = new QTextEdit(this);
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
 

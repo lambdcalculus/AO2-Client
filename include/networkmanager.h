@@ -24,10 +24,10 @@ public:
   ~NetworkManager();
 
   AOApplication *ao_app = nullptr;
-  QTcpSocket *ms_socket;
-  QTcpSocket *server_socket;
-  QDnsLookup *ms_dns;
-  QTimer *ms_reconnect_timer;
+  QTcpSocket *ms_socket = nullptr;
+  QTcpSocket *server_socket = nullptr;
+  QDnsLookup *ms_dns = nullptr;
+  QTimer *ms_reconnect_timer = nullptr;
 
   const QString ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
 #ifdef LOCAL_MS
@@ -42,10 +42,10 @@ public:
   static const int ms_reconnect_delay_ms = 7000;
 
   bool ms_partial_packet = false;
-  QString ms_temp_packet = "";
+  QString ms_temp_packet;
 
   bool partial_packet = false;
-  QString temp_packet = "";
+  QString temp_packet;
 
   unsigned int s_decryptor = 5;
 

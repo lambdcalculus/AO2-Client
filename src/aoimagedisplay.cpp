@@ -1,19 +1,19 @@
 #include "file_functions.h"
 
-#include "aoimage.h"
+#include "aoimagedisplay.h"
 
 #include <QDebug>
 
-AOImage::AOImage(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
+AOImageDisplay::AOImageDisplay(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {
   ao_app = p_ao_app;
 }
 
-void AOImage::set_image(QString p_image)
+void AOImageDisplay::set_image(QString p_image)
 {
   QString f_path = ao_app->find_theme_asset_path(p_image);
   AOPixmap f_pixmap(f_path);
-  this->setPixmap(f_pixmap.scale_to_size(size()));
+  this->setPixmap(f_pixmap.scale(size()));
 
   // Store final path if the path exists
   if (file_exists(f_path))
@@ -22,7 +22,7 @@ void AOImage::set_image(QString p_image)
     image_path = "";
 }
 
-void AOImage::set_image_from_path(QString p_path)
+void AOImageDisplay::set_image_from_path(QString p_path)
 {
   QString default_path = ao_app->find_theme_asset_path("chatmed.png");
 
@@ -34,7 +34,7 @@ void AOImage::set_image_from_path(QString p_path)
     final_path = default_path;
 
   AOPixmap f_pixmap(final_path);
-  this->setPixmap(f_pixmap.scale_to_size(size()));
+  this->setPixmap(f_pixmap.scale(size()));
 
   // Store final path if the path exists
   if (file_exists(final_path))

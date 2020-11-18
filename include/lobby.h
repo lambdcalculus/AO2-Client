@@ -2,7 +2,7 @@
 #define LOBBY_H
 
 #include "aobutton.h"
-#include "aoimage.h"
+#include "aoimagedisplay.h"
 #include "aopacket.h"
 #include "aotextarea.h"
 
@@ -54,32 +54,32 @@ public:
 private:
   AOApplication *ao_app = nullptr;
 
-  AOImage *ui_background;
+  AOImageDisplay *ui_background = nullptr;
 
-  AOButton *ui_public_servers;
-  AOButton *ui_favorites;
+  AOButton *ui_public_servers = nullptr;
+  AOButton *ui_favorites = nullptr;
 
-  AOButton *ui_refresh;
-  AOButton *ui_add_to_fav;
-  AOButton *ui_connect;
+  AOButton *ui_refresh = nullptr;
+  AOButton *ui_add_to_fav = nullptr;
+  AOButton *ui_connect = nullptr;
 
-  QTextEdit *ui_version;
-  AOButton *ui_about;
+  QTextEdit *ui_version = nullptr;
+  AOButton *ui_about = nullptr;
 
-  QListWidget *ui_server_list;
+  QListWidget *ui_server_list = nullptr;
 
-  QTextEdit *ui_player_count;
-  AOTextArea *ui_description;
+  QTextEdit *ui_player_count = nullptr;
+  AOTextArea *ui_description = nullptr;
 
-  AOTextArea *ui_chatbox;
+  AOTextArea *ui_chatbox = nullptr;
 
-  QLineEdit *ui_chatname;
-  QLineEdit *ui_chatmessage;
+  QLineEdit *ui_chatname = nullptr;
+  QLineEdit *ui_chatmessage = nullptr;
 
-  AOImage *ui_loading_background;
-  QTextEdit *ui_loading_text;
-  QProgressBar *ui_progress_bar;
-  AOButton *ui_cancel;
+  AOImageDisplay *ui_loading_background = nullptr;
+  QTextEdit *ui_loading_text = nullptr;
+  QProgressBar *ui_progress_bar = nullptr;
+  AOButton *ui_cancel = nullptr;
 
   server_type f_last_server;
 
