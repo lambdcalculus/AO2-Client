@@ -18,6 +18,8 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app)
   m_frame_timer = new QTimer(this);
   m_frame_timer->setSingleShot(true);
 
+  setAlignment(Qt::AlignCenter);
+
   connect(m_reader, SIGNAL(frameChanged(int)), this,
           SLOT(on_frame_changed(int)));
   connect(m_frame_timer, SIGNAL(timeout()), this, SLOT(timer_done()));
