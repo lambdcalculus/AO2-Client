@@ -726,7 +726,7 @@ void Courtroom::on_chat_return_pressed()
 
   if (m_text_color < 0)
     f_text_color = "0";
-  else if (m_text_color > 4)
+  else if (m_text_color > ui_text_color->count())
     f_text_color = "0";
   else
     f_text_color = QString::number(m_text_color);
