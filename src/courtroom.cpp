@@ -2304,8 +2304,8 @@ void Courtroom::on_app_reload_theme_requested()
   // to update status on the background
   set_background(current_background);
   enter_courtroom(m_cid);
-  anim_state = 4;
-  text_state = 3;
+  // anim_state = 3;
+  // text_state = 2;
 }
 
 void Courtroom::on_back_to_lobby_clicked()
