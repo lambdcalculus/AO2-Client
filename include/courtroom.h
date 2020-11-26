@@ -406,6 +406,11 @@ private:
 
   QString current_file;
 
+  // if true, a reload theme order was delayed to be executed *after* a shout
+  // this allows reload theme orders that were received while a shout was
+  // playing to be executed only after the shout is done playing
+  bool shout_delayed_reload_theme = false;
+
   int m_shout_state = 0;
   int m_effect_state = 0;
   int m_text_color = 0;
