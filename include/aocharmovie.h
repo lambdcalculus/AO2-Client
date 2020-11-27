@@ -21,7 +21,7 @@ public:
   bool play_pre(QString p_chr, QString p_emote);
   void play_talking(QString p_chr, QString p_emote);
   void play_idle(QString p_chr, QString p_emote);
-  void set_mirror_enabled(bool p_enable);
+  void set_mirror_enabled(bool p_enabled);
   void combo_resize(QSize p_size);
   void stop();
 

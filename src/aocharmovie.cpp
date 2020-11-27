@@ -95,9 +95,9 @@ void AOCharMovie::play_idle(QString p_chr, QString p_emote)
   play(p_chr, p_emote, "(a)", false);
 }
 
-void AOCharMovie::set_mirror_enabled(bool p_enable)
+void AOCharMovie::set_mirror_enabled(bool p_enabled)
 {
-  m_mirror = p_enable;
+  m_mirror = p_enabled;
 }
 
 void AOCharMovie::stop()
