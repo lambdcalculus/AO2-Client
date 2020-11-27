@@ -57,11 +57,11 @@ void AOCharButton::enterEvent(QEvent *e)
 {
   setFlat(false);
   QPushButton::enterEvent(e);
-  emit mouse_entered(this);
+  Q_EMIT mouse_entered(this);
 }
 
 void AOCharButton::leaveEvent(QEvent *e)
 {
   QPushButton::leaveEvent(e);
-  emit mouse_left();
+  Q_EMIT mouse_left();
 }

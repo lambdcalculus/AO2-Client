@@ -42,5 +42,5 @@ void AOShoutPlayer::play(QString p_name, QString p_char)
 
 void AOShoutPlayer::stop()
 {
-  emit stopping();
+  Q_EMIT stopping();
 }

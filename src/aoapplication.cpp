@@ -123,33 +123,33 @@ QString AOApplication::get_version_string()
 void AOApplication::set_gamemode(QString p_gamemode)
 {
   config->set_gamemode(p_gamemode);
-  emit reload_theme();
+  Q_EMIT reload_theme();
 }
 
 void AOApplication::set_timeofday(QString p_timeofday)
 {
   config->set_timeofday(p_timeofday);
-  emit reload_theme();
+  Q_EMIT reload_theme();
 }
 
 void AOApplication::on_config_theme_changed()
 {
-  emit reload_theme();
+  Q_EMIT reload_theme();
 }
 
 void AOApplication::on_config_reload_theme_requested()
 {
-  emit reload_theme();
+  Q_EMIT reload_theme();
 }
 
 void AOApplication::on_config_gamemode_changed()
 {
-  emit reload_theme();
+  Q_EMIT reload_theme();
 }
 
 void AOApplication::on_config_timeofday_changed()
 {
-  emit reload_theme();
+  Q_EMIT reload_theme();
 }
 
 void AOApplication::set_favorite_list()

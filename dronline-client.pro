@@ -48,7 +48,6 @@ HEADERS += \
   include/discord_rich_presence.h \
   include/file_functions.h \
   include/hardware_functions.h \
-  include/hex_functions.h \
   include/lobby.h \
   include/misc_functions.h \
   include/networkmanager.h
@@ -94,7 +93,6 @@ SOURCES += \
   src/evidence.cpp \
   src/file_functions.cpp \
   src/hardware_functions.cpp \
-  src/hex_functions.cpp \
   src/lobby.cpp \
   src/main.cpp \
   src/misc_functions.cpp \

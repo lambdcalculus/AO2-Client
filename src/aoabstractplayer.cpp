@@ -14,5 +14,5 @@ void AOAbstractPlayer::set_volume(int p_volume)
 {
   m_volume = p_volume;
 
-  emit new_volume(m_volume);
+  Q_EMIT new_volume(m_volume);
 }
