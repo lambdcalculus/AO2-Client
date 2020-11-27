@@ -120,15 +120,15 @@ void Courtroom::enter_courtroom(int p_cid)
   set_widgets();
 
   check_shouts();
-  if (!shouts_enabled[m_shout_current])
+  if (m_shout_current < shouts_enabled.length() && !shouts_enabled[m_shout_current])
     cycle_shout(1);
 
   check_effects();
-  if (!effects_enabled[m_effect_current])
+  if (m_effect_current < effects_enabled.length() && !effects_enabled[m_effect_current])
     cycle_effect(1);
 
   check_wtce();
-  if (is_judge && !wtce_enabled[m_wtce_current])
+  if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current]))
     cycle_wtce(1);
 
   check_free_blocks();
