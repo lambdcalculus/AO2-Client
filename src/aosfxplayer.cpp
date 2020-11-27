@@ -31,5 +31,5 @@ void AOSfxPlayer::play(QString p_name)
 
 void AOSfxPlayer::stop()
 {
-  emit stopping();
+  Q_EMIT stopping();
 }

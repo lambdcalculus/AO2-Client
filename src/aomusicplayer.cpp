@@ -40,5 +40,5 @@ void AOMusicPlayer::play(QString p_file)
 
 void AOMusicPlayer::stop()
 {
-  emit stopping();
+  Q_EMIT stopping();
 }

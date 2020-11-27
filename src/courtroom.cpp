@@ -21,7 +21,8 @@
 #include <QTextCharFormat>
 #include <QTime>
 
-Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app)
+    : QMainWindow()
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -190,8 +191,8 @@ void Courtroom::set_scene()
   // witness is default if pos is invalid
   QString f_background = "witnessempty";
   QString f_desk_image = "stand";
-  QString f_desk_mod = m_chatmessage[DESK_MOD];
-  QString f_side = m_chatmessage[SIDE];
+  QString f_desk_mod = m_chatmessage[CMDeskModifier];
+  QString f_side = m_chatmessage[CMPosition];
   QString ini_path = ao_app->get_background_path("backgrounds.ini");
 
   if (file_exists(ini_path))
@@ -737,26 +738,22 @@ void Courtroom::on_chat_return_pressed()
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
-void Courtroom::handle_chatmessage(QStringList *p_contents)
+void Courtroom::handle_chatmessage(QStringList p_contents)
 {
-  if (p_contents->size() < 15)
+  if (p_contents.size() < 15)
     return;
-  else if (p_contents->size() == 15)
-    p_contents->append("");
+  else if (p_contents.size() == 15)
+    p_contents.append(QString());
 
-  for (int n_string = 0; n_string < chatmessage_size; ++n_string)
-  {
-    m_chatmessage[n_string] = p_contents->at(n_string);
-    //    qDebug() << "m_chatmessage[" << n_string << "] = " <<
-    //    m_chatmessage[n_string];
-  }
+  for (int i = 0; i < chatmessage_size; ++i)
+    m_chatmessage[i] = p_contents[i];
 
-  int f_char_id = m_chatmessage[CHAR_ID].toInt();
+  int f_char_id = m_chatmessage[CMChrId].toInt();
 
   if (f_char_id == -1)
   {
     is_system_speaking = true;
-    m_chatmessage[CHAR_ID] = "0";
+    m_chatmessage[CMChrId] = "0";
     f_char_id = 0;
   }
   else
@@ -765,15 +762,15 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   if (f_char_id < 0 || f_char_id >= char_list.size())
     return;
 
-  if (mute_map.value(m_chatmessage[CHAR_ID].toInt()))
+  if (mute_map.value(m_chatmessage[CMChrId].toInt()))
     return;
 
   chatmessage_is_empty =
-      m_chatmessage[MESSAGE] == " " || m_chatmessage[MESSAGE] == "";
+      m_chatmessage[CMMessage] == " " || m_chatmessage[CMMessage] == "";
   m_msg_is_first_person = false;
 
   // reset our ui state if client just spoke
-  if (m_cid == f_char_id && !is_system_speaking)
+  if (m_cid == f_char_id && is_system_speaking == false)
   {
     ui_ic_chat_message->clear();
 
@@ -800,22 +797,22 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
 
   QString f_showname;
   qDebug() << "handle_chatmessage";
-  qDebug() << m_chatmessage[SHOWNAME]
+  qDebug() << m_chatmessage[CMShowName]
            << ao_app->get_showname(char_list.at(f_char_id).name);
 
   // We actually DO wanna fail here if the showname is empty but the system is
   // speaking.
   // Having an empty showname for system is actually what we expect.
-  if (m_chatmessage[SHOWNAME].isEmpty() && !is_system_speaking)
+  if (m_chatmessage[CMShowName].isEmpty() && !is_system_speaking)
   {
     f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
   }
   else
   {
-    f_showname = m_chatmessage[SHOWNAME];
+    f_showname = m_chatmessage[CMShowName];
   }
 
-  QString f_message = f_showname + ": " + m_chatmessage[MESSAGE] + "\n";
+  QString f_message = f_showname + ": " + m_chatmessage[CMMessage] + "\n";
 
   /*
   if (f_message == previous_ic_message && is_system_speaking == false)
@@ -833,25 +830,25 @@ void Courtroom::handle_chatmessage(QStringList *p_contents)
   ui_vp_effect->stop();
 
   if (is_system_speaking)
-    append_system_text(f_showname, m_chatmessage[MESSAGE]);
+    append_system_text(f_showname, m_chatmessage[CMMessage]);
   else
-    append_ic_text(f_showname, m_chatmessage[MESSAGE], false, false);
+    append_ic_text(f_showname, m_chatmessage[CMMessage], false, false);
 
   if (ao_config->log_is_recording_enabled() &&
       (!chatmessage_is_empty || !is_system_speaking))
   {
-    save_textlog(f_showname + ": " + m_chatmessage[MESSAGE]);
+    save_textlog(f_showname + ": " + m_chatmessage[CMMessage]);
   }
 
-  int objection_mod = m_chatmessage[OBJECTION_MOD].toInt();
-  QString f_char = m_chatmessage[CHAR_NAME];
+  int objection_mod = m_chatmessage[CMShoutModifier].toInt();
+  QString f_char = m_chatmessage[CMChrName];
 
   // if an objection is used
   if (objection_mod > 0)
   {
-    int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+    int emote_mod = m_chatmessage[CMEmoteModifier].toInt();
     if (emote_mod == 0)
-      m_chatmessage[EMOTE_MOD] = 1;
+      m_chatmessage[CMEmoteModifier] = 1;
 
     // handles cases 1-8 (5-8 are DRO only)
     if (objection_mod >= 1 && objection_mod <= ui_shouts.size() &&
@@ -880,17 +877,17 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
   qDebug() << "handle_chatmessage_2";
 
-  QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
+  QString real_name = char_list.at(m_chatmessage[CMChrId].toInt()).name;
 
   QString f_showname;
 
-  if (m_chatmessage[SHOWNAME].isEmpty())
+  if (m_chatmessage[CMShowName].isEmpty())
   {
     f_showname = ao_app->get_showname(real_name);
   }
   else
   {
-    f_showname = m_chatmessage[SHOWNAME];
+    f_showname = m_chatmessage[CMShowName];
   }
 
   // Check if char.ini has color property, which overrides the theme's default
@@ -906,7 +903,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   ui_vp_chatbox->hide();
   ui_vp_showname_image->hide();
 
-  QString chatbox = ao_app->get_chat(m_chatmessage[CHAR_NAME]);
+  QString chatbox = ao_app->get_chat(m_chatmessage[CMChrName]);
 
   if (chatbox == "")
     ui_vp_chatbox->set_image("chatmed.png");
@@ -916,16 +913,16 @@ void Courtroom::handle_chatmessage_2() // handles IC
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
 
-  if (!m_msg_is_first_person)
+  if (m_msg_is_first_person == false)
   {
     set_scene();
   }
 
   set_text_color();
 
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+  int emote_mod = m_chatmessage[CMEmoteModifier].toInt();
 
-  if (m_chatmessage[FLIP].toInt() == 1)
+  if (m_chatmessage[CMFlipState].toInt() == 1)
     ui_vp_player_char->set_mirror_enabled(true);
   else
     ui_vp_player_char->set_mirror_enabled(false);
@@ -952,8 +949,8 @@ void Courtroom::handle_chatmessage_3()
 
   start_chat_ticking();
 
-  int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
-  QString f_side = m_chatmessage[SIDE];
+  int f_evi_id = m_chatmessage[CMEvidenceId].toInt();
+  QString f_side = m_chatmessage[CMPosition];
 
   if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size())
   {
@@ -965,11 +962,11 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_evidence_display->show_evidence(f_image, is_left_side);
   }
 
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+  int emote_mod = m_chatmessage[CMEmoteModifier].toInt();
 
   if (emote_mod == 5 || emote_mod == 6)
   {
-    QString side = m_chatmessage[SIDE];
+    QString side = m_chatmessage[CMPosition];
     ui_vp_desk->hide();
 
     if (side == "pro" || side == "hlp" || side == "wit")
@@ -980,7 +977,7 @@ void Courtroom::handle_chatmessage_3()
 
   int f_anim_state = 0;
   // BLUE is from an enum in datatypes.h
-  bool text_is_blue = m_chatmessage[TEXT_COLOR].toInt() == BLUE;
+  bool text_is_blue = m_chatmessage[CMTextColor].toInt() == CBlue;
 
   if (!text_is_blue && text_state == 1)
     // talking
@@ -993,8 +990,8 @@ void Courtroom::handle_chatmessage_3()
     return;
 
   ui_vp_player_char->stop();
-  QString f_char = m_chatmessage[CHAR_NAME];
-  QString f_emote = m_chatmessage[EMOTE];
+  QString f_char = m_chatmessage[CMChrName];
+  QString f_emote = m_chatmessage[CMEmote];
 
   ui_vp_showname_image->show();
 
@@ -1026,23 +1023,23 @@ void Courtroom::handle_chatmessage_3()
   switch (f_anim_state)
   {
   case 2:
-    if (!m_msg_is_first_person)
+    if (m_msg_is_first_person == false)
     {
-      ui_vp_player_char->play_talking(f_char, f_emote, true);
+      ui_vp_player_char->play_talking(f_char, f_emote);
     }
     anim_state = 2;
     break;
   default:
     qDebug() << "W: invalid anim_state: " << f_anim_state;
   case 3:
-    if (!m_msg_is_first_person)
+    if (m_msg_is_first_person == false)
     {
-      ui_vp_player_char->play_idle(f_char, f_emote, true);
+      ui_vp_player_char->play_idle(f_char, f_emote);
     }
     anim_state = 3;
   }
 
-  int effect = m_chatmessage[EFFECT_STATE].toInt();
+  int effect = m_chatmessage[CMEffectState].toInt();
   QStringList offset = ao_app->get_effect_offset(f_char, effect);
 
   ui_vp_effect->move(ui_viewport->x() + offset.at(0).toInt(),
@@ -1095,7 +1092,7 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_effect->play(overlay_name, f_char);
   }
 
-  QString f_message = m_chatmessage[MESSAGE];
+  QString f_message = m_chatmessage[CMMessage];
   QStringList callwords = ao_app->get_callwords();
 
   for (QString word : callwords)
@@ -1340,24 +1337,26 @@ void Courtroom::append_system_text(QString p_showname, QString p_line)
 
 void Courtroom::play_preanim()
 {
-  QString f_char = m_chatmessage[CHAR_NAME];
-  QString f_preanim = m_chatmessage[PRE_EMOTE];
+  QString f_char = m_chatmessage[CMChrName];
+  QString f_preanim = m_chatmessage[CMPreAnim];
 
   // all time values in char.inis are multiplied by a constant(time_mod) to get
   // the actual time
   int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
-  int sfx_delay = m_chatmessage[SFX_DELAY].toInt() * 60;
+  int sfx_delay = m_chatmessage[CMSoundDelay].toInt() * 60;
 
   sfx_delay_timer->start(sfx_delay);
 
   // set state
   anim_state = 1;
 
-  if (!m_msg_is_first_person)
+  if (m_msg_is_first_person == false)
   {
     QString f_anim_path = ao_app->get_character_path(f_char, f_preanim);
-    if (ui_vp_player_char->play_pre(f_char, f_preanim, true))
+    if (ui_vp_player_char->play_pre(f_char, f_preanim))
     {
+      qDebug() << "Playing" << f_anim_path;
+
       if (text_delay >= 0)
         text_delay_timer->start(text_delay);
 
@@ -1408,7 +1407,7 @@ void Courtroom::start_chat_ticking()
   blip_pos = 0;
   chat_tick_timer->start(ao_app->get_chat_tick_interval());
 
-  QString f_gender = ao_app->get_gender(m_chatmessage[CHAR_NAME]);
+  QString f_gender = ao_app->get_gender(m_chatmessage[CMChrName]);
 
   //  m_blip_player->set_file(f_gender);
   m_blips_player->set_blips("sfx-blip" + f_gender + ".wav");
@@ -1427,7 +1426,7 @@ void Courtroom::chat_tick()
   else
     vp_message_format.setTextOutline(Qt::NoPen);
 
-  QString f_message = m_chatmessage[MESSAGE];
+  QString f_message = m_chatmessage[CMMessage];
 
   if (tick_pos >= f_message.size())
   {
@@ -1435,10 +1434,9 @@ void Courtroom::chat_tick()
     chat_tick_timer->stop();
     anim_state = 3;
 
-    if (!m_msg_is_first_person)
+    if (m_msg_is_first_person == false)
     {
-      ui_vp_player_char->play_idle(m_chatmessage[CHAR_NAME],
-                                   m_chatmessage[EMOTE], true);
+      ui_vp_player_char->play_idle(m_chatmessage[CMChrName], m_chatmessage[CMEmote]);
     }
 
     m_string_color = "";
@@ -1451,7 +1449,7 @@ void Courtroom::chat_tick()
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
-    else if (m_chatmessage[TEXT_COLOR].toInt() == RAINBOW)
+    else if (m_chatmessage[CMTextColor].toInt() == CRainbow)
     {
       QString html_color;
 
@@ -1565,7 +1563,7 @@ void Courtroom::chat_tick()
 
 void Courtroom::show_testimony()
 {
-  if (!testimony_in_progress || m_chatmessage[SIDE] != "wit")
+  if (!testimony_in_progress || m_chatmessage[CMPosition] != "wit")
     return;
 
   ui_vp_testimony->show();
@@ -1585,7 +1583,7 @@ void Courtroom::hide_testimony()
 
 void Courtroom::play_sfx()
 {
-  QString sfx_name = m_chatmessage[SFX_NAME];
+  QString sfx_name = m_chatmessage[CMSoundName];
   if (sfx_name == "1")
     return;
 
@@ -1595,40 +1593,40 @@ void Courtroom::play_sfx()
 void Courtroom::set_text_color()
 {
 
-  switch (m_chatmessage[TEXT_COLOR].toInt())
+  switch (m_chatmessage[CMTextColor].toInt())
   {
-  case GREEN:
+  case CGreen:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(101, 200, 86);
     break;
-  case RED:
+  case CRed:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(186, 21, 24);
     break;
-  case ORANGE:
+  case COrange:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(213, 89, 0);
     break;
-  case BLUE:
+  case CBlue:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(21, 136, 200);
     break;
-  case YELLOW:
+  case CYellow:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(231, 206, 78);
     break;
-  case PURPLE:
+  case CPurple:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(247, 118, 253);
     break;
-  case PINK:
+  case CPink:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(218, 124, 128);
     break;
   default:
-    qDebug() << "W: undefined text color: " << m_chatmessage[TEXT_COLOR];
+    qDebug() << "W: undefined text color: " << m_chatmessage[CMTextColor];
     [[fallthrough]];
-  case WHITE:
+  case CWhite:
     ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
     m_base_string_color.setRgb(213, 213, 213);
     break;
@@ -1673,16 +1671,13 @@ void Courtroom::set_ban(int p_cid)
   ao_app->destruct_courtroom();
 }
 
-void Courtroom::handle_song(QStringList *p_contents)
+void Courtroom::handle_song(QStringList p_contents)
 {
-
-  QStringList f_contents = *p_contents;
-
-  if (f_contents.size() < 2)
+  if (p_contents.size() < 2)
     return;
 
-  QString f_song = f_contents.at(0);
-  int n_char = f_contents.at(1).toInt();
+  QString f_song = p_contents.at(0);
+  int n_char = p_contents.at(1).toInt();
 
   for (auto &ext : audio_extensions())
   {
@@ -1708,9 +1703,9 @@ void Courtroom::handle_song(QStringList *p_contents)
     // If there is an empty showname, the client will use instead the default
     // showname of the character.
     QString f_showname;
-    if (f_contents.size() == 3)
+    if (p_contents.size() == 3)
     {
-      f_showname = f_contents.at(2);
+      f_showname = p_contents.at(2);
     }
     else
     {
@@ -2430,7 +2425,7 @@ void Courtroom::ping_server()
 
 void Courtroom::closeEvent(QCloseEvent *event)
 {
-  emit closing();
+  Q_EMIT closing();
   QMainWindow::closeEvent(event);
 }
 

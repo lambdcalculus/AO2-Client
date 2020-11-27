@@ -31,7 +31,7 @@ void AOBassHandle::suicide()
   disconnect();
 
   // suicide note
-  emit body_discovery();
+  Q_EMIT body_discovery();
 
   delete this;
 }
@@ -98,5 +98,5 @@ void AOBassHandle::sync(DWORD data)
 {
   Q_UNUSED(data)
 
-  emit stopped();
+  Q_EMIT stopped();
 }
