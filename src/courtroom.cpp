@@ -883,7 +883,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
     on_app_reload_theme_requested();
   }
 
-  QString real_name = char_list.at(m_chatmessage[CHAR_ID].toInt()).name;
+  QString real_name = char_list.at(m_chatmessage[CMChrId].toInt()).name;
 
   QString f_showname;
 
