@@ -33,13 +33,13 @@ public:
   QMovie::MovieState state();
   void stop();
 
+signals:
+  void done();
+
 private:
   QMovie *m_movie = nullptr;
   AOApplication *ao_app = nullptr;
   bool play_once = true;
-
-signals:
-  void done();
 
 private slots:
   void frame_change(int n_frame);

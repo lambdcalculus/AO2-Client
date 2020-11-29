@@ -186,13 +186,13 @@ void NetworkManager::on_srv_lookup()
   if (!connected)
     connect_to_master_nosrv();
   else
-    emit ms_connect_finished(connected, false);
+    Q_EMIT ms_connect_finished(connected, false);
 #endif
 }
 
 void NetworkManager::on_ms_nosrv_connect_success()
 {
-  emit ms_connect_finished(true, false);
+  Q_EMIT ms_connect_finished(true, false);
 
   QObject::disconnect(ms_socket, SIGNAL(connected()), this,
                       SLOT(on_ms_nosrv_connect_success()));
@@ -212,7 +212,7 @@ void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
                       this,
                       SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
 
-  emit ms_connect_finished(false, true);
+  Q_EMIT ms_connect_finished(false, true);
 
   ms_reconnect_timer->start(ms_reconnect_delay_ms);
 }

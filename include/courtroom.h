@@ -212,7 +212,7 @@ public:
   // these functions handle chatmessages sequentially.
   // The process itself is very convoluted and merits separate documentation
   // But the general idea is objection animation->pre animation->talking->idle
-  void handle_chatmessage(QStringList *p_contents);
+  void handle_chatmessage(QStringList p_contents);
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
@@ -235,7 +235,7 @@ public:
   // prints who played the song to IC chat and plays said song(if found on local
   // filesystem) takes in a list where the first element is the song name and
   // the second is the char id of who played it
-  void handle_song(QStringList *p_contents);
+  void handle_song(QStringList p_contents);
 
   // animates music text
   void handle_music_anim();
@@ -597,8 +597,8 @@ private:
   QVector<QCheckBox *> ui_checks; // 0 = pre, 1 = flip, 2 = hidden
   QVector<AOLabel *> ui_labels;   // 0 = music, 1 = sfx, 2 = blip
   QVector<AOImageDisplay *> ui_label_images;
-  QVector<QString> label_images = {"Pre",   "Flip", "Hidden",
-                                   "Music", "SFX",  "Blip"};
+  QVector<QString> label_images = {"Pre", "Flip", "Hidden",
+                                   "Music", "SFX", "Blip"};
 
   AOButton *ui_effect_flash = nullptr;
   AOButton *ui_effect_gloom = nullptr;

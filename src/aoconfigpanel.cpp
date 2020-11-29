@@ -308,7 +308,7 @@ void AOConfigPanel::refresh_timeofday_list()
 void AOConfigPanel::on_reload_theme_clicked()
 {
   qDebug() << "reload theme clicked";
-  emit reload_theme();
+  Q_EMIT reload_theme();
 }
 
 void AOConfigPanel::on_gamemode_index_changed(QString p_text)

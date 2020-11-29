@@ -97,37 +97,37 @@ struct pos_size_type
   int height = 0;
 };
 
-enum CHAT_MESSAGE
+enum ChatMessage : std::int32_t
 {
-  DESK_MOD = 0,
-  PRE_EMOTE,
-  CHAR_NAME,
-  EMOTE,
-  MESSAGE,
-  SIDE,
-  SFX_NAME,
-  EMOTE_MOD,
-  CHAR_ID,
-  SFX_DELAY,
-  OBJECTION_MOD,
-  EVIDENCE_ID,
-  FLIP,
-  EFFECT_STATE,
-  TEXT_COLOR,
-  SHOWNAME
+  CMDeskModifier = 0,
+  CMPreAnim,
+  CMChrName,
+  CMEmote,
+  CMMessage,
+  CMPosition,
+  CMSoundName,
+  CMEmoteModifier,
+  CMChrId,
+  CMSoundDelay,
+  CMShoutModifier,
+  CMEvidenceId,
+  CMFlipState,
+  CMEffectState,
+  CMTextColor,
+  CMShowName,
 };
 
-enum COLOR
+enum Color : std::int32_t
 {
-  WHITE = 0,
-  GREEN,
-  RED,
-  ORANGE,
-  BLUE,
-  YELLOW,
-  PURPLE,
-  PINK,
-  RAINBOW
+  CWhite,
+  CGreen,
+  CRed,
+  COrange,
+  CBlue,
+  CYellow,
+  CPurple,
+  CPink,
+  CRainbow,
 };
 
 #endif // DATATYPES_H
