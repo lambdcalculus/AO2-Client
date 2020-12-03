@@ -50,7 +50,7 @@ private:
   ManualTimer manual_timer;
   QTimer firing_timer;
 
-  QTime start_time = QTime(0, 5);
+  QTime start_time = QTime(0, 0);
   // All of this is in miliseconds
   int manual_timer_timestep_length = -12;
   int firing_timer_length = 12;
