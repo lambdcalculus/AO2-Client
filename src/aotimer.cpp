@@ -12,6 +12,7 @@ AOTimer::AOTimer(QWidget *p_parent) : QTextEdit(p_parent)
   setReadOnly(true);
 
   firing_timer.setTimerType(Qt::PreciseTimer);
+  firing_timer.setInterval(firing_timer_length);
   connect(&firing_timer, SIGNAL(timeout()), this, SLOT(update_time()));
 
   set_time(start_time);
@@ -63,9 +64,10 @@ void AOTimer::update_time()
   // (which could be less than firing_timer_length if, say, the timer was
   // paused midstep).
   // The next firing_timer should take firing_timer_length miliseconds no
-  // matter what. However, to avoid needless computation, we only explicitly
-  // restart firing_timer if its length was not firing_timer_length already
-  // (see example above).
+  // matter what. However, manually restarting a timer is a very expensive QT
+  // operation, while QT's built-in automatic restart is very efficient.
+  // Therefore, we only restart firing_timer if its length was not
+  // firing_timer_length already (see example above).
   if (firing_timer.interval() != firing_timer_length)
     firing_timer.start(firing_timer_length);
 }
@@ -77,12 +79,16 @@ void AOTimer::set()
 
 void AOTimer::resume()
 {
-  firing_timer.start(firing_timer_length);
+  paused = false;
+  firing_timer.start();
 }
 
 void AOTimer::pause()
 {
+  paused = true;
+  int remaining = firing_timer.remainingTime();
   firing_timer.stop();
+  firing_timer.setInterval(remaining);
 }
 
 void AOTimer::redraw()
@@ -122,10 +128,16 @@ void AOTimer::set_firing_interval(int new_firing_interval)
   // For this timestep however, the firing interval will be shorter than
   // firing_timer_length to account for the fact the timer may have already been
   // running a bit in this timestep
+  int this_step_firing_interval;
   if (new_firing_interval < time_spent_in_timestep)
-    firing_timer.start(0);
+    this_step_firing_interval = 0;
   else
-    firing_timer.start(new_firing_interval - time_spent_in_timestep);
+    this_step_firing_interval = new_firing_interval - time_spent_in_timestep;
+
+  firing_timer.setInterval(this_step_firing_interval);
+
+  if (!paused)
+    firing_timer.start();
 }
 
 void AOTimer::set_concentrate_mode()

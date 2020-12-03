@@ -56,6 +56,8 @@ private:
   int firing_timer_length = 12;
   int time_spent_in_timestep = 0;
 
+  bool paused;
+
 public slots:
   void update_time();
   void set();
