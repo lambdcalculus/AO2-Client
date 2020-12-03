@@ -11,6 +11,7 @@ AOTimer::AOTimer(QWidget *p_parent) : QTextEdit(p_parent)
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setReadOnly(true);
 
+  firing_timer.setTimerType(Qt::PreciseTimer);
   connect(&firing_timer, SIGNAL(timeout()), this, SLOT(update_time()));
 
   set_time(start_time);
@@ -57,7 +58,16 @@ void AOTimer::update_time()
   // current timer Redraw and return
   old_manual_timer.perform_timestep();
   redraw();
-  firing_timer.start(firing_timer_length);
+  // As the firing timer is not single shot, it will restart automatically once
+  // expired. However, it will do so with its firing interval, whatever it was
+  // (which could be less than firing_timer_length if, say, the timer was
+  // paused midstep).
+  // The next firing_timer should take firing_timer_length miliseconds no
+  // matter what. However, to avoid needless computation, we only explicitly
+  // restart firing_timer if its length was not firing_timer_length already
+  // (see example above).
+  if (firing_timer.interval() != firing_timer_length)
+    firing_timer.start(firing_timer_length);
 }
 
 void AOTimer::set()
