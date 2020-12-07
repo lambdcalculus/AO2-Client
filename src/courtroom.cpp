@@ -877,6 +877,12 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
   qDebug() << "handle_chatmessage_2";
 
+  if (shout_delayed_reload_theme)
+  {
+    shout_delayed_reload_theme = false;
+    on_app_reload_theme_requested();
+  }
+
   QString real_name = char_list.at(m_chatmessage[CMChrId].toInt()).name;
 
   QString f_showname;
@@ -2277,6 +2283,15 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::on_app_reload_theme_requested()
 {
+  // If an objection is playing, delay reload theme order to be executed
+  // after objection is done
+  if (ui_vp_objection->state() == QMovie::MovieState::Running)
+  {
+    shout_delayed_reload_theme = true;
+    return;
+  }
+
+  // Otherwise carry on
   load_shouts();
   load_effects();
   load_wtce();
@@ -2285,8 +2300,6 @@ void Courtroom::on_app_reload_theme_requested()
   // to update status on the background
   set_background(current_background);
   enter_courtroom(m_cid);
-  anim_state = 4;
-  text_state = 3;
 }
 
 void Courtroom::on_back_to_lobby_clicked()

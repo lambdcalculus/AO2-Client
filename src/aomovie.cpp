@@ -152,3 +152,8 @@ void AOMovie::combo_resize(int w, int h)
   this->resize(f_size);
   m_movie->setScaledSize(f_size);
 }
+
+QMovie::MovieState AOMovie::state()
+{
+  return m_movie->state();
+}
