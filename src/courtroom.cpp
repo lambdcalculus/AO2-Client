@@ -21,8 +21,7 @@
 #include <QTextCharFormat>
 #include <QTime>
 
-Courtroom::Courtroom(AOApplication *p_ao_app)
-    : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -120,15 +119,18 @@ void Courtroom::enter_courtroom(int p_cid)
   set_widgets();
 
   check_shouts();
-  if (m_shout_current < shouts_enabled.length() && !shouts_enabled[m_shout_current])
+  if (m_shout_current < shouts_enabled.length() &&
+      !shouts_enabled[m_shout_current])
     cycle_shout(1);
 
   check_effects();
-  if (m_effect_current < effects_enabled.length() && !effects_enabled[m_effect_current])
+  if (m_effect_current < effects_enabled.length() &&
+      !effects_enabled[m_effect_current])
     cycle_effect(1);
 
   check_wtce();
-  if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current]))
+  if (is_judge &&
+      (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current]))
     cycle_wtce(1);
 
   check_free_blocks();
@@ -356,16 +358,15 @@ void Courtroom::handle_clock(QString time)
   }
 
   qDebug() << "Displaying clock asset...";
-  const QString asset_path =
-      ao_app->find_theme_asset_path("hours/" + QString::number(current_clock),
-                                    animated_or_static_extensions());
+  QString clock_filename = "hours/" + QString::number(current_clock);
+  const QString asset_path = ao_app->find_theme_asset_path(
+      clock_filename, animated_or_static_extensions());
   if (asset_path.isEmpty())
   {
     qDebug() << "Asset not found; aborting.";
     return;
   }
-
-  ui_vp_clock->play(asset_path);
+  ui_vp_clock->play(clock_filename);
   ui_vp_clock->show();
 }
 
@@ -1442,7 +1443,8 @@ void Courtroom::chat_tick()
 
     if (m_msg_is_first_person == false)
     {
-      ui_vp_player_char->play_idle(m_chatmessage[CMChrName], m_chatmessage[CMEmote]);
+      ui_vp_player_char->play_idle(m_chatmessage[CMChrName],
+                                   m_chatmessage[CMEmote]);
     }
 
     m_string_color = "";
