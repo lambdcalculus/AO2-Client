@@ -1476,8 +1476,19 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier,
   QString class_name = widget->metaObject()->className();
 
   int f_weight = ao_app->get_font_property(p_identifier, design_file);
+
+  // Font priority
+  // 1. "font_" + p_identifier
+  // 2. "font_default"
+  // 3. System font
+  QFontDatabase font_database;
   QString font_name =
       ao_app->get_font_name("font_" + p_identifier, design_file);
+  if (!font_database.families().contains(font_name))
+  {
+    QString default_font_name =
+        ao_app->get_font_name("font_default", "courtroom_fonts.ini");
+  }
   widget->setFont(QFont(font_name, f_weight));
 
   if (override_color.isEmpty())
