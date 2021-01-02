@@ -30,8 +30,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
   BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
 
-  // ao_app->setFont(QFont(default_font));
-
   create_widgets();
   connect_widgets();
 
