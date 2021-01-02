@@ -1808,6 +1808,8 @@ void Courtroom::mod_called(QString p_ip)
   {
     m_system_player->play(ao_app->get_sfx("mod_call"));
     ao_app->alert(this);
+    if (ao_config->log_is_recording_enabled())
+      save_textlog("(OOC)(MOD CALL)" + p_ip);
   }
 }
 
