@@ -45,6 +45,10 @@ public:
   void send_ms_packet(AOPacket *p_packet);
   void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
+  ///////////////server metadata////////////////
+
+  bool ackMS_enabled = false;
+
   ///////////////loading info///////////////////
 
   // player number, it's hardly used but might be needed for some old servers

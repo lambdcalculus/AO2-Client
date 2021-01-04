@@ -139,6 +139,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString f_hdid;
     f_hdid = get_hdid();
 
+    ackMS_enabled = false;
+
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
   }
@@ -161,10 +163,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->append_server_chatmessage(f_contents.at(0),
                                              f_contents.at(1));
   }
-  // FIXME Should the FL packet acknowledgement removed?
   else if (header == "FL")
   {
-    // The packet is acknowledged but is of no use to the client
+    if (f_packet.contains("ackMS", Qt::CaseInsensitive))
+      ackMS_enabled = true;
   }
   else if (header == "PN")
   {
@@ -552,6 +554,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && courtroom_loaded)
       w_courtroom->handle_chatmessage(p_packet->get_contents());
+  }
+  else if (header == "ackMS")
+  {
+    if (courtroom_constructed && courtroom_loaded)
+      w_courtroom->handle_acknowledged_ms();
   }
   else if (header == "MC")
   {
