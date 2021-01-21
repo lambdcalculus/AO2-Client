@@ -21,7 +21,8 @@
 #include <QTextCharFormat>
 #include <QTime>
 
-Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app)
+    : QMainWindow()
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -796,6 +797,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   // reset our ui state if client just spoke
   if (m_cid == f_char_id && is_system_speaking == false)
   {
+#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
     // If the server does not have the feature of acknowledging our MS
     // messages, assume in this if that the message is proof the server
     // acknowledged our message. It is not quite the same, as it is
@@ -803,13 +805,16 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     // as the client, but the client did not send that message, but it is
     // the best we can do.
     if (!ao_app->ackMS_enabled)
+    {
       handle_acknowledged_ms();
+    }
 
     // If the server does have the feature of acknowledging our MS messages,
     // it will have sent an ackMS packet prior to the MS one, so chat would
     // have been cleared and thus we need not do anything else.
+#endif
 
-    // Also update first person mode status
+    // update first person mode status
     m_msg_is_first_person = ao_app->get_first_person_enabled();
   }
 

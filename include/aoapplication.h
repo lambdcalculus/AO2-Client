@@ -45,9 +45,11 @@ public:
   void send_ms_packet(AOPacket *p_packet);
   void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
+#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
   ///////////////server metadata////////////////
 
   bool ackMS_enabled = false;
+#endif
 
   ///////////////loading info///////////////////
 

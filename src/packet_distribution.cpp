@@ -139,7 +139,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString f_hdid;
     f_hdid = get_hdid();
 
+#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
     ackMS_enabled = false;
+#endif
 
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
@@ -165,8 +167,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "FL")
   {
+#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
     if (f_packet.contains("ackMS", Qt::CaseInsensitive))
       ackMS_enabled = true;
+#endif
   }
   else if (header == "PN")
   {
