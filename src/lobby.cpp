@@ -236,10 +236,16 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
     return;
 
   int f_weight = ao_app->get_font_property(p_identifier, design_file);
-  QString class_name = widget->metaObject()->className();
 
+  // Font priority
+  // 1. "font_" + p_identifier
+  // 2. "font_default"
+  // 3. System font
+  QFontDatabase font_database;
   QString font_name =
       ao_app->get_font_name("font_" + p_identifier, design_file);
+  if (!font_database.families().contains(font_name))
+    font_name = ao_app->get_font_name("font_default", "lobby_fonts.ini");
   QFont font(font_name, f_weight);
   widget->setFont(font);
 
@@ -257,6 +263,7 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   if (center)
     is_center = "qproperty-alignment: AlignCenter;";
 
+  QString class_name = widget->metaObject()->className();
   QString style_sheet_string =
       class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: rgba(" +
       QString::number(f_color.red()) + ", " + QString::number(f_color.green()) +
