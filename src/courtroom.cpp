@@ -21,7 +21,8 @@
 #include <QTextCharFormat>
 #include <QTime>
 
-Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app)
+    : QMainWindow()
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -739,6 +740,29 @@ void Courtroom::on_chat_return_pressed()
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
+void Courtroom::handle_acknowledged_ms()
+{
+  ui_ic_chat_message->clear();
+
+  // reset states
+  ui_pre->setChecked(ao_config->always_pre_enabled());
+  list_sfx();
+  ui_sfx_list->setCurrentItem(
+      ui_sfx_list->item(0)); // prevents undefined errors
+
+  m_shout_state = 0;
+  draw_shout_buttons();
+
+  m_effect_state = 0;
+  draw_effect_buttons();
+
+  m_wtce_current = 0;
+  draw_judge_wtce_buttons();
+
+  is_presenting_evidence = false;
+  ui_evidence_present->set_image("present_disabled.png");
+}
+
 void Courtroom::handle_chatmessage(QStringList p_contents)
 {
   if (p_contents.size() < 15)
@@ -773,26 +797,24 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   // reset our ui state if client just spoke
   if (m_cid == f_char_id && is_system_speaking == false)
   {
-    ui_ic_chat_message->clear();
+#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
+    // If the server does not have the feature of acknowledging our MS
+    // messages, assume in this if that the message is proof the server
+    // acknowledged our message. It is not quite the same, as it is
+    // possible the server crafted a message with the same char_id
+    // as the client, but the client did not send that message, but it is
+    // the best we can do.
+    if (!ao_app->ackMS_enabled)
+    {
+      handle_acknowledged_ms();
+    }
 
-    // reset states
-    ui_pre->setChecked(ao_config->always_pre_enabled());
-    list_sfx();
-    ui_sfx_list->setCurrentItem(
-        ui_sfx_list->item(0)); // prevents undefined errors
+    // If the server does have the feature of acknowledging our MS messages,
+    // it will have sent an ackMS packet prior to the MS one, so chat would
+    // have been cleared and thus we need not do anything else.
+#endif
 
-    m_shout_state = 0;
-    draw_shout_buttons();
-
-    m_effect_state = 0;
-    draw_effect_buttons();
-
-    m_wtce_current = 0;
-    draw_judge_wtce_buttons();
-
-    is_presenting_evidence = false;
-    ui_evidence_present->set_image("present_disabled.png");
-
+    // update first person mode status
     m_msg_is_first_person = ao_app->get_first_person_enabled();
   }
 

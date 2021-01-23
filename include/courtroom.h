@@ -209,6 +209,9 @@ public:
   // these are for OOC chat
   void append_server_chatmessage(QString p_name, QString p_message);
 
+  // handles resetting the UI after the server acknowledged the client sent an
+  // message.
+  void handle_acknowledged_ms();
   // these functions handle chatmessages sequentially.
   // The process itself is very convoluted and merits separate documentation
   // But the general idea is objection animation->pre animation->talking->idle
@@ -597,8 +600,8 @@ private:
   QVector<QCheckBox *> ui_checks; // 0 = pre, 1 = flip, 2 = hidden
   QVector<AOLabel *> ui_labels;   // 0 = music, 1 = sfx, 2 = blip
   QVector<AOImageDisplay *> ui_label_images;
-  QVector<QString> label_images = {"Pre", "Flip", "Hidden",
-                                   "Music", "SFX", "Blip"};
+  QVector<QString> label_images = {"Pre",   "Flip", "Hidden",
+                                   "Music", "SFX",  "Blip"};
 
   AOButton *ui_effect_flash = nullptr;
   AOButton *ui_effect_gloom = nullptr;
