@@ -1482,12 +1482,10 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier,
   // 2. "font_default"
   // 3. System font
   QFontDatabase font_database;
-  QString font_name =
-      ao_app->get_font_name("font_" + p_identifier, design_file);
+  QString font_name = ao_app->get_font_name("font_" + p_identifier, design_file);
   if (!font_database.families().contains(font_name))
   {
-    QString default_font_name =
-        ao_app->get_font_name("font_default", "courtroom_fonts.ini");
+    font_name = ao_app->get_font_name("font_default", "courtroom_fonts.ini");
   }
   widget->setFont(QFont(font_name, f_weight));
 
