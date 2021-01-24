@@ -57,6 +57,11 @@ private:
   // driver
   AOConfig *m_config = nullptr;
 
+  // behaviour
+  QPushButton *w_save = nullptr;
+  QPushButton *w_close = nullptr;
+  QCheckBox *w_autosave = nullptr;
+
   // general
   QLineEdit *w_username = nullptr;
   QLineEdit *w_callwords = nullptr;
@@ -91,9 +96,6 @@ private:
   QLabel *w_blips_value = nullptr;
   QSpinBox *w_blip_rate = nullptr;
   QCheckBox *w_blank_blips = nullptr;
-
-  // save
-  QPushButton *w_save = nullptr;
 };
 
 #endif // AOCONFIGPANEL_H

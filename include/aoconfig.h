@@ -18,6 +18,7 @@ public:
   int get_number(QString p_name, int p_default = 0);
 
   // getters
+  bool autosave();
   QString username();
   QString callwords();
   bool server_alerts_enabled();
@@ -46,6 +47,8 @@ public slots:
 
   // setters
 public slots:
+  void set_autosave(bool p_enabled);
+  void set_autosave(int p_state);
   void set_username(QString p_string);
   void set_callwords(QString p_string);
   void set_server_alerts(bool p_enabled);
@@ -79,6 +82,7 @@ public slots:
 
   // signals
 signals:
+  void autosave_changed(bool);
   void username_changed(QString);
   void callwords_changed(QString);
   void server_alerts_changed(bool);
