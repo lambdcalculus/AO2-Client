@@ -57,7 +57,8 @@ void AOEmoteButton::set_image(QString p_chr, int p_emote_number, bool p_enabled)
       }
       else
       {
-        w_selected->setStyleSheet("background-color: rgba(0, 0, 0, 127)");
+        w_selected->setStyleSheet(
+            "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 0, 0, 0), stop:1 rgba(0, 0, 0, 127)); }");
       }
 
       w_selected->show();
@@ -66,7 +67,7 @@ void AOEmoteButton::set_image(QString p_chr, int p_emote_number, bool p_enabled)
 
   const bool texture_exist = file_exists(texture_path);
   setText(texture_exist ? QString() : ao_app->get_emote_comment(p_chr, p_emote_number));
-  setStyleSheet(texture_exist ? QString("border-image: url(%1)").arg(texture_path) : QString());
+  setStyleSheet(texture_exist ? QString("%1 { border-image: url(%2); }").arg(metaObject()->className()).arg(texture_path) : QString());
 }
 
 void AOEmoteButton::on_clicked()
