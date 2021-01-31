@@ -130,7 +130,8 @@ public:
    * @return The first case-sensitive root+extension path for which a file
    * exists, or an empty string, if not one does.
    */
-  QString find_asset_path(QStringList possible_roots, QStringList possible_exts = {""});
+  QString find_asset_path(QStringList possible_roots,
+                          QStringList possible_exts = {""});
 
   /**
    * @brief Returns the first case-sensitive file in the theme folder that is
@@ -350,7 +351,8 @@ public:
   QString get_sfx(QString p_identifier);
 
   // Returns the value of p_search_line within target_tag and terminator_tag
-  QString read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag);
+  QString read_char_ini(QString p_char, QString p_search_line,
+                        QString target_tag, QString terminator_tag);
 
   // Returns the text between target_tag and terminator_tag in p_file
   QString get_stylesheet(QString target_tag, QString p_file);
