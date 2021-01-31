@@ -1,9 +1,12 @@
 #ifndef AOEMOTEBUTTON_H
 #define AOEMOTEBUTTON_H
 
-#include <QPushButton>
-
+// src
 #include "aoapplication.h"
+
+// qt
+#include <QLabel>
+#include <QPushButton>
 
 class AOEmoteButton : public QPushButton
 {
@@ -12,24 +15,17 @@ class AOEmoteButton : public QPushButton
 public:
   AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y);
 
-  void set_image(QString p_char, int p_emote, QString suffix);
+  int get_emote_number();
+  void set_emote_number(int p_emote_number);
+  void set_image(QString p_chr, int p_emote_number, bool p_enabled);
 
-  void set_id(int p_id)
-  {
-    m_id = p_id;
-  }
-  int get_id()
-  {
-    return m_id;
-  }
+signals:
+  void emote_clicked(int p_emote_number);
 
 private:
   AOApplication *ao_app = nullptr;
-
-  int m_id = 0;
-
-signals:
-  void emote_clicked(int p_id);
+  QLabel *w_selected = nullptr;
+  int m_emote_number = 0;
 
 private slots:
   void on_clicked();

@@ -59,7 +59,7 @@ void Courtroom::reconstruct_emotes()
 
     ui_emote_list.append(f_emote);
 
-    f_emote->set_id(n);
+    f_emote->set_emote_number(n);
 
     connect(f_emote, SIGNAL(emote_clicked(int)), this,
             SLOT(on_emote_clicked(int)));
@@ -130,12 +130,8 @@ void Courtroom::set_emote_page()
   {
     int n_real_emote = n_emote + current_emote_page * max_emotes_on_page;
     AOEmoteButton *f_emote = ui_emote_list.at(n_emote);
-
-    if (n_real_emote == current_emote)
-      f_emote->set_image(current_char, n_real_emote, "_on.png");
-    else
-      f_emote->set_image(current_char, n_real_emote, "_off.png");
-
+    f_emote->set_image(current_char, n_real_emote,
+                       n_real_emote == current_emote);
     f_emote->show();
   }
 }
@@ -162,7 +158,7 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
     ui_emote_list.at(current_emote % max_emotes_on_page)
-        ->set_image(current_char, current_emote, "_off.png");
+        ->set_image(current_char, current_emote, false);
 
   int old_emote = current_emote;
 
@@ -170,7 +166,7 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
     ui_emote_list.at(current_emote % max_emotes_on_page)
-        ->set_image(current_char, current_emote, "_on.png");
+        ->set_image(current_char, current_emote, true);
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
