@@ -21,8 +21,10 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // tab
   setFocusProxy(AO_GUI_WIDGET(QTabWidget, "tab_widget"));
 
-  // save
+  // behaviour
   w_save = AO_GUI_WIDGET(QPushButton, "save");
+  w_close = AO_GUI_WIDGET(QPushButton, "close");
+  w_autosave = AO_GUI_WIDGET(QCheckBox, "autosave");
 
   // general
   w_username = AO_GUI_WIDGET(QLineEdit, "username");
@@ -67,6 +69,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   refresh_timeofday_list();
 
   // input
+  connect(m_config, SIGNAL(autosave_changed(bool)), w_autosave,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(username_changed(QString)), w_username,
           SLOT(setText(QString)));
   connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords,
@@ -111,7 +115,10 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
           SLOT(setChecked(bool)));
 
   // output
+  connect(w_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(w_save, SIGNAL(clicked()), m_config, SLOT(save_file()));
+  connect(w_autosave, SIGNAL(stateChanged(int)), m_config,
+          SLOT(set_autosave(int)));
   connect(w_username, SIGNAL(textEdited(QString)), m_config,
           SLOT(set_username(QString)));
   connect(w_callwords, SIGNAL(textEdited(QString)), m_config,
@@ -166,6 +173,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
           SLOT(set_blank_blips(int)));
 
   // set values
+  w_autosave->setChecked(m_config->autosave());
   w_username->setText(m_config->username());
   w_callwords->setText(m_config->callwords());
   w_server_alerts->setChecked(m_config->server_alerts_enabled());
@@ -177,10 +185,16 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_always_pre->setChecked(m_config->always_pre_enabled());
   w_chat_tick_interval->setValue(m_config->chat_tick_interval());
   w_log_max_lines->setValue(m_config->log_max_lines());
+
   if (m_config->log_is_topdown_enabled())
+  {
     w_log_orientation_top_down->setChecked(true);
+  }
   else
+  {
     w_log_orientation_bottom_up->setChecked(true);
+  }
+
   w_log_uses_newline->setChecked(m_config->log_uses_newline_enabled());
   w_log_music->setChecked(m_config->log_music_enabled());
   w_log_is_recording->setChecked(m_config->log_is_recording_enabled());

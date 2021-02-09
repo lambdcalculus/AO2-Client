@@ -22,6 +22,7 @@ class AOConfigPrivate : public QObject
   QVector<QObject *> parents;
 
   // data
+  bool autosave;
   QString username;
   QString callwords;
   QString theme;
@@ -53,11 +54,21 @@ public:
   }
   ~AOConfigPrivate()
   {
-    save_file();
+    if (autosave)
+    {
+      save_file();
+    }
   }
 
   // setters
 public slots:
+  void set_autosave(bool p_enabled)
+  {
+    if (autosave == p_enabled)
+      return;
+    autosave = p_enabled;
+    invoke_parents("autosave_changed", Q_ARG(bool, p_enabled));
+  }
   void set_username(QString p_string)
   {
     if (username == p_string)
@@ -207,6 +218,7 @@ public slots:
   }
   void read_file()
   {
+    autosave = cfg.value("autosave", true).toBool();
     username = cfg.value("username").toString();
     callwords = cfg.value("callwords").toString();
     server_alerts = cfg.value("server_alerts", true).toBool();
@@ -235,6 +247,7 @@ public slots:
   }
   void save_file()
   {
+    cfg.setValue("autosave", autosave);
     cfg.setValue("username", username);
     cfg.setValue("callwords", callwords);
     cfg.setValue("server_alerts", server_alerts);
@@ -307,6 +320,11 @@ bool AOConfig::get_bool(QString p_name, bool p_default)
 int AOConfig::get_number(QString p_name, int p_default)
 {
   return d->cfg.value(p_name, p_default).toInt();
+}
+
+bool AOConfig::autosave()
+{
+  return d->autosave;
 }
 
 QString AOConfig::username()
@@ -411,6 +429,16 @@ int AOConfig::blip_rate()
 bool AOConfig::blank_blips_enabled()
 {
   return d->blank_blips;
+}
+
+void AOConfig::set_autosave(bool p_enabled)
+{
+  d->set_autosave(p_enabled);
+}
+
+void AOConfig::set_autosave(int p_state)
+{
+  set_autosave(p_state == Qt::Checked);
 }
 
 void AOConfig::set_username(QString p_string)

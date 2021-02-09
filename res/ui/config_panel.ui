@@ -693,6 +693,16 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
+      <widget class="QCheckBox" name="autosave">
+       <property name="toolTip">
+        <string extracomment="Autosave settings when exiting the client."/>
+       </property>
+       <property name="text">
+        <string>Autosave</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -709,6 +719,13 @@
       <widget class="QPushButton" name="save">
        <property name="text">
         <string>&amp;Save</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="close">
+       <property name="text">
+        <string>&amp;Close</string>
        </property>
       </widget>
      </item>
