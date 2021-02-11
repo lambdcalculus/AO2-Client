@@ -503,6 +503,9 @@
        </item>
        <item row="2" column="1">
         <widget class="QCheckBox" name="disable_background_audio">
+         <property name="toolTip">
+          <string>Allow the program to temporarily disable sounds when out of focus.</string>
+         </property>
          <property name="text">
           <string>Disable Background Audio</string>
          </property>
