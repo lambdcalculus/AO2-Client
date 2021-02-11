@@ -6,21 +6,18 @@
 #include "file_functions.h"
 #include "misc_functions.h"
 
-AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
-    : QLabel(p_parent)
+AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
   evidence_movie = new QMovie(this);
   evidence_icon = new QLabel(this);
-  sfx_player = new AOSfxPlayer(this, ao_app);
+  sfx_player = new AOSfxPlayer(ao_app, this);
 
-  connect(evidence_movie, SIGNAL(frameChanged(int)), this,
-          SLOT(frame_change(int)));
+  connect(evidence_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
 
-void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
-                                      bool is_left_side)
+void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_side)
 {
   this->reset();
 
@@ -43,8 +40,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image,
     gif_name = "evidence_appear_right.gif";
   }
 
-  pos_size_type icon_dimensions =
-      ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
+  pos_size_type icon_dimensions = ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
 
   evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
   evidence_icon->resize(icon_dimensions.width, icon_dimensions.height);
@@ -77,7 +73,6 @@ void AOEvidenceDisplay::frame_change(int p_frame)
 
 void AOEvidenceDisplay::reset()
 {
-  sfx_player->stop();
   evidence_movie->stop();
   evidence_icon->hide();
   this->clear();

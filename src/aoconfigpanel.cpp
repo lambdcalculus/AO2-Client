@@ -44,22 +44,23 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // IC Chatlog
   w_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
   w_log_uses_newline = AO_GUI_WIDGET(QCheckBox, "log_newline");
-  w_log_orientation_top_down =
-      AO_GUI_WIDGET(QRadioButton, "log_orientation_top_down");
-  w_log_orientation_bottom_up =
-      AO_GUI_WIDGET(QRadioButton, "log_orientation_bottom_up");
+  w_log_orientation_top_down = AO_GUI_WIDGET(QRadioButton, "log_orientation_top_down");
+  w_log_orientation_bottom_up = AO_GUI_WIDGET(QRadioButton, "log_orientation_bottom_up");
   w_log_music = AO_GUI_WIDGET(QCheckBox, "log_music");
   w_log_is_recording = AO_GUI_WIDGET(QCheckBox, "log_recording");
 
   // audio
-  w_effects = AO_GUI_WIDGET(QSlider, "effects");
-  w_effects_value = AO_GUI_WIDGET(QLabel, "effects_value");
+  w_master = AO_GUI_WIDGET(QSlider, "master");
+  w_master_value = AO_GUI_WIDGET(QLabel, "master_value");
+  w_disable_background_audio = AO_GUI_WIDGET(QCheckBox, "disable_background_audio");
   w_system = AO_GUI_WIDGET(QSlider, "system");
   w_system_value = AO_GUI_WIDGET(QLabel, "system_value");
+  w_effect = AO_GUI_WIDGET(QSlider, "effect");
+  w_effect_value = AO_GUI_WIDGET(QLabel, "effect_value");
   w_music = AO_GUI_WIDGET(QSlider, "music");
   w_music_value = AO_GUI_WIDGET(QLabel, "music_value");
-  w_blips = AO_GUI_WIDGET(QSlider, "blips");
-  w_blips_value = AO_GUI_WIDGET(QLabel, "blips_value");
+  w_blip = AO_GUI_WIDGET(QSlider, "blip");
+  w_blip_value = AO_GUI_WIDGET(QLabel, "blip_value");
   w_blip_rate = AO_GUI_WIDGET(QSpinBox, "blip_rate");
   w_blank_blips = AO_GUI_WIDGET(QCheckBox, "blank_blips");
 
@@ -69,108 +70,64 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   refresh_timeofday_list();
 
   // input
-  connect(m_config, SIGNAL(autosave_changed(bool)), w_autosave,
-          SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(username_changed(QString)), w_username,
-          SLOT(setText(QString)));
-  connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords,
-          SLOT(setText(QString)));
-  connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts,
-          SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(theme_changed(QString)), w_theme,
-          SLOT(setCurrentText(QString)));
-  connect(m_config, SIGNAL(gamemode_changed(QString)), w_gamemode,
-          SLOT(setCurrentText(QString)));
-  connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_manual_gamemode,
-          SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(timeofday_changed(QString)), w_timeofday,
-          SLOT(setCurrentText(QString)));
-  connect(m_config, SIGNAL(manual_timeofday_changed(bool)), w_manual_timeofday,
-          SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre,
-          SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(chat_tick_interval_changed(int)),
-          w_chat_tick_interval, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(log_max_lines_changed(int)), w_log_max_lines,
-          SLOT(setValue(int)));
-  connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this,
-          SLOT(on_log_is_topdown_changed(bool)));
-  connect(m_config, SIGNAL(log_uses_newline_changed(bool)), w_log_uses_newline,
-          SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(log_music_changed(bool)), w_log_music,
-          SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(log_is_recording_changed(bool)), w_log_is_recording,
-          SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(effects_volume_changed(int)), w_effects,
-          SLOT(setValue(int)));
-  connect(m_config, SIGNAL(system_volume_changed(int)), w_system,
-          SLOT(setValue(int)));
-  connect(m_config, SIGNAL(music_volume_changed(int)), w_music,
-          SLOT(setValue(int)));
-  connect(m_config, SIGNAL(blips_volume_changed(int)), w_blips,
-          SLOT(setValue(int)));
-  connect(m_config, SIGNAL(blip_rate_changed(int)), w_blip_rate,
-          SLOT(setValue(int)));
-  connect(m_config, SIGNAL(blank_blips_changed(bool)), w_blank_blips,
-          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(autosave_changed(bool)), w_autosave, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(username_changed(QString)), w_username, SLOT(setText(QString)));
+  connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords, SLOT(setText(QString)));
+  connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(theme_changed(QString)), w_theme, SLOT(setCurrentText(QString)));
+  connect(m_config, SIGNAL(gamemode_changed(QString)), w_gamemode, SLOT(setCurrentText(QString)));
+  connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_manual_gamemode, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(timeofday_changed(QString)), w_timeofday, SLOT(setCurrentText(QString)));
+  connect(m_config, SIGNAL(manual_timeofday_changed(bool)), w_manual_timeofday, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(chat_tick_interval_changed(int)), w_chat_tick_interval, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(log_max_lines_changed(int)), w_log_max_lines, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_log_is_topdown_changed(bool)));
+  connect(m_config, SIGNAL(log_uses_newline_changed(bool)), w_log_uses_newline, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_music_changed(bool)), w_log_music, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_is_recording_changed(bool)), w_log_is_recording, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(master_volume_changed(int)), w_master, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(disable_background_audio_changed(bool)), w_disable_background_audio, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(system_volume_changed(int)), w_system, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(effect_volume_changed(int)), w_effect, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(music_volume_changed(int)), w_music, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(blip_volume_changed(int)), w_blip, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(blip_rate_changed(int)), w_blip_rate, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(blank_blips_changed(bool)), w_blank_blips, SLOT(setChecked(bool)));
 
   // output
   connect(w_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(w_save, SIGNAL(clicked()), m_config, SLOT(save_file()));
-  connect(w_autosave, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_autosave(int)));
-  connect(w_username, SIGNAL(textEdited(QString)), m_config,
-          SLOT(set_username(QString)));
-  connect(w_callwords, SIGNAL(textEdited(QString)), m_config,
-          SLOT(set_callwords(QString)));
-  connect(w_server_alerts, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_server_alerts(int)));
-  connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config,
-          SLOT(set_theme(QString)));
-  connect(w_reload_theme, SIGNAL(clicked()), this,
-          SLOT(on_reload_theme_clicked()));
-  connect(w_gamemode, SIGNAL(currentIndexChanged(QString)), this,
-          SLOT(on_gamemode_index_changed(QString)));
-  connect(w_manual_gamemode, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_manual_gamemode(int)));
-  connect(w_timeofday, SIGNAL(currentIndexChanged(QString)), this,
-          SLOT(on_timeofday_index_changed(QString)));
-  connect(w_manual_timeofday, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_manual_timeofday(int)));
-  connect(w_always_pre, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_always_pre(int)));
-  connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config,
-          SLOT(set_chat_tick_interval(int)));
-  connect(w_log_max_lines, SIGNAL(valueChanged(int)), m_config,
-          SLOT(set_log_max_lines(int)));
-  connect(w_log_orientation_top_down, SIGNAL(toggled(bool)), m_config,
-          SLOT(set_log_is_topdown(bool)));
-  connect(w_log_uses_newline, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_log_uses_newline(int)));
-  connect(w_log_music, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_log_music(int)));
-  connect(w_log_is_recording, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_log_is_recording(int)));
-  connect(w_effects, SIGNAL(valueChanged(int)), m_config,
-          SLOT(set_effects_volume(int)));
-  connect(w_effects, SIGNAL(valueChanged(int)), this,
-          SLOT(on_effects_value_changed(int)));
-  connect(w_system, SIGNAL(valueChanged(int)), m_config,
-          SLOT(set_system_volume(int)));
-  connect(w_system, SIGNAL(valueChanged(int)), this,
-          SLOT(on_system_value_changed(int)));
-  connect(w_music, SIGNAL(valueChanged(int)), m_config,
-          SLOT(set_music_volume(int)));
-  connect(w_music, SIGNAL(valueChanged(int)), this,
-          SLOT(on_music_value_changed(int)));
-  connect(w_blips, SIGNAL(valueChanged(int)), m_config,
-          SLOT(set_blips_volume(int)));
-  connect(w_blips, SIGNAL(valueChanged(int)), this,
-          SLOT(on_blips_value_changed(int)));
-  connect(w_blip_rate, SIGNAL(valueChanged(int)), m_config,
-          SLOT(set_blip_rate(int)));
-  connect(w_blank_blips, SIGNAL(stateChanged(int)), m_config,
-          SLOT(set_blank_blips(int)));
+  connect(w_autosave, SIGNAL(stateChanged(int)), m_config, SLOT(set_autosave(int)));
+  connect(w_username, SIGNAL(textEdited(QString)), m_config, SLOT(set_username(QString)));
+  connect(w_callwords, SIGNAL(textEdited(QString)), m_config, SLOT(set_callwords(QString)));
+  connect(w_server_alerts, SIGNAL(stateChanged(int)), m_config, SLOT(set_server_alerts(int)));
+  connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
+  connect(w_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
+  connect(w_gamemode, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_gamemode_index_changed(QString)));
+  connect(w_manual_gamemode, SIGNAL(stateChanged(int)), m_config, SLOT(set_manual_gamemode(int)));
+  connect(w_timeofday, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_timeofday_index_changed(QString)));
+  connect(w_manual_timeofday, SIGNAL(stateChanged(int)), m_config, SLOT(set_manual_timeofday(int)));
+  connect(w_always_pre, SIGNAL(stateChanged(int)), m_config, SLOT(set_always_pre(int)));
+  connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
+  connect(w_log_max_lines, SIGNAL(valueChanged(int)), m_config, SLOT(set_log_max_lines(int)));
+  connect(w_log_orientation_top_down, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_topdown(bool)));
+  connect(w_log_uses_newline, SIGNAL(stateChanged(int)), m_config, SLOT(set_log_uses_newline(int)));
+  connect(w_log_music, SIGNAL(stateChanged(int)), m_config, SLOT(set_log_music(int)));
+  connect(w_log_is_recording, SIGNAL(stateChanged(int)), m_config, SLOT(set_log_is_recording(int)));
+  connect(w_disable_background_audio, SIGNAL(stateChanged(int)), m_config, SLOT(set_disable_background_audio(int)));
+  connect(w_master, SIGNAL(valueChanged(int)), m_config, SLOT(set_master_volume(int)));
+  connect(w_master, SIGNAL(valueChanged(int)), this, SLOT(on_master_value_changed(int)));
+  connect(w_system, SIGNAL(valueChanged(int)), m_config, SLOT(set_system_volume(int)));
+  connect(w_system, SIGNAL(valueChanged(int)), this, SLOT(on_system_value_changed(int)));
+  connect(w_effect, SIGNAL(valueChanged(int)), m_config, SLOT(set_effect_volume(int)));
+  connect(w_effect, SIGNAL(valueChanged(int)), this, SLOT(on_effect_value_changed(int)));
+  connect(w_music, SIGNAL(valueChanged(int)), m_config, SLOT(set_music_volume(int)));
+  connect(w_music, SIGNAL(valueChanged(int)), this, SLOT(on_music_value_changed(int)));
+  connect(w_blip, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_volume(int)));
+  connect(w_blip, SIGNAL(valueChanged(int)), this, SLOT(on_blip_value_changed(int)));
+  connect(w_blip_rate, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_rate(int)));
+  connect(w_blank_blips, SIGNAL(stateChanged(int)), m_config, SLOT(set_blank_blips(int)));
 
   // set values
   w_autosave->setChecked(m_config->autosave());
@@ -198,10 +155,12 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_log_uses_newline->setChecked(m_config->log_uses_newline_enabled());
   w_log_music->setChecked(m_config->log_music_enabled());
   w_log_is_recording->setChecked(m_config->log_is_recording_enabled());
-  w_effects->setValue(m_config->effects_volume());
+  w_master->setValue(m_config->master_volume());
+  w_disable_background_audio->setChecked(m_config->disable_background_audio());
   w_system->setValue(m_config->system_volume());
+  w_effect->setValue(m_config->effect_volume());
   w_music->setValue(m_config->music_volume());
-  w_blips->setValue(m_config->blips_volume());
+  w_blip->setValue(m_config->blip_volume());
   w_blip_rate->setValue(m_config->blip_rate());
   w_blank_blips->setChecked(m_config->blank_blips_enabled());
 
@@ -210,10 +169,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_timeofday->setEnabled(m_config->manual_timeofday_enabled());
   // The manual gamemode checkbox enables browsing the gamemode combox
   // similarly with time of day
-  connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_gamemode,
-          SLOT(setEnabled(bool)));
-  connect(m_config, SIGNAL(manual_timeofday_changed(bool)), w_timeofday,
-          SLOT(setEnabled(bool)));
+  connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_gamemode, SLOT(setEnabled(bool)));
+  connect(m_config, SIGNAL(manual_timeofday_changed(bool)), w_timeofday, SLOT(setEnabled(bool)));
 }
 
 void AOConfigPanel::showEvent(QShowEvent *event)
@@ -239,8 +196,7 @@ void AOConfigPanel::refresh_theme_list()
 
   // themes
   const QString path = QDir::currentPath() + "/base/themes";
-  for (QString i_folder :
-       QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
+  for (QString i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
       continue;
@@ -265,10 +221,8 @@ void AOConfigPanel::refresh_gamemode_list()
   // add empty entry indicating no gamemode chosen
   w_gamemode->addItem("<default>");
   // gamemodes
-  QString path =
-      QDir::currentPath() + "/base/themes/" + m_config->theme() + "/gamemodes/";
-  for (QString i_folder :
-       QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
+  QString path = QDir::currentPath() + "/base/themes/" + m_config->theme() + "/gamemodes/";
+  for (QString i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
       continue;
@@ -297,15 +251,12 @@ void AOConfigPanel::refresh_timeofday_list()
   // gamemode chosen or not
   QString path;
   if (m_config->gamemode().isEmpty())
-    path =
-        QDir::currentPath() + "/base/themes/" + m_config->theme() + "/times/";
+    path = QDir::currentPath() + "/base/themes/" + m_config->theme() + "/times/";
   else
-    path = QDir::currentPath() + "/base/themes/" + m_config->theme() +
-           "/gamemodes/" + m_config->gamemode() + "/times/";
+    path = QDir::currentPath() + "/base/themes/" + m_config->theme() + "/gamemodes/" + m_config->gamemode() + "/times/";
 
   // times of day
-  for (QString i_folder :
-       QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
+  for (QString i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
       continue;
@@ -343,9 +294,9 @@ void AOConfigPanel::on_log_is_topdown_changed(bool p_enabled)
   w_log_orientation_bottom_up->setChecked(!p_enabled);
 }
 
-void AOConfigPanel::on_effects_value_changed(int p_num)
+void AOConfigPanel::on_master_value_changed(int p_num)
 {
-  w_effects_value->setText(QString::number(p_num) + "%");
+  w_master_value->setText(QString::number(p_num) + "%");
 }
 
 void AOConfigPanel::on_system_value_changed(int p_num)
@@ -353,14 +304,19 @@ void AOConfigPanel::on_system_value_changed(int p_num)
   w_system_value->setText(QString::number(p_num) + "%");
 }
 
+void AOConfigPanel::on_effect_value_changed(int p_num)
+{
+  w_effect_value->setText(QString::number(p_num) + "%");
+}
+
 void AOConfigPanel::on_music_value_changed(int p_num)
 {
   w_music_value->setText(QString::number(p_num) + "%");
 }
 
-void AOConfigPanel::on_blips_value_changed(int p_num)
+void AOConfigPanel::on_blip_value_changed(int p_num)
 {
-  w_blips_value->setText(QString::number(p_num) + "%");
+  w_blip_value->setText(QString::number(p_num) + "%");
 }
 
 void AOConfigPanel::on_config_reload_theme_requested()

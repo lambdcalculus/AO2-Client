@@ -1,16 +1,16 @@
 #include "aoshoutplayer.h"
+
+#include "draudioengine.h"
 #include "file_functions.h"
 
 #include <QDebug>
 
-AOShoutPlayer::AOShoutPlayer(QObject *p_parent, AOApplication *p_ao_app)
-    : AOAbstractPlayer(p_parent, p_ao_app)
-{
-}
+AOShoutPlayer::AOShoutPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObject(p_ao_app, p_parent)
+{}
 
 void AOShoutPlayer::play(QString p_name, QString p_char)
 {
-  QString f_file;
+  QString file;
 
   QString char_path = ao_app->get_character_path(p_char, p_name);
   QString theme_path = ao_app->find_theme_asset_path(p_name);
@@ -19,28 +19,11 @@ void AOShoutPlayer::play(QString p_name, QString p_char)
   qDebug() << theme_path;
 
   if (file_exists(char_path))
-    f_file = char_path;
+    file = char_path;
   else if (file_exists(theme_path))
-    f_file = theme_path;
-  else
-    f_file = "";
+    file = theme_path;
 
-  try
-  {
-    AOBassHandle *handle = new AOBassHandle(f_file, true, this);
-    connect(this, &AOShoutPlayer::new_volume, handle,
-            &AOBassHandle::set_volume);
-    connect(this, &AOShoutPlayer::stopping, handle, &AOBassHandle::stop);
-    handle->set_volume(get_volume());
-    handle->play();
-  }
-  catch (const std::exception &e_exception)
-  {
-    qDebug() << e_exception.what();
-  }
-}
-
-void AOShoutPlayer::stop()
-{
-  Q_EMIT stopping();
+  if (file.isNull())
+    return;
+  DRAudioEngine::get_family(DRAudio::Family::FEffect)->play_stream(file);
 }

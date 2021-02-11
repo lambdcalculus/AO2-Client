@@ -34,10 +34,14 @@ public:
   bool log_uses_newline_enabled();
   bool log_music_enabled();
   bool log_is_recording_enabled();
-  int effects_volume();
+
+  // audio
+  int master_volume();
+  bool disable_background_audio();
   int system_volume();
+  int effect_volume();
   int music_volume();
-  int blips_volume();
+  int blip_volume();
   int blip_rate();
   bool blank_blips_enabled();
 
@@ -72,10 +76,13 @@ public slots:
   void set_log_music(int p_state);
   void set_log_is_recording(bool p_enabled);
   void set_log_is_recording(int p_state);
-  void set_effects_volume(int p_number);
+  void set_disable_background_audio(bool p_enabled);
+  void set_disable_background_audio(int p_state);
+  void set_master_volume(int p_number);
   void set_system_volume(int p_number);
+  void set_effect_volume(int p_number);
   void set_music_volume(int p_number);
-  void set_blips_volume(int p_number);
+  void set_blip_volume(int p_number);
   void set_blip_rate(int p_number);
   void set_blank_blips(bool p_enabled);
   void set_blank_blips(int p_state);
@@ -98,10 +105,12 @@ signals:
   void log_uses_newline_changed(bool);
   void log_music_changed(bool);
   void log_is_recording_changed(bool);
-  void effects_volume_changed(int);
+  void master_volume_changed(int);
+  void disable_background_audio_changed(bool);
   void system_volume_changed(int);
+  void effect_volume_changed(int);
   void music_volume_changed(int);
-  void blips_volume_changed(int);
+  void blip_volume_changed(int);
   void blip_rate_changed(int);
   void blank_blips_changed(bool);
 };

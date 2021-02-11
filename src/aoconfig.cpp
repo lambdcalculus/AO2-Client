@@ -1,10 +1,15 @@
 #include "aoconfig.h"
 
+#include "draudioengine.h"
+
 // qt
 #include <QApplication>
 #include <QDir>
+#include <QPointer>
 #include <QSettings>
 #include <QVector>
+
+#include <QDebug>
 
 /*!
     We have to suffer through a lot of boilerplate code
@@ -38,18 +43,28 @@ class AOConfigPrivate : public QObject
   bool log_uses_newline;
   bool log_music;
   bool log_is_recording;
-  int effects_volume;
+
+  int master_volume;
+  bool disable_background_audio;
+  int effect_volume;
   int system_volume;
   int music_volume;
-  int blips_volume;
+  int blip_volume;
   int blip_rate;
   bool blank_blips;
 
+  // audio sync
+  DRAudioEngine *audio_engine = nullptr;
+
 public:
-  AOConfigPrivate()
-      : QObject(qApp),
-        cfg(QDir::currentPath() + "/base/config.ini", QSettings::IniFormat)
+  AOConfigPrivate(QObject *p_parent = nullptr)
+      : QObject(p_parent), cfg(QDir::currentPath() + "/base/config.ini", QSettings::IniFormat),
+        audio_engine(new DRAudioEngine(this))
   {
+    Q_ASSERT_X(qApp, "initialization", "QGuiApplication is required");
+    connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), this,
+            SLOT(on_application_state_changed(Qt::ApplicationState)));
+
     read_file();
   }
   ~AOConfigPrivate()
@@ -174,33 +189,52 @@ public slots:
     log_is_recording = p_enabled;
     invoke_parents("log_is_recording_changed", Q_ARG(bool, p_enabled));
   }
-  void set_effects_volume(int p_number)
+  void set_master_volume(int p_number)
   {
-    if (effects_volume == p_number)
+    if (master_volume == p_number)
       return;
-    effects_volume = p_number;
-    invoke_parents("effects_volume_changed", Q_ARG(int, p_number));
+    master_volume = p_number;
+    audio_engine->set_volume(p_number);
+    invoke_parents("master_volume_changed", Q_ARG(int, p_number));
+  }
+  void set_disable_background_audio(bool p_enabled)
+  {
+    if (disable_background_audio == p_enabled)
+      return;
+    disable_background_audio = p_enabled;
+    invoke_parents("disable_background_audio_changed", Q_ARG(bool, p_enabled));
   }
   void set_system_volume(int p_number)
   {
     if (system_volume == p_number)
       return;
     system_volume = p_number;
+    audio_engine->get_family(DRAudio::Family::FSystem)->set_volume(p_number);
     invoke_parents("system_volume_changed", Q_ARG(int, p_number));
+  }
+  void set_effects_volume(int p_number)
+  {
+    if (effect_volume == p_number)
+      return;
+    effect_volume = p_number;
+    audio_engine->get_family(DRAudio::Family::FEffect)->set_volume(p_number);
+    invoke_parents("effect_volume_changed", Q_ARG(int, p_number));
   }
   void set_music_volume(int p_number)
   {
     if (music_volume == p_number)
       return;
     music_volume = p_number;
+    audio_engine->get_family(DRAudio::Family::FMusic)->set_volume(p_number);
     invoke_parents("music_volume_changed", Q_ARG(int, p_number));
   }
   void set_blips_volume(int p_number)
   {
-    if (blips_volume == p_number)
+    if (blip_volume == p_number)
       return;
-    blips_volume = p_number;
-    invoke_parents("blips_volume_changed", Q_ARG(int, p_number));
+    blip_volume = p_number;
+    audio_engine->get_family(DRAudio::Family::FBlip)->set_volume(p_number);
+    invoke_parents("blip_volume_changed", Q_ARG(int, p_number));
   }
   void set_blip_rate(int p_number)
   {
@@ -238,12 +272,22 @@ public slots:
     log_uses_newline = cfg.value("chatlog_newline", false).toBool();
     log_music = cfg.value("music_change_log", true).toBool();
     log_is_recording = cfg.value("enable_logging", true).toBool();
-    effects_volume = cfg.value("default_sfx", 50).toInt();
+
+    disable_background_audio = cfg.value("disable_background_audio").toBool();
+    master_volume = cfg.value("default_master", 50).toInt();
     system_volume = cfg.value("default_system", 50).toInt();
+    effect_volume = cfg.value("default_sfx", 50).toInt();
     music_volume = cfg.value("default_music", 50).toInt();
-    blips_volume = cfg.value("default_blip", 50).toInt();
+    blip_volume = cfg.value("default_blip", 50).toInt();
     blip_rate = cfg.value("blip_rate", 1000000000).toInt();
     blank_blips = cfg.value("blank_blips").toBool();
+
+    // audio update
+    audio_engine->set_volume(master_volume);
+    audio_engine->get_family(DRAudio::Family::FSystem)->set_volume(system_volume);
+    audio_engine->get_family(DRAudio::Family::FEffect)->set_volume(effect_volume);
+    audio_engine->get_family(DRAudio::Family::FMusic)->set_volume(music_volume);
+    audio_engine->get_family(DRAudio::Family::FBlip)->set_volume(blip_volume);
   }
   void save_file()
   {
@@ -263,38 +307,48 @@ public slots:
     cfg.setValue("chatlog_newline", log_uses_newline);
     cfg.setValue("music_change_log", log_music);
     cfg.setValue("enable_logging", log_is_recording);
-    cfg.setValue("default_sfx", effects_volume);
+    cfg.setValue("default_master", master_volume);
+    cfg.setValue("disable_background_audio", disable_background_audio);
+    cfg.setValue("default_sfx", effect_volume);
     cfg.setValue("default_system", system_volume);
     cfg.setValue("default_music", music_volume);
-    cfg.setValue("default_blip", blips_volume);
+    cfg.setValue("default_blip", blip_volume);
     cfg.setValue("blip_rate", blip_rate);
     cfg.setValue("blank_blips", blank_blips);
     cfg.sync();
   }
 
 private:
-  void invoke_parents(QString p_method_name,
-                      QGenericArgument p_arg1 = QGenericArgument(nullptr))
+  void invoke_parents(QString p_method_name, QGenericArgument p_arg1 = QGenericArgument(nullptr))
   {
     for (QObject *i_parent : parents)
     {
-      QMetaObject::invokeMethod(i_parent, p_method_name.toStdString().c_str(),
-                                p_arg1);
+      QMetaObject::invokeMethod(i_parent, p_method_name.toStdString().c_str(), p_arg1);
     }
+  }
+
+private slots:
+  void on_application_state_changed(Qt::ApplicationState p_state)
+  {
+    audio_engine->set_suppressed(disable_background_audio && p_state != Qt::ApplicationActive);
   }
 };
 
 /*!
  * private classes are cool
  */
-static AOConfigPrivate *d = nullptr;
+namespace
+{
+static QPointer<AOConfigPrivate> d;
+}
 
 AOConfig::AOConfig(QObject *p_parent) : QObject(p_parent)
 {
   // init if not created yet
   if (d == nullptr)
   {
-    d = new AOConfigPrivate;
+    Q_ASSERT_X(qApp, "initialization", "QGuiApplication is required");
+    d = new AOConfigPrivate(qApp);
   }
 
   // ao2 is the pinnacle of thread security
@@ -400,15 +454,23 @@ bool AOConfig::log_is_recording_enabled()
 {
   return d->log_is_recording;
 }
-
-int AOConfig::effects_volume()
+int AOConfig::master_volume()
 {
-  return d->effects_volume;
+  return d->master_volume;
+}
+
+bool AOConfig::disable_background_audio()
+{
+  return d->disable_background_audio;
 }
 
 int AOConfig::system_volume()
 {
   return d->system_volume;
+}
+int AOConfig::effect_volume()
+{
+  return d->effect_volume;
 }
 
 int AOConfig::music_volume()
@@ -416,9 +478,9 @@ int AOConfig::music_volume()
   return d->music_volume;
 }
 
-int AOConfig::blips_volume()
+int AOConfig::blip_volume()
 {
-  return d->blips_volume;
+  return d->blip_volume;
 }
 
 int AOConfig::blip_rate()
@@ -556,9 +618,19 @@ void AOConfig::set_log_is_recording(int p_state)
   set_log_is_recording(p_state == Qt::Checked);
 }
 
-void AOConfig::set_effects_volume(int p_number)
+void AOConfig::set_disable_background_audio(bool p_enabled)
 {
-  d->set_effects_volume(p_number);
+  d->set_disable_background_audio(p_enabled);
+}
+
+void AOConfig::set_disable_background_audio(int p_state)
+{
+  set_disable_background_audio(p_state == Qt::Checked);
+}
+
+void AOConfig::set_master_volume(int p_number)
+{
+  d->set_master_volume(p_number);
 }
 
 void AOConfig::set_system_volume(int p_number)
@@ -566,12 +638,17 @@ void AOConfig::set_system_volume(int p_number)
   d->set_system_volume(p_number);
 }
 
+void AOConfig::set_effect_volume(int p_number)
+{
+  d->set_effects_volume(p_number);
+}
+
 void AOConfig::set_music_volume(int p_number)
 {
   d->set_music_volume(p_number);
 }
 
-void AOConfig::set_blips_volume(int p_number)
+void AOConfig::set_blip_volume(int p_number)
 {
   d->set_blips_volume(p_number);
 }

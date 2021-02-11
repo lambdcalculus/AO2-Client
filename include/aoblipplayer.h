@@ -1,34 +1,35 @@
-#ifndef AOBLIPPLAYER_H
-#define AOBLIPPLAYER_H
-// src
+#pragma once
+
+// pdir
 #include "aoapplication.h"
+#include "aoobject.h"
+#include "draudioengine.h"
+
 // 3rd
 #include <bass.h>
+
 // qt
 #include <QDebug>
 #include <QWidget>
+
 // std
-#include <string.h>
+#include <optional>
 
 const int BLIP_COUNT = 5;
 
-class AOBlipPlayer
+class AOBlipPlayer : public AOObject
 {
-public:
-  AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app);
+  Q_OBJECT
 
+public:
+  AOBlipPlayer(AOApplication *p_ao_app, QObject *p_parent = nullptr);
+
+public slots:
   void set_blips(QString p_sfx);
   void blip_tick();
-  void set_volume(int p_volume);
-
-  int m_cycle = 0;
 
 private:
-  QWidget *m_parent = nullptr;
-  AOApplication *ao_app = nullptr;
-
-  int m_volume;
-  HSTREAM m_stream_list[BLIP_COUNT];
+  DRAudioEngine::family_ptr m_family;
+  std::optional<QString> m_blip;
+  std::optional<QString> m_file;
 };
-
-#endif // AOBLIPPLAYER_H

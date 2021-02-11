@@ -44,24 +44,11 @@ void Courtroom::create_widgets()
 
   char_button_mapper = new QSignalMapper(this);
 
-  m_effects_player = new AOSfxPlayer(this, ao_app);
-  m_effects_player->set_volume(ao_config->effects_volume());
-  m_shouts_player = new AOShoutPlayer(this, ao_app);
-  m_shouts_player->set_volume(ao_config->effects_volume());
-  connect(ao_config, SIGNAL(effects_volume_changed(int)), this,
-          SLOT(on_config_effects_volume_changed(int)));
-  m_system_player = new AOSfxPlayer(this, ao_app);
-  m_system_player->set_volume(ao_config->system_volume());
-  connect(ao_config, SIGNAL(system_volume_changed(int)), this,
-          SLOT(on_config_system_volume_changed(int)));
-  m_music_player = new AOMusicPlayer(this, ao_app);
-  m_music_player->set_volume(ao_config->music_volume());
-  connect(ao_config, SIGNAL(music_volume_changed(int)), this,
-          SLOT(on_config_music_volume_changed(int)));
-  m_blips_player = new AOBlipPlayer(this, ao_app);
-  m_blips_player->set_volume(ao_config->blips_volume());
-  connect(ao_config, SIGNAL(blips_volume_changed(int)), this,
-          SLOT(on_config_blips_volume_changed(int)));
+  m_system_player = new AOSystemPlayer(ao_app, this);
+  m_effects_player = new AOSfxPlayer(ao_app, this);
+  m_shouts_player = new AOShoutPlayer(ao_app, this);
+  m_music_player = new AOMusicPlayer(ao_app, this);
+  m_blips_player = new AOBlipPlayer(ao_app, this);
 
   ui_background = new AOImageDisplay(this, ao_app);
 
@@ -241,56 +228,40 @@ void Courtroom::connect_widgets()
 {
   connect(keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
 
-  connect(ao_app, SIGNAL(reload_theme()), this,
-          SLOT(on_app_reload_theme_requested()));
+  connect(ao_app, SIGNAL(reload_theme()), this, SLOT(on_app_reload_theme_requested()));
 
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
 
-  connect(text_delay_timer, SIGNAL(timeout()), this,
-          SLOT(start_chat_ticking()));
+  connect(text_delay_timer, SIGNAL(timeout()), this, SLOT(start_chat_ticking()));
   connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
 
   connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
 
   connect(realization_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
-  connect(testimony_show_timer, SIGNAL(timeout()), this,
-          SLOT(hide_testimony()));
-  connect(testimony_hide_timer, SIGNAL(timeout()), this,
-          SLOT(show_testimony()));
+  connect(testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
+  connect(testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
 
-  connect(ui_emote_left, SIGNAL(clicked()), this,
-          SLOT(on_emote_left_clicked()));
-  connect(ui_emote_right, SIGNAL(clicked()), this,
-          SLOT(on_emote_right_clicked()));
+  connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
+  connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 
-  connect(ui_emote_dropdown, SIGNAL(activated(int)), this,
-          SLOT(on_emote_dropdown_changed(int)));
-  connect(ui_pos_dropdown, SIGNAL(activated(int)), this,
-          SLOT(on_pos_dropdown_changed(int)));
+  connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
+  connect(ui_pos_dropdown, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed(int)));
 
   connect(ui_mute_list, SIGNAL(itemChanged(QListWidgetItem *)), this,
           SLOT(on_mute_list_item_changed(QListWidgetItem *)));
 
-  connect(ui_ic_chat_message, SIGNAL(returnPressed()), this,
-          SLOT(on_chat_return_pressed()));
+  connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_chat_return_pressed()));
 
-  connect(ui_ooc_chat_name, SIGNAL(textEdited(QString)), ao_config,
-          SLOT(set_username(QString)));
-  connect(ao_config, SIGNAL(username_changed(QString)), ui_ooc_chat_name,
-          SLOT(setText(QString)));
-  connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this,
-          SLOT(on_ooc_return_pressed()));
+  connect(ui_ooc_chat_name, SIGNAL(textEdited(QString)), ao_config, SLOT(set_username(QString)));
+  connect(ao_config, SIGNAL(username_changed(QString)), ui_ooc_chat_name, SLOT(setText(QString)));
+  connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
 
-  connect(ui_music_list, SIGNAL(clicked(QModelIndex)), this,
-          SLOT(on_music_list_clicked()));
-  connect(ui_area_list, SIGNAL(clicked(QModelIndex)), this,
-          SLOT(on_area_list_clicked()));
-  connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this,
-          SLOT(on_music_list_double_clicked(QModelIndex)));
-  connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this,
-          SLOT(on_area_list_double_clicked(QModelIndex)));
+  connect(ui_music_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_music_list_clicked()));
+  connect(ui_area_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_area_list_clicked()));
+  connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
+  connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_area_list_double_clicked(QModelIndex)));
 
   // connect events for shout/effect/wtce buttons happen in load_shouts(),
   // load_effects(), load_wtce()
@@ -298,67 +269,47 @@ void Courtroom::connect_widgets()
   connect(ui_shout_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
 
   connect(ui_effect_up, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
-  connect(ui_effect_down, SIGNAL(clicked(bool)), this,
-          SLOT(on_cycle_clicked()));
+  connect(ui_effect_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
 
   connect(ui_wtce_up, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
   connect(ui_wtce_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
 
   connect(ui_mute, SIGNAL(clicked()), this, SLOT(on_mute_clicked()));
 
-  connect(ui_defense_minus, SIGNAL(clicked()), this,
-          SLOT(on_defense_minus_clicked()));
-  connect(ui_defense_plus, SIGNAL(clicked()), this,
-          SLOT(on_defense_plus_clicked()));
-  connect(ui_prosecution_minus, SIGNAL(clicked()), this,
-          SLOT(on_prosecution_minus_clicked()));
-  connect(ui_prosecution_plus, SIGNAL(clicked()), this,
-          SLOT(on_prosecution_plus_clicked()));
+  connect(ui_defense_minus, SIGNAL(clicked()), this, SLOT(on_defense_minus_clicked()));
+  connect(ui_defense_plus, SIGNAL(clicked()), this, SLOT(on_defense_plus_clicked()));
+  connect(ui_prosecution_minus, SIGNAL(clicked()), this, SLOT(on_prosecution_minus_clicked()));
+  connect(ui_prosecution_plus, SIGNAL(clicked()), this, SLOT(on_prosecution_plus_clicked()));
 
-  connect(ui_text_color, SIGNAL(currentIndexChanged(int)), this,
-          SLOT(on_text_color_changed(int)));
+  connect(ui_text_color, SIGNAL(currentIndexChanged(int)), this, SLOT(on_text_color_changed(int)));
 
-  connect(ao_config, SIGNAL(log_max_lines_changed(int)), this,
-          SLOT(on_chat_config_changed()));
-  connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this,
-          SLOT(on_chat_config_changed()));
-  connect(ao_config, SIGNAL(log_uses_newline_changed(bool)), this,
-          SLOT(on_chat_config_changed()));
+  connect(ao_config, SIGNAL(log_max_lines_changed(int)), this, SLOT(on_chat_config_changed()));
+  connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_chat_config_changed()));
+  connect(ao_config, SIGNAL(log_uses_newline_changed(bool)), this, SLOT(on_chat_config_changed()));
 
-  connect(ui_music_search, SIGNAL(textChanged(QString)), this,
-          SLOT(on_music_search_edited(QString)));
-  connect(ui_sfx_search, SIGNAL(textChanged(QString)), this,
-          SLOT(on_sfx_search_edited(QString)));
+  connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
+  connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(on_sfx_search_edited(QString)));
 
-  connect(ui_change_character, SIGNAL(clicked()), this,
-          SLOT(on_change_character_clicked()));
+  connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
 
-  connect(ui_switch_area_music, SIGNAL(clicked()), this,
-          SLOT(on_switch_area_music_clicked()));
+  connect(ui_switch_area_music, SIGNAL(clicked()), this, SLOT(on_switch_area_music_clicked()));
 
-  connect(ui_config_panel, SIGNAL(clicked()), this,
-          SLOT(on_config_panel_clicked()));
-  connect(ui_note_button, SIGNAL(clicked()), this,
-          SLOT(on_note_button_clicked()));
+  connect(ui_config_panel, SIGNAL(clicked()), this, SLOT(on_config_panel_clicked()));
+  connect(ui_note_button, SIGNAL(clicked()), this, SLOT(on_note_button_clicked()));
 
-  connect(ui_vp_notepad, SIGNAL(textChanged()), this,
-          SLOT(on_note_text_changed()));
+  connect(ui_vp_notepad, SIGNAL(textChanged()), this, SLOT(on_note_text_changed()));
 
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_hidden, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
-  connect(ui_sfx_list, SIGNAL(clicked(QModelIndex)), this,
-          SLOT(on_sfx_list_clicked(QModelIndex)));
+  connect(ui_sfx_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_sfx_list_clicked(QModelIndex)));
 
-  connect(ui_evidence_button, SIGNAL(clicked()), this,
-          SLOT(on_evidence_button_clicked()));
+  connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
-  connect(ui_note_area->add_button, SIGNAL(clicked(bool)), this,
-          SLOT(on_add_button_clicked()));
-  connect(ui_set_notes, SIGNAL(clicked(bool)), this,
-          SLOT(on_set_notes_clicked()));
+  connect(ui_note_area->add_button, SIGNAL(clicked(bool)), this, SLOT(on_add_button_clicked()));
+  connect(ui_set_notes, SIGNAL(clicked(bool)), this, SLOT(on_set_notes_clicked()));
 }
 
 void Courtroom::reset_widget_names()
@@ -457,8 +408,7 @@ void Courtroom::insert_widget_name(QString p_widget_name, QWidget *p_widget)
   p_widget->setObjectName(p_widget_name);
 }
 
-void Courtroom::insert_widget_names(QVector<QString> &p_widget_names,
-                                    QVector<QWidget *> &p_widgets)
+void Courtroom::insert_widget_names(QVector<QString> &p_widget_names, QVector<QWidget *> &p_widgets)
 {
   for (int i = 0; i < p_widgets.length(); ++i)
     insert_widget_name(p_widget_names[i], p_widgets[i]);
@@ -577,8 +527,7 @@ void Courtroom::set_widget_layers()
 void Courtroom::set_widgets()
 {
   QString filename = design_ini;
-  pos_size_type f_courtroom =
-      ao_app->get_element_dimensions("courtroom", filename);
+  pos_size_type f_courtroom = ao_app->get_element_dimensions("courtroom", filename);
 
   if (f_courtroom.width < 0 || f_courtroom.height < 0)
   {
@@ -681,8 +630,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_vp_clock, "clock");
   ui_vp_clock->hide();
 
-  ui_ic_chat_message->setStyleSheet(
-      "QLineEdit{background-color: rgba(100, 100, 100, 255);}");
+  ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
 
   ui_vp_chatbox->set_image("chatmed.png");
   ui_vp_chatbox->hide();
@@ -718,12 +666,10 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
-  ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state) +
-                            ".png");
+  ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state) + ".png");
 
   set_size_and_pos(ui_prosecution_bar, "prosecution_bar");
-  ui_prosecution_bar->set_image(
-      "prosecutionbar" + QString::number(prosecution_bar_state) + ".png");
+  ui_prosecution_bar->set_image("prosecutionbar" + QString::number(prosecution_bar_state) + ".png");
 
   //  set_size_and_pos(ui_shouts[0], "hold_it");
   //  ui_shouts[0]->show();
@@ -752,8 +698,7 @@ void Courtroom::set_widgets()
   ui_shout_down->hide();
 
   // courtroom_config.ini necessary + check for crash
-  if (ao_app->read_theme_ini("enable_single_shout", cc_config_ini) == "true" &&
-      ui_shouts.size() > 0)
+  if (ao_app->read_theme_ini("enable_single_shout", cc_config_ini) == "true" && ui_shouts.size() > 0)
   {
     for (auto &shout : ui_shouts)
       move_widget(shout, "bullet");
@@ -805,8 +750,7 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_wtce[i], wtce_names[i]);
   }
 
-  if (ao_app->read_theme_ini("enable_single_wtce", cc_config_ini) ==
-      "true") // courtroom_config.ini necessary
+  if (ao_app->read_theme_ini("enable_single_wtce", cc_config_ini) == "true") // courtroom_config.ini necessary
   {
     for (auto &wtce : ui_wtce)
       move_widget(wtce, "wtce");
@@ -872,8 +816,7 @@ void Courtroom::set_widgets()
   // behavior will occur if the button is hidden due to 'config_panel' not being
   // found in courtroom_design.ini This is to assist with people who switch to
   // incompatible and/or smaller themes and have the button disappear
-  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() ||
-      !ui_config_panel->isVisible())
+  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() || !ui_config_panel->isVisible())
   {
     ui_config_panel->setVisible(true);
     ui_config_panel->move(0, 0);
@@ -1013,8 +956,7 @@ void Courtroom::set_widgets()
   note_scroll_area->setWidget(ui_note_area);
   ui_note_area->set_image("note_area.png");
   ui_note_area->add_button->set_image("add_button.png");
-  ui_note_area->add_button->setSizePolicy(QSizePolicy::Fixed,
-                                          QSizePolicy::Fixed);
+  ui_note_area->add_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   ui_note_area->setLayout(ui_note_area->m_layout);
   ui_note_area->show();
   note_scroll_area->hide();
@@ -1036,8 +978,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
   QString filename = design_ini;
 
-  pos_size_type design_ini_result =
-      ao_app->get_element_dimensions(p_identifier, filename);
+  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
@@ -1055,8 +996,7 @@ void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
 {
   QString filename = design_ini;
 
-  pos_size_type design_ini_result =
-      ao_app->get_element_dimensions(p_identifier, filename);
+  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
@@ -1070,15 +1010,12 @@ void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
 }
 
 template <typename T>
-int Courtroom::adapt_numbered_items(QVector<T *> &item_vector,
-                                    QString config_item_number,
-                                    QString item_name)
+int Courtroom::adapt_numbered_items(QVector<T *> &item_vector, QString config_item_number, QString item_name)
 {
   // &item_vector must be a vector of size at least 1!
 
   // Redraw the new correct number of items.
-  int new_item_number =
-      ao_app->read_theme_ini(config_item_number, cc_config_ini).toInt();
+  int new_item_number = ao_app->read_theme_ini(config_item_number, cc_config_ini).toInt();
   int current_item_number = item_vector.size();
   // Note we use the fact that, if config_item_number is not there,
   // read_theme_ini returns an empty string, which .toInt() would fail to
@@ -1132,12 +1069,10 @@ void Courtroom::check_effects()
 
   for (int i = 0; i < ui_effects.size(); ++i)
   {
-    QString path = ao_app->find_asset_path(
-        {ao_app->get_character_path(current_char, effect_names.at(i))},
-        animated_extensions());
+    QString path =
+        ao_app->find_asset_path({ao_app->get_character_path(current_char, effect_names.at(i))}, animated_extensions());
     if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(effect_names.at(i),
-                                           animated_extensions());
+      path = ao_app->find_theme_asset_path(effect_names.at(i), animated_extensions());
     effects_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1153,12 +1088,10 @@ void Courtroom::check_free_blocks()
 
   for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
-    QString path = ao_app->find_asset_path(
-        {ao_app->get_character_path(current_char, free_block_names.at(i))},
-        animated_extensions());
-    if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(free_block_names.at(i),
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(current_char, free_block_names.at(i))},
                                            animated_extensions());
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(free_block_names.at(i), animated_extensions());
     free_blocks_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1174,13 +1107,11 @@ void Courtroom::check_shouts()
 
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    QString path = ao_app->find_asset_path(
-        {ao_app->get_character_path(current_char, shout_names.at(i))},
-        animated_extensions());
+    QString path =
+        ao_app->find_asset_path({ao_app->get_character_path(current_char, shout_names.at(i))}, animated_extensions());
 
     if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(shout_names.at(i),
-                                           animated_extensions());
+      path = ao_app->find_theme_asset_path(shout_names.at(i), animated_extensions());
 
     shouts_enabled[i] = (!path.isEmpty());
   }
@@ -1197,12 +1128,10 @@ void Courtroom::check_wtce()
 
   for (int i = 0; i < ui_wtce.size(); ++i)
   {
-    QString path = ao_app->find_asset_path(
-        {ao_app->get_character_path(current_char, wtce_names.at(i))},
-        animated_extensions());
+    QString path =
+        ao_app->find_asset_path({ao_app->get_character_path(current_char, wtce_names.at(i))}, animated_extensions());
     if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(wtce_names.at(i),
-                                           animated_extensions());
+      path = ao_app->find_theme_asset_path(wtce_names.at(i), animated_extensions());
     wtce_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1220,8 +1149,7 @@ void Courtroom::delete_widget(QWidget *p_widget)
     grand_parent = this;
 
   // set new parent
-  for (QWidget *child :
-       p_widget->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly))
+  for (QWidget *child : p_widget->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly))
     child->setParent(grand_parent);
 
   // delete widget
@@ -1235,8 +1163,7 @@ void Courtroom::load_effects()
     delete_widget(widget);
 
   // And create new effects
-  int effect_number =
-      ao_app->read_theme_ini("effect_number", cc_config_ini).toInt();
+  int effect_number = ao_app->read_theme_ini("effect_number", cc_config_ini).toInt();
   effects_enabled.resize(effect_number);
   ui_effects.resize(effect_number);
 
@@ -1250,8 +1177,7 @@ void Courtroom::load_effects()
 
   // And connect their actions
   for (auto &effect : ui_effects)
-    connect(effect, SIGNAL(clicked(bool)), this,
-            SLOT(on_effect_button_clicked()));
+    connect(effect, SIGNAL(clicked(bool)), this, SLOT(on_effect_button_clicked()));
 
   // And add names
   effect_names.clear();
@@ -1272,8 +1198,7 @@ void Courtroom::load_free_blocks()
     delete_widget(widget);
 
   // And create new free block buttons
-  int free_block_number =
-      ao_app->read_theme_ini("free_block_number", cc_config_ini).toInt();
+  int free_block_number = ao_app->read_theme_ini("free_block_number", cc_config_ini).toInt();
   free_blocks_enabled.resize(free_block_number);
   ui_free_blocks.resize(free_block_number);
 
@@ -1289,8 +1214,7 @@ void Courtroom::load_free_blocks()
   free_block_names.clear();
   for (int i = 1; i <= ui_free_blocks.size(); ++i)
   {
-    QString name =
-        "free_block_" + ao_app->get_spbutton("[FREE BLOCKS]", i).trimmed();
+    QString name = "free_block_" + ao_app->get_spbutton("[FREE BLOCKS]", i).trimmed();
     if (!name.isEmpty())
     {
       free_block_names.append(name);
@@ -1306,8 +1230,7 @@ void Courtroom::load_shouts()
     delete_widget(widget);
 
   // And create new shouts
-  int shout_number =
-      ao_app->read_theme_ini("shout_number", cc_config_ini).toInt();
+  int shout_number = ao_app->read_theme_ini("shout_number", cc_config_ini).toInt();
   shouts_enabled.resize(shout_number);
   ui_shouts.resize(shout_number);
 
@@ -1345,8 +1268,7 @@ void Courtroom::load_wtce()
     delete_widget(widget);
 
   // And create new wtce buttons
-  int wtce_number =
-      ao_app->read_theme_ini("wtce_number", cc_config_ini).toInt();
+  int wtce_number = ao_app->read_theme_ini("wtce_number", cc_config_ini).toInt();
   wtce_enabled.resize(wtce_number);
   ui_wtce.resize(wtce_number);
 
@@ -1414,8 +1336,7 @@ void Courtroom::set_judge_wtce()
     wtce->hide();
 
   // check if we use a single wtce or multiple
-  const bool is_single_wtce =
-      ao_app->read_theme_ini("enable_single_wtce", cc_config_ini) == "true";
+  const bool is_single_wtce = ao_app->read_theme_ini("enable_single_wtce", cc_config_ini) == "true";
 
   // update visibility for next/previous
   ui_wtce_up->setVisible(is_judge && is_single_wtce);
@@ -1469,8 +1390,7 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier)
   set_font(widget, p_identifier, "");
 }
 
-void Courtroom::set_font(QWidget *widget, QString p_identifier,
-                         QString override_color)
+void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override_color)
 {
   QString design_file = fonts_ini;
   QString class_name = widget->metaObject()->className();
@@ -1491,8 +1411,7 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier,
 
   if (override_color.isEmpty())
   {
-    QString color =
-        ao_app->read_theme_ini(p_identifier + "_color", "courtroom_fonts.ini");
+    QString color = ao_app->read_theme_ini(p_identifier + "_color", "courtroom_fonts.ini");
     if (color.isEmpty())
       color = "255, 255, 255";
     override_color = "rgba(" + color + ", 255)";
@@ -1501,9 +1420,7 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier,
   int bold = ao_app->get_font_property(p_identifier + "_bold", design_file);
   QString is_bold = (bold == 1 ? "bold" : "");
 
-  QString style_sheet_string = class_name +
-                               " { background-color: rgba(0, 0, 0, 0);\n" +
-                               "color: " + override_color +
+  QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: " + override_color +
                                ";\n"
                                "font: " +
                                is_bold + "; }";
@@ -1515,8 +1432,7 @@ void Courtroom::set_qtextedit_font(QTextEdit *widget, QString p_identifier)
   set_qtextedit_font(widget, p_identifier, "");
 }
 
-void Courtroom::set_qtextedit_font(QTextEdit *widget, QString p_identifier,
-                                   QString override_color)
+void Courtroom::set_qtextedit_font(QTextEdit *widget, QString p_identifier, QString override_color)
 {
   set_font(widget, p_identifier, override_color);
 
