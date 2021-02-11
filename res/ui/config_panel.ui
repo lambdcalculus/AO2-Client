@@ -116,9 +116,6 @@
        </item>
        <item row="5" column="1">
         <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
@@ -130,18 +127,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="tab_2">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>429</width>
-        <height>284</height>
-       </size>
-      </property>
       <attribute name="title">
        <string>Game</string>
       </attribute>
@@ -285,9 +270,6 @@
        </item>
        <item row="6" column="1">
         <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
@@ -433,10 +415,7 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
+        <spacer name="spacer">
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
@@ -468,6 +447,12 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="maximum">
             <number>100</number>
@@ -501,7 +486,7 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="1">
+       <item row="1" column="1">
         <widget class="QCheckBox" name="disable_background_audio">
          <property name="toolTip">
           <string>Allow the program to temporarily disable sounds when out of focus.</string>
@@ -511,21 +496,14 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="system_label">
          <property name="text">
           <string>System:</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="3" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
           <widget class="QSlider" name="system">
@@ -534,6 +512,12 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="maximum">
             <number>100</number>
@@ -567,14 +551,14 @@
          </item>
         </layout>
        </item>
-       <item row="7" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="music_label">
          <property name="text">
           <string>Music:</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
+       <item row="4" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QSlider" name="music">
@@ -583,6 +567,12 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="maximum">
             <number>100</number>
@@ -616,14 +606,14 @@
          </item>
         </layout>
        </item>
-       <item row="9" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="effect_label">
          <property name="text">
           <string>Effects:</string>
          </property>
         </widget>
        </item>
-       <item row="9" column="1">
+       <item row="5" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QSlider" name="effect">
@@ -632,6 +622,12 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="maximum">
             <number>100</number>
@@ -659,14 +655,14 @@
          </item>
         </layout>
        </item>
-       <item row="11" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="blip_label">
          <property name="text">
           <string>Blips:</string>
          </property>
         </widget>
        </item>
-       <item row="11" column="1">
+       <item row="6" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <widget class="QSlider" name="blip">
@@ -675,6 +671,12 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="maximum">
             <number>100</number>
@@ -702,14 +704,14 @@
          </item>
         </layout>
        </item>
-       <item row="13" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="blip_rate_label">
          <property name="text">
           <string>Blip rate:</string>
          </property>
         </widget>
        </item>
-       <item row="13" column="1">
+       <item row="7" column="1">
         <widget class="QSpinBox" name="blip_rate">
          <property name="minimum">
           <number>1</number>
@@ -722,14 +724,14 @@
          </property>
         </widget>
        </item>
-       <item row="15" column="0">
+       <item row="8" column="0">
         <widget class="QLabel" name="blank_blips_label">
          <property name="text">
           <string>Blank blips:</string>
          </property>
         </widget>
        </item>
-       <item row="15" column="1">
+       <item row="8" column="1">
         <widget class="QCheckBox" name="blank_blips">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -739,11 +741,8 @@
          </property>
         </widget>
        </item>
-       <item row="16" column="1">
-        <spacer name="verticalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
+       <item row="9" column="1">
+        <spacer name="verticalSpacer_3">
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
@@ -751,6 +750,13 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="2" column="1">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
