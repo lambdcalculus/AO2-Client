@@ -16,7 +16,7 @@ enum class Family
 enum Option
 {
   OSuppressed = 0x1,
-  ONoSuppression = 0x2,
+  OIgnoreSuppression = 0x2,
 };
 Q_DECLARE_FLAGS(Options, Option)
 
