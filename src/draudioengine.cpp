@@ -50,6 +50,9 @@ DRAudioEngine::DRAudioEngine(QObject *p_parent) : QObject(p_parent)
     d->family_map.insert(DRAudio::Family::FEffect, family_ptr(new DRAudioStreamFamily(DRAudio::Family::FEffect)));
     d->family_map.insert(DRAudio::Family::FMusic, family_ptr(new DRAudioStreamFamily(DRAudio::Family::FMusic)));
     d->family_map.insert(DRAudio::Family::FBlip, family_ptr(new DRAudioStreamFamily(DRAudio::Family::FBlip)));
+
+    // family-specific options
+    get_family(DRAudio::Family::FSystem)->set_ignore_suppression(true);
   }
 
   d->parents.append(this);

@@ -22,6 +22,11 @@ bool DRAudioStreamFamily::is_suppressed()
   return m_options.testFlag(DRAudio::OSuppressed);
 }
 
+bool DRAudioStreamFamily::is_ignore_suppression()
+{
+  return m_options.testFlag(DRAudio::OIgnoreSuppression);
+}
+
 DRAudioStreamFamily::iterator DRAudioStreamFamily::begin()
 {
   return m_stream_list.begin();
@@ -73,6 +78,13 @@ void DRAudioStreamFamily::set_suppressed(bool p_enabled)
   set_options(options);
 }
 
+void DRAudioStreamFamily::set_ignore_suppression(bool p_enabled)
+{
+  DRAudio::Options options = m_options;
+  options.setFlag(DRAudio::OIgnoreSuppression, p_enabled);
+  set_options(options);
+}
+
 std::optional<DRAudioStreamFamily::stream_ptr> DRAudioStreamFamily::create_stream(QString p_file)
 {
   stream_ptr stream(new DRAudioStream(m_family));
@@ -113,7 +125,7 @@ int32_t DRAudioStreamFamily::calculate_volume()
 {
   float volume = float(m_volume) * 0.01f;
 
-  if (is_suppressed() || DRAudioEngine::is_suppressed())
+  if (!is_ignore_suppression() && (is_suppressed() || DRAudioEngine::is_suppressed()))
   {
     volume = 0;
   }

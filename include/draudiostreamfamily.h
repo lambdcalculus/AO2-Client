@@ -27,6 +27,7 @@ public:
   DRAudio::Options get_options();
   // options getter
   bool is_suppressed();
+  bool is_ignore_suppression();
 
   using iterator = QVector<stream_ptr>::iterator;
   iterator begin();
@@ -38,6 +39,7 @@ public slots:
   void set_options(DRAudio::Options p_options);
   // options setter
   void set_suppressed(bool p_enabled);
+  void set_ignore_suppression(bool p_enabled);
 
 signals:
   void volume_changed(std::int32_t);
