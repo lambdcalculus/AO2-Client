@@ -1,7 +1,6 @@
 #include "aopixmap.h"
 
-AOPixmap::AOPixmap(QPixmap p_pixmap)
-    : m_pixmap(p_pixmap)
+AOPixmap::AOPixmap(QPixmap p_pixmap) : m_pixmap(p_pixmap)
 {
   if (m_pixmap.isNull())
   {
@@ -9,9 +8,9 @@ AOPixmap::AOPixmap(QPixmap p_pixmap)
   }
 }
 
-AOPixmap::AOPixmap(QString p_file_path)
-    : AOPixmap(QPixmap(p_file_path))
-{}
+AOPixmap::AOPixmap(QString p_file_path) : AOPixmap(QPixmap(p_file_path))
+{
+}
 
 void AOPixmap::clear()
 {
@@ -29,5 +28,6 @@ QPixmap AOPixmap::scale(QSize p_size)
 QPixmap AOPixmap::scale_to_height(QSize p_size)
 {
   const bool f_is_pixmap_larger = m_pixmap.width() > p_size.width() || m_pixmap.height() > p_size.height();
-  return m_pixmap.scaledToHeight(p_size.height(), f_is_pixmap_larger ? Qt::SmoothTransformation : Qt::FastTransformation);
+  return m_pixmap.scaledToHeight(p_size.height(),
+                                 f_is_pixmap_larger ? Qt::SmoothTransformation : Qt::FastTransformation);
 }

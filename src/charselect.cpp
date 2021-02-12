@@ -23,15 +23,11 @@ void Courtroom::construct_char_select()
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
   ui_spectator->setText("Spectator");
 
-  connect(char_button_mapper, SIGNAL(mapped(int)), this,
-          SLOT(char_clicked(int)));
-  connect(ui_back_to_lobby, SIGNAL(clicked()), this,
-          SLOT(on_back_to_lobby_clicked()));
+  connect(char_button_mapper, SIGNAL(mapped(int)), this, SLOT(char_clicked(int)));
+  connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
 
-  connect(ui_char_select_left, SIGNAL(clicked()), this,
-          SLOT(on_char_select_left_clicked()));
-  connect(ui_char_select_right, SIGNAL(clicked()), this,
-          SLOT(on_char_select_right_clicked()));
+  connect(ui_char_select_left, SIGNAL(clicked()), this, SLOT(on_char_select_left_clicked()));
+  connect(ui_char_select_right, SIGNAL(clicked()), this, SLOT(on_char_select_right_clicked()));
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
 
@@ -43,8 +39,7 @@ void Courtroom::reconstruct_char_select()
   while (!ui_char_button_list.isEmpty())
     delete ui_char_button_list.takeLast();
 
-  QPoint f_spacing =
-      ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
+  QPoint f_spacing = ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
 
   const int button_width = 60;
   int x_spacing = f_spacing.x();
@@ -56,12 +51,8 @@ void Courtroom::reconstruct_char_select()
 
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
-  char_columns =
-      ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) +
-      1;
-  char_rows = ((ui_char_buttons->height() - button_height) /
-               (y_spacing + button_height)) +
-              1;
+  char_columns = ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
+  char_rows = ((ui_char_buttons->height() - button_height) / (y_spacing + button_height)) + 1;
 
   max_chars_on_page = char_columns * char_rows;
 
@@ -70,16 +61,14 @@ void Courtroom::reconstruct_char_select()
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
-    AOCharButton *button =
-        new AOCharButton(ui_char_buttons, ao_app, x_pos, y_pos);
+    AOCharButton *button = new AOCharButton(ui_char_buttons, ao_app, x_pos, y_pos);
     ui_char_button_list.append(button);
 
     connect(button, SIGNAL(clicked()), char_button_mapper, SLOT(map()));
     char_button_mapper->setMapping(button, n);
 
     // mouse events
-    connect(button, SIGNAL(mouse_entered(AOCharButton *)), this,
-            SLOT(char_mouse_entered(AOCharButton *)));
+    connect(button, SIGNAL(mouse_entered(AOCharButton *)), this, SLOT(char_mouse_entered(AOCharButton *)));
     connect(button, SIGNAL(mouse_left()), this, SLOT(char_mouse_left()));
 
     ++x_mod_count;
@@ -106,13 +95,11 @@ void Courtroom::set_char_select()
 {
   QString filename = "courtroom_design.ini";
 
-  pos_size_type f_charselect =
-      ao_app->get_element_dimensions("char_select", filename);
+  pos_size_type f_charselect = ao_app->get_element_dimensions("char_select", filename);
 
   if (f_charselect.width < 0 || f_charselect.height < 0)
   {
-    qDebug()
-        << "W: did not find courtroom width or height in courtroom_design.ini!";
+    qDebug() << "W: did not find courtroom width or height in courtroom_design.ini!";
     this->resize(714, 668);
   }
   else
@@ -177,8 +164,7 @@ void Courtroom::char_clicked(int n_char)
 {
   int n_real_char = n_char + current_char_page * max_chars_on_page;
 
-  QString char_ini_path =
-      ao_app->get_character_path(char_list.at(n_real_char).name, "char.ini");
+  QString char_ini_path = ao_app->get_character_path(char_list.at(n_real_char).name, "char.ini");
   qDebug() << "char_ini_path" << char_ini_path;
 
   if (!file_exists(char_ini_path))
@@ -194,8 +180,8 @@ void Courtroom::char_clicked(int n_char)
   }
   else
   {
-    QString content = "CC#" + QString::number(ao_app->s_pv) + "#" +
-                      QString::number(n_real_char) + "#" + get_hdid() + "#%";
+    QString content =
+        "CC#" + QString::number(ao_app->s_pv) + "#" + QString::number(n_real_char) + "#" + get_hdid() + "#%";
     ao_app->send_server_packet(new AOPacket(content));
   }
 }

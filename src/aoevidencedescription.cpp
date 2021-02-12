@@ -1,7 +1,6 @@
 #include "aoevidencedescription.h"
 
-AOEvidenceDescription::AOEvidenceDescription(QWidget *parent)
-    : QPlainTextEdit(parent)
+AOEvidenceDescription::AOEvidenceDescription(QWidget *parent) : QPlainTextEdit(parent)
 {
   this->setReadOnly(true);
 

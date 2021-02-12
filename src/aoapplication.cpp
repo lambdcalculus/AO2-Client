@@ -17,22 +17,16 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   discord = new AttorneyOnline::Discord();
 
   net_manager = new NetworkManager(this);
-  connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)),
-          SLOT(ms_connect_finished(bool, bool)));
+  connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)), SLOT(ms_connect_finished(bool, bool)));
 
   config = new AOConfig(this);
-  connect(config, SIGNAL(theme_changed(QString)), this,
-          SLOT(on_config_theme_changed()));
-  connect(config, SIGNAL(gamemode_changed(QString)), this,
-          SLOT(on_config_gamemode_changed()));
-  connect(config, SIGNAL(timeofday_changed(QString)), this,
-          SLOT(on_config_timeofday_changed()));
+  connect(config, SIGNAL(theme_changed(QString)), this, SLOT(on_config_theme_changed()));
+  connect(config, SIGNAL(gamemode_changed(QString)), this, SLOT(on_config_gamemode_changed()));
+  connect(config, SIGNAL(timeofday_changed(QString)), this, SLOT(on_config_timeofday_changed()));
 
   config_panel = new AOConfigPanel(this);
-  connect(config_panel, SIGNAL(reload_theme()), this,
-          SLOT(on_config_reload_theme_requested()));
-  connect(this, SIGNAL(reload_theme()), config_panel,
-          SLOT(on_config_reload_theme_requested()));
+  connect(config_panel, SIGNAL(reload_theme()), this, SLOT(on_config_reload_theme_requested()));
+  connect(this, SIGNAL(reload_theme()), config_panel, SLOT(on_config_reload_theme_requested()));
   config_panel->hide();
 }
 
@@ -87,8 +81,7 @@ void AOApplication::construct_courtroom()
 
   w_courtroom = new Courtroom(this);
   connect(w_courtroom, SIGNAL(closing()), this, SLOT(on_courtroom_closing()));
-  connect(w_courtroom, SIGNAL(destroyed()), this,
-          SLOT(on_courtroom_destroyed()));
+  connect(w_courtroom, SIGNAL(destroyed()), this, SLOT(on_courtroom_destroyed()));
   courtroom_constructed = true;
 
   QRect screenGeometry = QApplication::desktop()->screenGeometry();
@@ -116,8 +109,7 @@ void AOApplication::destruct_courtroom()
 
 QString AOApplication::get_version_string()
 {
-  return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." +
-         QString::number(MINOR_VERSION);
+  return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION);
 }
 
 void AOApplication::set_gamemode(QString p_gamemode)
@@ -278,10 +270,8 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
     }
     else if (will_retry)
     {
-      w_lobby->append_error(
-          "Error connecting to master server. Will try again in " +
-          QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) +
-          " seconds.");
+      w_lobby->append_error("Error connecting to master server. Will try again in " +
+                            QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
     }
     else
     {

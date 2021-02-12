@@ -46,9 +46,7 @@ class AOConfigPrivate : public QObject
   bool blank_blips;
 
 public:
-  AOConfigPrivate()
-      : QObject(qApp),
-        cfg(QDir::currentPath() + "/base/config.ini", QSettings::IniFormat)
+  AOConfigPrivate() : QObject(qApp), cfg(QDir::currentPath() + "/base/config.ini", QSettings::IniFormat)
   {
     read_file();
   }
@@ -273,13 +271,11 @@ public slots:
   }
 
 private:
-  void invoke_parents(QString p_method_name,
-                      QGenericArgument p_arg1 = QGenericArgument(nullptr))
+  void invoke_parents(QString p_method_name, QGenericArgument p_arg1 = QGenericArgument(nullptr))
   {
     for (QObject *i_parent : parents)
     {
-      QMetaObject::invokeMethod(i_parent, p_method_name.toStdString().c_str(),
-                                p_arg1);
+      QMetaObject::invokeMethod(i_parent, p_method_name.toStdString().c_str(), p_arg1);
     }
   }
 };
