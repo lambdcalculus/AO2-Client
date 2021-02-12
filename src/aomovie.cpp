@@ -4,8 +4,7 @@
 #include "file_functions.h"
 #include "misc_functions.h"
 
-AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app)
-    : QLabel(p_parent)
+AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 
@@ -64,11 +63,9 @@ void AOMovie::play(QString p_file, QString p_char)
       animated_or_static_extensions());
   if (file_path.isEmpty())
   {
-    file_path =
-        ao_app->find_theme_asset_path(p_file, animated_or_static_extensions());
+    file_path = ao_app->find_theme_asset_path(p_file, animated_or_static_extensions());
     if (file_path.isEmpty())
-      file_path = ao_app->find_theme_asset_path(
-          "placeholder", animated_or_static_extensions());
+      file_path = ao_app->find_theme_asset_path("placeholder", animated_or_static_extensions());
   }
 
   qDebug() << "playing" << file_path;
@@ -79,8 +76,7 @@ void AOMovie::play(QString p_file, QString p_char)
   m_movie->start();
 }
 
-void AOMovie::play_interjection(QString p_char_name,
-                                QString p_interjection_name)
+void AOMovie::play_interjection(QString p_char_name, QString p_interjection_name)
 {
   m_movie->stop();
 
@@ -99,11 +95,9 @@ void AOMovie::play_interjection(QString p_char_name,
   // `p_char_name`
 
   QString interjection_filepath = ao_app->find_asset_path(
-      {ao_app->get_character_path(p_char_name, p_char_interjection_name)},
-      animated_extensions());
+      {ao_app->get_character_path(p_char_name, p_char_interjection_name)}, animated_extensions());
   if (interjection_filepath.isEmpty())
-    interjection_filepath = ao_app->find_theme_asset_path(
-        p_interjection_name, animated_extensions());
+    interjection_filepath = ao_app->find_theme_asset_path(p_interjection_name, animated_extensions());
 
   if (interjection_filepath.isEmpty())
   {
@@ -111,12 +105,9 @@ void AOMovie::play_interjection(QString p_char_name,
     return;
   }
 
-  qDebug() << "playing interjection"
-           << (p_interjection_name.isEmpty() ? "(none)" : p_interjection_name)
-           << "for character"
-           << (p_char_name.isEmpty() ? "(none)" : p_char_name) << "at"
-           << (interjection_filepath.isEmpty() ? "(not found)"
-                                               : interjection_filepath);
+  qDebug() << "playing interjection" << (p_interjection_name.isEmpty() ? "(none)" : p_interjection_name)
+           << "for character" << (p_char_name.isEmpty() ? "(none)" : p_char_name) << "at"
+           << (interjection_filepath.isEmpty() ? "(not found)" : interjection_filepath);
   m_movie->setFileName(interjection_filepath);
   this->show();
   m_movie->setScaledSize(this->size());

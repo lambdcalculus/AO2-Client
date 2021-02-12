@@ -8,8 +8,7 @@
 #include <QDebug>
 #include <QImageReader>
 
-AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app)
-    : QLabel(p_parent)
+AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;
 

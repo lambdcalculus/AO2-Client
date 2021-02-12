@@ -13,8 +13,7 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message)
 {
   const QTextCursor old_cursor = this->textCursor();
   const int old_scrollbar_value = this->verticalScrollBar()->value();
-  const bool is_scrolled_down =
-      old_scrollbar_value == this->verticalScrollBar()->maximum();
+  const bool is_scrolled_down = old_scrollbar_value == this->verticalScrollBar()->maximum();
 
   this->moveCursor(QTextCursor::End);
 
@@ -35,8 +34,7 @@ void AOTextArea::append_error(QString p_message)
 {
   const QTextCursor old_cursor = this->textCursor();
   const int old_scrollbar_value = this->verticalScrollBar()->value();
-  const bool is_scrolled_down =
-      old_scrollbar_value == this->verticalScrollBar()->maximum();
+  const bool is_scrolled_down = old_scrollbar_value == this->verticalScrollBar()->maximum();
 
   this->moveCursor(QTextCursor::End);
 
@@ -51,8 +49,7 @@ void AOTextArea::append_error(QString p_message)
   this->auto_scroll(old_cursor, old_scrollbar_value, is_scrolled_down);
 }
 
-void AOTextArea::auto_scroll(QTextCursor old_cursor, int old_scrollbar_value,
-                             bool is_scrolled_down)
+void AOTextArea::auto_scroll(QTextCursor old_cursor, int old_scrollbar_value, bool is_scrolled_down)
 {
   if (old_cursor.hasSelection() || !is_scrolled_down)
   {

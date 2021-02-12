@@ -7,3 +7,4 @@ AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: None
 AllowShortLoopsOnASingleLine: false
 AllowShortEnumsOnASingleLine: false
+ColumnLimit: 120

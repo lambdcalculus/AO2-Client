@@ -122,8 +122,7 @@ void AOTimer::set_firing_interval(int new_firing_interval)
    */
 
   // Update time spent so far and new future firing interval
-  time_spent_in_timestep +=
-      (firing_timer_length - firing_timer.remainingTime());
+  time_spent_in_timestep += (firing_timer_length - firing_timer.remainingTime());
   firing_timer_length = new_firing_interval;
   // For this timestep however, the firing interval will be shorter than
   // firing_timer_length to account for the fact the timer may have already been

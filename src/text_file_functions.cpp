@@ -208,8 +208,7 @@ QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
   return return_value;
 }
 
-pos_size_type AOApplication::get_element_dimensions(QString p_identifier,
-                                                    QString p_file)
+pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QString p_file)
 {
   pos_size_type return_value;
   return_value.x = 0;
@@ -464,11 +463,9 @@ QStringList AOApplication::get_sfx_list()
   QFile char_sfx_list_ini;
 
   base_sfx_list_ini.setFileName(get_base_path() + "configs/sounds.ini");
-  char_sfx_list_ini.setFileName(
-      get_character_path(get_current_char(), "sounds.ini"));
+  char_sfx_list_ini.setFileName(get_character_path(get_current_char(), "sounds.ini"));
 
-  if (!char_sfx_list_ini.open(QIODevice::ReadOnly) &&
-      !base_sfx_list_ini.open(QIODevice::ReadOnly))
+  if (!char_sfx_list_ini.open(QIODevice::ReadOnly) && !base_sfx_list_ini.open(QIODevice::ReadOnly))
   {
     return return_value;
   }
@@ -494,8 +491,7 @@ QStringList AOApplication::get_sfx_list()
 // returns whatever is to the right of "search_line =" within target_tag and
 // terminator_tag, trimmed returns the empty string if the search line couldnt
 // be found
-QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
-                                     QString target_tag, QString terminator_tag)
+QString AOApplication::read_char_ini(QString p_char, QString p_search_line, QString target_tag, QString terminator_tag)
 {
   QString char_ini_path = get_character_path(p_char, "char.ini");
 
@@ -528,8 +524,7 @@ QString AOApplication::read_char_ini(QString p_char, QString p_search_line,
 
     QStringList line_elements = line.split("=");
 
-    if (QString::compare(line_elements.at(0).trimmed(), p_search_line,
-                         Qt::CaseInsensitive) != 0)
+    if (QString::compare(line_elements.at(0).trimmed(), p_search_line, Qt::CaseInsensitive) != 0)
       continue;
 
     if (line_elements.size() < 2)
@@ -633,8 +628,7 @@ int AOApplication::get_emote_number(QString p_char)
 
 QString AOApplication::get_emote_comment(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1),
-                                   "[Emotions]", "[Offsets]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
@@ -649,8 +643,7 @@ QString AOApplication::get_emote_comment(QString p_char, int p_emote)
 
 QString AOApplication::get_pre_emote(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1),
-                                   "[Emotions]", "[Offsets]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
@@ -665,8 +658,7 @@ QString AOApplication::get_pre_emote(QString p_char, int p_emote)
 
 QString AOApplication::get_emote(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1),
-                                   "[Emotions]", "[Offsets]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
@@ -681,15 +673,13 @@ QString AOApplication::get_emote(QString p_char, int p_emote)
 
 int AOApplication::get_emote_mod(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1),
-                                   "[Emotions]", "[Offsets]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
   if (result_contents.size() < 4)
   {
-    qDebug() << "W: misformatted char.ini: " << p_char << ", "
-             << QString::number(p_emote);
+    qDebug() << "W: misformatted char.ini: " << p_char << ", " << QString::number(p_emote);
     return 0;
   }
   else
@@ -698,8 +688,7 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
 
 int AOApplication::get_desk_mod(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1),
-                                   "[Emotions]", "[Offsets]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[Emotions]", "[Offsets]");
 
   QStringList result_contents = f_result.split("#");
 
@@ -716,9 +705,7 @@ int AOApplication::get_desk_mod(QString p_char, int p_emote)
 
 QStringList AOApplication::get_effect_offset(QString p_char, int p_effect)
 {
-  QStringList f_result =
-      read_char_ini(p_char, QString::number(p_effect), "[Offsets]", "[Overlay]")
-          .split(",");
+  QStringList f_result = read_char_ini(p_char, QString::number(p_effect), "[Offsets]", "[Overlay]").split(",");
 
   if (f_result.size() < 2)
     return decltype(f_result){0, 0};
@@ -728,9 +715,7 @@ QStringList AOApplication::get_effect_offset(QString p_char, int p_effect)
 
 QStringList AOApplication::get_overlay(QString p_char, int p_effect)
 {
-  QStringList f_result =
-      read_char_ini(p_char, QString::number(p_effect), "[Overlay]", "[SoundN]")
-          .split("#");
+  QStringList f_result = read_char_ini(p_char, QString::number(p_effect), "[Overlay]", "[SoundN]").split("#");
 
   if (f_result.size() < 2)
     f_result.push_back("");
@@ -740,8 +725,7 @@ QStringList AOApplication::get_overlay(QString p_char, int p_effect)
 
 QString AOApplication::get_sfx_name(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1),
-                                   "[SoundN]", "[SoundT]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[SoundN]", "[SoundT]");
 
   if (f_result == "")
     return "1";
@@ -751,8 +735,7 @@ QString AOApplication::get_sfx_name(QString p_char, int p_emote)
 
 int AOApplication::get_sfx_delay(QString p_char, int p_emote)
 {
-  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1),
-                                   "[SoundT]", "[TextDelay]");
+  QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "[SoundT]", "[TextDelay]");
 
   if (f_result == "")
     return 1;
@@ -762,8 +745,7 @@ int AOApplication::get_sfx_delay(QString p_char, int p_emote)
 
 int AOApplication::get_text_delay(QString p_char, QString p_emote)
 {
-  QString f_result =
-      read_char_ini(p_char, p_emote, "[TextDelay]", "END_OF_FILE");
+  QString f_result = read_char_ini(p_char, p_emote, "[TextDelay]", "END_OF_FILE");
 
   if (f_result == "")
     return -1;

@@ -39,10 +39,7 @@ void AOPacket::net_encode()
   for (int n_element = 0; n_element < m_contents.size(); ++n_element)
   {
     QString f_element = m_contents.at(n_element);
-    f_element.replace("#", "<num>")
-        .replace("%", "<percent>")
-        .replace("$", "<dollar>")
-        .replace("&", "<and>");
+    f_element.replace("#", "<num>").replace("%", "<percent>").replace("$", "<dollar>").replace("&", "<and>");
 
     m_contents.removeAt(n_element);
     m_contents.insert(n_element, f_element);
@@ -54,10 +51,7 @@ void AOPacket::net_decode()
   for (int n_element = 0; n_element < m_contents.size(); ++n_element)
   {
     QString f_element = m_contents.at(n_element);
-    f_element.replace("<num>", "#")
-        .replace("<percent>", "%")
-        .replace("<dollar>", "$")
-        .replace("<and>", "&");
+    f_element.replace("<num>", "#").replace("<percent>", "%").replace("<dollar>", "$").replace("<and>", "&");
 
     m_contents.removeAt(n_element);
     m_contents.insert(n_element, f_element);
