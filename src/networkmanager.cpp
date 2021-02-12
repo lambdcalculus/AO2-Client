@@ -15,15 +15,11 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   ms_reconnect_timer = new QTimer(this);
   ms_reconnect_timer->setSingleShot(true);
-  QObject::connect(ms_reconnect_timer, SIGNAL(timeout()), this,
-                   SLOT(retry_ms_connect()));
+  QObject::connect(ms_reconnect_timer, SIGNAL(timeout()), this, SLOT(retry_ms_connect()));
 
-  QObject::connect(ms_socket, SIGNAL(readyRead()), this,
-                   SLOT(handle_ms_packet()));
-  QObject::connect(server_socket, SIGNAL(readyRead()), this,
-                   SLOT(handle_server_packet()));
-  QObject::connect(server_socket, SIGNAL(disconnected()), ao_app,
-                   SLOT(server_disconnected()));
+  QObject::connect(ms_socket, SIGNAL(readyRead()), this, SLOT(handle_ms_packet()));
+  QObject::connect(server_socket, SIGNAL(readyRead()), this, SLOT(handle_server_packet()));
+  QObject::connect(server_socket, SIGNAL(disconnected()), ao_app, SLOT(server_disconnected()));
 }
 
 NetworkManager::~NetworkManager()
@@ -47,8 +43,7 @@ void NetworkManager::connect_to_master_nosrv()
   QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
                    SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
 
-  QObject::connect(ms_socket, SIGNAL(connected()), this,
-                   SLOT(on_ms_nosrv_connect_success()));
+  QObject::connect(ms_socket, SIGNAL(connected()), this, SLOT(on_ms_nosrv_connect_success()));
   ms_socket->connectToHost(ms_nosrv_hostname, ms_port);
 }
 
@@ -103,8 +98,7 @@ void NetworkManager::handle_ms_packet()
     }
   }
 
-  QStringList packet_list =
-      in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+  QStringList packet_list = in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
 
   for (QString packet : packet_list)
   {
@@ -152,26 +146,22 @@ void NetworkManager::on_srv_lookup()
           break;
         }
         else if (ms_socket->state() != QAbstractSocket::ConnectingState &&
-                 ms_socket->state() != QAbstractSocket::HostLookupState &&
-                 ms_socket->error() != -1)
+                 ms_socket->state() != QAbstractSocket::HostLookupState && ms_socket->error() != -1)
         {
           qDebug() << ms_socket->error();
-          qWarning() << "Error connecting to master server:"
-                     << ms_socket->errorString();
+          qWarning() << "Error connecting to master server:" << ms_socket->errorString();
           ms_socket->abort();
           ms_socket->close();
           break;
         }
-      } while (timer.elapsed() <
-               timeout_milliseconds); // Very expensive spin-wait loop - it will
-                                      // bring CPU to 100%!
+      } while (timer.elapsed() < timeout_milliseconds); // Very expensive spin-wait loop - it will
+                                                        // bring CPU to 100%!
       if (connected)
       {
         // Connect a one-shot signal in case the master server disconnects
         // randomly
-        QObject::connect(
-            ms_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
-            SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
+        QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
+                         SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
         break;
       }
       else
@@ -194,8 +184,7 @@ void NetworkManager::on_ms_nosrv_connect_success()
 {
   Q_EMIT ms_connect_finished(true, false);
 
-  QObject::disconnect(ms_socket, SIGNAL(connected()), this,
-                      SLOT(on_ms_nosrv_connect_success()));
+  QObject::disconnect(ms_socket, SIGNAL(connected()), this, SLOT(on_ms_nosrv_connect_success()));
 
   QObject::connect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
                    SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
@@ -203,13 +192,11 @@ void NetworkManager::on_ms_nosrv_connect_success()
 
 void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
 {
-  qWarning() << "Master server socket error:" << ms_socket->errorString() << "("
-             << error << ")";
+  qWarning() << "Master server socket error:" << ms_socket->errorString() << "(" << error << ")";
 
   // Disconnect the one-shot signal - this way, failover connect attempts
   // don't trigger a full retry
-  QObject::disconnect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)),
-                      this,
+  QObject::disconnect(ms_socket, SIGNAL(error(QAbstractSocket::SocketError)), this,
                       SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
 
   Q_EMIT ms_connect_finished(false, true);
@@ -219,8 +206,7 @@ void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
 
 void NetworkManager::retry_ms_connect()
 {
-  if (!ms_reconnect_timer->isActive() &&
-      ms_socket->state() != QAbstractSocket::ConnectingState)
+  if (!ms_reconnect_timer->isActive() && ms_socket->state() != QAbstractSocket::ConnectingState)
     connect_to_master();
 }
 
@@ -246,8 +232,7 @@ void NetworkManager::handle_server_packet()
     }
   }
 
-  QStringList packet_list =
-      in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+  QStringList packet_list = in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
 
   for (QString packet : packet_list)
   {

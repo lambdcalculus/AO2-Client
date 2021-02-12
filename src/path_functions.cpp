@@ -75,10 +75,8 @@ QString AOApplication::get_default_background_path(QString p_file)
 
 QString AOApplication::get_evidence_path(QString p_file)
 {
-  QString default_path =
-      get_case_sensitive_path(get_base_path() + "evidence/" + p_file);
-  QString alt_path =
-      get_case_sensitive_path(get_base_path() + "items/" + p_file);
+  QString default_path = get_case_sensitive_path(get_base_path() + "evidence/" + p_file);
+  QString alt_path = get_case_sensitive_path(get_base_path() + "items/" + p_file);
 
   if (QFile(default_path).exists())
     return default_path;
@@ -88,8 +86,7 @@ QString AOApplication::get_evidence_path(QString p_file)
 
 QString Courtroom::get_background_path(QString p_file)
 {
-  return ao_app->get_base_path() + "background/" + current_background + "/" +
-         p_file;
+  return ao_app->get_base_path() + "background/" + current_background + "/" + p_file;
 }
 
 #ifndef CASE_SENSITIVE_FILESYSTEM
@@ -118,8 +115,7 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
   // Note also the fixed string search here. This is so that, for example, music
   // files with parentheses don't get interpreted as grouping for a regex
   // search.
-  QRegExp file_rx =
-      QRegExp(file_basename, Qt::CaseInsensitive, QRegExp::FixedString);
+  QRegExp file_rx = QRegExp(file_basename, Qt::CaseInsensitive, QRegExp::FixedString);
   QStringList files = QDir(file_parent_dir).entryList();
 
   int result = files.indexOf(file_rx);
@@ -132,8 +128,7 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
 }
 #endif
 
-QString AOApplication::find_asset_path(QStringList possible_roots,
-                                       QStringList possible_exts)
+QString AOApplication::find_asset_path(QStringList possible_roots, QStringList possible_exts)
 {
   for (QString root : possible_roots)
   {
@@ -150,12 +145,10 @@ QString AOApplication::find_asset_path(QStringList possible_roots,
 QString AOApplication::find_theme_asset_path(QString p_file, QStringList exts)
 {
   QStringList paths{
-      get_base_path() + "themes/" + get_theme() + "/gamemodes/" +
-          get_gamemode() + "/times/" + get_timeofday() + "/" + p_file,
-      get_base_path() + "themes/" + get_theme() + "/gamemodes/" +
-          get_gamemode() + "/" + p_file,
-      get_base_path() + "themes/" + get_theme() + "/times/" + get_timeofday() +
-          "/" + p_file,
+      get_base_path() + "themes/" + get_theme() + "/gamemodes/" + get_gamemode() + "/times/" + get_timeofday() + "/" +
+          p_file,
+      get_base_path() + "themes/" + get_theme() + "/gamemodes/" + get_gamemode() + "/" + p_file,
+      get_base_path() + "themes/" + get_theme() + "/times/" + get_timeofday() + "/" + p_file,
       get_base_path() + "themes/" + get_theme() + "/" + p_file,
       get_base_path() + "themes/default/" + p_file,
   };

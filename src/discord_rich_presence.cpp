@@ -109,12 +109,10 @@ void Discord::state_server(std::string name, std::string server_id)
 
 void Discord::state_character(std::string name)
 {
-  auto name_internal =
-      QString(name.c_str()).toLower().replace(' ', '_').toStdString();
+  auto name_internal = QString(name.c_str()).toLower().replace(' ', '_').toStdString();
   auto name_friendly = QString(name.c_str()).replace('_', ' ').toStdString();
   const std::string playing_as = "Playing as " + name_friendly;
-  qDebug() << "Discord RPC: Setting character state (" << playing_as.c_str()
-           << ")";
+  qDebug() << "Discord RPC: Setting character state (" << playing_as.c_str() << ")";
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));

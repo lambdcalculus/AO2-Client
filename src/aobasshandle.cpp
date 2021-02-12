@@ -1,7 +1,8 @@
 #include "aobasshandle.h"
 
 AOBassHandle::AOBassHandle(QObject *p_parent) : QObject(p_parent)
-{}
+{
+}
 
 AOBassHandle::AOBassHandle(QString p_file, bool p_suicide, QObject *p_parent) noexcept(false) : QObject(p_parent)
 {

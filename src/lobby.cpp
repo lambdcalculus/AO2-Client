@@ -50,22 +50,17 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_progress_bar->setStyleSheet("QProgressBar{ color: white; }");
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
-  connect(ui_public_servers, SIGNAL(clicked()), this,
-          SLOT(on_public_servers_clicked()));
+  connect(ui_public_servers, SIGNAL(clicked()), this, SLOT(on_public_servers_clicked()));
   connect(ui_favorites, SIGNAL(clicked()), this, SLOT(on_favorites_clicked()));
   connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
   connect(ui_refresh, SIGNAL(released()), this, SLOT(on_refresh_released()));
-  connect(ui_add_to_fav, SIGNAL(pressed()), this,
-          SLOT(on_add_to_fav_pressed()));
-  connect(ui_add_to_fav, SIGNAL(released()), this,
-          SLOT(on_add_to_fav_released()));
+  connect(ui_add_to_fav, SIGNAL(pressed()), this, SLOT(on_add_to_fav_pressed()));
+  connect(ui_add_to_fav, SIGNAL(released()), this, SLOT(on_add_to_fav_released()));
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
-  connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this,
-          SLOT(on_server_list_clicked(QModelIndex)));
-  connect(ui_chatmessage, SIGNAL(returnPressed()), this,
-          SLOT(on_chatfield_return_pressed()));
+  connect(ui_server_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_server_list_clicked(QModelIndex)));
+  connect(ui_chatmessage, SIGNAL(returnPressed()), this, SLOT(on_chatfield_return_pressed()));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
   set_widgets();
@@ -84,18 +79,17 @@ void Lobby::set_widgets()
 
     // Most common symptom of bad config files, missing assets, or misnamed
     // theme folder
-    call_notice(
-        "It doesn't look like your client is set up correctly. This can be "
-        "due to the following reasons: \n"
-        "1. Check you downloaded and extracted the resources correctly from "
-        "the DRO Discord including the large 'base' folder.\n"
-        "2. If you did, check that the base folder is in the same folder "
-        "where you launched Danganronpa Online from: " +
-        QDir::currentPath() +
-        "\n"
-        "3. If it is there, check that your current theme folder exists in "
-        "base/themes. According to base/config.ini, your current theme is " +
-        ao_app->get_theme());
+    call_notice("It doesn't look like your client is set up correctly. This can be "
+                "due to the following reasons: \n"
+                "1. Check you downloaded and extracted the resources correctly from "
+                "the DRO Discord including the large 'base' folder.\n"
+                "2. If you did, check that the base folder is in the same folder "
+                "where you launched Danganronpa Online from: " +
+                QDir::currentPath() +
+                "\n"
+                "3. If it is there, check that your current theme folder exists in "
+                "base/themes. According to base/config.ini, your current theme is " +
+                ao_app->get_theme());
 
     this->resize(517, 666);
   }
@@ -144,17 +138,15 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_chatbox, "chatbox");
   ui_chatbox->setReadOnly(true);
-  ui_chatbox->setStyleSheet(
-      "QTextBrowser{background-color: rgba(0, 0, 0, 0);}");
+  ui_chatbox->setStyleSheet("QTextBrowser{background-color: rgba(0, 0, 0, 0);}");
 
   set_size_and_pos(ui_chatname, "chatname");
   ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                              "selection-background-color: rgba(0, 0, 0, 0);");
 
   set_size_and_pos(ui_chatmessage, "chatmessage");
-  ui_chatmessage->setStyleSheet(
-      "background-color: rgba(0, 0, 0, 0);"
-      "selection-background-color: rgba(0, 0, 0, 0);");
+  ui_chatmessage->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                "selection-background-color: rgba(0, 0, 0, 0);");
 
   ui_loading_background->resize(this->width(), this->height());
   ui_loading_background->set_image("loadingbackground.png");
@@ -183,8 +175,7 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 {
   QString filename = "lobby_design.ini";
 
-  pos_size_type design_ini_result =
-      ao_app->get_element_dimensions(p_identifier, filename);
+  pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
@@ -242,8 +233,7 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   // 2. "font_default"
   // 3. System font
   QFontDatabase font_database;
-  QString font_name =
-      ao_app->get_font_name("font_" + p_identifier, design_file);
+  QString font_name = ao_app->get_font_name("font_" + p_identifier, design_file);
   if (!font_database.families().contains(font_name))
     font_name = ao_app->get_font_name("font_default", "lobby_fonts.ini");
   QFont font(font_name, f_weight);
@@ -251,24 +241,21 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
 
   QColor f_color = ao_app->get_color(p_identifier + "_color", design_file);
 
-  bool bold =
-      (bool)ao_app->get_font_property(p_identifier + "_bold", design_file);
+  bool bold = (bool)ao_app->get_font_property(p_identifier + "_bold", design_file);
   QString is_bold = "";
   if (bold)
     is_bold = "bold";
 
-  bool center =
-      (bool)ao_app->get_font_property(p_identifier + "_center", design_file);
+  bool center = (bool)ao_app->get_font_property(p_identifier + "_center", design_file);
   QString is_center = "";
   if (center)
     is_center = "qproperty-alignment: AlignCenter;";
 
   QString class_name = widget->metaObject()->className();
-  QString style_sheet_string =
-      class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: rgba(" +
-      QString::number(f_color.red()) + ", " + QString::number(f_color.green()) +
-      ", " + QString::number(f_color.blue()) + ", 255);\n" + is_center + "\n" +
-      "font: " + is_bold + "; }";
+  QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: rgba(" +
+                               QString::number(f_color.red()) + ", " + QString::number(f_color.green()) + ", " +
+                               QString::number(f_color.blue()) + ", 255);\n" + is_center + "\n" + "font: " + is_bold +
+                               "; }";
 
   widget->setStyleSheet(style_sheet_string);
 }
@@ -495,8 +482,7 @@ void Lobby::set_choose_a_server()
 
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  QString f_string = "Online: " + QString::number(players_online) + "/" +
-                     QString::number(max_players);
+  QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
   ui_player_count->setText(f_string);
   ui_player_count->setAlignment(Qt::AlignHCenter);
 

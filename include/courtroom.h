@@ -99,8 +99,7 @@ public:
   // sets font properties for QTextEdit (same as above but also text outline)
   void set_qtextedit_font(QTextEdit *widget, QString p_identifier);
   // same as second set_font but for qtextedit
-  void set_qtextedit_font(QTextEdit *widget, QString p_identifier,
-                          QString override_color);
+  void set_qtextedit_font(QTextEdit *widget, QString p_identifier, QString override_color);
   // helper function that calls above function on the relevant widgets
   void set_fonts();
 
@@ -224,8 +223,7 @@ public:
   // selected
   // or the user isn't already scrolled to the top
   void update_ic_log(bool p_reset_log);
-  void append_ic_text(QString p_name, QString p_line, bool p_system,
-                      bool p_music);
+  void append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music);
 
   /**
    * @brief Appends a message arriving from system to the IC chatlog.
@@ -285,8 +283,7 @@ public:
   void pause_timer(int timer_id);
 
   template <typename T>
-  int adapt_numbered_items(QVector<T *> &item_vector,
-                           QString config_item_number, QString item_name);
+  int adapt_numbered_items(QVector<T *> &item_vector, QString config_item_number, QString item_name);
 
 signals:
   void closing();
@@ -348,8 +345,7 @@ private:
   QTimer *testimony_hide_timer = nullptr;
 
   // Generate a File Name based on the time you launched the client
-  QString icchatlogsfilename = QDateTime::currentDateTime().toString(
-      "'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
+  QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
 
   // configuration files locations
   QString rpc_ini = "configs/rpccharlist.ini";
@@ -600,8 +596,7 @@ private:
   QVector<QCheckBox *> ui_checks; // 0 = pre, 1 = flip, 2 = hidden
   QVector<AOLabel *> ui_labels;   // 0 = music, 1 = sfx, 2 = blip
   QVector<AOImageDisplay *> ui_label_images;
-  QVector<QString> label_images = {"Pre",   "Flip", "Hidden",
-                                   "Music", "SFX",  "Blip"};
+  QVector<QString> label_images = {"Pre", "Flip", "Hidden", "Music", "SFX", "Blip"};
 
   AOButton *ui_effect_flash = nullptr;
   AOButton *ui_effect_gloom = nullptr;
@@ -656,11 +651,8 @@ private:
   void set_widget_names();
   void reset_widget_names();
   void insert_widget_name(QString p_widget_name, QWidget *p_widget);
-  void insert_widget_names(QVector<QString> &p_widget_names,
-                           QVector<QWidget *> &p_widgets);
-  template <typename T>
-  void insert_widget_names(QVector<QString> &p_widget_names,
-                           QVector<T *> &p_widgets);
+  void insert_widget_names(QVector<QString> &p_widget_names, QVector<QWidget *> &p_widgets);
+  template <typename T> void insert_widget_names(QVector<QString> &p_widget_names, QVector<T *> &p_widgets);
   void set_widget_layers();
 
   void construct_char_select();
@@ -884,9 +876,7 @@ protected:
   void closeEvent(QCloseEvent *event) override;
 };
 
-template <typename T>
-void Courtroom::insert_widget_names(QVector<QString> &p_widget_names,
-                                    QVector<T *> &p_widgets)
+template <typename T> void Courtroom::insert_widget_names(QVector<QString> &p_widget_names, QVector<T *> &p_widgets)
 {
   QVector<QWidget *> widgets;
 

@@ -4,8 +4,7 @@
 
 #include <QDebug>
 
-AOMusicPlayer::AOMusicPlayer(QObject *p_parent, AOApplication *p_ao_app)
-    : AOAbstractPlayer(p_parent, p_ao_app)
+AOMusicPlayer::AOMusicPlayer(QObject *p_parent, AOApplication *p_ao_app) : AOAbstractPlayer(p_parent, p_ao_app)
 {
 }
 
@@ -20,8 +19,7 @@ void AOMusicPlayer::play(QString p_file)
   try
   { // create new song
     AOBassHandle *handle = new AOBassHandle(m_file, false, this);
-    connect(this, &AOMusicPlayer::new_volume, handle,
-            &AOBassHandle::set_volume);
+    connect(this, &AOMusicPlayer::new_volume, handle, &AOBassHandle::set_volume);
     connect(this, &AOMusicPlayer::stopping, handle, &AOBassHandle::stop);
 
     // delete previous

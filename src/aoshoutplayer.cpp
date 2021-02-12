@@ -3,8 +3,7 @@
 
 #include <QDebug>
 
-AOShoutPlayer::AOShoutPlayer(QObject *p_parent, AOApplication *p_ao_app)
-    : AOAbstractPlayer(p_parent, p_ao_app)
+AOShoutPlayer::AOShoutPlayer(QObject *p_parent, AOApplication *p_ao_app) : AOAbstractPlayer(p_parent, p_ao_app)
 {
 }
 
@@ -28,8 +27,7 @@ void AOShoutPlayer::play(QString p_name, QString p_char)
   try
   {
     AOBassHandle *handle = new AOBassHandle(f_file, true, this);
-    connect(this, &AOShoutPlayer::new_volume, handle,
-            &AOBassHandle::set_volume);
+    connect(this, &AOShoutPlayer::new_volume, handle, &AOBassHandle::set_volume);
     connect(this, &AOShoutPlayer::stopping, handle, &AOBassHandle::stop);
     handle->set_volume(get_volume());
     handle->play();

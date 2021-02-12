@@ -6,8 +6,7 @@
 #include <QDebug>
 #include <QMovie>
 
-AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app)
-    : QLabel(parent), ao_app(p_ao_app)
+AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent), ao_app(p_ao_app)
 {
   m_reader = new QMovie(this);
   setMovie(m_reader);
@@ -22,8 +21,7 @@ void AOScene::set_image(QString p_image)
 
   for (auto &ext : animated_or_static_extensions())
   {
-    QString full_background_path =
-        ao_app->get_case_sensitive_path(background_path + ext);
+    QString full_background_path = ao_app->get_case_sensitive_path(background_path + ext);
 
     if (file_exists(full_background_path))
     {

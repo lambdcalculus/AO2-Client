@@ -5,8 +5,7 @@
 
 #include <QDebug>
 
-AOSfxPlayer::AOSfxPlayer(QObject *p_parent, AOApplication *p_ao_app)
-    : AOAbstractPlayer(p_parent, p_ao_app)
+AOSfxPlayer::AOSfxPlayer(QObject *p_parent, AOApplication *p_ao_app) : AOAbstractPlayer(p_parent, p_ao_app)
 {
 }
 

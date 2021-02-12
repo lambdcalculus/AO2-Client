@@ -5,8 +5,7 @@
 
 #include <QDebug>
 
-AONoteArea::AONoteArea(QWidget *p_parent, AOApplication *p_ao_app)
-    : AOImageDisplay(p_parent, p_ao_app)
+AONoteArea::AONoteArea(QWidget *p_parent, AOApplication *p_ao_app) : AOImageDisplay(p_parent, p_ao_app)
 {
   ao_app = p_ao_app;
 }
@@ -54,10 +53,8 @@ void Courtroom::on_add_button_clicked()
 
   set_dropdown(f_line, "[LINE EDIT]");
 
-  connect(f_button, SIGNAL(clicked(bool)), this,
-          SLOT(on_set_file_button_clicked()));
-  connect(f_delete, SIGNAL(clicked(bool)), this,
-          SLOT(on_delete_button_clicked()));
+  connect(f_button, SIGNAL(clicked(bool)), this, SLOT(on_set_file_button_clicked()));
+  connect(f_delete, SIGNAL(clicked(bool)), this, SLOT(on_delete_button_clicked()));
   connect(f_hover, SIGNAL(clicked(bool)), this, SLOT(on_file_selected()));
 }
 
@@ -78,13 +75,11 @@ void Courtroom::set_note_files()
 
   for (int i = 0; i < ui_note_area->m_layout->count() - 1; ++i)
   {
-    AONotePicker *f_notepicker = static_cast<AONotePicker *>(
-        ui_note_area->m_layout->itemAt(i)->widget());
+    AONotePicker *f_notepicker = static_cast<AONotePicker *>(ui_note_area->m_layout->itemAt(i)->widget());
     QString f_filestring = f_notepicker->real_file;
     QString f_filename = f_notepicker->m_line->text();
 
-    t +=
-        QString::number(i) + " = " + f_filestring + " = " + f_filename + "\n\n";
+    t += QString::number(i) + " = " + f_filestring + " = " + f_filename + "\n\n";
   }
 
   config_file.close();

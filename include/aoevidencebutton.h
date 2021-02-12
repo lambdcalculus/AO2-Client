@@ -12,8 +12,7 @@ class AOEvidenceButton : public QPushButton
   Q_OBJECT
 
 public:
-  AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x,
-                   int p_y);
+  AOEvidenceButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y);
 
   void reset();
   void set_image(QString p_image);
