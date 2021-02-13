@@ -54,6 +54,7 @@ class Courtroom : public QMainWindow
 
 public:
   explicit Courtroom(AOApplication *p_ao_app);
+  ~Courtroom();
 
   void append_char(char_type p_char)
   {

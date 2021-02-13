@@ -34,6 +34,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   set_widget_names();
 }
 
+Courtroom::~Courtroom()
+{
+  // shutdown all audio
+  for (auto &family : DRAudioEngine::get_family_list())
+    for (auto &stream : family->get_stream_list())
+      stream->stop();
+}
+
 void Courtroom::enter_courtroom(int p_cid)
 {
   bool changed_character = (m_cid != p_cid);
