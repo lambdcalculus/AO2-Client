@@ -45,10 +45,11 @@ private slots:
   void on_gamemode_index_changed(QString p_text);
   void on_timeofday_index_changed(QString p_text);
   void on_log_is_topdown_changed(bool p_enabled);
-  void on_effects_value_changed(int p_num);
+  void on_master_value_changed(int p_num);
   void on_system_value_changed(int p_num);
+  void on_effect_value_changed(int p_num);
   void on_music_value_changed(int p_num);
-  void on_blips_value_changed(int p_num);
+  void on_blip_value_changed(int p_num);
 
 private:
   // FIXME This dependency shouldn't have come to exist.
@@ -86,14 +87,17 @@ private:
   QCheckBox *w_log_is_recording = nullptr;
 
   // audio
-  QSlider *w_effects = nullptr;
-  QLabel *w_effects_value = nullptr;
+  QSlider *w_master = nullptr;
+  QLabel *w_master_value = nullptr;
+  QCheckBox *w_mute_background_audio = nullptr;
   QSlider *w_system = nullptr;
   QLabel *w_system_value = nullptr;
+  QSlider *w_effect = nullptr;
+  QLabel *w_effect_value = nullptr;
   QSlider *w_music = nullptr;
   QLabel *w_music_value = nullptr;
-  QSlider *w_blips = nullptr;
-  QLabel *w_blips_value = nullptr;
+  QSlider *w_blip = nullptr;
+  QLabel *w_blip_value = nullptr;
   QSpinBox *w_blip_rate = nullptr;
   QCheckBox *w_blank_blips = nullptr;
 };

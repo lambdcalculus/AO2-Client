@@ -26,16 +26,20 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
 
-  // initializing sound device
-  BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, 0, NULL);
-  BASS_PluginLoad("bassopus.dll", BASS_UNICODE);
-
   create_widgets();
   connect_widgets();
 
   set_widgets();
   set_char_select();
   set_widget_names();
+}
+
+Courtroom::~Courtroom()
+{
+  // shutdown all audio
+  for (auto &family : DRAudioEngine::get_family_list())
+    for (auto &stream : family->get_stream_list())
+      stream->stop();
 }
 
 void Courtroom::enter_courtroom(int p_cid)

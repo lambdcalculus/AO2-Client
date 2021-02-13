@@ -44,20 +44,11 @@ void Courtroom::create_widgets()
 
   char_button_mapper = new QSignalMapper(this);
 
-  m_effects_player = new AOSfxPlayer(this, ao_app);
-  m_effects_player->set_volume(ao_config->effects_volume());
-  m_shouts_player = new AOShoutPlayer(this, ao_app);
-  m_shouts_player->set_volume(ao_config->effects_volume());
-  connect(ao_config, SIGNAL(effects_volume_changed(int)), this, SLOT(on_config_effects_volume_changed(int)));
-  m_system_player = new AOSfxPlayer(this, ao_app);
-  m_system_player->set_volume(ao_config->system_volume());
-  connect(ao_config, SIGNAL(system_volume_changed(int)), this, SLOT(on_config_system_volume_changed(int)));
-  m_music_player = new AOMusicPlayer(this, ao_app);
-  m_music_player->set_volume(ao_config->music_volume());
-  connect(ao_config, SIGNAL(music_volume_changed(int)), this, SLOT(on_config_music_volume_changed(int)));
-  m_blips_player = new AOBlipPlayer(this, ao_app);
-  m_blips_player->set_volume(ao_config->blips_volume());
-  connect(ao_config, SIGNAL(blips_volume_changed(int)), this, SLOT(on_config_blips_volume_changed(int)));
+  m_system_player = new AOSystemPlayer(ao_app, this);
+  m_effects_player = new AOSfxPlayer(ao_app, this);
+  m_shouts_player = new AOShoutPlayer(ao_app, this);
+  m_music_player = new AOMusicPlayer(ao_app, this);
+  m_blips_player = new AOBlipPlayer(ao_app, this);
 
   ui_background = new AOImageDisplay(this, ao_app);
 

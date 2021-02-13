@@ -1,17 +1,13 @@
-#ifndef AOSFXPLAYER_H
-#define AOSFXPLAYER_H
+#pragma once
 
-#include "aoabstractplayer.h"
+#include "aoobject.h"
 
-class AOSfxPlayer : public AOAbstractPlayer
+class AOSfxPlayer : public AOObject
 {
   Q_OBJECT
 
 public:
-  AOSfxPlayer(QObject *p_parent, AOApplication *p_ao_app);
+  AOSfxPlayer(AOApplication *p_ao_app, QObject *p_parent = nullptr);
 
   void play(QString p_file);
-  void stop();
 };
-
-#endif // AOSFXPLAYER_H

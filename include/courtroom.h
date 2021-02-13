@@ -23,9 +23,11 @@
 #include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aoshoutplayer.h"
+#include "aosystemplayer.h"
 #include "aotextarea.h"
 #include "aotimer.h"
 #include "datatypes.h"
+#include "draudioengine.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -52,6 +54,7 @@ class Courtroom : public QMainWindow
 
 public:
   explicit Courtroom(AOApplication *p_ao_app);
+  ~Courtroom();
 
   void append_char(char_type p_char)
   {
@@ -852,24 +855,14 @@ public:
 
 public slots:
   void set_audio_mute_enabled(bool p_enabled);
-  void set_effects_volume(int p_volume);
-  void set_system_volume(int p_volume);
-  void set_music_volume(int p_volume);
-  void set_blips_volume(int p_volume);
 
 private:
   bool m_audio_mute = false;
   AOSfxPlayer *m_effects_player = nullptr;
   AOShoutPlayer *m_shouts_player = nullptr;
-  AOSfxPlayer *m_system_player = nullptr;
+  AOSystemPlayer *m_system_player = nullptr;
   AOMusicPlayer *m_music_player = nullptr;
   AOBlipPlayer *m_blips_player = nullptr;
-
-private slots:
-  void on_config_effects_volume_changed(int p_volume);
-  void on_config_system_volume_changed(int p_volume);
-  void on_config_music_volume_changed(int p_volume);
-  void on_config_blips_volume_changed(int p_volume);
 
   // QWidget interface
 protected:

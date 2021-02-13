@@ -1,42 +1,22 @@
 #include "aomusicplayer.h"
 
-#include <string.h>
-
 #include <QDebug>
 
-AOMusicPlayer::AOMusicPlayer(QObject *p_parent, AOApplication *p_ao_app) : AOAbstractPlayer(p_parent, p_ao_app)
+AOMusicPlayer::AOMusicPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObject(p_ao_app, p_parent)
 {
+  m_family = DRAudioEngine::get_family(DRAudio::Family::FMusic);
+  m_family->set_capacity(1); // a single song is needed
 }
 
-void AOMusicPlayer::play(QString p_file)
+void AOMusicPlayer::play(QString p_song)
 {
-  QString f_file = ao_app->get_music_path(p_file);
-
   stop();
-
-  m_file = f_file;
-
-  try
-  { // create new song
-    AOBassHandle *handle = new AOBassHandle(m_file, false, this);
-    connect(this, &AOMusicPlayer::new_volume, handle, &AOBassHandle::set_volume);
-    connect(this, &AOMusicPlayer::stopping, handle, &AOBassHandle::stop);
-
-    // delete previous
-    if (m_handle)
-      delete m_handle;
-
-    m_handle = handle;
-    m_handle->set_volume(get_volume());
-    m_handle->play();
-  }
-  catch (const std::exception &e_exception)
-  {
-    qDebug() << e_exception.what();
-  }
+  m_song = p_song;
+  m_family->play_stream(ao_app->get_music_path(p_song));
 }
 
 void AOMusicPlayer::stop()
 {
-  Q_EMIT stopping();
+  for (auto &song : m_family->get_stream_list())
+    song->stop();
 }

@@ -14,7 +14,6 @@ DEPENDPATH += $$PWD/include
 DEFINES += DRO_ACKMS
 
 HEADERS += \
-  include/aoabstractplayer.h \
   include/aoapplication.h \
   include/aobasshandle.h \
   include/aoblipplayer.h \
@@ -37,17 +36,24 @@ HEADERS += \
   include/aonotearea.h \
   include/aonotepad.h \
   include/aonotepicker.h \
+  include/aoobject.h \
   include/aopacket.h \
   include/aopixmap.h \
   include/aoscene.h \
   include/aosfxplayer.h \
   include/aoshoutplayer.h \
+  include/aosystemplayer.h \
   include/aotextarea.h \
   include/aotimer.h \
   include/courtroom.h \
   include/datatypes.h \
   include/debug_functions.h \
   include/discord_rich_presence.h \
+  include/draudio.h \
+  include/draudioengine.h \
+  include/draudioerror.h \
+  include/draudiostream.h \
+  include/draudiostreamfamily.h \
   include/file_functions.h \
   include/hardware_functions.h \
   include/lobby.h \
@@ -55,7 +61,6 @@ HEADERS += \
   include/networkmanager.h
 
 SOURCES += \
-  src/aoabstractplayer.cpp \
   src/aoapplication.cpp \
   src/aobasshandle.cpp \
   src/aoblipplayer.cpp \
@@ -78,11 +83,13 @@ SOURCES += \
   src/aonotearea.cpp \
   src/aonotepad.cpp \
   src/aonotepicker.cpp \
+  src/aoobject.cpp \
   src/aopacket.cpp \
   src/aopixmap.cpp \
   src/aoscene.cpp \
   src/aosfxplayer.cpp \
   src/aoshoutplayer.cpp \
+  src/aosystemplayer.cpp \
   src/aotextarea.cpp \
   src/aotimer.cpp \
   src/audio_functions.cpp \
@@ -91,6 +98,11 @@ SOURCES += \
   src/courtroom_widgets.cpp \
   src/debug_functions.cpp \
   src/discord_rich_presence.cpp \
+  src/draudio.cpp \
+  src/draudioengine.cpp \
+  src/draudioerror.cpp \
+  src/draudiostream.cpp \
+  src/draudiostreamfamily.cpp \
   src/emotes.cpp \
   src/evidence.cpp \
   src/file_functions.cpp \

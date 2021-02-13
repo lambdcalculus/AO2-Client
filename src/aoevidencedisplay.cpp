@@ -12,7 +12,7 @@ AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
 
   evidence_movie = new QMovie(this);
   evidence_icon = new QLabel(this);
-  sfx_player = new AOSfxPlayer(this, ao_app);
+  sfx_player = new AOSfxPlayer(ao_app, this);
 
   connect(evidence_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
@@ -73,7 +73,6 @@ void AOEvidenceDisplay::frame_change(int p_frame)
 
 void AOEvidenceDisplay::reset()
 {
-  sfx_player->stop();
   evidence_movie->stop();
   evidence_icon->hide();
   this->clear();

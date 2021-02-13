@@ -1,21 +1,20 @@
-#ifndef AOMUSICPLAYER_H
-#define AOMUSICPLAYER_H
+#pragma once
 
-#include "aoabstractplayer.h"
+#include "aoobject.h"
+#include "draudioengine.h"
 
-class AOMusicPlayer : public AOAbstractPlayer
+class AOMusicPlayer : public AOObject
 {
   Q_OBJECT
 
 public:
-  AOMusicPlayer(QObject *p_parent, AOApplication *p_ao_app);
+  AOMusicPlayer(AOApplication *p_ao_app, QObject *p_parent = nullptr);
 
-  void play(QString p_file);
+public slots:
+  void play(QString p_song);
   void stop();
 
 private:
-  AOBassHandle *m_handle = nullptr;
-  QString m_file;
+  DRAudioEngine::family_ptr m_family;
+  QString m_song;
 };
-
-#endif // AOMUSICPLAYER_H

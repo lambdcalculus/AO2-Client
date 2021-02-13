@@ -42,12 +42,12 @@ int AOApplication::get_default_music()
 
 int AOApplication::get_default_sfx()
 {
-  return config->effects_volume();
+  return config->effect_volume();
 }
 
 int AOApplication::get_default_blip()
 {
-  return config->blips_volume();
+  return config->blip_volume();
 }
 
 QStringList AOApplication::get_callwords()
