@@ -15,7 +15,6 @@ DEFINES += DRO_ACKMS
 
 HEADERS += \
   include/aoapplication.h \
-  include/aobasshandle.h \
   include/aoblipplayer.h \
   include/aobutton.h \
   include/aocharbutton.h \
@@ -62,7 +61,6 @@ HEADERS += \
 
 SOURCES += \
   src/aoapplication.cpp \
-  src/aobasshandle.cpp \
   src/aoblipplayer.cpp \
   src/aobutton.cpp \
   src/aocharbutton.cpp \
