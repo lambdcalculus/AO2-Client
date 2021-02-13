@@ -45,7 +45,7 @@ class AOConfigPrivate : public QObject
   bool log_is_recording;
 
   int master_volume;
-  bool disable_background_audio;
+  bool mute_background_audio;
   int effect_volume;
   int system_volume;
   int music_volume;
@@ -197,12 +197,12 @@ public slots:
     audio_engine->set_volume(p_number);
     invoke_parents("master_volume_changed", Q_ARG(int, p_number));
   }
-  void set_disable_background_audio(bool p_enabled)
+  void set_mute_background_audio(bool p_enabled)
   {
-    if (disable_background_audio == p_enabled)
+    if (mute_background_audio == p_enabled)
       return;
-    disable_background_audio = p_enabled;
-    invoke_parents("disable_background_audio_changed", Q_ARG(bool, p_enabled));
+    mute_background_audio = p_enabled;
+    invoke_parents("mute_background_audio_changed", Q_ARG(bool, p_enabled));
   }
   void set_system_volume(int p_number)
   {
@@ -273,7 +273,7 @@ public slots:
     log_music = cfg.value("music_change_log", true).toBool();
     log_is_recording = cfg.value("enable_logging", true).toBool();
 
-    disable_background_audio = cfg.value("disable_background_audio").toBool();
+    mute_background_audio = cfg.value("mute_background_audio").toBool();
     master_volume = cfg.value("default_master", 50).toInt();
     system_volume = cfg.value("default_system", 50).toInt();
     effect_volume = cfg.value("default_sfx", 50).toInt();
@@ -308,7 +308,7 @@ public slots:
     cfg.setValue("music_change_log", log_music);
     cfg.setValue("enable_logging", log_is_recording);
     cfg.setValue("default_master", master_volume);
-    cfg.setValue("disable_background_audio", disable_background_audio);
+    cfg.setValue("mute_background_audio", mute_background_audio);
     cfg.setValue("default_sfx", effect_volume);
     cfg.setValue("default_system", system_volume);
     cfg.setValue("default_music", music_volume);
@@ -330,7 +330,7 @@ private:
 private slots:
   void on_application_state_changed(Qt::ApplicationState p_state)
   {
-    audio_engine->set_suppressed(disable_background_audio && p_state != Qt::ApplicationActive);
+    audio_engine->set_suppressed(mute_background_audio && p_state != Qt::ApplicationActive);
   }
 };
 
@@ -459,9 +459,9 @@ int AOConfig::master_volume()
   return d->master_volume;
 }
 
-bool AOConfig::disable_background_audio()
+bool AOConfig::mute_background_audio()
 {
-  return d->disable_background_audio;
+  return d->mute_background_audio;
 }
 
 int AOConfig::system_volume()
@@ -618,14 +618,14 @@ void AOConfig::set_log_is_recording(int p_state)
   set_log_is_recording(p_state == Qt::Checked);
 }
 
-void AOConfig::set_disable_background_audio(bool p_enabled)
+void AOConfig::set_mute_background_audio(bool p_enabled)
 {
-  d->set_disable_background_audio(p_enabled);
+  d->set_mute_background_audio(p_enabled);
 }
 
-void AOConfig::set_disable_background_audio(int p_state)
+void AOConfig::set_mute_background_audio(int p_state)
 {
-  set_disable_background_audio(p_state == Qt::Checked);
+  set_mute_background_audio(p_state == Qt::Checked);
 }
 
 void AOConfig::set_master_volume(int p_number)

@@ -52,7 +52,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // audio
   w_master = AO_GUI_WIDGET(QSlider, "master");
   w_master_value = AO_GUI_WIDGET(QLabel, "master_value");
-  w_disable_background_audio = AO_GUI_WIDGET(QCheckBox, "disable_background_audio");
+  w_mute_background_audio = AO_GUI_WIDGET(QCheckBox, "mute_background_audio");
   w_system = AO_GUI_WIDGET(QSlider, "system");
   w_system_value = AO_GUI_WIDGET(QLabel, "system_value");
   w_effect = AO_GUI_WIDGET(QSlider, "effect");
@@ -87,7 +87,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(log_music_changed(bool)), w_log_music, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_is_recording_changed(bool)), w_log_is_recording, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(master_volume_changed(int)), w_master, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(disable_background_audio_changed(bool)), w_disable_background_audio, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(mute_background_audio_changed(bool)), w_mute_background_audio, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(system_volume_changed(int)), w_system, SLOT(setValue(int)));
   connect(m_config, SIGNAL(effect_volume_changed(int)), w_effect, SLOT(setValue(int)));
   connect(m_config, SIGNAL(music_volume_changed(int)), w_music, SLOT(setValue(int)));
@@ -115,7 +115,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_log_uses_newline, SIGNAL(stateChanged(int)), m_config, SLOT(set_log_uses_newline(int)));
   connect(w_log_music, SIGNAL(stateChanged(int)), m_config, SLOT(set_log_music(int)));
   connect(w_log_is_recording, SIGNAL(stateChanged(int)), m_config, SLOT(set_log_is_recording(int)));
-  connect(w_disable_background_audio, SIGNAL(stateChanged(int)), m_config, SLOT(set_disable_background_audio(int)));
+  connect(w_mute_background_audio, SIGNAL(stateChanged(int)), m_config, SLOT(set_mute_background_audio(int)));
   connect(w_master, SIGNAL(valueChanged(int)), m_config, SLOT(set_master_volume(int)));
   connect(w_master, SIGNAL(valueChanged(int)), this, SLOT(on_master_value_changed(int)));
   connect(w_system, SIGNAL(valueChanged(int)), m_config, SLOT(set_system_volume(int)));
@@ -156,7 +156,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_log_music->setChecked(m_config->log_music_enabled());
   w_log_is_recording->setChecked(m_config->log_is_recording_enabled());
   w_master->setValue(m_config->master_volume());
-  w_disable_background_audio->setChecked(m_config->disable_background_audio());
+  w_mute_background_audio->setChecked(m_config->mute_background_audio());
   w_system->setValue(m_config->system_volume());
   w_effect->setValue(m_config->effect_volume());
   w_music->setValue(m_config->music_volume());

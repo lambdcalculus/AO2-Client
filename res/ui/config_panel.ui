@@ -496,12 +496,12 @@
         </layout>
        </item>
        <item row="1" column="1">
-        <widget class="QCheckBox" name="disable_background_audio">
+        <widget class="QCheckBox" name="mute_background_audio">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, audio will be muted temporarily when the client is not in focus.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This does not apply to system sounds.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, audio will be temporarily muted when the client is not in focus.\n\nThis does not apply to system sounds.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Mute Focus</string>
+          <string>Mute Background Audio</string>
          </property>
         </widget>
        </item>
