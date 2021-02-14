@@ -25,7 +25,6 @@ HEADERS += \
   include/aoevidencebutton.h \
   include/aoevidencedescription.h \
   include/aoevidencedisplay.h \
-  include/aoexception.h \
   include/aoguiloader.h \
   include/aoimagedisplay.h \
   include/aolabel.h \
@@ -71,7 +70,6 @@ SOURCES += \
   src/aoevidencebutton.cpp \
   src/aoevidencedescription.cpp \
   src/aoevidencedisplay.cpp \
-  src/aoexception.cpp \
   src/aoguiloader.cpp \
   src/aoimagedisplay.cpp \
   src/aolabel.cpp \
