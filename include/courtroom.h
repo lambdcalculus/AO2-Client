@@ -1,7 +1,6 @@
 #ifndef COURTROOM_H
 #define COURTROOM_H
 
-#include "aobasshandle.h"
 #include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
