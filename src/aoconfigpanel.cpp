@@ -98,24 +98,24 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // output
   connect(w_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(w_save, SIGNAL(clicked()), m_config, SLOT(save_file()));
-  connect(w_autosave, SIGNAL(stateChanged(int)), m_config, SLOT(set_autosave(int)));
+  connect(w_autosave, SIGNAL(toggled(bool)), m_config, SLOT(set_autosave(bool)));
   connect(w_username, SIGNAL(textEdited(QString)), m_config, SLOT(set_username(QString)));
   connect(w_callwords, SIGNAL(textEdited(QString)), m_config, SLOT(set_callwords(QString)));
-  connect(w_server_alerts, SIGNAL(stateChanged(int)), m_config, SLOT(set_server_alerts(int)));
+  connect(w_server_alerts, SIGNAL(toggled(bool)), m_config, SLOT(set_server_alerts(bool)));
   connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
   connect(w_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(w_gamemode, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_gamemode_index_changed(QString)));
-  connect(w_manual_gamemode, SIGNAL(stateChanged(int)), m_config, SLOT(set_manual_gamemode(int)));
+  connect(w_manual_gamemode, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_gamemode(bool)));
   connect(w_timeofday, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_timeofday_index_changed(QString)));
-  connect(w_manual_timeofday, SIGNAL(stateChanged(int)), m_config, SLOT(set_manual_timeofday(int)));
-  connect(w_always_pre, SIGNAL(stateChanged(int)), m_config, SLOT(set_always_pre(int)));
+  connect(w_manual_timeofday, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_timeofday(bool)));
+  connect(w_always_pre, SIGNAL(toggled(bool)), m_config, SLOT(set_always_pre(bool)));
   connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
   connect(w_log_max_lines, SIGNAL(valueChanged(int)), m_config, SLOT(set_log_max_lines(int)));
   connect(w_log_orientation_top_down, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_topdown(bool)));
-  connect(w_log_uses_newline, SIGNAL(stateChanged(int)), m_config, SLOT(set_log_uses_newline(int)));
-  connect(w_log_music, SIGNAL(stateChanged(int)), m_config, SLOT(set_log_music(int)));
-  connect(w_log_is_recording, SIGNAL(stateChanged(int)), m_config, SLOT(set_log_is_recording(int)));
-  connect(w_mute_background_audio, SIGNAL(stateChanged(int)), m_config, SLOT(set_mute_background_audio(int)));
+  connect(w_log_uses_newline, SIGNAL(toggled(bool)), m_config, SLOT(set_log_uses_newline(bool)));
+  connect(w_log_music, SIGNAL(toggled(bool)), m_config, SLOT(set_log_music(bool)));
+  connect(w_log_is_recording, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_recording(bool)));
+  connect(w_mute_background_audio, SIGNAL(toggled(bool)), m_config, SLOT(set_mute_background_audio(bool)));
   connect(w_master, SIGNAL(valueChanged(int)), m_config, SLOT(set_master_volume(int)));
   connect(w_master, SIGNAL(valueChanged(int)), this, SLOT(on_master_value_changed(int)));
   connect(w_system, SIGNAL(valueChanged(int)), m_config, SLOT(set_system_volume(int)));
@@ -127,7 +127,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_blip, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_volume(int)));
   connect(w_blip, SIGNAL(valueChanged(int)), this, SLOT(on_blip_value_changed(int)));
   connect(w_blip_rate, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_rate(int)));
-  connect(w_blank_blips, SIGNAL(stateChanged(int)), m_config, SLOT(set_blank_blips(int)));
+  connect(w_blank_blips, SIGNAL(toggled(bool)), m_config, SLOT(set_blank_blips(bool)));
 
   // set values
   w_autosave->setChecked(m_config->autosave());

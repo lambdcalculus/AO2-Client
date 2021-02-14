@@ -498,11 +498,6 @@ void AOConfig::set_autosave(bool p_enabled)
   d->set_autosave(p_enabled);
 }
 
-void AOConfig::set_autosave(int p_state)
-{
-  set_autosave(p_state == Qt::Checked);
-}
-
 void AOConfig::set_username(QString p_string)
 {
   d->set_username(p_string);
@@ -523,11 +518,6 @@ void AOConfig::set_gamemode(QString p_string)
   d->set_gamemode(p_string);
 }
 
-void AOConfig::set_manual_gamemode(int p_state)
-{
-  set_manual_gamemode(p_state == Qt::Checked);
-}
-
 void AOConfig::set_manual_gamemode(bool p_enabled)
 {
   d->set_manual_gamemode(p_enabled);
@@ -538,29 +528,14 @@ void AOConfig::set_timeofday(QString p_string)
   d->set_timeofday(p_string);
 }
 
-void AOConfig::set_manual_timeofday(int p_state)
-{
-  set_manual_timeofday(p_state == Qt::Checked);
-}
-
 void AOConfig::set_manual_timeofday(bool p_enabled)
 {
   d->set_manual_timeofday(p_enabled);
 }
 
-void AOConfig::set_server_alerts(int p_state)
-{
-  set_server_alerts(p_state == Qt::Checked);
-}
-
 void AOConfig::set_server_alerts(bool p_enabled)
 {
   d->set_server_alerts(p_enabled);
-}
-
-void AOConfig::set_always_pre(int p_state)
-{
-  set_always_pre(p_state == Qt::Checked);
 }
 
 void AOConfig::set_always_pre(bool p_enabled)
@@ -583,19 +558,9 @@ void AOConfig::set_log_is_topdown(bool p_enabled)
   d->set_log_is_topdown(p_enabled);
 }
 
-void AOConfig::set_log_is_topdown(int p_state)
-{
-  set_log_is_topdown(p_state == Qt::Checked);
-}
-
 void AOConfig::set_log_uses_newline(bool p_enabled)
 {
   d->set_log_uses_newline(p_enabled);
-}
-
-void AOConfig::set_log_uses_newline(int p_state)
-{
-  set_log_uses_newline(p_state == Qt::Checked);
 }
 
 void AOConfig::set_log_music(bool p_enabled)
@@ -603,29 +568,14 @@ void AOConfig::set_log_music(bool p_enabled)
   d->set_log_music(p_enabled);
 }
 
-void AOConfig::set_log_music(int p_state)
-{
-  set_log_music(p_state == Qt::Checked);
-}
-
 void AOConfig::set_log_is_recording(bool p_enabled)
 {
   d->set_log_is_recording(p_enabled);
 }
 
-void AOConfig::set_log_is_recording(int p_state)
-{
-  set_log_is_recording(p_state == Qt::Checked);
-}
-
 void AOConfig::set_mute_background_audio(bool p_enabled)
 {
   d->set_mute_background_audio(p_enabled);
-}
-
-void AOConfig::set_mute_background_audio(int p_state)
-{
-  set_mute_background_audio(p_state == Qt::Checked);
 }
 
 void AOConfig::set_master_volume(int p_number)
@@ -661,11 +611,6 @@ void AOConfig::set_blip_rate(int p_number)
 void AOConfig::set_blank_blips(bool p_enabled)
 {
   d->set_blank_blips(p_enabled);
-}
-
-void AOConfig::set_blank_blips(int p_state)
-{
-  set_blank_blips(p_state == Qt::Checked);
 }
 
 void AOConfig::save_file()

@@ -52,32 +52,22 @@ public slots:
   // setters
 public slots:
   void set_autosave(bool p_enabled);
-  void set_autosave(int p_state);
   void set_username(QString p_string);
   void set_callwords(QString p_string);
   void set_server_alerts(bool p_enabled);
-  void set_server_alerts(int p_state);
   void set_always_pre(bool p_enabled);
-  void set_always_pre(int p_state);
   void set_theme(QString p_string);
   void set_gamemode(QString p_string);
   void set_manual_gamemode(bool p_enabled);
-  void set_manual_gamemode(int p_state);
   void set_timeofday(QString p_string);
   void set_manual_timeofday(bool p_enabled);
-  void set_manual_timeofday(int p_state);
   void set_chat_tick_interval(int p_number);
   void set_log_max_lines(int p_number);
   void set_log_is_topdown(bool p_enabled);
-  void set_log_is_topdown(int p_state);
   void set_log_uses_newline(bool p_enabled);
-  void set_log_uses_newline(int p_state);
   void set_log_music(bool p_enabled);
-  void set_log_music(int p_state);
   void set_log_is_recording(bool p_enabled);
-  void set_log_is_recording(int p_state);
   void set_mute_background_audio(bool p_enabled);
-  void set_mute_background_audio(int p_state);
   void set_master_volume(int p_number);
   void set_system_volume(int p_number);
   void set_effect_volume(int p_number);
@@ -85,7 +75,6 @@ public slots:
   void set_blip_volume(int p_number);
   void set_blip_rate(int p_number);
   void set_blank_blips(bool p_enabled);
-  void set_blank_blips(int p_state);
 
   // signals
 signals:
