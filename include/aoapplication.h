@@ -355,6 +355,9 @@ public:
   // Returns the text between target_tag and terminator_tag in p_file
   QString get_stylesheet(QString target_tag, QString p_file);
 
+  // Returns string list (color name to color HEX)
+  QMap<Color, QString> get_chatmessage_colors();
+
   // Returns string list (highlight character to color name)
   QVector<QStringList> get_highlight_colors();
 

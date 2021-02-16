@@ -316,6 +316,16 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
   return f_text; // This is the empty string if no appends took place
 }
 
+QMap<Color, QString> AOApplication::get_chatmessage_colors()
+{
+  QMap<Color, QString> default_colors = {
+      {CGreen, "#65C856"},  {CRed, "#BA1518"},    {COrange, "#D55900"}, {CBlue, "#1588C8"},
+      {CYellow, "#E7CE4E"}, {CPurple, "#F776FD"}, {CPink, "#DA7C80"},   {CWhite, "#D5D5D5"},
+  };
+
+  return default_colors;
+}
+
 QVector<QStringList> AOApplication::get_highlight_colors()
 {
   // File lookup order
