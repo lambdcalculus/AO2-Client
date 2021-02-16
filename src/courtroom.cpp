@@ -1469,7 +1469,7 @@ void Courtroom::chat_tick()
       // render_character should only be false if the character is a highlight
       // character specifically marked as a character that should not be
       // rendered.
-      QVector<QStringList> f_vec = ao_app->get_highlight_color();
+      QVector<QStringList> f_vec = ao_app->get_highlight_colors();
       if (m_color_stack.isEmpty())
         m_color_stack.push("");
 

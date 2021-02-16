@@ -316,7 +316,7 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
   return f_text; // This is the empty string if no appends took place
 }
 
-QVector<QStringList> AOApplication::get_highlight_color()
+QVector<QStringList> AOApplication::get_highlight_colors()
 {
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
