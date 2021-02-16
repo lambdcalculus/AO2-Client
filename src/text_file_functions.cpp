@@ -328,7 +328,67 @@ QMap<Color, QStringList> AOApplication::get_chatmessage_colors()
   default_colors[CPurple] = QStringList{"Purple", "#F776FD"};
   default_colors[CPink] = QStringList{"Pink", "#DA7C80"};
 
-  return default_colors;
+  // File lookup order
+  // 1. In the theme folder (gamemode-timeofday/main/default), look for
+  // "courtroom_config.ini".
+
+  QString path = find_theme_asset_path("courtroom_config.ini");
+  if (path.isEmpty())
+    return default_colors;
+
+  QFile design_ini(path);
+  if (!design_ini.open(QIODevice::ReadOnly))
+    return default_colors;
+
+  // Make copy for new colors
+  QMap<Color, QStringList> read_colors;
+  for (QMap<Color, QStringList>::iterator item = default_colors.begin(); item != default_colors.end(); ++item)
+  {
+    Color color = item.key();
+    QStringList color_parameters = item.value();
+    read_colors[color] = color_parameters;
+  }
+
+  QTextStream in(&design_ini);
+  bool tag_found = false;
+  while (!in.atEnd())
+  {
+    QString line = in.readLine();
+
+    if (line.startsWith("[IC_COLORS]", Qt::CaseInsensitive))
+    {
+      tag_found = true;
+      continue;
+    }
+
+    if (tag_found)
+    {
+      if ((line.startsWith("[") && line.endsWith("]")))
+        break;
+      // Syntax
+      // Name = Color Code (hex or named color)
+      QString color_name = line.split("=")[0].trimmed();
+      QString color_code = line.split("=")[1].trimmed();
+
+      // We will try and override colors in our currently stored list of colors
+      // We match by the 0th color parameter
+      for (QMap<Color, QStringList>::iterator item = default_colors.begin(); item != default_colors.end(); ++item)
+      {
+        Color default_color = item.key();
+        QStringList default_color_parameters = item.value();
+        QString default_color_name = default_color_parameters[0];
+
+        if (color_name == default_color_name)
+        {
+          read_colors[default_color] = QStringList{color_name, color_code};
+          break;
+        }
+      }
+    }
+  }
+
+  design_ini.close();
+  return read_colors;
 }
 
 QVector<QStringList> AOApplication::get_highlight_colors()
