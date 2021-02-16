@@ -316,12 +316,17 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
   return f_text; // This is the empty string if no appends took place
 }
 
-QMap<Color, QString> AOApplication::get_chatmessage_colors()
+QMap<Color, QStringList> AOApplication::get_chatmessage_colors()
 {
-  QMap<Color, QString> default_colors = {
-      {CGreen, "#65C856"},  {CRed, "#BA1518"},    {COrange, "#D55900"}, {CBlue, "#1588C8"},
-      {CYellow, "#E7CE4E"}, {CPurple, "#F776FD"}, {CPink, "#DA7C80"},   {CWhite, "#D5D5D5"},
-  };
+  QMap<Color, QStringList> default_colors;
+  default_colors[CWhite] = QStringList{"White", "#D5D5D5"};
+  default_colors[CGreen] = QStringList{"Green", "#65C856"};
+  default_colors[CRed] = QStringList{"Red", "#BA1518"};
+  default_colors[COrange] = QStringList{"Orange", "#D55900"};
+  default_colors[CBlue] = QStringList{"Blue", "#1588C8"};
+  default_colors[CYellow] = QStringList{"Yellow", "#E7CE4E"};
+  default_colors[CPurple] = QStringList{"Purple", "#F776FD"};
+  default_colors[CPink] = QStringList{"Pink", "#DA7C80"};
 
   return default_colors;
 }

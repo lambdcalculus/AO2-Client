@@ -1573,17 +1573,17 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_text_color()
 {
-  QMap<Color, QString> all_colors = ao_app->get_chatmessage_colors();
+  QMap<Color, QStringList> all_colors = ao_app->get_chatmessage_colors();
   Color color = (Color)m_chatmessage[CMTextColor].toInt();
 
   QString hex_color;
   if (all_colors.contains(color))
   {
-    hex_color = all_colors[color];
+    hex_color = all_colors[color][1];
   }
   else
   {
-    hex_color = all_colors[CWhite];
+    hex_color = all_colors[CWhite][1];
   }
 
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
