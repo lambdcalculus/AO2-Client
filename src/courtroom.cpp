@@ -2457,7 +2457,7 @@ void Courtroom::on_set_notes_clicked()
 
 void Courtroom::resume_timer(int timer_id)
 {
-  if (timer_id >= timer_number)
+  if (timer_id >= timer_number || timer_id < 0)
     return;
 
   ui_timers[timer_id]->resume();
@@ -2465,7 +2465,7 @@ void Courtroom::resume_timer(int timer_id)
 
 void Courtroom::set_timer_time(int timer_id, int new_time)
 {
-  if (timer_id >= timer_number)
+  if (timer_id >= timer_number || timer_id < 0)
     return;
 
   ui_timers[timer_id]->set_time(QTime(0, 0).addMSecs(new_time));
@@ -2473,7 +2473,7 @@ void Courtroom::set_timer_time(int timer_id, int new_time)
 
 void Courtroom::set_timer_timestep(int timer_id, int timestep_length)
 {
-  if (timer_id >= timer_number)
+  if (timer_id >= timer_number || timer_id < 0)
     return;
 
   ui_timers[timer_id]->set_timestep_length(timestep_length);
@@ -2481,7 +2481,7 @@ void Courtroom::set_timer_timestep(int timer_id, int timestep_length)
 
 void Courtroom::set_timer_firing(int timer_id, int firing_interval)
 {
-  if (timer_id >= timer_number)
+  if (timer_id >= timer_number || timer_id < 0)
     return;
 
   ui_timers[timer_id]->set_firing_interval(firing_interval);
@@ -2489,7 +2489,7 @@ void Courtroom::set_timer_firing(int timer_id, int firing_interval)
 
 void Courtroom::pause_timer(int timer_id)
 {
-  if (timer_id >= timer_number)
+  if (timer_id >= timer_number || timer_id < 0)
     return;
 
   ui_timers[timer_id]->pause();
