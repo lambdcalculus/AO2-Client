@@ -29,7 +29,7 @@ public slots:
   void blip_tick();
 
 private:
-  DRAudioEngine::family_ptr m_family;
+  DRAudioStreamFamily::ptr m_family;
   std::optional<QString> m_blip;
   std::optional<QString> m_file;
 };
