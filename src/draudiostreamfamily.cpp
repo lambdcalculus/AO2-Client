@@ -135,7 +135,7 @@ float DRAudioStreamFamily::calculate_volume()
     volume *= (float(DRAudioEngine::get_volume()) * 0.01f);
   }
 
-  return volume;
+  return volume * 100.0f;
 }
 
 void DRAudioStreamFamily::adjust_capacity()
