@@ -27,7 +27,7 @@ private:
   QObjectList parents;
   std::int32_t volume = 0;
   DRAudio::Options options;
-  QMap<DRAudio::Family, DRAudioEngine::family_ptr> family_map;
+  QMap<DRAudio::Family, DRAudioStreamFamily::ptr> family_map;
 };
 
 namespace
@@ -46,10 +46,14 @@ DRAudioEngine::DRAudioEngine(QObject *p_parent) : QObject(p_parent)
     d = new DRAudioEnginePrivate(qApp);
 
     // there's plenty of way of optimizing this
-    d->family_map.insert(DRAudio::Family::FSystem, family_ptr(new DRAudioStreamFamily(DRAudio::Family::FSystem)));
-    d->family_map.insert(DRAudio::Family::FEffect, family_ptr(new DRAudioStreamFamily(DRAudio::Family::FEffect)));
-    d->family_map.insert(DRAudio::Family::FMusic, family_ptr(new DRAudioStreamFamily(DRAudio::Family::FMusic)));
-    d->family_map.insert(DRAudio::Family::FBlip, family_ptr(new DRAudioStreamFamily(DRAudio::Family::FBlip)));
+    d->family_map.insert(DRAudio::Family::FSystem,
+                         DRAudioStreamFamily::ptr(new DRAudioStreamFamily(DRAudio::Family::FSystem)));
+    d->family_map.insert(DRAudio::Family::FEffect,
+                         DRAudioStreamFamily::ptr(new DRAudioStreamFamily(DRAudio::Family::FEffect)));
+    d->family_map.insert(DRAudio::Family::FMusic,
+                         DRAudioStreamFamily::ptr(new DRAudioStreamFamily(DRAudio::Family::FMusic)));
+    d->family_map.insert(DRAudio::Family::FBlip,
+                         DRAudioStreamFamily::ptr(new DRAudioStreamFamily(DRAudio::Family::FBlip)));
 
     // family-specific options
     get_family(DRAudio::Family::FSystem)->set_ignore_suppression(true);
@@ -65,12 +69,12 @@ DRAudioEngine::~DRAudioEngine()
   BASS_Free();
 }
 
-DRAudioEngine::family_ptr DRAudioEngine::get_family(DRAudio::Family p_family)
+DRAudioStreamFamily::ptr DRAudioEngine::get_family(DRAudio::Family p_family)
 {
   return d->family_map.value(p_family);
 }
 
-QList<DRAudioEngine::family_ptr> DRAudioEngine::get_family_list()
+QList<DRAudioStreamFamily::ptr> DRAudioEngine::get_family_list()
 {
   return d->family_map.values();
 }

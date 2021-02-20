@@ -92,6 +92,7 @@ SOURCES += \
   src/charselect.cpp \
   src/courtroom.cpp \
   src/courtroom_widgets.cpp \
+  src/datatypes.cpp \
   src/debug_functions.cpp \
   src/discord_rich_presence.cpp \
   src/draudio.cpp \

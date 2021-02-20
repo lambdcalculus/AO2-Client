@@ -94,7 +94,7 @@ std::optional<DRAudioError> DRAudioStream::set_file(QString p_file)
   return std::nullopt;
 }
 
-void DRAudioStream::set_volume(int32_t p_volume)
+void DRAudioStream::set_volume(float p_volume)
 {
   if (!m_hstream)
     return;

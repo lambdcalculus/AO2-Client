@@ -18,6 +18,8 @@ class DRAudioStream : public QObject
   Q_OBJECT
 
 public:
+  using ptr = QSharedPointer<DRAudioStream>;
+
   ~DRAudioStream();
 
   DRAudio::Family get_family();
@@ -31,7 +33,7 @@ public slots:
   void stop();
 
   std::optional<DRAudioError> set_file(QString m_file);
-  void set_volume(std::int32_t p_volume);
+  void set_volume(float p_volume);
 
 signals:
   void file_changed(QString p_file);

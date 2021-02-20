@@ -7,13 +7,11 @@ class DRAudioEngine : public QObject
   Q_OBJECT
 
 public:
-  using family_ptr = QSharedPointer<DRAudioStreamFamily>;
-
   DRAudioEngine(QObject *p_parent = nullptr);
   ~DRAudioEngine();
 
-  static family_ptr get_family(DRAudio::Family p_family);
-  static QList<family_ptr> get_family_list();
+  static DRAudioStreamFamily::ptr get_family(DRAudio::Family p_family);
+  static QList<DRAudioStreamFamily::ptr> get_family_list();
   static std::int32_t get_volume();
   static DRAudio::Options get_options();
   // option getter

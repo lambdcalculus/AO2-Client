@@ -15,6 +15,6 @@ public slots:
   void stop();
 
 private:
-  DRAudioEngine::family_ptr m_family;
+  DRAudioStreamFamily::ptr m_family;
   QString m_song;
 };
