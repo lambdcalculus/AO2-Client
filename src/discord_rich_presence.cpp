@@ -37,9 +37,11 @@ void Discord::start(const char *APPLICATION_ID)
     qInfo() << "Discord RPC ready for" << user->username;
   };
   handlers.disconnected = [](int errorCode, const char *message) {
+    Q_UNUSED(errorCode)
     qInfo() << "Discord RPC disconnected! " << message;
   };
   handlers.errored = [](int errorCode, const char *message) {
+    Q_UNUSED(errorCode)
     qWarning() << "Discord RPC errored out! " << message;
   };
   qInfo() << "Initializing Discord RPC";
