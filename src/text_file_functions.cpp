@@ -6,6 +6,7 @@
 
 #include <QColor>
 #include <QDebug>
+#include <QSettings>
 #include <QStringList>
 #include <QTextStream>
 #include <QVector>
@@ -330,64 +331,57 @@ QMap<Color, QStringList> AOApplication::get_chatmessage_colors()
 
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
-  // "courtroom_config.ini".
+  // "courtroom_text_colors.ini".
 
-  QString path = find_theme_asset_path("courtroom_config.ini");
+  QString path = find_theme_asset_path("courtroom_text_colors.ini");
   if (path.isEmpty())
     return default_colors;
 
-  QFile design_ini(path);
-  if (!design_ini.open(QIODevice::ReadOnly))
-    return default_colors;
+  QSettings text_colors(path, QSettings::IniFormat);
 
   // Make copy for new colors
   QMap<Color, QStringList> read_colors;
-  for (QMap<Color, QStringList>::iterator item = default_colors.begin(); item != default_colors.end(); ++item)
+  foreach (Color color, default_colors.keys())
   {
-    Color color = item.key();
-    QStringList color_parameters = item.value();
+    QStringList color_parameters = default_colors[color];
     read_colors[color] = color_parameters;
   }
 
-  QTextStream in(&design_ini);
-  bool tag_found = false;
-  while (!in.atEnd())
+  foreach (QString color_name, text_colors.childGroups())
   {
-    QString line = in.readLine();
+    // Capitalize because inis may not necessarily capitalize, but DRO does
+    color_name = color_name[0].toUpper() + color_name.mid(1).toLower();
 
-    if (line.startsWith("[IC_COLORS]", Qt::CaseInsensitive))
+    // Ignore colors that are not default colors
+    // Check if color is valid
+    Color matched_default_color;
+    bool valid = false;
+
+    foreach (Color default_color, default_colors.keys())
     {
-      tag_found = true;
-      continue;
-    }
-
-    if (tag_found)
-    {
-      if ((line.startsWith("[") && line.endsWith("]")))
-        break;
-      // Syntax
-      // Name = Color Code (hex or named color)
-      QString color_name = line.split("=")[0].trimmed();
-      QString color_code = line.split("=")[1].trimmed();
-
-      // We will try and override colors in our currently stored list of colors
-      // We match by the 0th color parameter
-      for (QMap<Color, QStringList>::iterator item = default_colors.begin(); item != default_colors.end(); ++item)
+      QStringList default_color_parameters = default_colors[default_color];
+      if (default_color_parameters[0] == color_name)
       {
-        Color default_color = item.key();
-        QStringList default_color_parameters = item.value();
-        QString default_color_name = default_color_parameters[0];
-
-        if (color_name == default_color_name)
-        {
-          read_colors[default_color] = QStringList{color_name, color_code};
-          break;
-        }
+        matched_default_color = default_color;
+        valid = true;
+        break;
       }
     }
+
+    if (!valid)
+      continue;
+
+    // At this point we know the color is valid
+    text_colors.beginGroup(color_name);
+    QString color_code = text_colors.value("code").toString();
+    if (color_code.isEmpty())
+      continue;
+
+    // We will override colors in our currently stored list of colors
+    read_colors[matched_default_color] = QStringList{color_name, color_code};
+    text_colors.endGroup();
   }
 
-  design_ini.close();
   return read_colors;
 }
 
