@@ -376,6 +376,11 @@ QMap<Color, QStringList> AOApplication::get_chatmessage_colors()
     QString color_code = text_colors.value("code").toString();
     if (color_code.isEmpty())
       continue;
+    // Check if the color is valid. If not, set it to white
+    if (!QColor::isValidColor(color_code))
+    {
+      color_code = default_colors[CWhite][1];
+    }
 
     // We will override colors in our currently stored list of colors
     read_colors[matched_default_color] = QStringList{color_name, color_code};

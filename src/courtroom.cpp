@@ -1576,18 +1576,19 @@ void Courtroom::set_text_color()
   QMap<Color, QStringList> all_colors = ao_app->get_chatmessage_colors();
   Color color = (Color)m_chatmessage[CMTextColor].toInt();
 
-  QString hex_color;
+  QString color_code;
   if (all_colors.contains(color))
   {
-    hex_color = all_colors[color][1];
+    color_code = all_colors[color][1];
   }
   else
   {
-    hex_color = all_colors[CWhite][1];
+    // Fallback color in case some other client sent a message with an out of bounds color
+    color_code = all_colors[CWhite][1];
   }
 
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-  m_base_string_color.setNamedColor(hex_color);
+  m_base_string_color.setNamedColor(color_code);
 }
 
 void Courtroom::set_ip_list(QString p_list)
