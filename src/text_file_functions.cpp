@@ -317,77 +317,59 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
   return f_text; // This is the empty string if no appends took place
 }
 
-QMap<Color, QStringList> AOApplication::get_chatmessage_colors()
+QMap<dr::Color, dr::ColorInfo> AOApplication::get_chatmessage_colors()
 {
-  QMap<Color, QStringList> default_colors;
-  default_colors[CWhite] = QStringList{"White", "#D5D5D5"};
-  default_colors[CGreen] = QStringList{"Green", "#65C856"};
-  default_colors[CRed] = QStringList{"Red", "#BA1518"};
-  default_colors[COrange] = QStringList{"Orange", "#D55900"};
-  default_colors[CBlue] = QStringList{"Blue", "#1588C8"};
-  default_colors[CYellow] = QStringList{"Yellow", "#E7CE4E"};
-  default_colors[CPurple] = QStringList{"Purple", "#F776FD"};
-  default_colors[CPink] = QStringList{"Pink", "#DA7C80"};
+  QMap<dr::Color, dr::ColorInfo> color_map = dr::get_default_color_map();
 
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
   // "courtroom_text_colors.ini".
 
-  QString path = find_theme_asset_path("courtroom_text_colors.ini");
+  const QString file_name = "courtroom_text_colors.ini";
+  QString path = find_theme_asset_path(file_name);
   if (path.isEmpty())
-    return default_colors;
-
-  QSettings text_colors(path, QSettings::IniFormat);
-
-  // Make copy for new colors
-  QMap<Color, QStringList> read_colors;
-  foreach (Color color, default_colors.keys())
   {
-    QStringList color_parameters = default_colors[color];
-    read_colors[color] = color_parameters;
+    qInfo().noquote() << QString("[color] theme %1 is missing file: %2, using default colors instead")
+                             .arg(get_theme())
+                             .arg(file_name);
+    return color_map;
   }
+  qInfo().noquote() << QString("[color] loading colors for theme %1").arg(get_theme());
 
-  foreach (QString color_name, text_colors.childGroups())
+  QSettings color_settings(path, QSettings::IniFormat);
+
+  QMap<QString, dr::ColorInfo> color_replacement_map;
+  for (QString &i_group : color_settings.childGroups())
   {
-    // Capitalize because inis may not necessarily capitalize, but DRO does
-    color_name = color_name[0].toUpper() + color_name.mid(1).toLower();
+    const QString lower_name = i_group.toLower();
 
-    // Ignore colors that are not default colors
-    // Check if color is valid
-    Color matched_default_color;
-    bool valid = false;
+    color_settings.beginGroup(i_group);
+    if (!color_settings.contains("code"))
+      continue;
+    const QString code = color_settings.value("code").toString().toLower();
 
-    foreach (Color default_color, default_colors.keys())
+    if (!QColor::isValidColor(code))
     {
-      QStringList default_color_parameters = default_colors[default_color];
-      if (default_color_parameters[0] == color_name)
-      {
-        matched_default_color = default_color;
-        valid = true;
-        break;
-      }
+      qWarning().noquote() << QString("[color] for color %1: color code is invalid: %2").arg(lower_name).arg(code);
+      continue;
     }
 
-    if (!valid)
-      continue;
-
-    // At this point we know the color is valid
-    text_colors.beginGroup(color_name);
-    QString color_code = text_colors.value("code").toString();
-    if (color_code.isEmpty())
-      continue;
-    // Check if the color is valid. If not, set it to white
-    if (!QColor::isValidColor(color_code))
-    {
-      color_code = default_colors[CWhite][1];
-    }
-
-    // We will override colors in our currently stored list of colors
-    read_colors[matched_default_color] = QStringList{color_name, color_code};
-    text_colors.endGroup();
+    if (color_replacement_map.contains(lower_name))
+      qWarning().noquote() << QString("[color] color %1 is already defined, replacing anyway").arg(lower_name);
+    color_replacement_map[lower_name].code = code;
   }
 
-  return read_colors;
+  // replace the data in the map we will return
+  for (dr::Color &i_color : color_map.keys())
+  {
+    dr::ColorInfo &color_info = color_map[i_color];
+    const QString lower_name = color_info.name.toLower();
+    if (!color_replacement_map.contains(lower_name))
+      continue;
+    color_info.code = color_replacement_map[lower_name].code;
+  }
+
+  return color_map;
 }
 
 QVector<QStringList> AOApplication::get_highlight_colors()

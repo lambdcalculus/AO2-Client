@@ -980,7 +980,7 @@ void Courtroom::handle_chatmessage_3()
 
   int f_anim_state = 0;
   // BLUE is from an enum in datatypes.h
-  bool text_is_blue = m_chatmessage[CMTextColor].toInt() == CBlue;
+  bool text_is_blue = m_chatmessage[CMTextColor].toInt() == dr::CBlue;
 
   if (!text_is_blue && text_state == 1)
     // talking
@@ -1431,7 +1431,7 @@ void Courtroom::chat_tick()
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
-    else if (m_chatmessage[CMTextColor].toInt() == CRainbow)
+    else if (m_chatmessage[CMTextColor].toInt() == dr::CRainbow)
     {
       QString html_color;
 
@@ -1573,20 +1573,9 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_text_color()
 {
-  QMap<Color, QStringList> all_colors = ao_app->get_chatmessage_colors();
-  Color color = (Color)m_chatmessage[CMTextColor].toInt();
-
-  QString color_code;
-  if (all_colors.contains(color))
-  {
-    color_code = all_colors[color][1];
-  }
-  else
-  {
-    // Fallback color in case some other client sent a message with an out of bounds color
-    color_code = all_colors[CWhite][1];
-  }
-
+  const QMap<dr::Color, dr::ColorInfo> color_map = ao_app->get_chatmessage_colors();
+  const dr::Color color = dr::Color(m_chatmessage[CMTextColor].toInt());
+  const QString color_code = color_map[color_map.contains(color) ? color : dr::CDefault].code;
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
   m_base_string_color.setNamedColor(color_code);
 }

@@ -356,7 +356,7 @@ public:
   QString get_stylesheet(QString target_tag, QString p_file);
 
   // Returns string list (color name to color HEX)
-  QMap<Color, QStringList> get_chatmessage_colors();
+  QMap<dr::Color, dr::ColorInfo> get_chatmessage_colors();
 
   // Returns string list (highlight character to color name)
   QVector<QStringList> get_highlight_colors();
