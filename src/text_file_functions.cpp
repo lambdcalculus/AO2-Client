@@ -356,7 +356,8 @@ QMap<dr::Color, dr::ColorInfo> AOApplication::get_chatmessage_colors()
 
     if (color_replacement_map.contains(lower_name))
       qWarning().noquote() << QString("[color] color %1 is already defined, replacing anyway").arg(lower_name);
-    color_replacement_map[lower_name].code = code;
+    color_replacement_map[lower_name].code = code.toLower();
+    color_settings.endGroup();
   }
 
   // replace the data in the map we will return
