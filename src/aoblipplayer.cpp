@@ -8,16 +8,16 @@ AOBlipPlayer::AOBlipPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObjec
 
 void AOBlipPlayer::set_blips(QString p_blip)
 {
-  if (m_blip.has_value() && m_blip.value() == p_blip)
+  if (m_blipName.has_value() && m_blipName.value() == p_blip)
     return;
 
-  m_blip = p_blip;
-  m_file = ao_app->get_sounds_path(m_blip.value());
+  m_blipName = p_blip;
+  m_blipFile = ao_app->get_sounds_path(m_blipName.value());
 }
 
 void AOBlipPlayer::blip_tick()
 {
-  if (!m_file.has_value())
+  if (!m_blipFile.has_value())
     return;
-  m_family->play_stream(m_file.value());
+  m_family->play_stream(m_blipFile.value());
 }

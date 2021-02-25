@@ -15,11 +15,7 @@ struct record_type
   bool music = false;
 
   record_type() = default;
-  record_type(QString p_name, QString p_line, QString p_color, bool p_is_system, bool p_is_music)
-      : name(p_name), line(p_line), system(p_is_system), music(p_is_music)
-  {
-    Q_UNUSED(p_color);
-  }
+  record_type(QString p_name, QString p_line, QString p_color, bool p_is_system, bool p_is_music);
 };
 
 typedef std::shared_ptr<record_type> record_type_ptr;
@@ -82,12 +78,6 @@ struct area_type
 {
   QString name;
   QString background;
-};
-
-struct pos_type
-{
-  int x;
-  int y;
 };
 
 struct pos_size_type

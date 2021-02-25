@@ -85,9 +85,9 @@ void DRAudioStreamFamily::set_ignore_suppression(bool p_enabled)
   set_options(options);
 }
 
-std::optional<DRAudioStreamFamily::stream_ptr> DRAudioStreamFamily::create_stream(QString p_file)
+std::optional<DRAudioStream::ptr> DRAudioStreamFamily::create_stream(QString p_file)
 {
-  stream_ptr stream(new DRAudioStream(m_family));
+  DRAudioStream::ptr stream(new DRAudioStream(m_family));
 
   if (auto err = stream->set_file(p_file); err)
   {
@@ -104,9 +104,9 @@ std::optional<DRAudioStreamFamily::stream_ptr> DRAudioStreamFamily::create_strea
   return stream;
 }
 
-std::optional<DRAudioStreamFamily::stream_ptr> DRAudioStreamFamily::play_stream(QString p_file)
+std::optional<DRAudioStream::ptr> DRAudioStreamFamily::play_stream(QString p_file)
 {
-  std::optional<stream_ptr> r_stream = create_stream(p_file);
+  std::optional<DRAudioStream::ptr> r_stream = create_stream(p_file);
   if (r_stream.has_value())
   {
     auto stream = r_stream.value();
@@ -116,12 +116,12 @@ std::optional<DRAudioStreamFamily::stream_ptr> DRAudioStreamFamily::play_stream(
   return r_stream;
 }
 
-QVector<DRAudioStreamFamily::stream_ptr> DRAudioStreamFamily::get_stream_list()
+QVector<DRAudioStream::ptr> DRAudioStreamFamily::get_stream_list()
 {
   return m_stream_list;
 }
 
-int32_t DRAudioStreamFamily::calculate_volume()
+float DRAudioStreamFamily::calculate_volume()
 {
   float volume = float(m_volume) * 0.01f;
 
@@ -132,10 +132,10 @@ int32_t DRAudioStreamFamily::calculate_volume()
   else
   {
     // master volume adjustment
-    volume = volume * (float(DRAudioEngine::get_volume()) * 0.01f);
+    volume *= (float(DRAudioEngine::get_volume()) * 0.01f);
   }
 
-  return volume * 100.f;
+  return volume * 100.0f;
 }
 
 void DRAudioStreamFamily::adjust_capacity()
