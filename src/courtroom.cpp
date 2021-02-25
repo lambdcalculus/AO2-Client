@@ -980,7 +980,7 @@ void Courtroom::handle_chatmessage_3()
 
   int f_anim_state = 0;
   // BLUE is from an enum in datatypes.h
-  bool text_is_blue = m_chatmessage[CMTextColor].toInt() == CBlue;
+  bool text_is_blue = m_chatmessage[CMTextColor].toInt() == dr::CBlue;
 
   if (!text_is_blue && text_state == 1)
     // talking
@@ -1431,7 +1431,7 @@ void Courtroom::chat_tick()
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
-    else if (m_chatmessage[CMTextColor].toInt() == CRainbow)
+    else if (m_chatmessage[CMTextColor].toInt() == dr::CRainbow)
     {
       QString html_color;
 
@@ -1469,7 +1469,7 @@ void Courtroom::chat_tick()
       // render_character should only be false if the character is a highlight
       // character specifically marked as a character that should not be
       // rendered.
-      QVector<QStringList> f_vec = ao_app->get_highlight_color();
+      QVector<QStringList> f_vec = ao_app->get_highlight_colors();
       if (m_color_stack.isEmpty())
         m_color_stack.push("");
 
@@ -1573,45 +1573,11 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_text_color()
 {
-
-  switch (m_chatmessage[CMTextColor].toInt())
-  {
-  case CGreen:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(101, 200, 86);
-    break;
-  case CRed:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(186, 21, 24);
-    break;
-  case COrange:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(213, 89, 0);
-    break;
-  case CBlue:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(21, 136, 200);
-    break;
-  case CYellow:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(231, 206, 78);
-    break;
-  case CPurple:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(247, 118, 253);
-    break;
-  case CPink:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(218, 124, 128);
-    break;
-  default:
-    qDebug() << "W: undefined text color: " << m_chatmessage[CMTextColor];
-    [[fallthrough]];
-  case CWhite:
-    ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
-    m_base_string_color.setRgb(213, 213, 213);
-    break;
-  }
+  const QMap<dr::Color, dr::ColorInfo> color_map = ao_app->get_chatmessage_colors();
+  const dr::Color color = dr::Color(m_chatmessage[CMTextColor].toInt());
+  const QString color_code = color_map[color_map.contains(color) ? color : dr::CDefault].code;
+  ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
+  m_base_string_color.setNamedColor(color_code);
 }
 
 void Courtroom::set_ip_list(QString p_list)

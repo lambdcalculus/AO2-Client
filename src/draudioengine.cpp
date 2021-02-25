@@ -10,6 +10,8 @@ class DRAudioEnginePrivate : public QObject
   Q_OBJECT
 
 public:
+  using ptr = std::unique_ptr<DRAudioEnginePrivate>;
+
   DRAudioEnginePrivate(QObject *parent = nullptr) : QObject(parent)
   {}
 
@@ -20,9 +22,6 @@ public:
       QMetaObject::invokeMethod(i_parent, p_method_name.toStdString().c_str(), p_arg1);
     }
   }
-
-private:
-  friend class DRAudioEngine;
 
   QObjectList parents;
   std::int32_t volume = 0;

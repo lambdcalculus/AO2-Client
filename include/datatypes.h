@@ -1,7 +1,9 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include <QMap>
 #include <QString>
+
 #include <memory>
 
 struct record_type
@@ -106,9 +108,11 @@ enum ChatMessage : std::int32_t
   CMShowName,
 };
 
+namespace dr
+{
 enum Color : std::int32_t
 {
-  CWhite,
+  CDefault,
   CGreen,
   CRed,
   COrange,
@@ -117,6 +121,24 @@ enum Color : std::int32_t
   CPurple,
   CPink,
   CRainbow,
+
+  // aliases
+  CWhite = CDefault,
 };
+
+struct ColorInfo
+{
+public:
+  ColorInfo() = default;
+  ColorInfo(QString p_showname, QString p_code) : name(p_showname.toLower()), showname(p_showname), code(p_code)
+  {}
+
+  QString name;
+  QString showname;
+  QString code;
+};
+
+QMap<Color, ColorInfo> get_default_color_map();
+} // namespace dr
 
 #endif // DATATYPES_H
