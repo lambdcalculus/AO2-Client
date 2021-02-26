@@ -19,7 +19,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   loader.load_from_file(":res/ui/config_panel.ui", this);
 
   // tab
-  setFocusProxy(AO_GUI_WIDGET(QTabWidget, "tab_widget"));
+  QTabWidget *tab_widget = AO_GUI_WIDGET(QTabWidget, "tab_widget");
+  setFocusProxy(tab_widget);
+  tab_widget->setCurrentIndex(0);
 
   // behaviour
   w_save = AO_GUI_WIDGET(QPushButton, "save");
