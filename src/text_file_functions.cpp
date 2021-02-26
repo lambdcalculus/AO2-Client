@@ -317,9 +317,9 @@ QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
   return f_text; // This is the empty string if no appends took place
 }
 
-QMap<dr::Color, dr::ColorInfo> AOApplication::get_chatmessage_colors()
+QMap<DR::Color, DR::ColorInfo> AOApplication::get_chatmessage_colors()
 {
-  QMap<dr::Color, dr::ColorInfo> color_map = dr::get_default_color_map();
+  QMap<DR::Color, DR::ColorInfo> color_map = DR::get_default_color_map();
 
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
@@ -338,7 +338,7 @@ QMap<dr::Color, dr::ColorInfo> AOApplication::get_chatmessage_colors()
 
   QSettings color_settings(path, QSettings::IniFormat);
 
-  QMap<QString, dr::ColorInfo> color_replacement_map;
+  QMap<QString, DR::ColorInfo> color_replacement_map;
   for (QString &i_group : color_settings.childGroups())
   {
     const QString lower_name = i_group.toLower();
@@ -361,9 +361,9 @@ QMap<dr::Color, dr::ColorInfo> AOApplication::get_chatmessage_colors()
   }
 
   // replace the data in the map we will return
-  for (dr::Color &i_color : color_map.keys())
+  for (DR::Color &i_color : color_map.keys())
   {
-    dr::ColorInfo &color_info = color_map[i_color];
+    DR::ColorInfo &color_info = color_map[i_color];
     const QString lower_name = color_info.name.toLower();
     if (!color_replacement_map.contains(lower_name))
       continue;

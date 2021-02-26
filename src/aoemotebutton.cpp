@@ -55,7 +55,7 @@ void AOEmoteButton::set_image(QString p_chr, int p_emote_number, bool p_enabled)
 
       if (file_exists(selected_texture_path))
       {
-        w_selected->setStyleSheet(QString("border-image: url(%1)").arg(selected_texture_path));
+        w_selected->setStyleSheet(QString("border-image: url(\"%1\")").arg(selected_texture_path));
       }
       else
       {
@@ -70,7 +70,7 @@ void AOEmoteButton::set_image(QString p_chr, int p_emote_number, bool p_enabled)
   const bool texture_exist = file_exists(texture_path);
   setText(texture_exist ? QString() : ao_app->get_emote_comment(p_chr, p_emote_number));
   setStyleSheet(texture_exist
-                    ? QString("%1 { border-image: url(%2); }").arg(metaObject()->className()).arg(texture_path)
+                    ? QString("%1 { border-image: url(\"%2\"); }").arg(metaObject()->className()).arg(texture_path)
                     : QString());
 }
 
