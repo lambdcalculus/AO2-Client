@@ -73,7 +73,7 @@ std::optional<DRAudioError> DRAudioStream::set_file(QString p_file)
 
   const QFileInfo file(p_file);
   if (!file.exists())
-    return DRAudioError("file does not exist");
+    return DRAudioError(QString("file does not exist: %1").arg(p_file.isEmpty() ? "<empty>" : p_file));
 
   if (m_file == p_file)
     return std::nullopt;
@@ -135,12 +135,10 @@ void DRAudioStream::on_sync_callback(HSYNC hsync, DWORD ch, DWORD data, void *us
     switch (v.type)
     {
     case BASS_SYNC_END:
-      qDebug().noquote() << QString("[%1] %2 has been triggered!").arg(filePath).arg("BASS_SYNC_END");
       Q_EMIT self->finished();
       break;
 
     case BASS_SYNC_DEV_FAIL:
-      qDebug().noquote() << QString("[%1] %2 has been triggered!").arg(filePath).arg("BASS_SYNC_DEV_FAIL");
       Q_EMIT self->device_error(QPrivateSignal());
       break;
     }
