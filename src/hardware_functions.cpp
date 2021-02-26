@@ -10,7 +10,7 @@ BOOL bIsRetrieved;
 
 QString get_hdid()
 {
-  bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), NULL, NULL, &dwVolSerial, NULL, NULL, NULL, NULL);
+  bIsRetrieved = GetVolumeInformation(TEXT("C:\\"), NULL, 0, &dwVolSerial, NULL, NULL, NULL, 0);
 
   if (bIsRetrieved)
     return QString::number(dwVolSerial, 16);

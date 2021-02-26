@@ -9,8 +9,13 @@
 #include "aoconfigpanel.h"
 
 #include <QDebug>
-#include <QDesktopWidget>
 #include <QRect>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+#include <QDesktopWidget>
+#else
+#include <QScreen>
+#endif
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
@@ -49,9 +54,16 @@ void AOApplication::construct_lobby()
   w_lobby = new Lobby(this);
   lobby_constructed = true;
 
-  QRect screenGeometry = QApplication::desktop()->screenGeometry();
-  int x = (screenGeometry.width() - w_lobby->width()) / 2;
-  int y = (screenGeometry.height() - w_lobby->height()) / 2;
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+  QRect screen_geometry = QApplication::desktop()->screenGeometry();
+#else
+  QScreen *screen = QApplication::screenAt(w_lobby->pos());
+  if (screen == nullptr)
+    return;
+  QRect screen_geometry = screen->geometry();
+#endif
+  int x = (screen_geometry.width() - w_lobby->width()) / 2;
+  int y = (screen_geometry.height() - w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
   discord->state_lobby();
@@ -84,9 +96,16 @@ void AOApplication::construct_courtroom()
   connect(w_courtroom, SIGNAL(destroyed()), this, SLOT(on_courtroom_destroyed()));
   courtroom_constructed = true;
 
-  QRect screenGeometry = QApplication::desktop()->screenGeometry();
-  int x = (screenGeometry.width() - w_courtroom->width()) / 2;
-  int y = (screenGeometry.height() - w_courtroom->height()) / 2;
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+  QRect screen_geometry = QApplication::desktop()->screenGeometry();
+#else
+  QScreen *screen = QApplication::screenAt(w_courtroom->pos());
+  if (screen == nullptr)
+    return;
+  QRect screen_geometry = screen->geometry();
+#endif
+  int x = (screen_geometry.width() - w_courtroom->width()) / 2;
+  int y = (screen_geometry.height() - w_courtroom->height()) / 2;
   w_courtroom->move(x, y);
 }
 
@@ -162,9 +181,16 @@ void AOApplication::toggle_config_panel()
   config_panel->setVisible(!config_panel->isVisible());
   if (config_panel->isVisible())
   {
-    QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    int x = (screenGeometry.width() - config_panel->width()) / 2;
-    int y = (screenGeometry.height() - config_panel->height()) / 2;
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+    QRect screen_geometry = QApplication::desktop()->screenGeometry();
+#else
+    QScreen *screen = QApplication::screenAt(config_panel->pos());
+    if (screen == nullptr)
+      return;
+    QRect screen_geometry = screen->geometry();
+#endif
+    int x = (screen_geometry.width() - config_panel->width()) / 2;
+    int y = (screen_geometry.height() - config_panel->height()) / 2;
     config_panel->setFocus();
     config_panel->raise();
     config_panel->move(x, y);

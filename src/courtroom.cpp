@@ -324,7 +324,7 @@ void Courtroom::handle_music_anim()
   if (ao_app->read_theme_ini("enable_const_music_speed", cc_config_ini) == "true")
     dist = res_b.width;
   else
-    dist = fm.width(ui_vp_music_name->toPlainText());
+    dist = fm.horizontalAdvance(ui_vp_music_name->toPlainText());
   int time = static_cast<int>(1000000 * dist / speed);
   music_anim->setLoopCount(-1);
   music_anim->setDuration(time);
@@ -980,7 +980,7 @@ void Courtroom::handle_chatmessage_3()
 
   int f_anim_state = 0;
   // BLUE is from an enum in datatypes.h
-  bool text_is_blue = m_chatmessage[CMTextColor].toInt() == dr::CBlue;
+  bool text_is_blue = m_chatmessage[CMTextColor].toInt() == DR::CBlue;
 
   if (!text_is_blue && text_state == 1)
     // talking
@@ -1032,12 +1032,14 @@ void Courtroom::handle_chatmessage_3()
     break;
   default:
     qDebug() << "W: invalid anim_state: " << f_anim_state;
+    [[fallthrough]];
   case 3:
     if (m_msg_is_first_person == false)
     {
       ui_vp_player_char->play_idle(f_char, f_emote);
     }
     anim_state = 3;
+    break;
   }
 
   int effect = m_chatmessage[CMEffectState].toInt();
@@ -1431,7 +1433,7 @@ void Courtroom::chat_tick()
 
     if (f_character == " ")
       ui_vp_message->insertPlainText(" ");
-    else if (m_chatmessage[CMTextColor].toInt() == dr::CRainbow)
+    else if (m_chatmessage[CMTextColor].toInt() == DR::CRainbow)
     {
       QString html_color;
 
@@ -1573,9 +1575,9 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_text_color()
 {
-  const QMap<dr::Color, dr::ColorInfo> color_map = ao_app->get_chatmessage_colors();
-  const dr::Color color = dr::Color(m_chatmessage[CMTextColor].toInt());
-  const QString color_code = color_map[color_map.contains(color) ? color : dr::CDefault].code;
+  const QMap<DR::Color, DR::ColorInfo> color_map = ao_app->get_chatmessage_colors();
+  const DR::Color color = DR::Color(m_chatmessage[CMTextColor].toInt());
+  const QString color_code = color_map[color_map.contains(color) ? color : DR::CDefault].code;
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
   m_base_string_color.setNamedColor(color_code);
 }
