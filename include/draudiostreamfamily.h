@@ -10,6 +10,7 @@
 #include <optional>
 
 class DRAudioEngine;
+class DRAudioEngineData;
 
 class DRAudioStreamFamily : public QObject
 {
@@ -20,49 +21,50 @@ public:
 
   std::optional<DRAudioStream::ptr> create_stream(QString p_file);
   std::optional<DRAudioStream::ptr> play_stream(QString p_file);
-  QVector<DRAudioStream::ptr> get_stream_list();
 
-  std::int32_t get_volume();
-  std::int32_t get_capacity();
-  DRAudio::Options get_options();
-  // options getter
-  bool is_suppressed();
-  bool is_ignore_suppression();
+  // get
+  QVector<DRAudioStream::ptr> get_stream_list() const;
+  int32_t get_volume() const;
+  int32_t get_capacity() const;
+  DRAudio::Options get_options() const;
 
-  using iterator = QVector<DRAudioStream::ptr>::iterator;
-  iterator begin();
-  iterator end();
+  // options get
+  bool is_suppressed() const;
+  bool is_ignore_suppression() const;
 
 public slots:
-  void set_volume(std::int32_t p_volume);
-  void set_capacity(std::int32_t p_capacity);
+  void set_volume(int32_t p_volume);
+  void set_capacity(int32_t p_capacity);
   void set_options(DRAudio::Options p_options);
   // options setter
   void set_suppressed(bool p_enabled);
   void set_ignore_suppression(bool p_enabled);
 
 signals:
-  void volume_changed(std::int32_t);
-  void capacity_changed(std::int32_t);
+  void volume_changed(int32_t);
+  void capacity_changed(int32_t);
   void options_changed(DRAudio::Options);
 
 private:
   friend class DRAudioEngine;
+  friend class DRAudioEngineData;
+  friend class DRAudioEnginePrivate;
 
   DRAudioStreamFamily(DRAudio::Family p_family);
 
   float calculate_volume();
 
-  void adjust_capacity();
-  void adjust_options();
-  void adjust_volume();
+  void update_device();
+  void update_capacity();
+  void update_options();
+  void update_volume();
 
   DRAudio::Family m_family;
-  std::int32_t m_volume = 0;
-  std::int32_t m_capacity = 0;
+  int32_t m_volume = 0;
+  int32_t m_capacity = 0;
   DRAudio::Options m_options;
   QVector<QSharedPointer<DRAudioStream>> m_stream_list;
 
 private slots:
-  void on_stream_stopped();
+  void on_stream_finished();
 };

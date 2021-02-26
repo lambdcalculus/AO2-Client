@@ -12,6 +12,7 @@ INCLUDEPATH += $$PWD/include $$PWD/3rd $$PWD/3rd/include
 DEPENDPATH += $$PWD/include
 
 DEFINES += DRO_ACKMS
+CONFIG(debug, debug|release):DEFINES += DR_DEV
 
 HEADERS += \
   include/aoapplication.h \
@@ -48,7 +49,9 @@ HEADERS += \
   include/debug_functions.h \
   include/discord_rich_presence.h \
   include/draudio.h \
+  include/draudiodevice.h \
   include/draudioengine.h \
+  include/draudioengine_p.h \
   include/draudioerror.h \
   include/draudiostream.h \
   include/draudiostreamfamily.h \
@@ -96,7 +99,9 @@ SOURCES += \
   src/debug_functions.cpp \
   src/discord_rich_presence.cpp \
   src/draudio.cpp \
+  src/draudiodevice.cpp \
   src/draudioengine.cpp \
+  src/draudioengine_p.cpp \
   src/draudioerror.cpp \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \

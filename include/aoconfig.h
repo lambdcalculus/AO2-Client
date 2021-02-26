@@ -36,6 +36,7 @@ public:
   bool log_is_recording_enabled();
 
   // audio
+  std::optional<QString> favorite_device_driver();
   int master_volume();
   bool mute_background_audio();
   int system_volume();
@@ -68,6 +69,9 @@ public slots:
   void set_log_music(bool p_enabled);
   void set_log_is_recording(bool p_enabled);
   void set_mute_background_audio(bool p_enabled);
+
+  // audio
+  void set_favorite_device_driver(QString p_device_driver);
   void set_master_volume(int p_number);
   void set_system_volume(int p_number);
   void set_effect_volume(int p_number);
@@ -94,6 +98,9 @@ signals:
   void log_uses_newline_changed(bool);
   void log_music_changed(bool);
   void log_is_recording_changed(bool);
+
+  // audio
+  void favorite_device_changed(QString);
   void master_volume_changed(int);
   void mute_background_audio_changed(bool);
   void system_volume_changed(int);

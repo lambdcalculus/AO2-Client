@@ -7,34 +7,24 @@
 DRAudioStreamFamily::DRAudioStreamFamily(DRAudio::Family p_family) : m_family(p_family)
 {}
 
-int32_t DRAudioStreamFamily::get_capacity()
+int32_t DRAudioStreamFamily::get_capacity() const
 {
   return m_capacity;
 }
 
-DRAudio::Options DRAudioStreamFamily::get_options()
+DRAudio::Options DRAudioStreamFamily::get_options() const
 {
   return m_options;
 }
 
-bool DRAudioStreamFamily::is_suppressed()
+bool DRAudioStreamFamily::is_suppressed() const
 {
   return m_options.testFlag(DRAudio::OSuppressed);
 }
 
-bool DRAudioStreamFamily::is_ignore_suppression()
+bool DRAudioStreamFamily::is_ignore_suppression() const
 {
   return m_options.testFlag(DRAudio::OIgnoreSuppression);
-}
-
-DRAudioStreamFamily::iterator DRAudioStreamFamily::begin()
-{
-  return m_stream_list.begin();
-}
-
-DRAudioStreamFamily::iterator DRAudioStreamFamily::end()
-{
-  return m_stream_list.end();
 }
 
 void DRAudioStreamFamily::set_capacity(int32_t p_capacity)
@@ -45,7 +35,7 @@ void DRAudioStreamFamily::set_capacity(int32_t p_capacity)
     return;
 
   m_capacity = p_capacity;
-  adjust_capacity();
+  update_capacity();
   Q_EMIT capacity_changed(m_capacity);
 }
 
@@ -55,7 +45,7 @@ void DRAudioStreamFamily::set_options(DRAudio::Options p_options)
     return;
 
   m_options = p_options;
-  adjust_options();
+  update_options();
   Q_EMIT options_changed(m_options);
 }
 
@@ -67,7 +57,7 @@ void DRAudioStreamFamily::set_volume(int32_t p_volume)
     return;
 
   m_volume = p_volume;
-  adjust_volume();
+  update_volume();
   Q_EMIT volume_changed(m_volume);
 }
 
@@ -91,15 +81,15 @@ std::optional<DRAudioStream::ptr> DRAudioStreamFamily::create_stream(QString p_f
 
   if (auto err = stream->set_file(p_file); err)
   {
-    qWarning() << err->get_error();
+    qWarning() << err->what();
     return std::nullopt;
   }
 
   m_stream_list.append(stream);
-  adjust_capacity();
+  update_capacity();
 
   stream->set_volume(calculate_volume());
-  connect(stream.get(), SIGNAL(finished()), this, SLOT(on_stream_stopped()));
+  connect(stream.get(), SIGNAL(finished()), this, SLOT(on_stream_finished()));
 
   return stream;
 }
@@ -116,7 +106,7 @@ std::optional<DRAudioStream::ptr> DRAudioStreamFamily::play_stream(QString p_fil
   return r_stream;
 }
 
-QVector<DRAudioStream::ptr> DRAudioStreamFamily::get_stream_list()
+QVector<DRAudioStream::ptr> DRAudioStreamFamily::get_stream_list() const
 {
   return m_stream_list;
 }
@@ -138,7 +128,13 @@ float DRAudioStreamFamily::calculate_volume()
   return volume * 100.0f;
 }
 
-void DRAudioStreamFamily::adjust_capacity()
+void DRAudioStreamFamily::update_device()
+{
+  for (DRAudioStream::ptr i_stream : m_stream_list)
+    i_stream->update_device();
+}
+
+void DRAudioStreamFamily::update_capacity()
 {
   if (m_capacity == 0)
     return;
@@ -146,20 +142,20 @@ void DRAudioStreamFamily::adjust_capacity()
     m_stream_list.removeFirst();
 }
 
-void DRAudioStreamFamily::adjust_options()
+void DRAudioStreamFamily::update_options()
 {
   // suppressed
-  adjust_volume();
+  update_volume();
 }
 
-void DRAudioStreamFamily::adjust_volume()
+void DRAudioStreamFamily::update_volume()
 {
   const float volume = calculate_volume();
   for (auto &stream : m_stream_list)
     stream->set_volume(volume);
 }
 
-void DRAudioStreamFamily::on_stream_stopped()
+void DRAudioStreamFamily::on_stream_finished()
 {
   DRAudioStream *invoker = dynamic_cast<DRAudioStream *>(sender());
   if (invoker == nullptr)

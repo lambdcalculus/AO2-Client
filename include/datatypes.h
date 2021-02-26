@@ -92,7 +92,7 @@ struct pos_size_type
   int height = 0;
 };
 
-enum ChatMessage : std::int32_t
+enum ChatMessage : int32_t
 {
   CMDeskModifier = 0,
   CMPreAnim,
@@ -114,7 +114,7 @@ enum ChatMessage : std::int32_t
 
 namespace dr
 {
-enum Color : std::int32_t
+enum Color : int32_t
 {
   CDefault,
   CGreen,
