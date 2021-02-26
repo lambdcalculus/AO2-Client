@@ -11,8 +11,6 @@
 
 #include <optional>
 
-void print_device_list(const QList<DRAudioDevice> &device_list);
-
 class DRAudioEngine;
 class DRAudioEngineData;
 
