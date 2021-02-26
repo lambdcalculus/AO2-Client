@@ -1,7 +1,10 @@
 #ifndef AOCONFIGPANEL_H
 #define AOCONFIGPANEL_H
 
-// qt
+#include "aoconfig.h"
+#include "aoguiloader.h"
+#include "draudioengine.h"
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLabel>
@@ -12,10 +15,6 @@
 #include <QSpinBox>
 #include <QTabWidget>
 #include <QWidget>
-
-// src
-#include "aoconfig.h"
-#include "aoguiloader.h"
 
 class AOApplication;
 
@@ -39,12 +38,17 @@ private:
   void refresh_theme_list();
   void refresh_gamemode_list();
   void refresh_timeofday_list();
+  void update_audio_device_list();
 
 private slots:
   void on_reload_theme_clicked();
   void on_gamemode_index_changed(QString p_text);
   void on_timeofday_index_changed(QString p_text);
   void on_log_is_topdown_changed(bool p_enabled);
+  void on_device_current_index_changed(int p_index);
+  void on_audio_device_changed(DRAudioDevice p_device);
+  void on_favorite_audio_device_changed(DRAudioDevice p_device);
+  void on_audio_device_list_changed(QList<DRAudioDevice> p_device_list);
   void on_master_value_changed(int p_num);
   void on_system_value_changed(int p_num);
   void on_effect_value_changed(int p_num);
@@ -57,6 +61,7 @@ private:
 
   // driver
   AOConfig *m_config = nullptr;
+  DRAudioEngine *m_engine = nullptr;
 
   // behaviour
   QPushButton *w_save = nullptr;
@@ -87,6 +92,8 @@ private:
   QCheckBox *w_log_is_recording = nullptr;
 
   // audio
+  QComboBox *w_device = nullptr;
+  QCheckBox *w_favorite_device = nullptr;
   QSlider *w_master = nullptr;
   QLabel *w_master_value = nullptr;
   QCheckBox *w_mute_background_audio = nullptr;

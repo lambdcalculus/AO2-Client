@@ -8,7 +8,7 @@
 #include "aoapplication.h" // ruined
 
 AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
-    : QWidget(p_parent), m_config(new AOConfig(this))
+    : QWidget(p_parent), m_config(new AOConfig(this)), m_engine(new DRAudioEngine(this))
 {
   ao_app = p_ao_app;
 
@@ -19,7 +19,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   loader.load_from_file(":res/ui/config_panel.ui", this);
 
   // tab
-  setFocusProxy(AO_GUI_WIDGET(QTabWidget, "tab_widget"));
+  QTabWidget *tab_widget = AO_GUI_WIDGET(QTabWidget, "tab_widget");
+  setFocusProxy(tab_widget);
+  tab_widget->setCurrentIndex(0);
 
   // behaviour
   w_save = AO_GUI_WIDGET(QPushButton, "save");
@@ -50,6 +52,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_log_is_recording = AO_GUI_WIDGET(QCheckBox, "log_recording");
 
   // audio
+  w_device = AO_GUI_WIDGET(QComboBox, "device");
+  w_favorite_device = AO_GUI_WIDGET(QCheckBox, "favorite_device");
   w_master = AO_GUI_WIDGET(QSlider, "master");
   w_master_value = AO_GUI_WIDGET(QLabel, "master_value");
   w_mute_background_audio = AO_GUI_WIDGET(QCheckBox, "mute_background_audio");
@@ -95,6 +99,12 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(blip_rate_changed(int)), w_blip_rate, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blank_blips_changed(bool)), w_blank_blips, SLOT(setChecked(bool)));
 
+  connect(m_engine, SIGNAL(device_changed(DRAudioDevice)), this, SLOT(on_audio_device_changed(DRAudioDevice)));
+  connect(m_engine, SIGNAL(device_list_changed(QList<DRAudioDevice>)), this,
+          SLOT(on_audio_device_list_changed(QList<DRAudioDevice>)));
+  connect(m_engine, SIGNAL(favorite_device_changed(DRAudioDevice)), this,
+          SLOT(on_favorite_audio_device_changed(DRAudioDevice)));
+
   // output
   connect(w_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(w_save, SIGNAL(clicked()), m_config, SLOT(save_file()));
@@ -116,6 +126,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_log_music, SIGNAL(toggled(bool)), m_config, SLOT(set_log_music(bool)));
   connect(w_log_is_recording, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_recording(bool)));
   connect(w_mute_background_audio, SIGNAL(toggled(bool)), m_config, SLOT(set_mute_background_audio(bool)));
+  connect(w_device, SIGNAL(currentIndexChanged(int)), this, SLOT(on_device_current_index_changed(int)));
   connect(w_master, SIGNAL(valueChanged(int)), m_config, SLOT(set_master_volume(int)));
   connect(w_master, SIGNAL(valueChanged(int)), this, SLOT(on_master_value_changed(int)));
   connect(w_system, SIGNAL(valueChanged(int)), m_config, SLOT(set_system_volume(int)));
@@ -155,6 +166,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_log_uses_newline->setChecked(m_config->log_uses_newline_enabled());
   w_log_music->setChecked(m_config->log_music_enabled());
   w_log_is_recording->setChecked(m_config->log_is_recording_enabled());
+
+  // audio
+  update_audio_device_list();
   w_master->setValue(m_config->master_volume());
   w_mute_background_audio->setChecked(m_config->mute_background_audio());
   w_system->setValue(m_config->system_volume());
@@ -270,6 +284,40 @@ void AOConfigPanel::refresh_timeofday_list()
   w_timeofday->blockSignals(false);
 }
 
+void AOConfigPanel::update_audio_device_list()
+{
+  const auto current_device = m_engine->get_device();
+  const auto favorite_device = m_engine->get_favorite_device();
+
+  QSignalBlocker device_blocker(w_device);
+  w_device->clear();
+
+  std::optional<int> current_device_index;
+  {
+    for (DRAudioDevice &i_device : m_engine->get_device_list())
+    {
+      if (!i_device.is_enabled())
+        continue;
+      w_device->addItem(i_device.get_name(), i_device.get_driver());
+      int item_index = w_device->count() - 1;
+
+      if (current_device.has_value() && current_device.value().get_driver() == i_device.get_driver())
+        current_device_index = item_index;
+
+      if (favorite_device.has_value() && favorite_device.value().get_driver() == i_device.get_driver())
+        w_device->setItemData(item_index, QColor(Qt::green), Qt::BackgroundRole);
+    }
+
+    const bool has_items(w_device->count());
+    if (!has_items)
+      w_device->addItem(tr("<no sound>"));
+    w_device->setEnabled(has_items);
+  }
+
+  if (current_device_index.has_value())
+    w_device->setCurrentIndex(current_device_index.value());
+}
+
 void AOConfigPanel::on_reload_theme_clicked()
 {
   qDebug() << "reload theme clicked";
@@ -292,6 +340,40 @@ void AOConfigPanel::on_log_is_topdown_changed(bool p_enabled)
 {
   w_log_orientation_top_down->setChecked(p_enabled);
   w_log_orientation_bottom_up->setChecked(!p_enabled);
+}
+
+void AOConfigPanel::on_device_current_index_changed(int p_index)
+{
+  if (p_index == -1 || p_index >= w_device->count())
+    return;
+
+  const QString target_device_driver = w_device->itemData(p_index).toString();
+  for (DRAudioDevice &i_device : m_engine->get_device_list())
+    if (target_device_driver == i_device.get_driver())
+    {
+      m_engine->set_device(i_device);
+      m_engine->set_favorite_device(i_device);
+      m_config->set_favorite_device_driver(i_device.get_driver());
+      break;
+    }
+}
+
+void AOConfigPanel::on_audio_device_changed(DRAudioDevice p_device)
+{
+  Q_UNUSED(p_device)
+  update_audio_device_list();
+}
+
+void AOConfigPanel::on_favorite_audio_device_changed(DRAudioDevice p_device)
+{
+  Q_UNUSED(p_device)
+  update_audio_device_list();
+}
+
+void AOConfigPanel::on_audio_device_list_changed(QList<DRAudioDevice> p_device_list)
+{
+  Q_UNUSED(p_device_list);
+  update_audio_device_list();
 }
 
 void AOConfigPanel::on_master_value_changed(int p_num)
