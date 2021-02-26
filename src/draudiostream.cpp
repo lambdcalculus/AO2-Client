@@ -39,14 +39,14 @@ std::optional<QString> DRAudioStream::get_file() const
 
 bool DRAudioStream::is_playing() const
 {
-  if (!m_hstream)
+  if (!m_hstream.has_value())
     return false;
   return BASS_ChannelIsActive(m_hstream.value()) == BASS_ACTIVE_PLAYING;
 }
 
 void DRAudioStream::play()
 {
-  if (!m_hstream)
+  if (!m_hstream.has_value())
     return;
   const BOOL result = BASS_ChannelPlay(m_hstream.value(), FALSE);
   if (result == FALSE)
@@ -60,7 +60,7 @@ void DRAudioStream::play()
 
 void DRAudioStream::stop()
 {
-  if (!m_hstream)
+  if (!m_hstream.has_value())
     return;
   BASS_ChannelStop(m_hstream.value());
   Q_EMIT finished();
@@ -105,7 +105,7 @@ std::optional<DRAudioError> DRAudioStream::set_file(QString p_file)
 
 void DRAudioStream::set_volume(float p_volume)
 {
-  if (!m_hstream)
+  if (!m_hstream.has_value())
     return;
   m_volume = p_volume;
   BASS_ChannelSetAttribute(m_hstream.value(), BASS_ATTRIB_VOL, float(p_volume) * 0.01f);
@@ -165,6 +165,12 @@ void DRAudioStream::on_device_error()
 
 void DRAudioStream::update_device()
 {
+  if (!m_hstream.has_value())
+  {
+    Q_EMIT finished();
+    return;
+  }
+
   if (is_playing())
     return;
   const QString file = m_file.value();

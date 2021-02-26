@@ -48,15 +48,24 @@ void DRAudioEnginePrivate::update_device()
   }
 
   if (!device.has_value())
+  {
     qCritical() << DRAudioError("Failed to initialize, device not set!").what();
+    return;
+  }
 
   qInfo().noquote() << QString("Initializing device: %1").arg(device->get_name());
   if (BASS_Init(device->get_id().value_or(0), 48000, BASS_DEVICE_LATENCY, 0, NULL) == FALSE)
+  {
     qCritical() << DRAudioError(QString("Failed to initialize: %1").arg(DRAudio::get_last_bass_error())).what();
+    return;
+  }
 
   qInfo() << "Switching to initiliazed device";
   if (BASS_SetDevice(device->get_id().value_or(0)) == FALSE)
+  {
     qCritical() << DRAudioError(QString("Failed to set device: %1").arg(DRAudio::get_last_bass_error())).what();
+    return;
+  }
 
   for (DRAudioStreamFamily::ptr &i_family : family_map.values())
     i_family->update_device();
