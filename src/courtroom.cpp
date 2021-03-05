@@ -1111,56 +1111,27 @@ void Courtroom::handle_chatmessage_3()
 
 void Courtroom::on_chat_config_changed()
 {
-  // forward declaration for a possible update of the chatlog
-  bool chatlog_changed = false;
-
-  int chatlog_limit = ao_config->log_max_lines();
-  // default chatlog_limit?
-  chatlog_limit = chatlog_limit <= 0 ? 200 : chatlog_limit; // TODO declare the default somewhere so
-                                                            // it's not a magic number
-  if (chatlog_limit < m_chatlog_limit)                      // only update if we need to chop away records
-    chatlog_changed = true;
-  m_chatlog_limit = chatlog_limit;
-
-  bool chatlog_scrolldown = ao_config->log_is_topdown_enabled();
-  if (m_chatlog_scrolldown != chatlog_scrolldown)
-    chatlog_changed = true;
-  m_chatlog_scrolldown = chatlog_scrolldown;
-
-  bool chatlog_newline = ao_config->log_uses_newline_enabled();
-  if (m_chatlog_newline != chatlog_newline)
-    chatlog_changed = true;
-  m_chatlog_newline = chatlog_newline;
-
-  // refresh the log if needed
-  if (chatlog_changed)
-    update_ic_log(chatlog_changed);
+  update_ic_log(true);
 }
 
 void Courtroom::update_ic_log(bool p_reset_log)
 {
   // resize if needed
-  int len = m_ic_records.length();
-  if (len > m_chatlog_limit)
-    m_ic_records = m_ic_records.mid(len - m_chatlog_limit);
+  const int record_count = m_ic_record_list.length() + m_ic_record_queue.length();
+  if (record_count > ao_config->log_max_lines())
+    m_ic_record_list = m_ic_record_list.mid(record_count - ao_config->log_max_lines());
 
-  /*
-   * first, we figure out whatever we append the last message or if we reset
-   * the entire log
-   * */
-  record_type_array records_to_add;
-  // populate
   if (p_reset_log)
   {
-    // we need the entire recordings
-    records_to_add = m_ic_records;
+    // we need all recordings
+    QQueue<DR::ChatRecord> new_queue;
+    while (!m_ic_record_list.isEmpty())
+      new_queue.append(m_ic_record_list.takeFirst());
+    new_queue.append(m_ic_record_queue);
+    m_ic_record_queue = std::move(new_queue);
 
     // clear log
     ui_ic_chatlog->clear();
-  }
-  else
-  {
-    records_to_add.append(m_ic_records.last());
   }
 
   // prepare the formats we need
@@ -1196,48 +1167,65 @@ void Courtroom::update_ic_log(bool p_reset_log)
   // need vscroll bar for cache
   QScrollBar *vscrollbar = ui_ic_chatlog->verticalScrollBar();
 
+  // format values
+  const bool chatlog_scrolldown = ao_config->log_is_topdown_enabled();
+  const bool chatlog_newline = ao_config->log_format_use_newline_enabled();
+
   // cache previous values
   const QTextCursor prev_cursor = ui_ic_chatlog->textCursor();
   const int scroll_pos = vscrollbar->value();
   const bool is_scrolled =
-      m_chatlog_scrolldown ? scroll_pos == vscrollbar->maximum() : scroll_pos == vscrollbar->minimum();
+      chatlog_scrolldown ? scroll_pos == vscrollbar->maximum() : scroll_pos == vscrollbar->minimum();
 
   // recover cursor
   QTextCursor cursor = ui_ic_chatlog->textCursor();
   // figure out if we need to move up or down
-  const QTextCursor::MoveOperation move_type = m_chatlog_scrolldown ? QTextCursor::End : QTextCursor::Start;
+  const QTextCursor::MoveOperation move_type = chatlog_scrolldown ? QTextCursor::End : QTextCursor::Start;
 
-  for (record_type_ptr record : records_to_add)
+  while (!m_ic_record_queue.isEmpty())
   {
+    DR::ChatRecord record = m_ic_record_queue.takeFirst();
+    m_ic_record_list.append(record);
+
+    if (record.get_message().trimmed().isEmpty() && !ao_config->log_display_empty_messages_enabled())
+      continue;
+
+    if (record.is_music() && !ao_config->log_display_music_switch_enabled())
+      continue;
+
     // move cursor
     cursor.movePosition(move_type);
-    const QString record_end = (QString(QChar::LineFeed) + (m_chatlog_newline ? QString(QChar::LineFeed) : ""));
 
-    if (record->system)
+    const QString record_end = (QString(QChar::LineFeed) + (chatlog_newline ? QString(QChar::LineFeed) : ""));
+
+    if (ao_config->log_display_timestamp_enabled())
+      cursor.insertText(QString("[%1] ").arg(record.get_timestamp().toString("hh:mm")), name_format);
+
+    if (record.is_system())
     {
-      cursor.insertText(record->line + record_end, system_format);
+      cursor.insertText(record.get_message() + record_end, system_format);
     }
     else
     {
       QString separator;
-      if (m_chatlog_newline)
+      if (chatlog_newline)
         separator = QString(QChar::LineFeed);
-      else if (!record->music)
+      else if (!record.is_music())
         separator = ": ";
       else
         separator = " ";
-      cursor.insertText(record->name + separator, name_format);
-      cursor.insertText(record->line + record_end, line_format);
+      cursor.insertText(record.get_name() + separator, name_format);
+      cursor.insertText(record.get_message() + record_end, line_format);
     }
   }
 
   // figure out the number of blocks we need overall
   // this is always going to amount to at least the current length of records
-  int block_count = m_ic_records.length() + 1; // there's always one extra block
+  int block_count = m_ic_record_list.length() + 1; // there's always one extra block
   // to do that, we need to go through the records
-  for (record_type_ptr record : m_ic_records)
-    if (!record->system)
-      if (m_chatlog_newline)
+  for (DR::ChatRecord &record : m_ic_record_list)
+    if (!record.is_system())
+      if (chatlog_newline)
         block_count += 2; // if newline is actived, it always inserts two extra
                           // newlines; therefor two paragraphs
 
@@ -1245,9 +1233,9 @@ void Courtroom::update_ic_log(bool p_reset_log)
   int blocks_to_delete = ui_ic_chatlog->document()->blockCount() - block_count;
 
   // the orientation at which we need to delete from
-  const QTextCursor::MoveOperation start_location = m_chatlog_scrolldown ? QTextCursor::Start : QTextCursor::End;
+  const QTextCursor::MoveOperation start_location = chatlog_scrolldown ? QTextCursor::Start : QTextCursor::End;
   const QTextCursor::MoveOperation block_orientation =
-      m_chatlog_scrolldown ? QTextCursor::NextBlock : QTextCursor::PreviousBlock;
+      chatlog_scrolldown ? QTextCursor::NextBlock : QTextCursor::PreviousBlock;
 
   /* Blocks appear like this
    * textQChar(0x2029)
@@ -1279,7 +1267,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
    * it/figure out the amount of blocks if we have a scroll up log, so we add it
    * again if we removed any break characters at all
    * */
-  if (!m_chatlog_scrolldown && blocks_to_delete > 0)
+  if (!chatlog_scrolldown && blocks_to_delete > 0)
     cursor.insertBlock();
 
   /*
@@ -1298,16 +1286,22 @@ void Courtroom::update_ic_log(bool p_reset_log)
   else
   {
     ui_ic_chatlog->moveCursor(move_type);
-    vscrollbar->setValue(m_chatlog_scrolldown ? vscrollbar->maximum() : vscrollbar->minimum());
+    vscrollbar->setValue(chatlog_scrolldown ? vscrollbar->maximum() : vscrollbar->minimum());
   }
 }
 
 void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music)
 {
-  // record new entry
-  m_ic_records.append(std::make_shared<record_type>(p_name, p_line, "", p_system, p_music));
+  if (p_name.trimmed().isEmpty())
+    p_name = "Anonymous";
 
-  // update
+  if (p_line.trimmed().isEmpty())
+    p_line = p_line.trimmed();
+
+  DR::ChatRecord new_record(p_name, p_line);
+  new_record.set_music(p_music);
+  new_record.set_system(p_system);
+  m_ic_record_queue.append(new_record);
   update_ic_log(false);
 }
 
@@ -1673,12 +1667,9 @@ void Courtroom::handle_song(QStringList p_contents)
 
     if (!mute_map.value(n_char))
     {
-      if (ao_app->get_music_change_log_enabled())
-      {
-        append_ic_text(str_char, "has played a song: " + f_song, false, true);
-        if (ao_config->log_is_recording_enabled())
-          save_textlog(str_char + " has played a song: " + f_song);
-      }
+      append_ic_text(str_char, "has played a song: " + f_song, false, true);
+      if (ao_config->log_is_recording_enabled())
+        save_textlog(str_char + " has played a song: " + f_song);
       m_music_player->play(f_song);
     }
   }

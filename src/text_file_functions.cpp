@@ -33,7 +33,7 @@ int AOApplication::read_blip_rate()
 
 bool AOApplication::read_chatlog_newline()
 {
-  return config->log_uses_newline_enabled();
+  return config->log_format_use_newline_enabled();
 }
 
 int AOApplication::get_default_music()

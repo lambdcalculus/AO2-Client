@@ -238,7 +238,7 @@ int AOApplication::get_chat_tick_interval()
 
 bool AOApplication::get_chatlog_newline()
 {
-  return config->log_uses_newline_enabled();
+  return config->log_format_use_newline_enabled();
 }
 
 bool AOApplication::get_enable_logging_enabled()
@@ -248,7 +248,7 @@ bool AOApplication::get_enable_logging_enabled()
 
 bool AOApplication::get_music_change_log_enabled()
 {
-  return config->log_music_enabled();
+  return config->log_display_music_switch_enabled();
 }
 
 void AOApplication::add_favorite_server(int p_server)
