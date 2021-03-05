@@ -669,7 +669,7 @@
          <item row="5" column="0">
           <widget class="QLabel" name="blips_label">
            <property name="text">
-            <string>Blips</string>
+            <string>Blips:</string>
            </property>
           </widget>
          </item>
