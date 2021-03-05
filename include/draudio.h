@@ -23,7 +23,7 @@ enum Option
   /**
    * If enabled, the engine will suppress all audio when the application is inactive.
    */
-  OEngineMuteBackgroundAudio = 0x4,
+  OEngineSuppressBackgroundAudio = 0x4,
 };
 Q_DECLARE_FLAGS(Options, Option)
 
