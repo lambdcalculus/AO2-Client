@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>487</width>
-    <height>361</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tab_widget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -439,339 +439,640 @@
       <attribute name="title">
        <string>Audio</string>
       </attribute>
-      <layout class="QFormLayout" name="formLayout_2">
-       <item row="0" column="0">
-        <widget class="QLabel" name="master_label">
-         <property name="text">
-          <string>Master:</string>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <item>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="styleSheet">
+          <string notr="true">QScrollArea#scrollArea { background-color: transparent };</string>
          </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <property name="lineWidth">
+          <number>0</number>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>-80</y>
+            <width>433</width>
+            <height>637</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QWidget#scrollAreaWidgetContents { background-color: transparent };</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QLabel" name="master_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Master</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="formLayout_5">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Device:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QComboBox" name="device"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Volume:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <widget class="QSlider" name="master">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="master_value">
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="sizeIncrement">
+                  <size>
+                   <width>40</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>0%</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Options</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QCheckBox" name="suppress_background_audio">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, audio will be temporarily suppressed when the client is not in focus.&lt;br/&gt;&lt;br/&gt;This option is never applied to the System audio channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Suppress Background Audio</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <widget class="QLabel" name="system_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>System</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="formLayout_2">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Volume:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QSlider" name="system">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="system_value">
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="sizeIncrement">
+                  <size>
+                   <width>40</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>0%</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>Options</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <widget class="QCheckBox" name="system_ignore_suppression">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;font style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/font&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Ignore Suppression</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_13">
+             <item>
+              <widget class="QLabel" name="music_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Music</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_5">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="formLayout_6">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Volume:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <widget class="QSlider" name="music">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="music_value">
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="sizeIncrement">
+                  <size>
+                   <width>40</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>0%</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_3">
+             <property name="title">
+              <string>Options</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QCheckBox" name="music_ignore_suppression">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;font style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/font&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Ignore Suppression</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_14">
+             <item>
+              <widget class="QLabel" name="effect_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Effects</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_6">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="formLayout_9">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Volume</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <item>
+                <widget class="QSlider" name="effect">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="effect_value">
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>0%</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_5">
+             <property name="title">
+              <string>Options</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QCheckBox" name="effect_ignore_suppression">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;font style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/font&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Ignore Suppression</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_15">
+             <item>
+              <widget class="QLabel" name="blip_label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Blips</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_7">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="formLayout_7">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Volume:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <item>
+                <widget class="QSlider" name="blip">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="blip_value">
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>0%</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_4">
+             <property name="title">
+              <string>Options</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_17">
+              <item>
+               <widget class="QCheckBox" name="blip_ignore_suppression">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;font style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/font&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Ignore Suppression</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QFormLayout" name="formLayout_8">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="blip_rate_label">
+                  <property name="text">
+                   <string>Blip Rate:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <layout class="QHBoxLayout" name="horizontalLayout_16">
+                  <item>
+                   <widget class="QSpinBox" name="blip_rate">
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="maximum">
+                     <number>1000000000</number>
+                    </property>
+                    <property name="value">
+                     <number>1000000000</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="blank_blips">
+                    <property name="text">
+                     <string>Blanks</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="device"/>
-       </item>
-       <item row="1" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_9">
-         <item>
-          <widget class="QSlider" name="master">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="master_value">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="sizeIncrement">
-            <size>
-             <width>40</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>0%</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="1">
-        <widget class="QCheckBox" name="mute_background_audio">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, audio will be temporarily muted when the client is not in focus.&lt;br/&gt;&lt;br/&gt;This does not apply to system sounds.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Mute Background Audio</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="system_label">
-         <property name="text">
-          <string>System:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <widget class="QSlider" name="system">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="system_value">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="sizeIncrement">
-            <size>
-             <width>40</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>0%</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="music_label">
-         <property name="text">
-          <string>Music:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QSlider" name="music">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="music_value">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="sizeIncrement">
-            <size>
-             <width>40</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>0%</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="effect_label">
-         <property name="text">
-          <string>Effects:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QSlider" name="effect">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="effect_value">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>0%</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="blip_label">
-         <property name="text">
-          <string>Blips:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QSlider" name="blip">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="blip_value">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>0%</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="blip_rate_label">
-         <property name="text">
-          <string>Blip rate:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <widget class="QSpinBox" name="blip_rate">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>1000000000</number>
-         </property>
-         <property name="value">
-          <number>1000000000</number>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="blank_blips_label">
-         <property name="text">
-          <string>Blank blips:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1">
-        <widget class="QCheckBox" name="blank_blips">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="1">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>

@@ -20,7 +20,7 @@ public:
   // option get
   static bool is_option(DRAudio::Option p_option);
   static bool is_suppressed();
-  static bool is_mute_background_audio();
+  static bool is_suppress_background_audio();
 
 public slots:
   void set_device(DRAudioDevice p_device);
@@ -31,7 +31,7 @@ public slots:
   // option set
   void set_option(DRAudio::Option p_option, bool p_enabled);
   void set_suppressed(bool p_enabled);
-  void set_mute_background_audio(bool p_enabled);
+  void set_suppress_background_audio(bool p_enabled);
 
 signals:
   void device_changed(DRAudioDevice);
