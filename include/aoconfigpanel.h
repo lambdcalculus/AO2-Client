@@ -7,6 +7,7 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QGroupBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -96,7 +97,7 @@ private:
   QCheckBox *w_favorite_device = nullptr;
   QSlider *w_master = nullptr;
   QLabel *w_master_value = nullptr;
-  QCheckBox *w_suppress_background_audio = nullptr;
+  QGroupBox *w_suppress_background_audio = nullptr;
   QSlider *w_system = nullptr;
   QLabel *w_system_value = nullptr;
   QSlider *w_effect = nullptr;

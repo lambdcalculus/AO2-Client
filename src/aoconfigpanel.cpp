@@ -56,7 +56,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_favorite_device = AO_GUI_WIDGET(QCheckBox, "favorite_device");
   w_master = AO_GUI_WIDGET(QSlider, "master");
   w_master_value = AO_GUI_WIDGET(QLabel, "master_value");
-  w_suppress_background_audio = AO_GUI_WIDGET(QCheckBox, "suppress_background_audio");
+  w_suppress_background_audio = AO_GUI_WIDGET(QGroupBox, "suppress_background_audio");
   w_system = AO_GUI_WIDGET(QSlider, "system");
   w_system_value = AO_GUI_WIDGET(QLabel, "system_value");
   w_effect = AO_GUI_WIDGET(QSlider, "effect");
