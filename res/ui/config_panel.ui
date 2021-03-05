@@ -719,6 +719,9 @@
        </item>
        <item>
         <widget class="QGroupBox" name="suppress_background_audio">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, audio will be temporarily suppressed when the client is not in focus.&lt;br/&gt;&lt;br/&gt;This option is never applied to the System audio channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="title">
           <string>Suppress Background Audio</string>
          </property>
@@ -751,13 +754,10 @@
           <item row="0" column="1">
            <widget class="QCheckBox" name="music_ignore_suppression">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;font style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/font&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;span style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/span&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Music</string>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, audio will be temporarily suppressed when the client is not in focus.&lt;br/&gt;&lt;br/&gt;This option is never applied to the System audio channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
