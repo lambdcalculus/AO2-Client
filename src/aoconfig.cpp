@@ -4,12 +4,12 @@
 
 // qt
 #include <QApplication>
+#include <QDebug>
 #include <QDir>
 #include <QPointer>
 #include <QSettings>
+#include <QSharedPointer>
 #include <QVector>
-
-#include <QDebug>
 
 /*!
     We have to suffer through a lot of boilerplate code
@@ -21,7 +21,7 @@ class AOConfigPrivate : public QObject
   Q_OBJECT
 
 public:
-  AOConfigPrivate(QObject *p_parent = nullptr);
+  AOConfigPrivate();
   ~AOConfigPrivate();
 
   // setters
@@ -64,11 +64,14 @@ private:
   // audio
   std::optional<QString> favorite_device_driver;
   int master_volume;
-  bool mute_background_audio;
-  int effect_volume;
+  bool suppress_background_audio;
   int system_volume;
+  int effect_volume;
+  bool effect_ignore_suppression;
   int music_volume;
+  bool music_ignore_suppression;
   int blip_volume;
+  bool blip_ignore_suppression;
   int blip_rate;
   bool blank_blips;
 
@@ -76,8 +79,8 @@ private:
   DRAudioEngine *audio_engine = nullptr;
 };
 
-AOConfigPrivate::AOConfigPrivate(QObject *p_parent)
-    : QObject(p_parent), cfg(QDir::currentPath() + "/base/config.ini", QSettings::IniFormat),
+AOConfigPrivate::AOConfigPrivate()
+    : QObject(nullptr), cfg(QDir::currentPath() + "/base/config.ini", QSettings::IniFormat),
       audio_engine(new DRAudioEngine(this))
 {
   Q_ASSERT_X(qApp, "initialization", "QGuiApplication is required");
@@ -121,12 +124,15 @@ void AOConfigPrivate::read_file()
   if (cfg.contains("favorite_device_driver"))
     favorite_device_driver = cfg.value("favorite_device_driver").toString();
 
-  mute_background_audio = cfg.value("mute_background_audio").toBool();
+  suppress_background_audio = cfg.value("suppress_background_audio").toBool();
   master_volume = cfg.value("default_master", 50).toInt();
   system_volume = cfg.value("default_system", 50).toInt();
   effect_volume = cfg.value("default_sfx", 50).toInt();
+  effect_ignore_suppression = cfg.value("effect_ignore_suppression", false).toBool();
   music_volume = cfg.value("default_music", 50).toInt();
+  music_ignore_suppression = cfg.value("music_ignore_suppression", false).toBool();
   blip_volume = cfg.value("default_blip", 50).toInt();
+  blip_ignore_suppression = cfg.value("blip_ignore_suppression", false).toBool();
   blip_rate = cfg.value("blip_rate", 1000000000).toInt();
   blank_blips = cfg.value("blank_blips").toBool();
 
@@ -134,8 +140,11 @@ void AOConfigPrivate::read_file()
   audio_engine->set_volume(master_volume);
   audio_engine->get_family(DRAudio::Family::FSystem)->set_volume(system_volume);
   audio_engine->get_family(DRAudio::Family::FEffect)->set_volume(effect_volume);
+  audio_engine->get_family(DRAudio::Family::FEffect)->set_ignore_suppression(effect_ignore_suppression);
   audio_engine->get_family(DRAudio::Family::FMusic)->set_volume(music_volume);
+  audio_engine->get_family(DRAudio::Family::FMusic)->set_ignore_suppression(effect_ignore_suppression);
   audio_engine->get_family(DRAudio::Family::FBlip)->set_volume(blip_volume);
+  audio_engine->get_family(DRAudio::Family::FBlip)->set_ignore_suppression(effect_ignore_suppression);
 
   // audio device
   update_favorite_device();
@@ -164,12 +173,15 @@ void AOConfigPrivate::save_file()
   if (favorite_device_driver.has_value())
     cfg.setValue("favorite_device_driver", favorite_device_driver.value());
 
-  cfg.setValue("mute_background_audio", mute_background_audio);
+  cfg.setValue("suppress_background_audio", suppress_background_audio);
   cfg.setValue("default_master", master_volume);
-  cfg.setValue("default_sfx", effect_volume);
   cfg.setValue("default_system", system_volume);
+  cfg.setValue("default_sfx", effect_volume);
+  cfg.setValue("effect_ignore_suppression", effect_ignore_suppression);
   cfg.setValue("default_music", music_volume);
+  cfg.setValue("music_ignore_suppression", music_ignore_suppression);
   cfg.setValue("default_blip", blip_volume);
+  cfg.setValue("blip_ignore_suppression", blip_ignore_suppression);
   cfg.setValue("blip_rate", blip_rate);
   cfg.setValue("blank_blips", blank_blips);
   cfg.sync();
@@ -192,7 +204,7 @@ void AOConfigPrivate::update_favorite_device()
 
 void AOConfigPrivate::on_application_state_changed(Qt::ApplicationState p_state)
 {
-  audio_engine->set_suppressed(mute_background_audio && p_state != Qt::ApplicationActive);
+  audio_engine->set_suppressed(suppress_background_audio && p_state != Qt::ApplicationActive);
 }
 
 // AOConfig ////////////////////////////////////////////////////////////////////
@@ -202,7 +214,7 @@ void AOConfigPrivate::on_application_state_changed(Qt::ApplicationState p_state)
  */
 namespace
 {
-static QPointer<AOConfigPrivate> d;
+static QSharedPointer<AOConfigPrivate> d;
 }
 
 AOConfig::AOConfig(QObject *p_parent) : QObject(p_parent)
@@ -211,7 +223,7 @@ AOConfig::AOConfig(QObject *p_parent) : QObject(p_parent)
   if (d == nullptr)
   {
     Q_ASSERT_X(qApp, "initialization", "QGuiApplication is required");
-    d = new AOConfigPrivate(qApp);
+    d = QSharedPointer<AOConfigPrivate>(new AOConfigPrivate);
   }
 
   // ao2 is the pinnacle of thread security
@@ -224,140 +236,155 @@ AOConfig::~AOConfig()
   d->children.removeAll(this);
 }
 
-QString AOConfig::get_string(QString p_name, QString p_default)
+QString AOConfig::get_string(QString p_name, QString p_default) const
 {
   return d->cfg.value(p_name, p_default).toString();
 }
 
-bool AOConfig::get_bool(QString p_name, bool p_default)
+bool AOConfig::get_bool(QString p_name, bool p_default) const
 {
   return d->cfg.value(p_name, p_default).toBool();
 }
 
-int AOConfig::get_number(QString p_name, int p_default)
+int AOConfig::get_number(QString p_name, int p_default) const
 {
   return d->cfg.value(p_name, p_default).toInt();
 }
 
-bool AOConfig::autosave()
+bool AOConfig::autosave() const
 {
   return d->autosave;
 }
 
-QString AOConfig::username()
+QString AOConfig::username() const
 {
   return d->username;
 }
 
-QString AOConfig::callwords()
+QString AOConfig::callwords() const
 {
   return d->callwords;
 }
 
-QString AOConfig::theme()
+QString AOConfig::theme() const
 {
   return d->theme;
 }
 
-QString AOConfig::gamemode()
+QString AOConfig::gamemode() const
 {
   return d->gamemode;
 }
 
-bool AOConfig::manual_gamemode_enabled()
+bool AOConfig::manual_gamemode_enabled() const
 {
   return d->manual_gamemode;
 }
 
-QString AOConfig::timeofday()
+QString AOConfig::timeofday() const
 {
   return d->timeofday;
 }
 
-bool AOConfig::manual_timeofday_enabled()
+bool AOConfig::manual_timeofday_enabled() const
 {
   return d->manual_timeofday;
 }
 
-bool AOConfig::server_alerts_enabled()
+bool AOConfig::server_alerts_enabled() const
 {
   return d->server_alerts;
 }
 
-bool AOConfig::always_pre_enabled()
+bool AOConfig::always_pre_enabled() const
 {
   return d->always_pre;
 }
 
-int AOConfig::chat_tick_interval()
+int AOConfig::chat_tick_interval() const
 {
   return d->chat_tick_interval;
 }
-int AOConfig::log_max_lines()
+int AOConfig::log_max_lines() const
 {
   return d->log_max_lines;
 }
 
-bool AOConfig::log_is_topdown_enabled()
+bool AOConfig::log_is_topdown_enabled() const
 {
   return d->log_is_topdown;
 }
 
-bool AOConfig::log_uses_newline_enabled()
+bool AOConfig::log_uses_newline_enabled() const
 {
   return d->log_uses_newline;
 }
 
-bool AOConfig::log_music_enabled()
+bool AOConfig::log_music_enabled() const
 {
   return d->log_music;
 }
 
-bool AOConfig::log_is_recording_enabled()
+bool AOConfig::log_is_recording_enabled() const
 {
   return d->log_is_recording;
 }
 
-std::optional<QString> AOConfig::favorite_device_driver()
+std::optional<QString> AOConfig::favorite_device_driver() const
 {
   return d->favorite_device_driver;
 }
 
-int AOConfig::master_volume()
+int AOConfig::master_volume() const
 {
   return d->master_volume;
 }
 
-bool AOConfig::mute_background_audio()
+bool AOConfig::suppress_background_audio() const
 {
-  return d->mute_background_audio;
+  return d->suppress_background_audio;
 }
 
-int AOConfig::system_volume()
+int AOConfig::system_volume() const
 {
   return d->system_volume;
 }
-int AOConfig::effect_volume()
+int AOConfig::effect_volume() const
 {
   return d->effect_volume;
 }
 
-int AOConfig::music_volume()
+bool AOConfig::effect_ignore_suppression() const
+{
+  return d->effect_ignore_suppression;
+}
+
+int AOConfig::music_volume() const
 {
   return d->music_volume;
 }
 
-int AOConfig::blip_volume()
+bool AOConfig::music_ignore_suppression() const
+{
+  return d->music_ignore_suppression;
+}
+
+int AOConfig::blip_volume() const
 {
   return d->blip_volume;
 }
 
-int AOConfig::blip_rate()
+bool AOConfig::blip_ignore_suppression() const
+{
+  return d->blip_ignore_suppression;
+}
+
+int AOConfig::blip_rate() const
 {
   return d->blip_rate;
 }
 
-bool AOConfig::blank_blips_enabled()
+bool AOConfig::blank_blips_enabled() const
 {
   return d->blank_blips;
 }
@@ -504,12 +531,12 @@ void AOConfig::set_master_volume(int p_number)
   d->invoke_signal("master_volume_changed", Q_ARG(int, p_number));
 }
 
-void AOConfig::set_mute_background_audio(bool p_enabled)
+void AOConfig::set_suppress_background_audio(bool p_enabled)
 {
-  if (d->mute_background_audio == p_enabled)
+  if (d->suppress_background_audio == p_enabled)
     return;
-  d->mute_background_audio = p_enabled;
-  d->invoke_signal("mute_background_audio_changed", Q_ARG(bool, p_enabled));
+  d->suppress_background_audio = p_enabled;
+  d->invoke_signal("suppress_background_audio_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_favorite_device_driver(QString p_device_driver)
@@ -539,6 +566,15 @@ void AOConfig::set_effect_volume(int p_number)
   d->invoke_signal("effect_volume_changed", Q_ARG(int, p_number));
 }
 
+void AOConfig::set_effect_ignore_suppression(bool p_enabled)
+{
+  if (d->music_ignore_suppression == p_enabled)
+    return;
+  d->music_ignore_suppression = p_enabled;
+  d->audio_engine->get_family(DRAudio::Family::FMusic)->set_ignore_suppression(p_enabled);
+  d->invoke_signal("music_ignore_suppression_changed", Q_ARG(bool, p_enabled));
+}
+
 void AOConfig::set_music_volume(int p_number)
 {
   if (d->music_volume == p_number)
@@ -548,6 +584,15 @@ void AOConfig::set_music_volume(int p_number)
   d->invoke_signal("music_volume_changed", Q_ARG(int, p_number));
 }
 
+void AOConfig::set_music_ignore_suppression(bool p_enabled)
+{
+  if (d->music_ignore_suppression == p_enabled)
+    return;
+  d->music_ignore_suppression = p_enabled;
+  d->audio_engine->get_family(DRAudio::Family::FMusic)->set_ignore_suppression(p_enabled);
+  d->invoke_signal("music_ignore_suppression_changed", Q_ARG(bool, p_enabled));
+}
+
 void AOConfig::set_blip_volume(int p_number)
 {
   if (d->blip_volume == p_number)
@@ -555,6 +600,15 @@ void AOConfig::set_blip_volume(int p_number)
   d->blip_volume = p_number;
   d->audio_engine->get_family(DRAudio::Family::FBlip)->set_volume(p_number);
   d->invoke_signal("blip_volume_changed", Q_ARG(int, p_number));
+}
+
+void AOConfig::set_blip_ignore_suppression(bool p_enabled)
+{
+  if (d->blip_ignore_suppression == p_enabled)
+    return;
+  d->blip_ignore_suppression = p_enabled;
+  d->audio_engine->get_family(DRAudio::Family::FBlip)->set_ignore_suppression(p_enabled);
+  d->invoke_signal("blip_ignore_suppression_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_blip_rate(int p_number)

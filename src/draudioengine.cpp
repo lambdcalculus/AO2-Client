@@ -108,10 +108,11 @@ bool DRAudioEngine::is_suppressed()
   return d->options.testFlag(DRAudio::OSuppressed);
 }
 
-bool DRAudioEngine::is_mute_background_audio()
+bool DRAudioEngine::is_suppress_background_audio()
 {
-  return is_option(DRAudio::OEngineMuteBackgroundAudio);
+  return is_option(DRAudio::OEngineSuppressBackgroundAudio);
 }
+
 void DRAudioEngine::set_device(DRAudioDevice p_device)
 {
   if (!d->device_map.contains(p_device.get_driver()))
@@ -171,9 +172,9 @@ void DRAudioEngine::set_suppressed(bool p_enabled)
   set_option(DRAudio::OSuppressed, p_enabled);
 }
 
-void DRAudioEngine::set_mute_background_audio(bool p_enabled)
+void DRAudioEngine::set_suppress_background_audio(bool p_enabled)
 {
-  set_option(DRAudio::OEngineMuteBackgroundAudio, p_enabled);
+  set_option(DRAudio::OEngineSuppressBackgroundAudio, p_enabled);
 }
 
 void DRAudioEngine::check_stream_error()

@@ -56,14 +56,17 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_favorite_device = AO_GUI_WIDGET(QCheckBox, "favorite_device");
   w_master = AO_GUI_WIDGET(QSlider, "master");
   w_master_value = AO_GUI_WIDGET(QLabel, "master_value");
-  w_mute_background_audio = AO_GUI_WIDGET(QCheckBox, "mute_background_audio");
+  w_suppress_background_audio = AO_GUI_WIDGET(QGroupBox, "suppress_background_audio");
   w_system = AO_GUI_WIDGET(QSlider, "system");
   w_system_value = AO_GUI_WIDGET(QLabel, "system_value");
   w_effect = AO_GUI_WIDGET(QSlider, "effect");
+  w_effect_ignore_suppression = AO_GUI_WIDGET(QCheckBox, "effect_ignore_suppression");
   w_effect_value = AO_GUI_WIDGET(QLabel, "effect_value");
   w_music = AO_GUI_WIDGET(QSlider, "music");
+  w_music_ignore_suppression = AO_GUI_WIDGET(QCheckBox, "music_ignore_suppression");
   w_music_value = AO_GUI_WIDGET(QLabel, "music_value");
   w_blip = AO_GUI_WIDGET(QSlider, "blip");
+  w_blip_ignore_suppression = AO_GUI_WIDGET(QCheckBox, "blip_ignore_suppression");
   w_blip_value = AO_GUI_WIDGET(QLabel, "blip_value");
   w_blip_rate = AO_GUI_WIDGET(QSpinBox, "blip_rate");
   w_blank_blips = AO_GUI_WIDGET(QCheckBox, "blank_blips");
@@ -91,11 +94,16 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(log_music_changed(bool)), w_log_music, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_is_recording_changed(bool)), w_log_is_recording, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(master_volume_changed(int)), w_master, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(mute_background_audio_changed(bool)), w_mute_background_audio, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(suppress_background_audio_changed(bool)), w_suppress_background_audio,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(system_volume_changed(int)), w_system, SLOT(setValue(int)));
   connect(m_config, SIGNAL(effect_volume_changed(int)), w_effect, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(effect_ignore_suppression_changed(bool)), w_effect_ignore_suppression,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(music_volume_changed(int)), w_music, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(music_ignore_suppression_changed(bool)), w_music_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_volume_changed(int)), w_blip, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(blip_ignore_suppression_changed(bool)), w_blip_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_rate_changed(int)), w_blip_rate, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blank_blips_changed(bool)), w_blank_blips, SLOT(setChecked(bool)));
 
@@ -125,7 +133,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_log_uses_newline, SIGNAL(toggled(bool)), m_config, SLOT(set_log_uses_newline(bool)));
   connect(w_log_music, SIGNAL(toggled(bool)), m_config, SLOT(set_log_music(bool)));
   connect(w_log_is_recording, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_recording(bool)));
-  connect(w_mute_background_audio, SIGNAL(toggled(bool)), m_config, SLOT(set_mute_background_audio(bool)));
+  connect(w_suppress_background_audio, SIGNAL(toggled(bool)), m_config, SLOT(set_suppress_background_audio(bool)));
   connect(w_device, SIGNAL(currentIndexChanged(int)), this, SLOT(on_device_current_index_changed(int)));
   connect(w_master, SIGNAL(valueChanged(int)), m_config, SLOT(set_master_volume(int)));
   connect(w_master, SIGNAL(valueChanged(int)), this, SLOT(on_master_value_changed(int)));
@@ -133,10 +141,13 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_system, SIGNAL(valueChanged(int)), this, SLOT(on_system_value_changed(int)));
   connect(w_effect, SIGNAL(valueChanged(int)), m_config, SLOT(set_effect_volume(int)));
   connect(w_effect, SIGNAL(valueChanged(int)), this, SLOT(on_effect_value_changed(int)));
+  connect(w_effect_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_effect_ignore_suppression(bool)));
   connect(w_music, SIGNAL(valueChanged(int)), m_config, SLOT(set_music_volume(int)));
   connect(w_music, SIGNAL(valueChanged(int)), this, SLOT(on_music_value_changed(int)));
+  connect(w_music_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_music_ignore_suppression(bool)));
   connect(w_blip, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_volume(int)));
   connect(w_blip, SIGNAL(valueChanged(int)), this, SLOT(on_blip_value_changed(int)));
+  connect(w_blip_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_blip_ignore_suppression(bool)));
   connect(w_blip_rate, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_rate(int)));
   connect(w_blank_blips, SIGNAL(toggled(bool)), m_config, SLOT(set_blank_blips(bool)));
 
@@ -170,11 +181,14 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // audio
   update_audio_device_list();
   w_master->setValue(m_config->master_volume());
-  w_mute_background_audio->setChecked(m_config->mute_background_audio());
+  w_suppress_background_audio->setChecked(m_config->suppress_background_audio());
   w_system->setValue(m_config->system_volume());
   w_effect->setValue(m_config->effect_volume());
+  w_effect_ignore_suppression->setChecked(m_config->effect_ignore_suppression());
   w_music->setValue(m_config->music_volume());
+  w_music_ignore_suppression->setChecked(m_config->music_ignore_suppression());
   w_blip->setValue(m_config->blip_volume());
+  w_blip_ignore_suppression->setChecked(m_config->blip_ignore_suppression());
   w_blip_rate->setValue(m_config->blip_rate());
   w_blank_blips->setChecked(m_config->blank_blips_enabled());
 
