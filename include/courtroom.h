@@ -850,10 +850,11 @@ private slots:
    */
 
 public:
-  bool is_audio_muted();
+  bool is_audio_suppressed() const;
 
 public slots:
-  void set_audio_mute_enabled(bool p_enabled);
+  void suppress_audio(bool p_enabled);
+  void stop_all_audio();
 
 private:
   bool m_audio_mute = false;
