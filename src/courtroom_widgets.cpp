@@ -1420,10 +1420,48 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override
   int bold = ao_app->get_font_property(p_identifier + "_bold", design_file);
   QString is_bold = (bold == 1 ? "bold" : "");
 
+  QString alignment = " ";
+  int halign = ao_app->get_font_property(p_identifier + "_halign", design_file);
+  switch (halign)
+  {
+  case 0:
+    alignment += "AlignLeft";
+    break;
+  case 1:
+    alignment += "AlignHCenter | ";
+    break;
+  case 2:
+    alignment += "AlignRight | ";
+    break;
+  default:
+    qWarning() << "Unknown horizontal alignment for " + p_identifier + ". Assuming Left.";
+    alignment += "AlignLeft | ";
+  }
+  /*
+    int valign = ao_app->get_font_property(p_identifier + "_halign", design_file);
+    switch (valign)
+    {
+    case 0:
+      alignment += "AlignTop";
+      break;
+    case 1:
+      alignment += "AlignVCenter";
+      break;
+    case 2:
+      alignment += "AlignBottom";
+      break;
+    default:
+      qWarning() << "Unknown vertical alignment for " + p_identifier + ". Assuming Top.";
+      alignment += "AlignTop";
+    }
+  */
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: " + override_color +
                                ";\n"
                                "font: " +
-                               is_bold + "; }";
+                               is_bold +
+                               ";\n"
+                               "qproperty-alignment: " +
+                               alignment + "; }";
   widget->setStyleSheet(style_sheet_string);
 }
 
