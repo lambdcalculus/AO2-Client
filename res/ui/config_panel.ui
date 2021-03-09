@@ -110,7 +110,7 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Discord Rich Status</string>
+          <string>Discord Rich Status Style</string>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>

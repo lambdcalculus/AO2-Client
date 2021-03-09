@@ -14,15 +14,16 @@ class Discord
 {
 private:
   const char *APPLICATION_ID[2] = {
-      "538080629535801347",
-      "538080629535801347",
+      "818850172330442793",
+      "818850172330442793",
   }; // insert second one here blah blah
   int m_index = 0;
-  std::string server_name, server_id;
+  std::string server_name, server_id, state, details, matchSecret;
   int64_t timestamp;
   DR::DiscordRichPresenceStyle style;
-  DiscordRichPresence current_presence;
-  void refresh_presence(DiscordRichPresence * = nullptr);
+  DiscordRichPresence *complete_presence = new DiscordRichPresence();
+  DiscordRichPresence *minimal_presence = new DiscordRichPresence();
+  void refresh_presence();
 
 public:
   Discord();

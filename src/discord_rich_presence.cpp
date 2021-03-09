@@ -11,20 +11,14 @@ namespace AttorneyOnline
 
 Discord::Discord()
 {
-  //  DiscordEventHandlers handlers;
-  //  std::memset(&handlers, 0, sizeof(handlers));
-  //  handlers = {};
-  //  handlers.ready = [] {
-  //    qInfo() << "Discord RPC ready";
-  //  };
-  //  handlers.disconnected = [](int errorCode, const char* message) {
-  //    qInfo() << "Discord RPC disconnected! " << message;
-  //  };
-  //  handlers.errored = [](int errorCode, const char* message) {
-  //    qWarning() << "Discord RPC errored out! " << message;
-  //  };
-  //  qInfo() << "Initializing Discord RPC";
-  //  Discord_Initialize(APPLICATION_ID1, &handlers, 1, nullptr);
+  // Set up the minimal presence
+  minimal_presence->largeImageKey = "danganronpa_online";
+  minimal_presence->largeImageText = "Sore Wa Chigau Yo!";
+  minimal_presence->instance = 1;
+  minimal_presence->state = "";
+  minimal_presence->details = "";
+  minimal_presence->matchSecret = "";
+  minimal_presence->startTimestamp = 0;
 
   start(APPLICATION_ID[0]);
 }
@@ -62,6 +56,7 @@ void Discord::restart(const char *APPLICATION_ID)
 
 void Discord::toggle(int p_index)
 {
+  // What is the point of this?
   if (p_index >= 0 && p_index < 2)
   {
     if (p_index != m_index)
@@ -77,88 +72,119 @@ void Discord::toggle(int p_index)
 void Discord::set_style(DR::DiscordRichPresenceStyle new_style)
 {
   style = new_style;
-  refresh_presence(&this->current_presence);
+  refresh_presence();
 }
 
-void Discord::refresh_presence(DiscordRichPresence *new_presence)
+void Discord::refresh_presence()
 {
-  // TODO: Change presence according to style
-  current_presence = *new_presence;
-  Discord_UpdatePresence(new_presence);
+  switch (style)
+  {
+  case DR::DRPSComplete:
+    // Don't modify presence from its current status
+    Discord_UpdatePresence(complete_presence);
+    break;
+  case DR::DRPSMinimal:
+    // Use instead minimal presence
+    Discord_UpdatePresence(minimal_presence);
+    break;
+  case DR::DRPSDisabled:
+    // Wipe out
+    Discord_ClearPresence();
+    break;
+  }
+  // Note that, no matter what, complete_presence always holds a
+  // fully updated presence, so it is safe to use it any moment
 }
 
 void Discord::state_lobby()
 {
-  DiscordRichPresence presence;
-  std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "danganronpa_online";
-  presence.largeImageText = "Sore Wa Chigau Yo!";
-  presence.instance = 1;
+  this->server_id = QString("").toStdString().c_str();
+  this->server_name = QString("").toStdString().c_str();
 
-  presence.state = "In Lobby";
-  presence.details = "Idle";
-  refresh_presence(&presence);
+  this->details = "Idle";
+  this->state = "In Lobby";
+  this->timestamp = 0;
+  this->matchSecret = QString("").toStdString().c_str();
+
+  complete_presence = new DiscordRichPresence();
+  // std::memset(&complete_presence, 0, sizeof(complete_presence));
+  complete_presence->largeImageKey = "danganronpa_online";
+  complete_presence->largeImageText = "Sore Wa Chigau Yo!";
+  complete_presence->instance = 1;
+
+  complete_presence->state = this->state.c_str();
+  complete_presence->details = this->details.c_str();
+
+  refresh_presence();
 }
 
 void Discord::state_server(std::string name, std::string server_id)
 {
   qDebug() << "Discord RPC: Setting server state";
 
-  DiscordRichPresence presence;
-  std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "danganronpa_online";
-  presence.largeImageText = "Sore Wa Chigau Yo!";
-  presence.instance = 1;
-
   auto timestamp = static_cast<int64_t>(std::time(nullptr));
-
-  presence.state = "In a Server";
-  presence.details = name.c_str();
-  presence.matchSecret = server_id.c_str();
-  presence.startTimestamp = this->timestamp;
 
   this->server_id = server_id;
   this->server_name = name;
+
+  this->state = "In a Server";
+  this->details = "";
+  this->matchSecret = this->server_id;
   this->timestamp = timestamp;
-  refresh_presence(&presence);
+
+  complete_presence = new DiscordRichPresence();
+  complete_presence->largeImageKey = "danganronpa_online";
+  complete_presence->largeImageText = "Sore Wa Chigau Yo!";
+  complete_presence->instance = 1;
+
+  complete_presence->state = this->state.c_str();
+  complete_presence->details = this->details.c_str();
+  complete_presence->matchSecret = this->matchSecret.c_str();
+  complete_presence->startTimestamp = this->timestamp;
+
+  refresh_presence();
 }
 
 void Discord::state_character(std::string name)
 {
-  auto name_internal = QString(name.c_str()).toLower().replace(' ', '_').toStdString();
+  // auto name_internal = QString(name.c_str()).toLower().replace(' ', '_').toStdString();
   auto name_friendly = QString(name.c_str()).replace('_', ' ').toStdString();
   const std::string playing_as = "Playing as " + name_friendly;
   qDebug() << "Discord RPC: Setting character state (" << playing_as.c_str() << ")";
 
-  DiscordRichPresence presence;
-  std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = name_internal.c_str();
-  presence.instance = 1;
-  presence.details = this->server_name.c_str();
-  presence.matchSecret = this->server_id.c_str();
-  presence.startTimestamp = this->timestamp;
+  this->state = playing_as.c_str();
+  this->details = this->server_name;
 
-  presence.state = playing_as.c_str();
-  presence.smallImageKey = "danganronpa_online";
-  presence.smallImageText = "Danganronpa Online";
-  refresh_presence(&presence);
+  complete_presence->largeImageKey = "danganronpa_online";
+  complete_presence->largeImageText = "Sore Wa Chigau Yo!";
+  complete_presence->instance = 1;
+
+  complete_presence->state = this->state.c_str();
+  complete_presence->details = this->details.c_str();
+  complete_presence->matchSecret = this->matchSecret.c_str();
+  complete_presence->startTimestamp = this->timestamp;
+
+  refresh_presence();
 }
 
 void Discord::state_spectate()
 {
   qDebug() << "Discord RPC: Setting spectator state";
 
-  DiscordRichPresence presence;
-  std::memset(&presence, 0, sizeof(presence));
-  presence.largeImageKey = "danganronpa_online";
-  presence.largeImageText = "Sore Wa Chigau Yo!";
-  presence.instance = 1;
-  presence.details = this->server_name.c_str();
-  presence.matchSecret = this->server_id.c_str();
-  presence.startTimestamp = this->timestamp;
+  this->state = "Spectating";
+  this->details = this->server_name;
 
-  presence.state = "Spectating";
-  refresh_presence(&presence);
+  complete_presence = new DiscordRichPresence();
+  complete_presence->largeImageKey = "danganronpa_online";
+  complete_presence->largeImageText = "Sore Wa Chigau Yo!";
+  complete_presence->instance = 1;
+
+  complete_presence->state = this->state.c_str();
+  complete_presence->details = this->details.c_str();
+  complete_presence->matchSecret = this->matchSecret.c_str();
+  complete_presence->startTimestamp = this->timestamp;
+
+  refresh_presence();
 }
 
 } // namespace AttorneyOnline

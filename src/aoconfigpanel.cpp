@@ -253,6 +253,7 @@ void AOConfigPanel::on_discord_rich_presence_style_changed(DR::DiscordRichPresen
     m_config->set_discord_rich_presence_style_disabled(true);
     break;
   }
+  ao_app->discord->set_style(drp_status);
 }
 
 void AOConfigPanel::refresh_theme_list()

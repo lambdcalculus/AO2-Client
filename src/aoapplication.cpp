@@ -33,6 +33,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   connect(config_panel, SIGNAL(reload_theme()), this, SLOT(on_config_reload_theme_requested()));
   connect(this, SIGNAL(reload_theme()), config_panel, SLOT(on_config_reload_theme_requested()));
   config_panel->hide();
+
+  discord->set_style(config->discord_rich_presence());
 }
 
 AOApplication::~AOApplication()
@@ -66,9 +68,9 @@ void AOApplication::construct_lobby()
   int y = (screen_geometry.height() - w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  discord->state_lobby();
-
   w_lobby->show();
+
+  discord->state_lobby();
 }
 
 void AOApplication::destruct_lobby()

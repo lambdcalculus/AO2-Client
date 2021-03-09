@@ -60,6 +60,7 @@ void Courtroom::enter_courtroom(int p_cid)
   {
     f_char = ao_app->get_char_name(char_list.at(m_cid).name);
     QString r_char = f_char;
+    /*
     // regex for removing non letter (except _) characters
     QRegularExpression re(QString::fromUtf8("[-`~!@#$%^&*()—+=|:;<>«»,.?/{}\'\"\\[\\]]"));
     r_char.remove(re);
@@ -71,7 +72,7 @@ void Courtroom::enter_courtroom(int p_cid)
     else
     {
       ao_app->discord->toggle(0);
-    }
+    }*/
 
     ao_app->discord->state_character(r_char.toStdString());
   }
