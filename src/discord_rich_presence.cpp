@@ -20,7 +20,7 @@ Discord::Discord()
   minimal_presence->matchSecret = "";
   minimal_presence->startTimestamp = 0;
 
-  start(APPLICATION_ID[0]);
+  start(APPLICATION_ID);
 }
 
 void Discord::start(const char *APPLICATION_ID)
@@ -52,21 +52,6 @@ void Discord::restart(const char *APPLICATION_ID)
 {
   Discord_Shutdown();
   start(APPLICATION_ID);
-}
-
-void Discord::toggle(int p_index)
-{
-  // What is the point of this?
-  if (p_index >= 0 && p_index < 2)
-  {
-    if (p_index != m_index)
-    {
-      restart(APPLICATION_ID[p_index]);
-      m_index = p_index;
-    }
-  }
-  else
-    qDebug() << p_index << "is not a valid APPLICATION_ID Index";
 }
 
 void Discord::set_style(DR::DiscordRichPresenceStyle new_style)
@@ -101,19 +86,19 @@ void Discord::state_lobby()
   this->server_id = QString("").toStdString().c_str();
   this->server_name = QString("").toStdString().c_str();
 
-  this->details = "Idle";
-  this->state = "In Lobby";
+  this->details = "In Lobby";
+  this->state = "Idle";
   this->timestamp = 0;
   this->matchSecret = QString("").toStdString().c_str();
 
   complete_presence = new DiscordRichPresence();
-  // std::memset(&complete_presence, 0, sizeof(complete_presence));
+
   complete_presence->largeImageKey = "danganronpa_online";
   complete_presence->largeImageText = "Sore Wa Chigau Yo!";
   complete_presence->instance = 1;
 
-  complete_presence->state = this->state.c_str();
   complete_presence->details = this->details.c_str();
+  complete_presence->state = this->state.c_str();
 
   refresh_presence();
 }
@@ -127,18 +112,19 @@ void Discord::state_server(std::string name, std::string server_id)
   this->server_id = server_id;
   this->server_name = name;
 
-  this->state = "In a Server";
-  this->details = "";
+  this->details = this->server_name;
+  this->state = "Connecting...";
   this->matchSecret = this->server_id;
   this->timestamp = timestamp;
 
   complete_presence = new DiscordRichPresence();
+
   complete_presence->largeImageKey = "danganronpa_online";
   complete_presence->largeImageText = "Sore Wa Chigau Yo!";
   complete_presence->instance = 1;
 
-  complete_presence->state = this->state.c_str();
   complete_presence->details = this->details.c_str();
+  complete_presence->state = this->state.c_str();
   complete_presence->matchSecret = this->matchSecret.c_str();
   complete_presence->startTimestamp = this->timestamp;
 
@@ -152,15 +138,17 @@ void Discord::state_character(std::string name)
   const std::string playing_as = "Playing as " + name_friendly;
   qDebug() << "Discord RPC: Setting character state (" << playing_as.c_str() << ")";
 
-  this->state = playing_as.c_str();
   this->details = this->server_name;
+  this->state = playing_as.c_str();
+
+  complete_presence = new DiscordRichPresence();
 
   complete_presence->largeImageKey = "danganronpa_online";
   complete_presence->largeImageText = "Sore Wa Chigau Yo!";
   complete_presence->instance = 1;
 
-  complete_presence->state = this->state.c_str();
   complete_presence->details = this->details.c_str();
+  complete_presence->state = this->state.c_str();
   complete_presence->matchSecret = this->matchSecret.c_str();
   complete_presence->startTimestamp = this->timestamp;
 
@@ -171,16 +159,17 @@ void Discord::state_spectate()
 {
   qDebug() << "Discord RPC: Setting spectator state";
 
-  this->state = "Spectating";
   this->details = this->server_name;
+  this->state = "Spectating";
 
   complete_presence = new DiscordRichPresence();
+
   complete_presence->largeImageKey = "danganronpa_online";
   complete_presence->largeImageText = "Sore Wa Chigau Yo!";
   complete_presence->instance = 1;
 
-  complete_presence->state = this->state.c_str();
   complete_presence->details = this->details.c_str();
+  complete_presence->state = this->state.c_str();
   complete_presence->matchSecret = this->matchSecret.c_str();
   complete_presence->startTimestamp = this->timestamp;
 
