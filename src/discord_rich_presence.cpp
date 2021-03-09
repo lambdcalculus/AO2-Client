@@ -65,15 +65,12 @@ void Discord::refresh_presence()
   switch (style)
   {
   case DR::DRPSComplete:
-    // Don't modify presence from its current status
     Discord_UpdatePresence(complete_presence);
     break;
   case DR::DRPSMinimal:
-    // Use instead minimal presence
     Discord_UpdatePresence(minimal_presence);
     break;
   case DR::DRPSDisabled:
-    // Wipe out
     Discord_ClearPresence();
     break;
   }
@@ -133,7 +130,6 @@ void Discord::state_server(std::string name, std::string server_id)
 
 void Discord::state_character(std::string name)
 {
-  // auto name_internal = QString(name.c_str()).toLower().replace(' ', '_').toStdString();
   auto name_friendly = QString(name.c_str()).replace('_', ' ').toStdString();
   const std::string playing_as = "Playing as " + name_friendly;
   qDebug() << "Discord RPC: Setting character state (" << playing_as.c_str() << ")";
