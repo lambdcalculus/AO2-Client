@@ -1,5 +1,5 @@
 #include "aoconfig.h"
-
+#include "datatypes.h"
 #include "draudioengine.h"
 
 // qt
@@ -47,12 +47,13 @@ private:
   bool autosave;
   QString username;
   QString callwords;
+  bool server_alerts;
+  DR::DiscordRichPresence discord_rich_presence;
   QString theme;
   QString gamemode;
   bool manual_gamemode;
   QString timeofday;
   bool manual_timeofday;
-  bool server_alerts;
   bool always_pre;
   int chat_tick_interval;
   int log_max_lines;
@@ -104,7 +105,24 @@ void AOConfigPrivate::read_file()
   username = cfg.value("username").toString();
   callwords = cfg.value("callwords").toString();
   server_alerts = cfg.value("server_alerts", true).toBool();
-
+  QString raw_discord_rich_presence = cfg.value("discord_rich_presence", "complete").toString();
+  if (raw_discord_rich_presence == "complete")
+  {
+    discord_rich_presence = DR::DRPComplete;
+  }
+  else if (raw_discord_rich_presence == "minimal")
+  {
+    discord_rich_presence = DR::DRPMinimal;
+  }
+  else if (raw_discord_rich_presence == "disabled")
+  {
+    discord_rich_presence = DR::DRPDisabled;
+  }
+  else
+  {
+    qWarning() << "Unknown Discord Rich Presence status, defaulting to 'complete'";
+    discord_rich_presence = DR::DRPComplete;
+  }
   theme = cfg.value("theme").toString();
   if (theme.trimmed().isEmpty())
     theme = "default";
@@ -156,6 +174,20 @@ void AOConfigPrivate::save_file()
   cfg.setValue("username", username);
   cfg.setValue("callwords", callwords);
   cfg.setValue("server_alerts", server_alerts);
+  QString raw_discord_rich_presence = "";
+  switch (discord_rich_presence)
+  {
+  case DR::DRPComplete:
+    raw_discord_rich_presence = "complete";
+    break;
+  case DR::DRPMinimal:
+    raw_discord_rich_presence = "minimal";
+    break;
+  case DR::DRPDisabled:
+    raw_discord_rich_presence = "disabled";
+    break;
+  }
+  cfg.setValue("discord_rich_presence", raw_discord_rich_presence);
   cfg.setValue("theme", theme);
   cfg.setValue("gamemode", gamemode);
   cfg.setValue("manual_gamemode", manual_gamemode);
@@ -266,6 +298,16 @@ QString AOConfig::callwords() const
   return d->callwords;
 }
 
+bool AOConfig::server_alerts_enabled() const
+{
+  return d->server_alerts;
+}
+
+DR::DiscordRichPresence AOConfig::discord_rich_presence() const
+{
+  return d->discord_rich_presence;
+}
+
 QString AOConfig::theme() const
 {
   return d->theme;
@@ -289,11 +331,6 @@ QString AOConfig::timeofday() const
 bool AOConfig::manual_timeofday_enabled() const
 {
   return d->manual_timeofday;
-}
-
-bool AOConfig::server_alerts_enabled() const
-{
-  return d->server_alerts;
 }
 
 bool AOConfig::always_pre_enabled() const
@@ -424,6 +461,36 @@ void AOConfig::set_server_alerts(bool p_enabled)
     return;
   d->server_alerts = p_enabled;
   d->invoke_signal("server_alerts_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_discord_rich_presence_complete(bool p_enabled)
+{
+  if (!p_enabled)
+    return;
+  if (d->discord_rich_presence == DR::DRPComplete)
+    return;
+  d->discord_rich_presence = DR::DRPComplete;
+  d->invoke_signal("discord_rich_presence_changed", Q_ARG(DR::DiscordRichPresence, DR::DRPComplete));
+}
+
+void AOConfig::set_discord_rich_presence_minimal(bool p_enabled)
+{
+  if (!p_enabled)
+    return;
+  if (d->discord_rich_presence == DR::DRPMinimal)
+    return;
+  d->discord_rich_presence = DR::DRPMinimal;
+  d->invoke_signal("discord_rich_presence_changed", Q_ARG(DR::DiscordRichPresence, DR::DRPMinimal));
+}
+
+void AOConfig::set_discord_rich_presence_disabled(bool p_enabled)
+{
+  if (!p_enabled)
+    return;
+  if (d->discord_rich_presence == DR::DRPDisabled)
+    return;
+  d->discord_rich_presence = DR::DRPDisabled;
+  d->invoke_signal("discord_rich_presence_changed", Q_ARG(DR::DiscordRichPresence, DR::DRPDisabled));
 }
 
 void AOConfig::set_theme(QString p_string)
