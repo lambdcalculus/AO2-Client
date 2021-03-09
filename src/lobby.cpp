@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "aosfxplayer.h"
 #include "debug_functions.h"
+#include "drtextedit.h"
 #include "networkmanager.h"
 
 #include <QDebug>
@@ -10,7 +11,6 @@
 #include <QImageReader>
 #include <QMessageBox>
 #include <QScrollBar>
-#include <QTextEdit>
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -24,14 +24,14 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_refresh = new AOButton(this, ao_app);
   ui_add_to_fav = new AOButton(this, ao_app);
   ui_connect = new AOButton(this, ao_app);
-  ui_version = new QTextEdit(this);
+  ui_version = new DRTextEdit(this);
   ui_version->setFrameStyle(QFrame::NoFrame);
   ui_version->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_version->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_version->setReadOnly(true);
   ui_about = new AOButton(this, ao_app);
   ui_server_list = new QListWidget(this);
-  ui_player_count = new QTextEdit(this);
+  ui_player_count = new DRTextEdit(this);
   ui_player_count->setFrameStyle(QFrame::NoFrame);
   ui_player_count->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_player_count->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -43,7 +43,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatname->setPlaceholderText("Name");
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImageDisplay(this, ao_app);
-  ui_loading_text = new QTextEdit(ui_loading_background);
+  ui_loading_text = new DRTextEdit(ui_loading_background);
   ui_progress_bar = new QProgressBar(ui_loading_background);
   ui_progress_bar->setMinimum(0);
   ui_progress_bar->setMaximum(100);
@@ -191,12 +191,12 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Lobby::set_fonts()
 {
-  set_qtextedit_font(ui_player_count, "player_count");
-  set_qtextedit_font(ui_description, "description");
+  set_drtextedit_font(ui_player_count, "player_count");
+  set_font(ui_description, "description");
   set_font(ui_chatbox, "chatbox");
   set_font(ui_chatname, "chatname");
   set_font(ui_chatmessage, "chatmessage");
-  set_qtextedit_font(ui_loading_text, "loading_text");
+  set_drtextedit_font(ui_loading_text, "loading_text");
   set_font(ui_server_list, "server_list");
 }
 
@@ -260,7 +260,7 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   widget->setStyleSheet(style_sheet_string);
 }
 
-void Lobby::set_qtextedit_font(QTextEdit *widget, QString p_identifier)
+void Lobby::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
 {
   set_font(widget, p_identifier);
 

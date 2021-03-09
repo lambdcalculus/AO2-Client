@@ -898,7 +898,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   // Check if char.ini has color property, which overrides the theme's default
   // showname color
   QString f_color = ao_app->read_char_ini(real_name, "color", "[Options]", "[Time]");
-  set_qtextedit_font(ui_vp_showname, "showname", f_color);
+  set_drtextedit_font(ui_vp_showname, "showname", f_color);
 
   ui_vp_showname->setText(f_showname);
   ui_vp_showname->setAlignment(Qt::AlignVCenter);
