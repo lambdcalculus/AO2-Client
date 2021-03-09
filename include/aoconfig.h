@@ -23,7 +23,7 @@ public:
   QString username() const;
   QString callwords() const;
   bool server_alerts_enabled() const;
-  DR::DiscordRichPresence discord_rich_presence() const;
+  DR::DiscordRichPresenceStyle discord_rich_presence() const;
   QString theme() const;
   QString gamemode() const;
   bool manual_gamemode_enabled() const;
@@ -61,9 +61,9 @@ public slots:
   void set_username(QString p_string);
   void set_callwords(QString p_string);
   void set_server_alerts(bool p_enabled);
-  void set_discord_rich_presence_complete(bool p_enabled);
-  void set_discord_rich_presence_minimal(bool p_enabled);
-  void set_discord_rich_presence_disabled(bool p_enabled);
+  void set_discord_rich_presence_style_complete(bool p_enabled);
+  void set_discord_rich_presence_style_minimal(bool p_enabled);
+  void set_discord_rich_presence_style_disabled(bool p_enabled);
   void set_always_pre(bool p_enabled);
   void set_theme(QString p_string);
   void set_gamemode(QString p_string);
@@ -97,7 +97,7 @@ signals:
   void username_changed(QString);
   void callwords_changed(QString);
   void server_alerts_changed(bool);
-  void discord_rich_presence_changed(DR::DiscordRichPresence);
+  void discord_rich_presence_style_changed(DR::DiscordRichPresenceStyle);
   void theme_changed(QString);
   void gamemode_changed(QString);
   void manual_gamemode_changed(bool);

@@ -138,11 +138,11 @@ enum Color : int32_t
   CWhite = CDefault,
 };
 
-enum DiscordRichPresence : int32_t
+enum DiscordRichPresenceStyle : int32_t
 {
-  DRPComplete,
-  DRPMinimal,
-  DRPDisabled,
+  DRPSComplete,
+  DRPSMinimal,
+  DRPSDisabled,
 };
 
 struct ColorInfo

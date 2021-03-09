@@ -1,4 +1,5 @@
 #include "discord_rich_presence.h"
+#include "datatypes.h"
 
 #include <cstring>
 #include <ctime>
@@ -73,6 +74,19 @@ void Discord::toggle(int p_index)
     qDebug() << p_index << "is not a valid APPLICATION_ID Index";
 }
 
+void Discord::set_style(DR::DiscordRichPresenceStyle new_style)
+{
+  style = new_style;
+  refresh_presence(&this->current_presence);
+}
+
+void Discord::refresh_presence(DiscordRichPresence *new_presence)
+{
+  // TODO: Change presence according to style
+  current_presence = *new_presence;
+  Discord_UpdatePresence(new_presence);
+}
+
 void Discord::state_lobby()
 {
   DiscordRichPresence presence;
@@ -83,7 +97,7 @@ void Discord::state_lobby()
 
   presence.state = "In Lobby";
   presence.details = "Idle";
-  Discord_UpdatePresence(&presence);
+  refresh_presence(&presence);
 }
 
 void Discord::state_server(std::string name, std::string server_id)
@@ -106,7 +120,7 @@ void Discord::state_server(std::string name, std::string server_id)
   this->server_id = server_id;
   this->server_name = name;
   this->timestamp = timestamp;
-  Discord_UpdatePresence(&presence);
+  refresh_presence(&presence);
 }
 
 void Discord::state_character(std::string name)
@@ -125,15 +139,14 @@ void Discord::state_character(std::string name)
   presence.startTimestamp = this->timestamp;
 
   presence.state = playing_as.c_str();
-  //  presence.smallImageKey = "danganronpa_online";
   presence.smallImageKey = "danganronpa_online";
   presence.smallImageText = "Danganronpa Online";
-  Discord_UpdatePresence(&presence);
+  refresh_presence(&presence);
 }
 
 void Discord::state_spectate()
 {
-  qDebug() << "Discord RPC: Setting specator state";
+  qDebug() << "Discord RPC: Setting spectator state";
 
   DiscordRichPresence presence;
   std::memset(&presence, 0, sizeof(presence));
@@ -145,7 +158,7 @@ void Discord::state_spectate()
   presence.startTimestamp = this->timestamp;
 
   presence.state = "Spectating";
-  Discord_UpdatePresence(&presence);
+  refresh_presence(&presence);
 }
 
 } // namespace AttorneyOnline

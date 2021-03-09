@@ -5,6 +5,8 @@
 // std
 #include <string>
 
+#include "datatypes.h"
+
 namespace AttorneyOnline
 {
 
@@ -18,6 +20,9 @@ private:
   int m_index = 0;
   std::string server_name, server_id;
   int64_t timestamp;
+  DR::DiscordRichPresenceStyle style;
+  DiscordRichPresence current_presence;
+  void refresh_presence(DiscordRichPresence * = nullptr);
 
 public:
   Discord();
@@ -30,6 +35,7 @@ public:
   void start(const char *APPLICATION_ID);
   void restart(const char *APPLICATION_ID);
   void toggle(int p_index);
+  void set_style(DR::DiscordRichPresenceStyle new_style);
 };
 
 } // namespace AttorneyOnline

@@ -114,23 +114,23 @@
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QRadioButton" name="discord_rich_presence_disabled">
+           <widget class="QRadioButton" name="discord_rich_presence_style_complete">
             <property name="text">
-             <string>Disabled</string>
+             <string>Complete</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="discord_rich_presence_minimal">
+           <widget class="QRadioButton" name="discord_rich_presence_style_minimal">
             <property name="text">
              <string>Minimal</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="discord_rich_presence_complete">
+           <widget class="QRadioButton" name="discord_rich_presence_style_disabled">
             <property name="text">
-             <string>Complete</string>
+             <string>Disabled</string>
             </property>
            </widget>
           </item>

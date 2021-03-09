@@ -48,7 +48,7 @@ private:
   QString username;
   QString callwords;
   bool server_alerts;
-  DR::DiscordRichPresence discord_rich_presence;
+  DR::DiscordRichPresenceStyle discord_rich_presence;
   QString theme;
   QString gamemode;
   bool manual_gamemode;
@@ -108,20 +108,20 @@ void AOConfigPrivate::read_file()
   QString raw_discord_rich_presence = cfg.value("discord_rich_presence", "complete").toString();
   if (raw_discord_rich_presence == "complete")
   {
-    discord_rich_presence = DR::DRPComplete;
+    discord_rich_presence = DR::DRPSComplete;
   }
   else if (raw_discord_rich_presence == "minimal")
   {
-    discord_rich_presence = DR::DRPMinimal;
+    discord_rich_presence = DR::DRPSMinimal;
   }
   else if (raw_discord_rich_presence == "disabled")
   {
-    discord_rich_presence = DR::DRPDisabled;
+    discord_rich_presence = DR::DRPSDisabled;
   }
   else
   {
     qWarning() << "Unknown Discord Rich Presence status, defaulting to 'complete'";
-    discord_rich_presence = DR::DRPComplete;
+    discord_rich_presence = DR::DRPSComplete;
   }
   theme = cfg.value("theme").toString();
   if (theme.trimmed().isEmpty())
@@ -177,13 +177,13 @@ void AOConfigPrivate::save_file()
   QString raw_discord_rich_presence = "";
   switch (discord_rich_presence)
   {
-  case DR::DRPComplete:
+  case DR::DRPSComplete:
     raw_discord_rich_presence = "complete";
     break;
-  case DR::DRPMinimal:
+  case DR::DRPSMinimal:
     raw_discord_rich_presence = "minimal";
     break;
-  case DR::DRPDisabled:
+  case DR::DRPSDisabled:
     raw_discord_rich_presence = "disabled";
     break;
   }
@@ -303,7 +303,7 @@ bool AOConfig::server_alerts_enabled() const
   return d->server_alerts;
 }
 
-DR::DiscordRichPresence AOConfig::discord_rich_presence() const
+DR::DiscordRichPresenceStyle AOConfig::discord_rich_presence() const
 {
   return d->discord_rich_presence;
 }
@@ -463,34 +463,34 @@ void AOConfig::set_server_alerts(bool p_enabled)
   d->invoke_signal("server_alerts_changed", Q_ARG(bool, p_enabled));
 }
 
-void AOConfig::set_discord_rich_presence_complete(bool p_enabled)
+void AOConfig::set_discord_rich_presence_style_complete(bool p_enabled)
 {
   if (!p_enabled)
     return;
-  if (d->discord_rich_presence == DR::DRPComplete)
+  if (d->discord_rich_presence == DR::DRPSComplete)
     return;
-  d->discord_rich_presence = DR::DRPComplete;
-  d->invoke_signal("discord_rich_presence_changed", Q_ARG(DR::DiscordRichPresence, DR::DRPComplete));
+  d->discord_rich_presence = DR::DRPSComplete;
+  d->invoke_signal("discord_rich_presence_style_changed", Q_ARG(DR::DiscordRichPresenceStyle, DR::DRPSComplete));
 }
 
-void AOConfig::set_discord_rich_presence_minimal(bool p_enabled)
+void AOConfig::set_discord_rich_presence_style_minimal(bool p_enabled)
 {
   if (!p_enabled)
     return;
-  if (d->discord_rich_presence == DR::DRPMinimal)
+  if (d->discord_rich_presence == DR::DRPSMinimal)
     return;
-  d->discord_rich_presence = DR::DRPMinimal;
-  d->invoke_signal("discord_rich_presence_changed", Q_ARG(DR::DiscordRichPresence, DR::DRPMinimal));
+  d->discord_rich_presence = DR::DRPSMinimal;
+  d->invoke_signal("discord_rich_presence_style_changed", Q_ARG(DR::DiscordRichPresenceStyle, DR::DRPSMinimal));
 }
 
-void AOConfig::set_discord_rich_presence_disabled(bool p_enabled)
+void AOConfig::set_discord_rich_presence_style_disabled(bool p_enabled)
 {
   if (!p_enabled)
     return;
-  if (d->discord_rich_presence == DR::DRPDisabled)
+  if (d->discord_rich_presence == DR::DRPSDisabled)
     return;
-  d->discord_rich_presence = DR::DRPDisabled;
-  d->invoke_signal("discord_rich_presence_changed", Q_ARG(DR::DiscordRichPresence, DR::DRPDisabled));
+  d->discord_rich_presence = DR::DRPSDisabled;
+  d->invoke_signal("discord_rich_presence_style_changed", Q_ARG(DR::DiscordRichPresenceStyle, DR::DRPSDisabled));
 }
 
 void AOConfig::set_theme(QString p_string)

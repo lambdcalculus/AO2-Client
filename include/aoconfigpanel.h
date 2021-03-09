@@ -42,7 +42,7 @@ private:
   void update_audio_device_list();
 
 private slots:
-  void on_discord_rich_presence_changed(DR::DiscordRichPresence drp_status);
+  void on_discord_rich_presence_style_changed(DR::DiscordRichPresenceStyle drp_status);
   void on_reload_theme_clicked();
   void on_gamemode_index_changed(QString p_text);
   void on_timeofday_index_changed(QString p_text);
@@ -74,9 +74,9 @@ private:
   QLineEdit *w_username = nullptr;
   QLineEdit *w_callwords = nullptr;
   QCheckBox *w_server_alerts = nullptr;
-  QRadioButton *w_discord_rich_presence_complete = nullptr;
-  QRadioButton *w_discord_rich_presence_minimal = nullptr;
-  QRadioButton *w_discord_rich_presence_disabled = nullptr;
+  QRadioButton *w_discord_rich_presence_style_complete = nullptr;
+  QRadioButton *w_discord_rich_presence_style_minimal = nullptr;
+  QRadioButton *w_discord_rich_presence_style_disabled = nullptr;
 
   // game
   QComboBox *w_theme = nullptr;

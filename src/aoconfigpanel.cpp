@@ -33,9 +33,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_username = AO_GUI_WIDGET(QLineEdit, "username");
   w_callwords = AO_GUI_WIDGET(QLineEdit, "callwords");
   w_server_alerts = AO_GUI_WIDGET(QCheckBox, "server_alerts");
-  w_discord_rich_presence_complete = AO_GUI_WIDGET(QRadioButton, "discord_rich_presence_complete");
-  w_discord_rich_presence_minimal = AO_GUI_WIDGET(QRadioButton, "discord_rich_presence_minimal");
-  w_discord_rich_presence_disabled = AO_GUI_WIDGET(QRadioButton, "discord_rich_presence_disabled");
+  w_discord_rich_presence_style_complete = AO_GUI_WIDGET(QRadioButton, "discord_rich_presence_style_complete");
+  w_discord_rich_presence_style_minimal = AO_GUI_WIDGET(QRadioButton, "discord_rich_presence_style_minimal");
+  w_discord_rich_presence_style_disabled = AO_GUI_WIDGET(QRadioButton, "discord_rich_presence_style_disabled");
 
   // game
   w_theme = AO_GUI_WIDGET(QComboBox, "theme");
@@ -85,8 +85,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(username_changed(QString)), w_username, SLOT(setText(QString)));
   connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords, SLOT(setText(QString)));
   connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts, SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(discord_rich_presence_changed(DR::DiscordRichPresence)), this,
-          SLOT(on_discord_rich_presence_changed(DR::DiscordRichPresence)));
+  connect(m_config, SIGNAL(discord_rich_presence_style_changed(DR::DiscordRichPresenceStyle)), this,
+          SLOT(on_discord_rich_presence_style_changed(DR::DiscordRichPresenceStyle)));
   connect(m_config, SIGNAL(theme_changed(QString)), w_theme, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(gamemode_changed(QString)), w_gamemode, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_manual_gamemode, SLOT(setChecked(bool)));
@@ -126,12 +126,12 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_username, SIGNAL(textEdited(QString)), m_config, SLOT(set_username(QString)));
   connect(w_callwords, SIGNAL(textEdited(QString)), m_config, SLOT(set_callwords(QString)));
   connect(w_server_alerts, SIGNAL(toggled(bool)), m_config, SLOT(set_server_alerts(bool)));
-  connect(w_discord_rich_presence_complete, SIGNAL(toggled(bool)), m_config,
-          SLOT(set_discord_rich_presence_complete(bool)));
-  connect(w_discord_rich_presence_minimal, SIGNAL(toggled(bool)), m_config,
-          SLOT(set_discord_rich_presence_minimal(bool)));
-  connect(w_discord_rich_presence_disabled, SIGNAL(toggled(bool)), m_config,
-          SLOT(set_discord_rich_presence_disabled(bool)));
+  connect(w_discord_rich_presence_style_complete, SIGNAL(toggled(bool)), m_config,
+          SLOT(set_discord_rich_presence_style_complete(bool)));
+  connect(w_discord_rich_presence_style_minimal, SIGNAL(toggled(bool)), m_config,
+          SLOT(set_discord_rich_presence_style_minimal(bool)));
+  connect(w_discord_rich_presence_style_disabled, SIGNAL(toggled(bool)), m_config,
+          SLOT(set_discord_rich_presence_style_disabled(bool)));
   connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
   connect(w_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(w_gamemode, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_gamemode_index_changed(QString)));
@@ -188,14 +188,14 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
 
   switch (m_config->discord_rich_presence())
   {
-  case DR::DRPComplete:
-    w_discord_rich_presence_complete->setChecked(true);
+  case DR::DRPSComplete:
+    w_discord_rich_presence_style_complete->setChecked(true);
     break;
-  case DR::DRPMinimal:
-    w_discord_rich_presence_minimal->setChecked(true);
+  case DR::DRPSMinimal:
+    w_discord_rich_presence_style_minimal->setChecked(true);
     break;
-  case DR::DRPDisabled:
-    w_discord_rich_presence_disabled->setChecked(true);
+  case DR::DRPSDisabled:
+    w_discord_rich_presence_style_disabled->setChecked(true);
     break;
   }
 
@@ -239,18 +239,18 @@ void AOConfigPanel::showEvent(QShowEvent *event)
   }
 }
 
-void AOConfigPanel::on_discord_rich_presence_changed(DR::DiscordRichPresence drp_status)
+void AOConfigPanel::on_discord_rich_presence_style_changed(DR::DiscordRichPresenceStyle drp_status)
 {
   switch (drp_status)
   {
-  case DR::DRPComplete:
-    m_config->set_discord_rich_presence_complete(true);
+  case DR::DRPSComplete:
+    m_config->set_discord_rich_presence_style_complete(true);
     break;
-  case DR::DRPMinimal:
-    m_config->set_discord_rich_presence_minimal(true);
+  case DR::DRPSMinimal:
+    m_config->set_discord_rich_presence_style_minimal(true);
     break;
-  case DR::DRPDisabled:
-    m_config->set_discord_rich_presence_disabled(true);
+  case DR::DRPSDisabled:
+    m_config->set_discord_rich_presence_style_disabled(true);
     break;
   }
 }
