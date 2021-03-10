@@ -108,7 +108,7 @@ void AOConfigPrivate::read_file()
   callwords = cfg.value("callwords").toString();
   server_alerts = cfg.value("server_alerts", true).toBool();
 
-  discord_presence = cfg.value("discord_presence", false).toBool();
+  discord_presence = cfg.value("discord_presence", true).toBool();
   discord_hide_server = cfg.value("discord_hide_server", false).toBool();
   discord_hide_character = cfg.value("discord_hide_character", false).toBool();
 

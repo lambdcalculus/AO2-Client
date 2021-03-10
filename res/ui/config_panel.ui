@@ -79,7 +79,7 @@
           </sizepolicy>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable Discord presence.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#0000ff;&quot;&gt;[NOTE]&lt;/span&gt;&lt;span style=&quot; color:#ffff00;&quot;/&gt;Changes may take up to 15 seconds to be reflected in your Discord profile.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable Discord presence.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#0000ff;&quot;&gt;[NOTE] &lt;/span&gt;Changes may take up to 15 seconds to be reflected in your Discord profile.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="title">
           <string>Discord Presence</string>
