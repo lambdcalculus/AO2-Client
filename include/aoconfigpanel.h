@@ -75,6 +75,7 @@ private:
   QCheckBox *w_server_alerts = nullptr;
 
   QGroupBox *w_discord_presence = nullptr;
+  QCheckBox *w_discord_hide_server = nullptr;
   QCheckBox *w_discord_hide_character = nullptr;
 
   // game

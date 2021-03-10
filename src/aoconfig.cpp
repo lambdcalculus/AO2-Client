@@ -49,6 +49,7 @@ private:
   QString callwords;
   bool server_alerts;
   bool discord_presence = false;
+  bool discord_hide_server = false;
   bool discord_hide_character = false;
   QString theme;
   QString gamemode;
@@ -108,6 +109,7 @@ void AOConfigPrivate::read_file()
   server_alerts = cfg.value("server_alerts", true).toBool();
 
   discord_presence = cfg.value("discord_presence", false).toBool();
+  discord_hide_server = cfg.value("discord_hide_server", false).toBool();
   discord_hide_character = cfg.value("discord_hide_character", false).toBool();
 
   theme = cfg.value("theme").toString();
@@ -163,6 +165,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("server_alerts", server_alerts);
 
   cfg.setValue("discord_presence", discord_presence);
+  cfg.setValue("discord_hide_server", discord_hide_server);
   cfg.setValue("discord_hide_character", discord_hide_character);
 
   cfg.setValue("theme", theme);
@@ -283,6 +286,11 @@ bool AOConfig::server_alerts_enabled() const
 bool AOConfig::discord_presence() const
 {
   return d->discord_presence;
+}
+
+bool AOConfig::discord_hide_server() const
+{
+  return d->discord_hide_server;
 }
 
 bool AOConfig::discord_hide_character() const
@@ -451,6 +459,14 @@ void AOConfig::set_discord_presence(const bool p_enabled)
     return;
   d->discord_presence = p_enabled;
   Q_EMIT d->invoke_signal("discord_presence_changed", Q_ARG(bool, d->discord_presence));
+}
+
+void AOConfig::set_discord_hide_server(const bool p_enabled)
+{
+  if (d->discord_hide_server == p_enabled)
+    return;
+  d->discord_hide_server = p_enabled;
+  Q_EMIT d->invoke_signal("discord_hide_server_changed", Q_ARG(bool, d->discord_hide_server));
 }
 
 void AOConfig::set_discord_hide_character(const bool p_enabled)

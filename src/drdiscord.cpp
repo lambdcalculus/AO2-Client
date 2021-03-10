@@ -100,6 +100,11 @@ bool DRDiscord::presence_enabled() const
   return option_enabled(OPresence);
 }
 
+bool DRDiscord::hide_server_enabled() const
+{
+  return option_enabled(OHideServer);
+}
+
 bool DRDiscord::hide_character_enabled() const
 {
   return option_enabled(OHideCharacter);
@@ -145,6 +150,11 @@ void DRDiscord::set_option(const DRDiscord::Option &f_option, const bool p_enabl
 void DRDiscord::set_presence(const bool p_enabled)
 {
   set_option(OPresence, p_enabled);
+}
+
+void DRDiscord::set_hide_server(const bool p_enabled)
+{
+  set_option(OHideServer, p_enabled);
 }
 
 void DRDiscord::set_hide_character(const bool p_enabled)
@@ -202,21 +212,27 @@ void DRDiscord::on_update_queued()
   {
   default:
   case State::Idle:
-    m_buf_details = "In Lobby";
+    m_buf_details.clear();
+    if (!hide_server_enabled())
+    {
+      m_buf_details = "Lobby";
+    }
     m_buf_state.clear();
     break;
 
   case State::Connected:
-    m_buf_details = QString("In: %1")
-                        .arg(m_server_name.has_value() ? m_server_name.value().toUtf8() : QString("<private>"))
-                        .toUtf8();
+    m_buf_details.clear();
+    if (!hide_server_enabled())
+    {
+      m_buf_details = QString("In: %1")
+                          .arg(m_server_name.has_value() ? m_server_name.value().toUtf8() : QString("<private>"))
+                          .toUtf8();
+    }
 
-    if (hide_character_enabled())
+    m_buf_state.clear();
+    if (!hide_character_enabled())
     {
       m_buf_state.clear();
-    }
-    else
-    {
       m_buf_state = m_character_name.has_value() ? QString("As: %1").arg(m_character_name.value()).toUtf8()
                                                  : QByteArray("Spectating");
     }

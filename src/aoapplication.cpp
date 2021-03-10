@@ -34,8 +34,10 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   discord = new DRDiscord(this);
   discord->set_presence(config->discord_presence());
+  discord->set_hide_server(config->discord_hide_server());
   discord->set_hide_character(config->discord_hide_character());
   connect(config, SIGNAL(discord_presence_changed(bool)), discord, SLOT(set_presence(bool)));
+  connect(config, SIGNAL(discord_hide_server_changed(bool)), discord, SLOT(set_hide_server(bool)));
   connect(config, SIGNAL(discord_hide_character_changed(bool)), discord, SLOT(set_hide_character(bool)));
 }
 

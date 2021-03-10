@@ -92,6 +92,13 @@
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
+           <widget class="QCheckBox" name="discord_hide_server">
+            <property name="text">
+             <string>Hide Server</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="discord_hide_character">
             <property name="text">
              <string>Hide Character</string>

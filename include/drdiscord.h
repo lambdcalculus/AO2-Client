@@ -17,7 +17,8 @@ public:
   enum Option : uint32_t
   {
     OPresence = 0x1,
-    OHideCharacter = 0x2,
+    OHideServer = 0x2,
+    OHideCharacter = 0x4,
   };
   Q_DECLARE_FLAGS(Options, Option)
 
@@ -34,6 +35,7 @@ public:
   Options get_options() const;
   bool option_enabled(const Option p_option) const;
   bool presence_enabled() const;
+  bool hide_server_enabled() const;
   bool hide_character_enabled() const;
   State get_state() const;
   bool is_state(const State p_state) const;
@@ -44,6 +46,7 @@ public slots:
   void set_options(const Options &f_options);
   void set_option(const Option &f_option, const bool p_enabled);
   void set_presence(const bool p_enabled);
+  void set_hide_server(const bool p_enabled);
   void set_hide_character(const bool p_enabled);
   void set_state(const State f_state);
   void set_server_name(const QString &f_server_name);
