@@ -3,7 +3,6 @@
 
 #include "aopacket.h"
 #include "datatypes.h"
-#include "discord_rich_presence.h"
 #include "drdiscord.h"
 
 #include <QApplication>

@@ -138,20 +138,12 @@ enum Color : int32_t
   CWhite = CDefault,
 };
 
-enum DiscordRichPresenceStyle : int32_t
-{
-  DRPSComplete,
-  DRPSMinimal,
-  DRPSDisabled,
-};
-
 struct ColorInfo
 {
 public:
   ColorInfo() = default;
   ColorInfo(QString p_showname, QString p_code) : name(p_showname.toLower()), showname(p_showname), code(p_code)
-  {
-  }
+  {}
 
   QString name;
   QString showname;

@@ -47,7 +47,6 @@ HEADERS += \
   include/courtroom.h \
   include/datatypes.h \
   include/debug_functions.h \
-  include/discord_rich_presence.h \
   include/draudio.h \
   include/draudiodevice.h \
   include/draudioengine.h \
@@ -98,7 +97,6 @@ SOURCES += \
   src/courtroom_widgets.cpp \
   src/datatypes.cpp \
   src/debug_functions.cpp \
-  src/discord_rich_presence.cpp \
   src/draudio.cpp \
   src/draudiodevice.cpp \
   src/draudioengine.cpp \
