@@ -239,8 +239,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // look for the server inside the known public list and report it
     if (is_favorite)
     {
-      server_name.clear();
-
       for (server_type &server : server_list)
       {
         const QString l_address = server.ip + server.port;
@@ -252,7 +250,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       }
     }
     discord->set_state(DRDiscord::State::Connected);
-    server_name.isEmpty() ? discord->clear_server_name() : discord->set_server_name(server_name);
+    discord->set_server_name(server_name);
   }
   else if (header == "CI")
   {
