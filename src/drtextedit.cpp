@@ -35,8 +35,7 @@ void DRTextEdit::setVerticalAlignment(Qt::Alignment verticalAlignment)
   this->_verticalAlignment = verticalAlignment;
 
   // Refresh. To get around the fact both height and length did not change, we set previous_height
-  // and previous_length to an invalid -1. This will be fixed in the onTextChanged() call
-  previous_length = -1;
+  // to an invalid -1. This will be fixed in the onTextChanged() call
   previous_height = -1;
   onTextChanged();
 }
@@ -53,10 +52,7 @@ void DRTextEdit::setHorizontalAlignment(Qt::Alignment horizontalAlignment)
       horizontalAlignment != Qt::AlignRight)
     horizontalAlignment = Qt::AlignLeft;
   this->_horizontalAlignment = horizontalAlignment;
-
-  // Refresh. To get around the fact length did not change, we set previous_length
-  // to an invalid -1. This will be fixed in the onTextChanged() call
-  previous_length = -1;
+  // Refresh.
   onTextChanged();
 }
 
@@ -67,12 +63,17 @@ Qt::Alignment DRTextEdit::horizontalAlignment()
 
 void DRTextEdit::onTextChanged()
 {
-  // We do not care about cases where the length of text has not changed.
-  // This also prevents recursive calls of this slot.
-  if (document()->toPlainText().length() == previous_length)
+  // Avoid recursion
+  if (processing_change)
     return;
-  previous_length = document()->toPlainText().length();
 
+  processing_change = true;
+  _onTextChanged();
+  processing_change = false;
+}
+
+void DRTextEdit::_onTextChanged()
+{
   // Do computations to align text horizontally
   setAlignment(_horizontalAlignment);
 

@@ -23,8 +23,10 @@ private:
   bool _outline = false;
   Qt::Alignment _verticalAlignment = Qt::AlignTop;
   Qt::Alignment _horizontalAlignment = Qt::AlignLeft;
-  int previous_length = 0;
   int previous_height = 0;
+
+  bool processing_change = false;
+  void _onTextChanged();
 
 private slots:
   void onTextChanged();

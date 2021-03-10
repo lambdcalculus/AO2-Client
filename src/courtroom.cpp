@@ -901,7 +901,6 @@ void Courtroom::handle_chatmessage_2() // handles IC
   set_drtextedit_font(ui_vp_showname, "showname", f_color);
 
   ui_vp_showname->setText(f_showname);
-  ui_vp_showname->setAlignment(Qt::AlignVCenter);
 
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
