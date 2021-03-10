@@ -13,13 +13,17 @@ public:
 
   void setOutline(bool outline);
   void setVerticalAlignment(Qt::Alignment);
+  void setHorizontalAlignment(Qt::Alignment);
 
   bool outline();
   Qt::Alignment verticalAlignment();
+  Qt::Alignment horizontalAlignment();
 
 private:
   bool _outline = false;
   Qt::Alignment _verticalAlignment = Qt::AlignTop;
+  Qt::Alignment _horizontalAlignment = Qt::AlignLeft;
+  int previous_length = 0;
   int previous_height = 0;
 
 private slots:

@@ -33,6 +33,12 @@ void DRTextEdit::setVerticalAlignment(Qt::Alignment verticalAlignment)
       verticalAlignment != Qt::AlignBottom)
     verticalAlignment = Qt::AlignTop;
   this->_verticalAlignment = verticalAlignment;
+
+  // Refresh. To get around the fact both height and length did not change, we set previous_height
+  // and previous_length to an invalid -1. This will be fixed in the onTextChanged() call
+  previous_length = -1;
+  previous_height = -1;
+  onTextChanged();
 }
 
 Qt::Alignment DRTextEdit::verticalAlignment()
@@ -40,8 +46,36 @@ Qt::Alignment DRTextEdit::verticalAlignment()
   return this->_verticalAlignment;
 }
 
+void DRTextEdit::setHorizontalAlignment(Qt::Alignment horizontalAlignment)
+{
+  // If an invalid horizontal alignment is passed, convert to Left.
+  if (horizontalAlignment != Qt::AlignLeft && horizontalAlignment != Qt::AlignHCenter &&
+      horizontalAlignment != Qt::AlignRight)
+    horizontalAlignment = Qt::AlignLeft;
+  this->_horizontalAlignment = horizontalAlignment;
+
+  // Refresh. To get around the fact length did not change, we set previous_length
+  // to an invalid -1. This will be fixed in the onTextChanged() call
+  previous_length = -1;
+  onTextChanged();
+}
+
+Qt::Alignment DRTextEdit::horizontalAlignment()
+{
+  return this->_horizontalAlignment;
+}
+
 void DRTextEdit::onTextChanged()
 {
+  // We do not care about cases where the length of text has not changed.
+  // This also prevents recursive calls of this slot.
+  if (document()->toPlainText().length() == previous_length)
+    return;
+  previous_length = document()->toPlainText().length();
+
+  // Do computations to align text horizontally
+  setAlignment(_horizontalAlignment);
+
   // Do computations to align text vertically according to preference
   // We do these computations every time the text changes, so we better be efficient!
 
@@ -63,7 +97,7 @@ void DRTextEdit::onTextChanged()
   switch (_verticalAlignment)
   {
   case Qt::AlignTop:
-    return; // Don't need to do much here
+    break; // Don't need to do much here
   case Qt::AlignVCenter:
     topMargin = (height() - new_height) / 2;
     break;

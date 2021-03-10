@@ -1420,31 +1420,10 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override
   int bold = ao_app->get_font_property(p_identifier + "_bold", design_file);
   QString is_bold = (bold == 1 ? "bold" : "");
 
-  QString alignment = " ";
-  int halign = ao_app->get_font_property(p_identifier + "_halign", design_file);
-  switch (halign)
-  {
-  case 0:
-    alignment += "AlignLeft";
-    break;
-  case 1:
-    alignment += "AlignHCenter | ";
-    break;
-  case 2:
-    alignment += "AlignRight | ";
-    break;
-  default:
-    qWarning() << "Unknown horizontal alignment for " + p_identifier + ". Assuming Left.";
-    alignment += "AlignLeft | ";
-  }
-
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: " + override_color +
                                ";\n"
                                "font: " +
-                               is_bold +
-                               ";\n"
-                               "qproperty-alignment: " +
-                               alignment + "; }";
+                               is_bold + "; }";
   widget->setStyleSheet(style_sheet_string);
 }
 
@@ -1459,6 +1438,24 @@ void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QS
   // Do outlines
   bool outline = (ao_app->get_font_property(p_identifier + "_outline", fonts_ini) == 1);
   widget->setOutline(outline);
+
+  // Do horizontal alignments
+  int raw_halign = ao_app->get_font_property(p_identifier + "_halign", fonts_ini);
+  switch (raw_halign)
+  {
+  case 0:
+    widget->setHorizontalAlignment(Qt::AlignLeft);
+    break;
+  case 1:
+    widget->setHorizontalAlignment(Qt::AlignHCenter);
+    break;
+  case 2:
+    widget->setHorizontalAlignment(Qt::AlignRight);
+    break;
+  default:
+    qWarning() << "Unknown horizontal alignment for " + p_identifier + ". Assuming Left.";
+    widget->setHorizontalAlignment(Qt::AlignLeft);
+  }
 
   // Do vertical alignments
   int raw_valign = ao_app->get_font_property(p_identifier + "_valign", fonts_ini);
