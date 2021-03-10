@@ -3,7 +3,7 @@
 
 #include "aopacket.h"
 #include "datatypes.h"
-#include "discord_rich_presence.h"
+#include "drdiscord.h"
 
 #include <QApplication>
 #include <QFile>
@@ -26,7 +26,7 @@ public:
   NetworkManager *net_manager = nullptr;
   Lobby *w_lobby = nullptr;
   Courtroom *w_courtroom = nullptr;
-  AttorneyOnline::Discord *discord = nullptr;
+  DRDiscord *discord = nullptr;
   AOConfig *config = nullptr;
   AOConfigPanel *config_panel = nullptr;
 

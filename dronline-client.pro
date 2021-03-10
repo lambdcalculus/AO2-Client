@@ -47,7 +47,6 @@ HEADERS += \
   include/courtroom.h \
   include/datatypes.h \
   include/debug_functions.h \
-  include/discord_rich_presence.h \
   include/draudio.h \
   include/draudiodevice.h \
   include/draudioengine.h \
@@ -55,6 +54,7 @@ HEADERS += \
   include/draudioerror.h \
   include/draudiostream.h \
   include/draudiostreamfamily.h \
+  include/drdiscord.h \
   include/file_functions.h \
   include/hardware_functions.h \
   include/lobby.h \
@@ -97,7 +97,6 @@ SOURCES += \
   src/courtroom_widgets.cpp \
   src/datatypes.cpp \
   src/debug_functions.cpp \
-  src/discord_rich_presence.cpp \
   src/draudio.cpp \
   src/draudiodevice.cpp \
   src/draudioengine.cpp \
@@ -105,6 +104,7 @@ SOURCES += \
   src/draudioerror.cpp \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \
+  src/drdiscord.cpp \
   src/emotes.cpp \
   src/evidence.cpp \
   src/file_functions.cpp \
