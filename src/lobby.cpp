@@ -246,16 +246,10 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   if (bold)
     is_bold = "bold";
 
-  bool center = (bool)ao_app->get_font_property(p_identifier + "_center", design_file);
-  QString is_center = "";
-  if (center)
-    is_center = "qproperty-alignment: AlignCenter;";
-
   QString class_name = widget->metaObject()->className();
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: rgba(" +
                                QString::number(f_color.red()) + ", " + QString::number(f_color.green()) + ", " +
-                               QString::number(f_color.blue()) + ", 255);\n" + is_center + "\n" + "font: " + is_bold +
-                               "; }";
+                               QString::number(f_color.blue()) + ", 255);\n" + "font: " + is_bold + "; }";
 
   widget->setStyleSheet(style_sheet_string);
 }
@@ -264,13 +258,48 @@ void Lobby::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
 {
   set_font(widget, p_identifier);
 
-  QString design_file = "lobby_fonts.ini";
-  QTextCharFormat widget_format = widget->currentCharFormat();
-  if (ao_app->get_font_property(p_identifier + "_outline", design_file) == 1)
-    widget_format.setTextOutline(QPen(Qt::black, 1));
-  else
-    widget_format.setTextOutline(Qt::NoPen);
-  widget->setCurrentCharFormat(widget_format);
+  QString fonts_ini = "lobby_fonts.ini";
+  // Do outlines
+  bool outline = (ao_app->get_font_property(p_identifier + "_outline", fonts_ini) == 1);
+  widget->setOutline(outline);
+
+  // Do horizontal alignments
+  int raw_halign = ao_app->get_font_property(p_identifier + "_halign", fonts_ini);
+  switch (raw_halign)
+  {
+  case 0:
+    widget->setHorizontalAlignment(Qt::AlignLeft);
+    break;
+  case 1:
+    widget->setHorizontalAlignment(Qt::AlignHCenter);
+    break;
+  case 2:
+    widget->setHorizontalAlignment(Qt::AlignRight);
+    break;
+  default:
+    qWarning() << "Unknown horizontal alignment for " + p_identifier + ". Assuming Left.";
+    widget->setHorizontalAlignment(Qt::AlignLeft);
+  }
+
+  // Do vertical alignments
+  int raw_valign = ao_app->get_font_property(p_identifier + "_valign", fonts_ini);
+  Qt::Alignment valignment;
+  switch (raw_valign)
+  {
+  case 0:
+    valignment = Qt::AlignTop;
+    break;
+  case 1:
+    valignment = Qt::AlignVCenter;
+    break;
+  case 2:
+    valignment = Qt::AlignBottom;
+    break;
+  default:
+    qWarning() << "Unknown vertical alignment for" << p_identifier << ":" << raw_valign << "Assuming Top.";
+    valignment = Qt::AlignTop;
+  }
+  widget->setVerticalAlignment(valignment);
 }
 
 void Lobby::set_loading_text(QString p_text)
