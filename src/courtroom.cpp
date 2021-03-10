@@ -53,7 +53,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (m_cid == -1)
   {
-    ao_app->discord->state_spectate();
+    ao_app->discord->clear_character_name();
     f_char = "";
   }
   else
@@ -62,8 +62,7 @@ void Courtroom::enter_courtroom(int p_cid)
     QString showname_char = ao_app->get_showname(f_char);
     if (showname_char.isEmpty())
       showname_char = f_char;
-
-    ao_app->discord->state_character(showname_char.toStdString());
+    ao_app->discord->set_character_name(showname_char);
   }
 
   current_char = f_char;

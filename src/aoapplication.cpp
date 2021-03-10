@@ -19,8 +19,6 @@
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  discord = new AttorneyOnline::Discord();
-
   net_manager = new NetworkManager(this);
   connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)), SLOT(ms_connect_finished(bool, bool)));
 
@@ -34,15 +32,17 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   connect(this, SIGNAL(reload_theme()), config_panel, SLOT(on_config_reload_theme_requested()));
   config_panel->hide();
 
-  discord->set_style(config->discord_rich_presence());
+  discord = new DRDiscord(this);
+  discord->set_presence(config->discord_presence());
+  discord->set_hide_character(config->discord_hide_character());
+  connect(config, SIGNAL(discord_presence_changed(bool)), discord, SLOT(set_presence(bool)));
+  connect(config, SIGNAL(discord_hide_character_changed(bool)), discord, SLOT(set_hide_character(bool)));
 }
 
 AOApplication::~AOApplication()
 {
   destruct_lobby();
   destruct_courtroom();
-  delete discord;
-  delete config_panel;
 }
 
 void AOApplication::construct_lobby()
@@ -70,7 +70,8 @@ void AOApplication::construct_lobby()
 
   w_lobby->show();
 
-  discord->state_lobby();
+  discord->set_state(DRDiscord::State::Idle);
+  discord->clear_server_name();
 }
 
 void AOApplication::destruct_lobby()

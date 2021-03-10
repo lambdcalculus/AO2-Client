@@ -33,9 +33,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_username = AO_GUI_WIDGET(QLineEdit, "username");
   w_callwords = AO_GUI_WIDGET(QLineEdit, "callwords");
   w_server_alerts = AO_GUI_WIDGET(QCheckBox, "server_alerts");
-  w_discord_rich_presence_style_complete = AO_GUI_WIDGET(QRadioButton, "discord_rich_presence_style_complete");
-  w_discord_rich_presence_style_minimal = AO_GUI_WIDGET(QRadioButton, "discord_rich_presence_style_minimal");
-  w_discord_rich_presence_style_disabled = AO_GUI_WIDGET(QRadioButton, "discord_rich_presence_style_disabled");
+  w_discord_presence = AO_GUI_WIDGET(QGroupBox, "discord_presence");
+  w_discord_hide_character = AO_GUI_WIDGET(QCheckBox, "discord_hide_character");
 
   // game
   w_theme = AO_GUI_WIDGET(QComboBox, "theme");
@@ -85,8 +84,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(username_changed(QString)), w_username, SLOT(setText(QString)));
   connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords, SLOT(setText(QString)));
   connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts, SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(discord_rich_presence_style_changed(DR::DiscordRichPresenceStyle)), this,
-          SLOT(on_discord_rich_presence_style_changed(DR::DiscordRichPresenceStyle)));
+  connect(m_config, SIGNAL(discord_presence_changed(bool)), w_discord_presence, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(discord_hide_character_changed(bool)), w_discord_hide_character, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(theme_changed(QString)), w_theme, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(gamemode_changed(QString)), w_gamemode, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_manual_gamemode, SLOT(setChecked(bool)));
@@ -126,12 +125,10 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_username, SIGNAL(textEdited(QString)), m_config, SLOT(set_username(QString)));
   connect(w_callwords, SIGNAL(textEdited(QString)), m_config, SLOT(set_callwords(QString)));
   connect(w_server_alerts, SIGNAL(toggled(bool)), m_config, SLOT(set_server_alerts(bool)));
-  connect(w_discord_rich_presence_style_complete, SIGNAL(toggled(bool)), m_config,
-          SLOT(set_discord_rich_presence_style_complete(bool)));
-  connect(w_discord_rich_presence_style_minimal, SIGNAL(toggled(bool)), m_config,
-          SLOT(set_discord_rich_presence_style_minimal(bool)));
-  connect(w_discord_rich_presence_style_disabled, SIGNAL(toggled(bool)), m_config,
-          SLOT(set_discord_rich_presence_style_disabled(bool)));
+
+  connect(w_discord_presence, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_presence(bool)));
+  connect(w_discord_hide_character, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_hide_character(const bool)));
+
   connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
   connect(w_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(w_gamemode, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_gamemode_index_changed(QString)));
@@ -186,18 +183,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
     w_log_orientation_bottom_up->setChecked(true);
   }
 
-  switch (m_config->discord_rich_presence())
-  {
-  case DR::DRPSComplete:
-    w_discord_rich_presence_style_complete->setChecked(true);
-    break;
-  case DR::DRPSMinimal:
-    w_discord_rich_presence_style_minimal->setChecked(true);
-    break;
-  case DR::DRPSDisabled:
-    w_discord_rich_presence_style_disabled->setChecked(true);
-    break;
-  }
+  w_discord_presence->setChecked(m_config->discord_presence());
+  w_discord_hide_character->setChecked(m_config->discord_hide_character());
 
   w_log_uses_newline->setChecked(m_config->log_uses_newline_enabled());
   w_log_music->setChecked(m_config->log_music_enabled());
@@ -237,23 +224,6 @@ void AOConfigPanel::showEvent(QShowEvent *event)
     refresh_gamemode_list();
     refresh_timeofday_list();
   }
-}
-
-void AOConfigPanel::on_discord_rich_presence_style_changed(DR::DiscordRichPresenceStyle drp_status)
-{
-  switch (drp_status)
-  {
-  case DR::DRPSComplete:
-    m_config->set_discord_rich_presence_style_complete(true);
-    break;
-  case DR::DRPSMinimal:
-    m_config->set_discord_rich_presence_style_minimal(true);
-    break;
-  case DR::DRPSDisabled:
-    m_config->set_discord_rich_presence_style_disabled(true);
-    break;
-  }
-  ao_app->discord->set_style(drp_status);
 }
 
 void AOConfigPanel::refresh_theme_list()

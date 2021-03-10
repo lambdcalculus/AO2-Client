@@ -234,9 +234,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     f_packet = new AOPacket("RC#%");
     send_server_packet(f_packet);
 
-    QCryptographicHash hash(QCryptographicHash::Algorithm::Sha256);
-    hash.addData(server_address.toUtf8());
-    discord->state_server(server_name.toStdString(), hash.result().toBase64().toStdString());
+    discord->set_state(DRDiscord::State::Connected);
+    discord->set_server_name(server_name);
   }
   else if (header == "CI")
   {

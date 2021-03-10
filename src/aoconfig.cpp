@@ -48,7 +48,8 @@ private:
   QString username;
   QString callwords;
   bool server_alerts;
-  DR::DiscordRichPresenceStyle discord_rich_presence;
+  bool discord_presence = false;
+  bool discord_hide_character = false;
   QString theme;
   QString gamemode;
   bool manual_gamemode;
@@ -105,24 +106,10 @@ void AOConfigPrivate::read_file()
   username = cfg.value("username").toString();
   callwords = cfg.value("callwords").toString();
   server_alerts = cfg.value("server_alerts", true).toBool();
-  QString raw_discord_rich_presence = cfg.value("discord_rich_presence", "complete").toString();
-  if (raw_discord_rich_presence == "complete")
-  {
-    discord_rich_presence = DR::DRPSComplete;
-  }
-  else if (raw_discord_rich_presence == "minimal")
-  {
-    discord_rich_presence = DR::DRPSMinimal;
-  }
-  else if (raw_discord_rich_presence == "disabled")
-  {
-    discord_rich_presence = DR::DRPSDisabled;
-  }
-  else
-  {
-    qWarning() << "Unknown Discord Rich Presence status, defaulting to 'complete'";
-    discord_rich_presence = DR::DRPSComplete;
-  }
+
+  discord_presence = cfg.value("discord_presence", false).toBool();
+  discord_hide_character = cfg.value("discord_hide_character", false).toBool();
+
   theme = cfg.value("theme").toString();
   if (theme.trimmed().isEmpty())
     theme = "default";
@@ -174,20 +161,10 @@ void AOConfigPrivate::save_file()
   cfg.setValue("username", username);
   cfg.setValue("callwords", callwords);
   cfg.setValue("server_alerts", server_alerts);
-  QString raw_discord_rich_presence = "";
-  switch (discord_rich_presence)
-  {
-  case DR::DRPSComplete:
-    raw_discord_rich_presence = "complete";
-    break;
-  case DR::DRPSMinimal:
-    raw_discord_rich_presence = "minimal";
-    break;
-  case DR::DRPSDisabled:
-    raw_discord_rich_presence = "disabled";
-    break;
-  }
-  cfg.setValue("discord_rich_presence", raw_discord_rich_presence);
+
+  cfg.setValue("discord_presence", discord_presence);
+  cfg.setValue("discord_hide_character", discord_hide_character);
+
   cfg.setValue("theme", theme);
   cfg.setValue("gamemode", gamemode);
   cfg.setValue("manual_gamemode", manual_gamemode);
@@ -303,9 +280,14 @@ bool AOConfig::server_alerts_enabled() const
   return d->server_alerts;
 }
 
-DR::DiscordRichPresenceStyle AOConfig::discord_rich_presence() const
+bool AOConfig::discord_presence() const
 {
-  return d->discord_rich_presence;
+  return d->discord_presence;
+}
+
+bool AOConfig::discord_hide_character() const
+{
+  return d->discord_hide_character;
 }
 
 QString AOConfig::theme() const
@@ -463,34 +445,20 @@ void AOConfig::set_server_alerts(bool p_enabled)
   d->invoke_signal("server_alerts_changed", Q_ARG(bool, p_enabled));
 }
 
-void AOConfig::set_discord_rich_presence_style_complete(bool p_enabled)
+void AOConfig::set_discord_presence(const bool p_enabled)
 {
-  if (!p_enabled)
+  if (d->discord_presence == p_enabled)
     return;
-  if (d->discord_rich_presence == DR::DRPSComplete)
-    return;
-  d->discord_rich_presence = DR::DRPSComplete;
-  d->invoke_signal("discord_rich_presence_style_changed", Q_ARG(DR::DiscordRichPresenceStyle, DR::DRPSComplete));
+  d->discord_presence = p_enabled;
+  Q_EMIT d->invoke_signal("discord_presence_changed", Q_ARG(bool, d->discord_presence));
 }
 
-void AOConfig::set_discord_rich_presence_style_minimal(bool p_enabled)
+void AOConfig::set_discord_hide_character(const bool p_enabled)
 {
-  if (!p_enabled)
+  if (d->discord_hide_character == p_enabled)
     return;
-  if (d->discord_rich_presence == DR::DRPSMinimal)
-    return;
-  d->discord_rich_presence = DR::DRPSMinimal;
-  d->invoke_signal("discord_rich_presence_style_changed", Q_ARG(DR::DiscordRichPresenceStyle, DR::DRPSMinimal));
-}
-
-void AOConfig::set_discord_rich_presence_style_disabled(bool p_enabled)
-{
-  if (!p_enabled)
-    return;
-  if (d->discord_rich_presence == DR::DRPSDisabled)
-    return;
-  d->discord_rich_presence = DR::DRPSDisabled;
-  d->invoke_signal("discord_rich_presence_style_changed", Q_ARG(DR::DiscordRichPresenceStyle, DR::DRPSDisabled));
+  d->discord_hide_character = p_enabled;
+  Q_EMIT d->invoke_signal("discord_hide_character_changed", Q_ARG(bool, d->discord_hide_character));
 }
 
 void AOConfig::set_theme(QString p_string)
