@@ -1456,28 +1456,29 @@ void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
 void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QString override_color)
 {
   set_font(widget, p_identifier, override_color);
-
-  QString design_file = fonts_ini;
-  bool outline = (ao_app->get_font_property(p_identifier + "_outline", design_file) == 1);
+  // Do outlines
+  bool outline = (ao_app->get_font_property(p_identifier + "_outline", fonts_ini) == 1);
   widget->setOutline(outline);
 
-  /*
-  int valign = ao_app->get_font_property(p_identifier + "_halign", design_file);
-  switch (valign)
+  // Do vertical alignments
+  int raw_valign = ao_app->get_font_property(p_identifier + "_valign", fonts_ini);
+  Qt::Alignment valignment;
+  switch (raw_valign)
   {
   case 0:
-    alignment += "AlignTop";
+    valignment = Qt::AlignTop;
     break;
   case 1:
-    alignment += "AlignVCenter";
+    valignment = Qt::AlignVCenter;
     break;
   case 2:
-    alignment += "AlignBottom";
+    valignment = Qt::AlignBottom;
     break;
   default:
-    qWarning() << "Unknown vertical alignment for " + p_identifier + ". Assuming Top.";
-    alignment += "AlignTop";
-  }*/
+    qWarning() << "Unknown vertical alignment for" << p_identifier << ":" << raw_valign << "Assuming Top.";
+    valignment = Qt::AlignTop;
+  }
+  widget->setVerticalAlignment(valignment);
 }
 
 void Courtroom::set_fonts()

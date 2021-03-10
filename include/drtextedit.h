@@ -12,10 +12,14 @@ public:
   DRTextEdit(QWidget *p_parent);
 
   void setOutline(bool outline);
-  int heightSpan();
+  void setVerticalAlignment(Qt::Alignment);
+
+  bool outline();
+  Qt::Alignment verticalAlignment();
 
 private:
-  Qt::Alignment verticalAlignment = Qt::AlignTop;
+  bool _outline = false;
+  Qt::Alignment _verticalAlignment = Qt::AlignTop;
   int previous_height = 0;
 
 private slots:
