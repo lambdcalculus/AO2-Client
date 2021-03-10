@@ -201,7 +201,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString window_title = "Danganronpa Online";
     int selected_server = w_lobby->get_selected_server();
 
-    QString server_address = "", server_name = "";
+    QString server_name, server_address;
+    bool is_favorite = false;
     if (w_lobby->public_servers_selected)
     {
       if (selected_server >= 0 && selected_server < server_list.size())
@@ -219,6 +220,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
         auto info = favorite_list.at(selected_server);
         server_name = info.name;
         server_address = info.ip + info.port;
+        is_favorite = true;
         window_title += ": " + server_name;
       }
     }
@@ -234,8 +236,23 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     f_packet = new AOPacket("RC#%");
     send_server_packet(f_packet);
 
+    // look for the server inside the known public list and report it
+    if (is_favorite)
+    {
+      server_name.clear();
+
+      for (server_type &server : server_list)
+      {
+        const QString l_address = server.ip + server.port;
+        if (server_address == l_address)
+        {
+          server_name = server.name;
+          break;
+        }
+      }
+    }
     discord->set_state(DRDiscord::State::Connected);
-    discord->set_server_name(server_name);
+    server_name.isEmpty() ? discord->clear_server_name() : discord->set_server_name(server_name);
   }
   else if (header == "CI")
   {
