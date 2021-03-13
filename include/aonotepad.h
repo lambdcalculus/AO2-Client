@@ -1,11 +1,10 @@
 #ifndef AONOTEPAD_H
 #define AONOTEPAD_H
 
-#include <QTextEdit>
-
 #include "aoapplication.h"
+#include "drtextedit.h"
 
-class AONotepad : public QTextEdit
+class AONotepad : public DRTextEdit
 {
   Q_OBJECT
 

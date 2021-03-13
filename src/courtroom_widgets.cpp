@@ -62,7 +62,7 @@ void Courtroom::create_widgets()
   ui_vp_music_display_a = new AOImageDisplay(this, ao_app);
   ui_vp_music_display_b = new AOImageDisplay(this, ao_app);
   ui_vp_music_area = new QWidget(ui_vp_music_display_a);
-  ui_vp_music_name = new QTextEdit(ui_vp_music_area);
+  ui_vp_music_name = new DRTextEdit(ui_vp_music_area);
   ui_vp_music_name->setText("DANGANRONPA ONLINE");
   ui_vp_music_name->setFrameStyle(QFrame::NoFrame);
   ui_vp_music_name->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -76,12 +76,12 @@ void Courtroom::create_widgets()
   ui_vp_evidence_display = new AOEvidenceDisplay(this, ao_app);
 
   ui_vp_chatbox = new AOImageDisplay(this, ao_app);
-  ui_vp_showname = new QTextEdit(ui_vp_chatbox);
+  ui_vp_showname = new DRTextEdit(ui_vp_chatbox);
   ui_vp_showname->setFrameStyle(QFrame::NoFrame);
   ui_vp_showname->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_showname->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_showname->setReadOnly(true);
-  ui_vp_message = new QTextEdit(ui_vp_chatbox);
+  ui_vp_message = new DRTextEdit(ui_vp_chatbox);
   ui_vp_message->setFrameStyle(QFrame::NoFrame);
   ui_vp_message->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_message->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -94,7 +94,7 @@ void Courtroom::create_widgets()
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
 
-  ui_ic_chatlog = new QTextEdit(this);
+  ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
 
   ui_server_chatlog = new AOTextArea(this);
@@ -211,7 +211,7 @@ void Courtroom::create_widgets()
   ui_evidence_button = new AOButton(this, ao_app);
 
   ui_vp_notepad_image = new AOImageDisplay(this, ao_app);
-  ui_vp_notepad = new QTextEdit(this);
+  ui_vp_notepad = new DRTextEdit(this);
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
 
   ui_timers.resize(1);
@@ -1427,39 +1427,72 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override
   widget->setStyleSheet(style_sheet_string);
 }
 
-void Courtroom::set_qtextedit_font(QTextEdit *widget, QString p_identifier)
+void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
 {
-  set_qtextedit_font(widget, p_identifier, "");
+  set_drtextedit_font(widget, p_identifier, "");
 }
 
-void Courtroom::set_qtextedit_font(QTextEdit *widget, QString p_identifier, QString override_color)
+void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QString override_color)
 {
   set_font(widget, p_identifier, override_color);
+  // Do outlines
+  bool outline = (ao_app->get_font_property(p_identifier + "_outline", fonts_ini) == 1);
+  widget->set_outline(outline);
 
-  QString design_file = fonts_ini;
-  QTextCharFormat widget_format = widget->currentCharFormat();
-  if (ao_app->get_font_property(p_identifier + "_outline", design_file) == 1)
-    widget_format.setTextOutline(QPen(Qt::black, 1));
-  else
-    widget_format.setTextOutline(Qt::NoPen);
-  widget->setCurrentCharFormat(widget_format);
+  // Do horizontal alignments
+  int raw_halign = ao_app->get_font_property(p_identifier + "_halign", fonts_ini);
+  switch (raw_halign)
+  {
+  default:
+    qWarning() << "Unknown horizontal alignment for " + p_identifier + ". Assuming Left.";
+    [[fallthrough]];
+  case DR::Left:
+    widget->set_horizontal_alignment(Qt::AlignLeft);
+    break;
+  case DR::Middle:
+    widget->set_horizontal_alignment(Qt::AlignHCenter);
+    break;
+  case DR::Right:
+    widget->set_horizontal_alignment(Qt::AlignRight);
+    break;
+  }
+
+  // Do vertical alignments
+  int raw_valign = ao_app->get_font_property(p_identifier + "_valign", fonts_ini);
+  Qt::Alignment valignment;
+  switch (raw_valign)
+  {
+  default:
+    qWarning() << "Unknown vertical alignment for" << p_identifier << ":" << raw_valign << "Assuming Top.";
+    [[fallthrough]];
+  case DR::Top:
+    valignment = Qt::AlignTop;
+    break;
+  case DR::Middle:
+    valignment = Qt::AlignVCenter;
+    break;
+  case DR::Bottom:
+    valignment = Qt::AlignBottom;
+    break;
+  }
+  widget->set_vertical_alignment(valignment);
 }
 
 void Courtroom::set_fonts()
 {
-  set_qtextedit_font(ui_vp_showname, "showname");
-  set_qtextedit_font(ui_vp_message, "message");
-  set_qtextedit_font(ui_ic_chatlog, "ic_chatlog");
-  set_font(ui_server_chatlog,
-           "server_chatlog"); // Chatlog does not support qtextedit because html
+  set_drtextedit_font(ui_vp_showname, "showname");
+  set_drtextedit_font(ui_vp_message, "message");
+  set_drtextedit_font(ui_ic_chatlog, "ic_chatlog");
+  // Chatlog does not support drtextedit because html
+  set_font(ui_server_chatlog, "server_chatlog");
   set_font(ui_music_list, "music_list");
   set_font(ui_area_list, "area_list");
   set_font(ui_sfx_list, "sfx_list");
-  set_qtextedit_font(ui_vp_music_name, "music_name");
-  set_qtextedit_font(ui_vp_notepad, "notepad");
+  set_drtextedit_font(ui_vp_music_name, "music_name");
+  set_drtextedit_font(ui_vp_notepad, "notepad");
   for (int i = 0; i < timer_number; i++)
   {
-    set_qtextedit_font(ui_timers[i], "timer_" + QString::number(i));
+    set_drtextedit_font(ui_timers[i], "timer_" + QString::number(i));
   }
 }
 
