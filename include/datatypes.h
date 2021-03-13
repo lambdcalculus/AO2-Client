@@ -158,6 +158,20 @@ using SplitBehavior = Qt::SplitBehaviorFlags;
 const SplitBehavior KeepEmptyParts = SplitBehavior::KeepEmptyParts;
 const SplitBehavior SkipEmptyParts = SplitBehavior::SkipEmptyParts;
 
+enum VAlign : int32_t
+{
+  Top,
+  Middle,
+  Bottom,
+};
+
+enum HAlign : int32_t
+{
+  Left,
+  Center,
+  Right,
+};
+
 enum Color : int32_t
 {
   CDefault,

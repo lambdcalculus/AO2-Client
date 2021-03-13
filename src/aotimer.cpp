@@ -1,7 +1,7 @@
 #include "aotimer.h"
 #include <QDebug>
 
-AOTimer::AOTimer(QWidget *p_parent) : QTextEdit(p_parent)
+AOTimer::AOTimer(QWidget *p_parent) : DRTextEdit(p_parent)
 {
   // Adapted from:
   // https://stackoverflow.com/questions/36679708/how-to-make-a-chronometer-in-qt-c

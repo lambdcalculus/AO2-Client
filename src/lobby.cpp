@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "aosfxplayer.h"
 #include "debug_functions.h"
+#include "drtextedit.h"
 #include "networkmanager.h"
 
 #include <QDebug>
@@ -10,7 +11,6 @@
 #include <QImageReader>
 #include <QMessageBox>
 #include <QScrollBar>
-#include <QTextEdit>
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -24,14 +24,14 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_refresh = new AOButton(this, ao_app);
   ui_add_to_fav = new AOButton(this, ao_app);
   ui_connect = new AOButton(this, ao_app);
-  ui_version = new QTextEdit(this);
+  ui_version = new DRTextEdit(this);
   ui_version->setFrameStyle(QFrame::NoFrame);
   ui_version->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_version->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_version->setReadOnly(true);
   ui_about = new AOButton(this, ao_app);
   ui_server_list = new QListWidget(this);
-  ui_player_count = new QTextEdit(this);
+  ui_player_count = new DRTextEdit(this);
   ui_player_count->setFrameStyle(QFrame::NoFrame);
   ui_player_count->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_player_count->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -43,7 +43,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_chatname->setPlaceholderText("Name");
   ui_chatmessage = new QLineEdit(this);
   ui_loading_background = new AOImageDisplay(this, ao_app);
-  ui_loading_text = new QTextEdit(ui_loading_background);
+  ui_loading_text = new DRTextEdit(ui_loading_background);
   ui_progress_bar = new QProgressBar(ui_loading_background);
   ui_progress_bar->setMinimum(0);
   ui_progress_bar->setMaximum(100);
@@ -191,12 +191,12 @@ void Lobby::set_size_and_pos(QWidget *p_widget, QString p_identifier)
 
 void Lobby::set_fonts()
 {
-  set_qtextedit_font(ui_player_count, "player_count");
-  set_qtextedit_font(ui_description, "description");
+  set_drtextedit_font(ui_player_count, "player_count");
+  set_font(ui_description, "description");
   set_font(ui_chatbox, "chatbox");
   set_font(ui_chatname, "chatname");
   set_font(ui_chatmessage, "chatmessage");
-  set_qtextedit_font(ui_loading_text, "loading_text");
+  set_drtextedit_font(ui_loading_text, "loading_text");
   set_font(ui_server_list, "server_list");
 }
 
@@ -246,31 +246,60 @@ void Lobby::set_font(QWidget *widget, QString p_identifier)
   if (bold)
     is_bold = "bold";
 
-  bool center = (bool)ao_app->get_font_property(p_identifier + "_center", design_file);
-  QString is_center = "";
-  if (center)
-    is_center = "qproperty-alignment: AlignCenter;";
-
   QString class_name = widget->metaObject()->className();
   QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: rgba(" +
                                QString::number(f_color.red()) + ", " + QString::number(f_color.green()) + ", " +
-                               QString::number(f_color.blue()) + ", 255);\n" + is_center + "\n" + "font: " + is_bold +
-                               "; }";
+                               QString::number(f_color.blue()) + ", 255);\n" + "font: " + is_bold + "; }";
 
   widget->setStyleSheet(style_sheet_string);
 }
 
-void Lobby::set_qtextedit_font(QTextEdit *widget, QString p_identifier)
+void Lobby::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
 {
   set_font(widget, p_identifier);
 
-  QString design_file = "lobby_fonts.ini";
-  QTextCharFormat widget_format = widget->currentCharFormat();
-  if (ao_app->get_font_property(p_identifier + "_outline", design_file) == 1)
-    widget_format.setTextOutline(QPen(Qt::black, 1));
-  else
-    widget_format.setTextOutline(Qt::NoPen);
-  widget->setCurrentCharFormat(widget_format);
+  QString fonts_ini = "lobby_fonts.ini";
+  // Do outlines
+  bool outline = (ao_app->get_font_property(p_identifier + "_outline", fonts_ini) == 1);
+  widget->set_outline(outline);
+
+  // Do horizontal alignments
+  int raw_halign = ao_app->get_font_property(p_identifier + "_halign", fonts_ini);
+  switch (raw_halign)
+  {
+  default:
+    qWarning() << "Unknown horizontal alignment for " + p_identifier + ". Assuming Left.";
+    [[fallthrough]];
+  case DR::Left:
+    widget->set_horizontal_alignment(Qt::AlignLeft);
+    break;
+  case DR::Middle:
+    widget->set_horizontal_alignment(Qt::AlignHCenter);
+    break;
+  case DR::Right:
+    widget->set_horizontal_alignment(Qt::AlignRight);
+    break;
+  }
+
+  // Do vertical alignments
+  int raw_valign = ao_app->get_font_property(p_identifier + "_valign", fonts_ini);
+  Qt::Alignment valignment;
+  switch (raw_valign)
+  {
+  default:
+    qWarning() << "Unknown vertical alignment for" << p_identifier << ":" << raw_valign << "Assuming Top.";
+    [[fallthrough]];
+  case DR::Top:
+    valignment = Qt::AlignTop;
+    break;
+  case DR::Middle:
+    valignment = Qt::AlignVCenter;
+    break;
+  case DR::Bottom:
+    valignment = Qt::AlignBottom;
+    break;
+  }
+  widget->set_vertical_alignment(valignment);
 }
 
 void Lobby::set_loading_text(QString p_text)
