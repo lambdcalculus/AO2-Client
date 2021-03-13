@@ -74,6 +74,10 @@ private:
   QLineEdit *w_callwords = nullptr;
   QCheckBox *w_server_alerts = nullptr;
 
+  QGroupBox *w_discord_presence = nullptr;
+  QCheckBox *w_discord_hide_server = nullptr;
+  QCheckBox *w_discord_hide_character = nullptr;
+
   // game
   QComboBox *w_theme = nullptr;
   QPushButton *w_reload_theme = nullptr;

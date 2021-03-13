@@ -53,27 +53,16 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (m_cid == -1)
   {
-    ao_app->discord->state_spectate();
+    ao_app->discord->clear_character_name();
     f_char = "";
   }
   else
   {
     f_char = ao_app->get_char_name(char_list.at(m_cid).name);
-    QString r_char = f_char;
-    // regex for removing non letter (except _) characters
-    QRegularExpression re(QString::fromUtf8("[-`~!@#$%^&*()—+=|:;<>«»,.?/{}\'\"\\[\\]]"));
-    r_char.remove(re);
-
-    if (!rpc_char_list.contains(f_char.toLower()))
-    {
-      ao_app->discord->toggle(1);
-    }
-    else
-    {
-      ao_app->discord->toggle(0);
-    }
-
-    ao_app->discord->state_character(r_char.toStdString());
+    QString showname_char = ao_app->get_showname(f_char);
+    if (showname_char.isEmpty())
+      showname_char = f_char;
+    ao_app->discord->set_character_name(showname_char);
   }
 
   current_char = f_char;

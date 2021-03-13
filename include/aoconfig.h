@@ -1,6 +1,7 @@
 #ifndef AOCONFIG_H
 #define AOCONFIG_H
 
+#include "datatypes.h"
 // qt
 #include <QObject>
 
@@ -22,6 +23,9 @@ public:
   QString username() const;
   QString callwords() const;
   bool server_alerts_enabled() const;
+  bool discord_presence() const;
+  bool discord_hide_server() const;
+  bool discord_hide_character() const;
   QString theme() const;
   QString gamemode() const;
   bool manual_gamemode_enabled() const;
@@ -61,6 +65,9 @@ public slots:
   void set_username(QString p_string);
   void set_callwords(QString p_string);
   void set_server_alerts(bool p_enabled);
+  void set_discord_presence(const bool p_enabled);
+  void set_discord_hide_server(const bool p_enabled);
+  void set_discord_hide_character(const bool p_enabled);
   void set_always_pre(bool p_enabled);
   void set_theme(QString p_string);
   void set_gamemode(QString p_string);
@@ -96,6 +103,9 @@ signals:
   void username_changed(QString);
   void callwords_changed(QString);
   void server_alerts_changed(bool);
+  void discord_presence_changed(bool);
+  void discord_hide_server_changed(bool);
+  void discord_hide_character_changed(bool);
   void theme_changed(QString);
   void gamemode_changed(QString);
   void manual_gamemode_changed(bool);

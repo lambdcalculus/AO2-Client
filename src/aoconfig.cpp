@@ -1,5 +1,5 @@
 #include "aoconfig.h"
-
+#include "datatypes.h"
 #include "draudioengine.h"
 
 // qt
@@ -47,12 +47,15 @@ private:
   bool autosave;
   QString username;
   QString callwords;
+  bool server_alerts;
+  bool discord_presence = false;
+  bool discord_hide_server = false;
+  bool discord_hide_character = false;
   QString theme;
   QString gamemode;
   bool manual_gamemode;
   QString timeofday;
   bool manual_timeofday;
-  bool server_alerts;
   bool always_pre;
   int chat_tick_interval;
   int log_max_lines;
@@ -107,6 +110,10 @@ void AOConfigPrivate::read_file()
   callwords = cfg.value("callwords").toString();
   server_alerts = cfg.value("server_alerts", true).toBool();
 
+  discord_presence = cfg.value("discord_presence", true).toBool();
+  discord_hide_server = cfg.value("discord_hide_server", false).toBool();
+  discord_hide_character = cfg.value("discord_hide_character", false).toBool();
+
   theme = cfg.value("theme").toString();
   if (theme.trimmed().isEmpty())
     theme = "default";
@@ -160,6 +167,11 @@ void AOConfigPrivate::save_file()
   cfg.setValue("username", username);
   cfg.setValue("callwords", callwords);
   cfg.setValue("server_alerts", server_alerts);
+
+  cfg.setValue("discord_presence", discord_presence);
+  cfg.setValue("discord_hide_server", discord_hide_server);
+  cfg.setValue("discord_hide_character", discord_hide_character);
+
   cfg.setValue("theme", theme);
   cfg.setValue("gamemode", gamemode);
   cfg.setValue("manual_gamemode", manual_gamemode);
@@ -272,6 +284,26 @@ QString AOConfig::callwords() const
   return d->callwords;
 }
 
+bool AOConfig::server_alerts_enabled() const
+{
+  return d->server_alerts;
+}
+
+bool AOConfig::discord_presence() const
+{
+  return d->discord_presence;
+}
+
+bool AOConfig::discord_hide_server() const
+{
+  return d->discord_hide_server;
+}
+
+bool AOConfig::discord_hide_character() const
+{
+  return d->discord_hide_character;
+}
+
 QString AOConfig::theme() const
 {
   return d->theme;
@@ -295,11 +327,6 @@ QString AOConfig::timeofday() const
 bool AOConfig::manual_timeofday_enabled() const
 {
   return d->manual_timeofday;
-}
-
-bool AOConfig::server_alerts_enabled() const
-{
-  return d->server_alerts;
 }
 
 bool AOConfig::always_pre_enabled() const
@@ -441,6 +468,30 @@ void AOConfig::set_server_alerts(bool p_enabled)
     return;
   d->server_alerts = p_enabled;
   d->invoke_signal("server_alerts_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_discord_presence(const bool p_enabled)
+{
+  if (d->discord_presence == p_enabled)
+    return;
+  d->discord_presence = p_enabled;
+  Q_EMIT d->invoke_signal("discord_presence_changed", Q_ARG(bool, d->discord_presence));
+}
+
+void AOConfig::set_discord_hide_server(const bool p_enabled)
+{
+  if (d->discord_hide_server == p_enabled)
+    return;
+  d->discord_hide_server = p_enabled;
+  Q_EMIT d->invoke_signal("discord_hide_server_changed", Q_ARG(bool, d->discord_hide_server));
+}
+
+void AOConfig::set_discord_hide_character(const bool p_enabled)
+{
+  if (d->discord_hide_character == p_enabled)
+    return;
+  d->discord_hide_character = p_enabled;
+  Q_EMIT d->invoke_signal("discord_hide_character_changed", Q_ARG(bool, d->discord_hide_character));
 }
 
 void AOConfig::set_theme(QString p_string)

@@ -1,4 +1,5 @@
 #include "aoconfigpanel.h"
+#include "datatypes.h"
 
 // qt
 #include <QDebug>
@@ -32,6 +33,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_username = AO_GUI_WIDGET(QLineEdit, "username");
   w_callwords = AO_GUI_WIDGET(QLineEdit, "callwords");
   w_server_alerts = AO_GUI_WIDGET(QCheckBox, "server_alerts");
+  w_discord_presence = AO_GUI_WIDGET(QGroupBox, "discord_presence");
+  w_discord_hide_server = AO_GUI_WIDGET(QCheckBox, "discord_hide_server");
+  w_discord_hide_character = AO_GUI_WIDGET(QCheckBox, "discord_hide_character");
 
   // game
   w_theme = AO_GUI_WIDGET(QComboBox, "theme");
@@ -83,6 +87,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(username_changed(QString)), w_username, SLOT(setText(QString)));
   connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords, SLOT(setText(QString)));
   connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(discord_presence_changed(bool)), w_discord_presence, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(discord_hide_server_changed(bool)), w_discord_hide_server, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(discord_hide_character_changed(bool)), w_discord_hide_character, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(theme_changed(QString)), w_theme, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(gamemode_changed(QString)), w_gamemode, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_manual_gamemode, SLOT(setChecked(bool)));
@@ -129,6 +136,11 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_username, SIGNAL(textEdited(QString)), m_config, SLOT(set_username(QString)));
   connect(w_callwords, SIGNAL(textEdited(QString)), m_config, SLOT(set_callwords(QString)));
   connect(w_server_alerts, SIGNAL(toggled(bool)), m_config, SLOT(set_server_alerts(bool)));
+
+  connect(w_discord_presence, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_presence(bool)));
+  connect(w_discord_hide_server, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_hide_server(const bool)));
+  connect(w_discord_hide_character, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_hide_character(const bool)));
+
   connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
   connect(w_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(w_gamemode, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_gamemode_index_changed(QString)));
@@ -194,6 +206,10 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_log_display_empty_messages->setChecked(m_config->log_display_empty_messages_enabled());
   w_log_display_music_switch->setChecked(m_config->log_display_music_switch_enabled());
   w_log_is_recording->setChecked(m_config->log_is_recording_enabled());
+
+  w_discord_presence->setChecked(m_config->discord_presence());
+  w_discord_hide_server->setChecked(m_config->discord_hide_server());
+  w_discord_hide_character->setChecked(m_config->discord_hide_character());
 
   // audio
   update_audio_device_list();
