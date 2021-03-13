@@ -1437,24 +1437,24 @@ void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QS
   set_font(widget, p_identifier, override_color);
   // Do outlines
   bool outline = (ao_app->get_font_property(p_identifier + "_outline", fonts_ini) == 1);
-  widget->setOutline(outline);
+  widget->set_outline(outline);
 
   // Do horizontal alignments
   int raw_halign = ao_app->get_font_property(p_identifier + "_halign", fonts_ini);
   switch (raw_halign)
   {
   case 0:
-    widget->setHorizontalAlignment(Qt::AlignLeft);
+    widget->set_horizontal_alignment(Qt::AlignLeft);
     break;
   case 1:
-    widget->setHorizontalAlignment(Qt::AlignHCenter);
+    widget->set_horizontal_alignment(Qt::AlignHCenter);
     break;
   case 2:
-    widget->setHorizontalAlignment(Qt::AlignRight);
+    widget->set_horizontal_alignment(Qt::AlignRight);
     break;
   default:
     qWarning() << "Unknown horizontal alignment for " + p_identifier + ". Assuming Left.";
-    widget->setHorizontalAlignment(Qt::AlignLeft);
+    widget->set_horizontal_alignment(Qt::AlignLeft);
   }
 
   // Do vertical alignments
@@ -1475,7 +1475,7 @@ void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QS
     qWarning() << "Unknown vertical alignment for" << p_identifier << ":" << raw_valign << "Assuming Top.";
     valignment = Qt::AlignTop;
   }
-  widget->setVerticalAlignment(valignment);
+  widget->set_vertical_alignment(valignment);
 }
 
 void Courtroom::set_fonts()

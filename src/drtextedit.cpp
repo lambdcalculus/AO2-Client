@@ -6,109 +6,95 @@
 
 DRTextEdit::DRTextEdit(QWidget *parent) : QTextEdit(parent)
 {
-  connect(this, SIGNAL(textChanged()), this, SLOT(onTextChanged()));
+  connect(this, SIGNAL(textChanged()), this, SLOT(on_text_changed()));
 }
 
-void DRTextEdit::setOutline(bool outline)
+void DRTextEdit::set_outline(bool p_outline)
 {
   QTextCharFormat widget_format = currentCharFormat();
-  if (outline)
+  if (p_outline)
     widget_format.setTextOutline(QPen(Qt::black, 1));
   else
     widget_format.setTextOutline(Qt::NoPen);
   setCurrentCharFormat(widget_format);
-
-  this->_outline = outline;
+  this->m_outline = p_outline;
 }
 
-bool DRTextEdit::outline()
+bool DRTextEdit::get_outline()
 {
-  return this->_outline;
+  return this->m_outline;
 }
 
-void DRTextEdit::setVerticalAlignment(Qt::Alignment verticalAlignment)
+void DRTextEdit::set_vertical_alignment(Qt::Alignment p_align)
 {
-  // If an invalid vertical alignment is passed, convert to Top.
-  if (verticalAlignment != Qt::AlignTop && verticalAlignment != Qt::AlignVCenter &&
-      verticalAlignment != Qt::AlignBottom)
-    verticalAlignment = Qt::AlignTop;
-  this->_verticalAlignment = verticalAlignment;
-
-  // Refresh. To get around the fact both height and length did not change, we set previous_height
-  // to an invalid -1. This will be fixed in the onTextChanged() call
-  previous_height = -1;
-  onTextChanged();
-}
-
-Qt::Alignment DRTextEdit::verticalAlignment()
-{
-  return this->_verticalAlignment;
-}
-
-void DRTextEdit::setHorizontalAlignment(Qt::Alignment horizontalAlignment)
-{
-  // If an invalid horizontal alignment is passed, convert to Left.
-  if (horizontalAlignment != Qt::AlignLeft && horizontalAlignment != Qt::AlignHCenter &&
-      horizontalAlignment != Qt::AlignRight)
-    horizontalAlignment = Qt::AlignLeft;
-  this->_horizontalAlignment = horizontalAlignment;
-  // Refresh.
-  onTextChanged();
-}
-
-Qt::Alignment DRTextEdit::horizontalAlignment()
-{
-  return this->_horizontalAlignment;
-}
-
-void DRTextEdit::onTextChanged()
-{
-  // Avoid recursion
-  if (processing_change)
+  switch (p_align)
+  {
+  case Qt::AlignTop:
+  case Qt::AlignVCenter:
+  case Qt::AlignBottom:
+    break;
+  default:
+    set_vertical_alignment(Qt::AlignTop);
     return;
-
-  processing_change = true;
-  _onTextChanged();
-  processing_change = false;
+  }
+  m_valign = p_align;
+  on_text_changed();
 }
 
-void DRTextEdit::_onTextChanged()
+Qt::Alignment DRTextEdit::get_vertical_alignment()
 {
-  // Do computations to align text horizontally
-  setAlignment(_horizontalAlignment);
+  return this->m_valign;
+}
 
-  // Do computations to align text vertically according to preference
-  // We do these computations every time the text changes, so we better be efficient!
+void DRTextEdit::set_horizontal_alignment(Qt::Alignment p_align)
+{
+  switch (p_align)
+  {
+  case Qt::AlignLeft:
+  case Qt::AlignHCenter:
+  case Qt::AlignRight:
+    break;
+  default:
+    set_horizontal_alignment(Qt::AlignLeft);
+    return;
+  }
+  m_halign = p_align;
+  on_text_changed();
+}
+
+Qt::Alignment DRTextEdit::get_horizontal_alignment()
+{
+  return this->m_halign;
+}
+
+void DRTextEdit::on_text_changed()
+{
+  if (m_status == Status::InProgress)
+    return;
+  m_status = Status::InProgress;
+
+  // Do computations to align text horizontally
+  setAlignment(m_halign);
 
   // This stores the total height of the totality of the text saved.
-  int new_height = document()->size().height();
-  // If the height did not change, exit early, as we don't need to do much formatting
-  if (new_height == previous_height)
-    return;
-  previous_height = new_height;
-
-  // If the height exceeds the height of the widget, aligning vertically does not make much sense
-  // so we exit early.
-  if (new_height > height())
-    return;
+  const int new_height = document()->size().height();
 
   // The way we will simulate vertical alignment is by adjusting the top margin to simulate
   // center alignment, or bottom alignment.
-  int topMargin = 0;
-  switch (_verticalAlignment)
+  int top_margin = 0;
+  switch (m_valign)
   {
-  case Qt::AlignTop:
-    break; // Don't need to do much here
   case Qt::AlignVCenter:
-    topMargin = (height() - new_height) / 2;
+    top_margin = (height() - new_height) / 2;
     break;
   case Qt::AlignBottom:
-    topMargin = (height() - new_height);
+    top_margin = (height() - new_height);
     break;
   default:
-    qDebug() << "Unrecognized vertical alignment " << this->_verticalAlignment << ". Assuming Top.";
     break;
   }
+  setViewportMargins(0, top_margin, 0, 0);
 
-  setViewportMargins(0, topMargin, 0, 0);
+  // we're done
+  m_status = Status::Done;
 }

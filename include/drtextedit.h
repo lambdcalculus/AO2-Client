@@ -11,25 +11,28 @@ class DRTextEdit : public QTextEdit
 public:
   DRTextEdit(QWidget *p_parent);
 
-  void setOutline(bool outline);
-  void setVerticalAlignment(Qt::Alignment);
-  void setHorizontalAlignment(Qt::Alignment);
+  bool get_outline();
+  Qt::Alignment get_vertical_alignment();
+  Qt::Alignment get_horizontal_alignment();
 
-  bool outline();
-  Qt::Alignment verticalAlignment();
-  Qt::Alignment horizontalAlignment();
+  void set_outline(bool p_outline);
+  void set_vertical_alignment(Qt::Alignment p_align);
+  void set_horizontal_alignment(Qt::Alignment p_align);
 
 private:
-  bool _outline = false;
-  Qt::Alignment _verticalAlignment = Qt::AlignTop;
-  Qt::Alignment _horizontalAlignment = Qt::AlignLeft;
-  int previous_height = 0;
+  bool m_outline = false;
+  Qt::Alignment m_valign = Qt::AlignTop;
+  Qt::Alignment m_halign = Qt::AlignLeft;
 
-  bool processing_change = false;
-  void _onTextChanged();
+  enum class Status
+  {
+    Done,
+    InProgress,
+  };
+  Status m_status = Status::Done;
 
 private slots:
-  void onTextChanged();
+  void on_text_changed();
 };
 
 #endif // DRTEXTEDIT_H
