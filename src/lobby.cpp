@@ -267,18 +267,18 @@ void Lobby::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
   int raw_halign = ao_app->get_font_property(p_identifier + "_halign", fonts_ini);
   switch (raw_halign)
   {
-  case 0:
-    widget->set_horizontal_alignment(Qt::AlignLeft);
-    break;
-  case 1:
-    widget->set_horizontal_alignment(Qt::AlignHCenter);
-    break;
-  case 2:
-    widget->set_horizontal_alignment(Qt::AlignRight);
-    break;
   default:
     qWarning() << "Unknown horizontal alignment for " + p_identifier + ". Assuming Left.";
+    [[fallthrough]];
+  case DR::Left:
     widget->set_horizontal_alignment(Qt::AlignLeft);
+    break;
+  case DR::Middle:
+    widget->set_horizontal_alignment(Qt::AlignHCenter);
+    break;
+  case DR::Right:
+    widget->set_horizontal_alignment(Qt::AlignRight);
+    break;
   }
 
   // Do vertical alignments
@@ -286,18 +286,18 @@ void Lobby::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
   Qt::Alignment valignment;
   switch (raw_valign)
   {
-  case 0:
-    valignment = Qt::AlignTop;
-    break;
-  case 1:
-    valignment = Qt::AlignVCenter;
-    break;
-  case 2:
-    valignment = Qt::AlignBottom;
-    break;
   default:
     qWarning() << "Unknown vertical alignment for" << p_identifier << ":" << raw_valign << "Assuming Top.";
+    [[fallthrough]];
+  case DR::Top:
     valignment = Qt::AlignTop;
+    break;
+  case DR::Middle:
+    valignment = Qt::AlignVCenter;
+    break;
+  case DR::Bottom:
+    valignment = Qt::AlignBottom;
+    break;
   }
   widget->set_vertical_alignment(valignment);
 }
