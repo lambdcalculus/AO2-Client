@@ -2252,8 +2252,9 @@ void Courtroom::on_spectator_clicked()
 void Courtroom::on_call_mod_clicked()
 {
   QMessageBox::StandardButton reply;
-  QString warning = "Are you sure you want to call a mod? They will get angry "
-                    "at you if the reason is no good.";
+  QString warning = "Are you sure you want to call a mod?"
+                    ""
+                    "Be prepared to explain what is happening and why they are needed when they answer.";
   reply = QMessageBox::warning(this, "Warning", warning, QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
   if (reply == QMessageBox::Yes)
