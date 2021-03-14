@@ -90,10 +90,12 @@ private:
 
   // IC Chatlog
   QSpinBox *w_log_max_lines = nullptr;
-  QCheckBox *w_log_uses_newline = nullptr;
+  QCheckBox *w_log_display_timestamp = nullptr;
+  QCheckBox *w_log_format_use_newline = nullptr;
+  QCheckBox *w_log_display_empty_messages = nullptr;
+  QCheckBox *w_log_display_music_switch = nullptr;
   QRadioButton *w_log_orientation_top_down = nullptr;
   QRadioButton *w_log_orientation_bottom_up = nullptr;
-  QCheckBox *w_log_music = nullptr;
   QCheckBox *w_log_is_recording = nullptr;
 
   // audio

@@ -38,6 +38,7 @@
 #include <QMap>
 #include <QPlainTextEdit>
 #include <QPropertyAnimation>
+#include <QQueue>
 #include <QRect>
 #include <QSignalMapper>
 #include <QSlider>
@@ -437,10 +438,6 @@ private:
   int emote_rows = 2;
   int max_emotes_on_page = 10;
 
-  int m_chatlog_limit = 200;
-  bool m_chatlog_newline = false;
-  bool m_chatlog_scrolldown = false;
-
   //  inmchatlog_changed;
 
   QVector<evi_type> local_evidence_list;
@@ -498,7 +495,8 @@ private:
   QVector<AOTimer *> ui_timers;
 
   DRTextEdit *ui_ic_chatlog = nullptr;
-  record_type_array m_ic_records;
+  QList<DR::ChatRecord> m_ic_record_list;
+  QQueue<DR::ChatRecord> m_ic_record_queue;
 
   AOTextArea *ui_server_chatlog = nullptr;
 

@@ -49,10 +49,12 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
 
   // IC Chatlog
   w_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
-  w_log_uses_newline = AO_GUI_WIDGET(QCheckBox, "log_newline");
+  w_log_display_timestamp = AO_GUI_WIDGET(QCheckBox, "log_display_timestamp");
+  w_log_format_use_newline = AO_GUI_WIDGET(QCheckBox, "log_format_use_newline");
+  w_log_display_empty_messages = AO_GUI_WIDGET(QCheckBox, "log_display_empty_messages");
+  w_log_display_music_switch = AO_GUI_WIDGET(QCheckBox, "log_display_music_switch");
   w_log_orientation_top_down = AO_GUI_WIDGET(QRadioButton, "log_orientation_top_down");
   w_log_orientation_bottom_up = AO_GUI_WIDGET(QRadioButton, "log_orientation_bottom_up");
-  w_log_music = AO_GUI_WIDGET(QCheckBox, "log_music");
   w_log_is_recording = AO_GUI_WIDGET(QCheckBox, "log_recording");
 
   // audio
@@ -95,11 +97,18 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(manual_timeofday_changed(bool)), w_manual_timeofday, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(chat_tick_interval_changed(int)), w_chat_tick_interval, SLOT(setValue(int)));
+
+  // log
   connect(m_config, SIGNAL(log_max_lines_changed(int)), w_log_max_lines, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(log_display_timestamp_changed(bool)), w_log_display_timestamp, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_format_use_newline_changed(bool)), w_log_format_use_newline, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_display_empty_messages_changed(bool)), w_log_display_empty_messages,
+          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_display_music_switch_changed(bool)), w_log_display_music_switch, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_log_is_topdown_changed(bool)));
-  connect(m_config, SIGNAL(log_uses_newline_changed(bool)), w_log_uses_newline, SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(log_music_changed(bool)), w_log_music, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_is_recording_changed(bool)), w_log_is_recording, SLOT(setChecked(bool)));
+
+  // audio
   connect(m_config, SIGNAL(master_volume_changed(int)), w_master, SLOT(setValue(int)));
   connect(m_config, SIGNAL(suppress_background_audio_changed(bool)), w_suppress_background_audio,
           SLOT(setChecked(bool)));
@@ -140,10 +149,14 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_manual_timeofday, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_timeofday(bool)));
   connect(w_always_pre, SIGNAL(toggled(bool)), m_config, SLOT(set_always_pre(bool)));
   connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
+
+  // out, log
   connect(w_log_max_lines, SIGNAL(valueChanged(int)), m_config, SLOT(set_log_max_lines(int)));
+  connect(w_log_display_timestamp, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_timestamp(bool)));
+  connect(w_log_format_use_newline, SIGNAL(toggled(bool)), m_config, SLOT(set_log_format_use_newline(bool)));
+  connect(w_log_display_empty_messages, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_empty_messages(bool)));
+  connect(w_log_display_music_switch, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_music_switch(bool)));
   connect(w_log_orientation_top_down, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_topdown(bool)));
-  connect(w_log_uses_newline, SIGNAL(toggled(bool)), m_config, SLOT(set_log_uses_newline(bool)));
-  connect(w_log_music, SIGNAL(toggled(bool)), m_config, SLOT(set_log_music(bool)));
   connect(w_log_is_recording, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_recording(bool)));
   connect(w_suppress_background_audio, SIGNAL(toggled(bool)), m_config, SLOT(set_suppress_background_audio(bool)));
   connect(w_device, SIGNAL(currentIndexChanged(int)), this, SLOT(on_device_current_index_changed(int)));
@@ -175,6 +188,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_manual_timeofday->setChecked(m_config->manual_timeofday_enabled());
   w_always_pre->setChecked(m_config->always_pre_enabled());
   w_chat_tick_interval->setValue(m_config->chat_tick_interval());
+
+  // log
   w_log_max_lines->setValue(m_config->log_max_lines());
 
   if (m_config->log_is_topdown_enabled())
@@ -186,13 +201,15 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
     w_log_orientation_bottom_up->setChecked(true);
   }
 
+  w_log_display_timestamp->setChecked(m_config->log_display_timestamp_enabled());
+  w_log_format_use_newline->setChecked(m_config->log_format_use_newline_enabled());
+  w_log_display_empty_messages->setChecked(m_config->log_display_empty_messages_enabled());
+  w_log_display_music_switch->setChecked(m_config->log_display_music_switch_enabled());
+  w_log_is_recording->setChecked(m_config->log_is_recording_enabled());
+
   w_discord_presence->setChecked(m_config->discord_presence());
   w_discord_hide_server->setChecked(m_config->discord_hide_server());
   w_discord_hide_character->setChecked(m_config->discord_hide_character());
-
-  w_log_uses_newline->setChecked(m_config->log_uses_newline_enabled());
-  w_log_music->setChecked(m_config->log_music_enabled());
-  w_log_is_recording->setChecked(m_config->log_is_recording_enabled());
 
   // audio
   update_audio_device_list();

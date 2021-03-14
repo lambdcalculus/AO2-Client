@@ -1,13 +1,13 @@
 #include "aotextarea.h"
 
+#include <QDateTime>
 #include <QDebug>
 #include <QRegExp>
 #include <QScrollBar>
 #include <QTextCursor>
 
 AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent)
-{
-}
+{}
 
 void AOTextArea::append_chatmessage(QString p_name, QString p_message)
 {
@@ -18,6 +18,7 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message)
   this->moveCursor(QTextCursor::End);
 
   this->append("");
+  this->insertHtml(QString("[%1] ").arg(QDateTime::currentDateTime().toString("hh:mm")));
   this->insertHtml("<b>" + p_name.toHtmlEscaped() + "</b>:&nbsp;");
 
   // cheap workarounds ahoy
@@ -39,6 +40,7 @@ void AOTextArea::append_error(QString p_message)
   this->moveCursor(QTextCursor::End);
 
   this->append("");
+  this->insertHtml(QString("[%1] ").arg(QDateTime::currentDateTime().toString("hh:mm")));
 
   p_message += " ";
   QString result = p_message.replace("\n", "<br>");
