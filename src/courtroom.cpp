@@ -1089,9 +1089,12 @@ void Courtroom::handle_chatmessage_3()
     {
       m_system_player->play(ao_app->get_sfx("word_call"));
       ao_app->alert(this);
-      ui_server_chatlog->append_chatmessage(
-          "CLIENT", "[" + QTime::currentTime().toString("HH:mm") + "] " + ui_vp_showname->toPlainText() +
-                        " has called you via your callword \"" + word + "\": \"" + f_message + "\"");
+      const QString name = "CLIENT";
+      const QString message =
+          ui_vp_showname->toPlainText() + " has called you via your callword \"" + word + "\": \"" + f_message + "\"";
+      ui_server_chatlog->append_chatmessage(name, message);
+      if (ao_config->log_is_recording_enabled())
+        save_textlog("(OOC)" + name + ": " + message);
       break;
     }
   }
