@@ -2,12 +2,13 @@
 #define AOTIMER_H
 
 #include <QElapsedTimer>
-#include <QTextEdit>
 #include <QTime>
 #include <QTimer>
 #include <QWidget>
-#include <aobutton.h>
-#include <aolabel.h>
+
+#include "aobutton.h"
+#include "aolabel.h"
+#include "drtextedit.h"
 
 class ManualTimer
 {
@@ -38,7 +39,7 @@ public:
   }
 };
 
-class AOTimer : public QTextEdit
+class AOTimer : public DRTextEdit
 {
   Q_OBJECT
 

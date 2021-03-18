@@ -5,6 +5,7 @@
 #include "aoimagedisplay.h"
 #include "aopacket.h"
 #include "aotextarea.h"
+#include "drtextedit.h"
 
 #include <QLabel>
 #include <QLineEdit>
@@ -35,7 +36,7 @@ public:
   void set_stylesheets();
   void set_fonts();
   void set_font(QWidget *widget, QString p_identifier);
-  void set_qtextedit_font(QTextEdit *widget, QString p_identifier);
+  void set_drtextedit_font(DRTextEdit *widget, QString p_identifier);
   void show_loading_overlay()
   {
     ui_loading_background->show();
@@ -63,12 +64,12 @@ private:
   AOButton *ui_add_to_fav = nullptr;
   AOButton *ui_connect = nullptr;
 
-  QTextEdit *ui_version = nullptr;
+  DRTextEdit *ui_version = nullptr;
   AOButton *ui_about = nullptr;
 
   QListWidget *ui_server_list = nullptr;
 
-  QTextEdit *ui_player_count = nullptr;
+  DRTextEdit *ui_player_count = nullptr;
   AOTextArea *ui_description = nullptr;
 
   AOTextArea *ui_chatbox = nullptr;
@@ -77,7 +78,7 @@ private:
   QLineEdit *ui_chatmessage = nullptr;
 
   AOImageDisplay *ui_loading_background = nullptr;
-  QTextEdit *ui_loading_text = nullptr;
+  DRTextEdit *ui_loading_text = nullptr;
   QProgressBar *ui_progress_bar = nullptr;
   AOButton *ui_cancel = nullptr;
 

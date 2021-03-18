@@ -1,30 +1,66 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include <QDateTime>
 #include <QMap>
+#include <QSharedPointer>
 #include <QString>
 
 #include <memory>
 
-struct record_type
+namespace DR
 {
+class ChatRecord
+{
+public:
+  using list = QVector<ChatRecord>;
+
+  ChatRecord(QString p_name, QString p_message) : name(p_name), message(p_message)
+  {}
+
+  QDateTime get_timestamp() const
+  {
+    return timestamp;
+  }
+  QString get_name() const
+  {
+    return name;
+  }
+  QString get_message() const
+  {
+    return message;
+  }
+  bool is_system() const
+  {
+    return system;
+  }
+  bool is_music() const
+  {
+    return music;
+  }
+
+  // set
+  void set_system(bool p_enabled)
+  {
+    if (system == p_enabled)
+      return;
+    system = p_enabled;
+  }
+  void set_music(bool p_enabled)
+  {
+    if (music == p_enabled)
+      return;
+    music = p_enabled;
+  }
+
+private:
+  QDateTime timestamp = QDateTime::currentDateTime();
   QString name;
-  QString line;
-  QString color;
+  QString message;
   bool system = false;
   bool music = false;
-
-  record_type() = default;
-  record_type(QString p_name, QString p_line, QString p_color, bool p_is_system, bool p_is_music)
-      : name(p_name), line(p_line), system(p_is_system), music(p_is_music)
-  {
-    Q_UNUSED(p_color);
-  }
 };
-
-typedef std::shared_ptr<record_type> record_type_ptr;
-
-typedef QVector<record_type_ptr> record_type_array;
+} // namespace DR
 
 struct server_type
 {
@@ -121,6 +157,20 @@ using SplitBehavior = Qt::SplitBehaviorFlags;
 #endif
 const SplitBehavior KeepEmptyParts = SplitBehavior::KeepEmptyParts;
 const SplitBehavior SkipEmptyParts = SplitBehavior::SkipEmptyParts;
+
+enum VAlign : int32_t
+{
+  Top,
+  Middle,
+  Bottom,
+};
+
+enum HAlign : int32_t
+{
+  Left,
+  Center,
+  Right,
+};
 
 enum Color : int32_t
 {

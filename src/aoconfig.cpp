@@ -1,5 +1,5 @@
 #include "aoconfig.h"
-
+#include "datatypes.h"
 #include "draudioengine.h"
 
 // qt
@@ -47,18 +47,23 @@ private:
   bool autosave;
   QString username;
   QString callwords;
+  bool server_alerts;
+  bool discord_presence = false;
+  bool discord_hide_server = false;
+  bool discord_hide_character = false;
   QString theme;
   QString gamemode;
   bool manual_gamemode;
   QString timeofday;
   bool manual_timeofday;
-  bool server_alerts;
   bool always_pre;
   int chat_tick_interval;
   int log_max_lines;
+  bool log_display_timestamp;
+  bool log_display_empty_messages;
   bool log_is_topdown;
-  bool log_uses_newline;
-  bool log_music;
+  bool log_format_use_newline;
+  bool log_display_music_switch;
   bool log_is_recording;
 
   // audio
@@ -105,6 +110,10 @@ void AOConfigPrivate::read_file()
   callwords = cfg.value("callwords").toString();
   server_alerts = cfg.value("server_alerts", true).toBool();
 
+  discord_presence = cfg.value("discord_presence", true).toBool();
+  discord_hide_server = cfg.value("discord_hide_server", false).toBool();
+  discord_hide_character = cfg.value("discord_hide_character", false).toBool();
+
   theme = cfg.value("theme").toString();
   if (theme.trimmed().isEmpty())
     theme = "default";
@@ -117,8 +126,10 @@ void AOConfigPrivate::read_file()
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
   log_max_lines = cfg.value("chatlog_limit", 200).toInt();
   log_is_topdown = cfg.value("chatlog_scrolldown", true).toBool();
-  log_uses_newline = cfg.value("chatlog_newline", false).toBool();
-  log_music = cfg.value("music_change_log", true).toBool();
+  log_display_timestamp = cfg.value("chatlog_display_timestamp", false).toBool();
+  log_display_empty_messages = cfg.value("log_display_empty_messages", false).toBool();
+  log_format_use_newline = cfg.value("chatlog_newline", false).toBool();
+  log_display_music_switch = cfg.value("music_change_log", true).toBool();
   log_is_recording = cfg.value("enable_logging", true).toBool();
 
   if (cfg.contains("favorite_device_driver"))
@@ -156,6 +167,11 @@ void AOConfigPrivate::save_file()
   cfg.setValue("username", username);
   cfg.setValue("callwords", callwords);
   cfg.setValue("server_alerts", server_alerts);
+
+  cfg.setValue("discord_presence", discord_presence);
+  cfg.setValue("discord_hide_server", discord_hide_server);
+  cfg.setValue("discord_hide_character", discord_hide_character);
+
   cfg.setValue("theme", theme);
   cfg.setValue("gamemode", gamemode);
   cfg.setValue("manual_gamemode", manual_gamemode);
@@ -164,9 +180,11 @@ void AOConfigPrivate::save_file()
   cfg.setValue("always_pre", always_pre);
   cfg.setValue("chat_tick_interval", chat_tick_interval);
   cfg.setValue("chatlog_limit", log_max_lines);
+  cfg.setValue("chatlog_display_timestamp", log_display_timestamp);
+  cfg.setValue("chatlog_newline", log_format_use_newline);
+  cfg.setValue("chatlog_display_empty_messages", log_display_empty_messages);
+  cfg.setValue("music_change_log", log_display_music_switch);
   cfg.setValue("chatlog_scrolldown", log_is_topdown);
-  cfg.setValue("chatlog_newline", log_uses_newline);
-  cfg.setValue("music_change_log", log_music);
   cfg.setValue("enable_logging", log_is_recording);
 
   // audio
@@ -266,6 +284,26 @@ QString AOConfig::callwords() const
   return d->callwords;
 }
 
+bool AOConfig::server_alerts_enabled() const
+{
+  return d->server_alerts;
+}
+
+bool AOConfig::discord_presence() const
+{
+  return d->discord_presence;
+}
+
+bool AOConfig::discord_hide_server() const
+{
+  return d->discord_hide_server;
+}
+
+bool AOConfig::discord_hide_character() const
+{
+  return d->discord_hide_character;
+}
+
 QString AOConfig::theme() const
 {
   return d->theme;
@@ -291,11 +329,6 @@ bool AOConfig::manual_timeofday_enabled() const
   return d->manual_timeofday;
 }
 
-bool AOConfig::server_alerts_enabled() const
-{
-  return d->server_alerts;
-}
-
 bool AOConfig::always_pre_enabled() const
 {
   return d->always_pre;
@@ -305,9 +338,20 @@ int AOConfig::chat_tick_interval() const
 {
   return d->chat_tick_interval;
 }
+
 int AOConfig::log_max_lines() const
 {
   return d->log_max_lines;
+}
+
+bool AOConfig::log_display_timestamp_enabled() const
+{
+  return d->log_display_timestamp;
+}
+
+bool AOConfig::log_display_empty_messages_enabled() const
+{
+  return d->log_display_empty_messages;
 }
 
 bool AOConfig::log_is_topdown_enabled() const
@@ -315,14 +359,14 @@ bool AOConfig::log_is_topdown_enabled() const
   return d->log_is_topdown;
 }
 
-bool AOConfig::log_uses_newline_enabled() const
+bool AOConfig::log_format_use_newline_enabled() const
 {
-  return d->log_uses_newline;
+  return d->log_format_use_newline;
 }
 
-bool AOConfig::log_music_enabled() const
+bool AOConfig::log_display_music_switch_enabled() const
 {
-  return d->log_music;
+  return d->log_display_music_switch;
 }
 
 bool AOConfig::log_is_recording_enabled() const
@@ -426,6 +470,30 @@ void AOConfig::set_server_alerts(bool p_enabled)
   d->invoke_signal("server_alerts_changed", Q_ARG(bool, p_enabled));
 }
 
+void AOConfig::set_discord_presence(const bool p_enabled)
+{
+  if (d->discord_presence == p_enabled)
+    return;
+  d->discord_presence = p_enabled;
+  Q_EMIT d->invoke_signal("discord_presence_changed", Q_ARG(bool, d->discord_presence));
+}
+
+void AOConfig::set_discord_hide_server(const bool p_enabled)
+{
+  if (d->discord_hide_server == p_enabled)
+    return;
+  d->discord_hide_server = p_enabled;
+  Q_EMIT d->invoke_signal("discord_hide_server_changed", Q_ARG(bool, d->discord_hide_server));
+}
+
+void AOConfig::set_discord_hide_character(const bool p_enabled)
+{
+  if (d->discord_hide_character == p_enabled)
+    return;
+  d->discord_hide_character = p_enabled;
+  Q_EMIT d->invoke_signal("discord_hide_character_changed", Q_ARG(bool, d->discord_hide_character));
+}
+
 void AOConfig::set_theme(QString p_string)
 {
   if (d->theme == p_string)
@@ -490,6 +558,30 @@ void AOConfig::set_log_max_lines(int p_number)
   d->invoke_signal("log_max_lines_changed", Q_ARG(int, p_number));
 }
 
+void AOConfig::set_log_display_timestamp(bool p_enabled)
+{
+  if (d->log_display_timestamp == p_enabled)
+    return;
+  d->log_display_timestamp = p_enabled;
+  d->invoke_signal("log_display_timestamp_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_log_display_empty_messages(bool p_enabled)
+{
+  if (d->log_display_empty_messages == p_enabled)
+    return;
+  d->log_display_empty_messages = p_enabled;
+  d->invoke_signal("log_display_empty_messages_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_log_format_use_newline(bool p_enabled)
+{
+  if (d->log_format_use_newline == p_enabled)
+    return;
+  d->log_format_use_newline = p_enabled;
+  d->invoke_signal("log_format_use_newline_changed", Q_ARG(bool, p_enabled));
+}
+
 void AOConfig::set_log_is_topdown(bool p_enabled)
 {
   if (d->log_is_topdown == p_enabled)
@@ -498,20 +590,12 @@ void AOConfig::set_log_is_topdown(bool p_enabled)
   d->invoke_signal("log_is_topdown_changed", Q_ARG(bool, p_enabled));
 }
 
-void AOConfig::set_log_uses_newline(bool p_enabled)
+void AOConfig::set_log_display_music_switch(bool p_enabled)
 {
-  if (d->log_uses_newline == p_enabled)
+  if (d->log_display_music_switch == p_enabled)
     return;
-  d->log_uses_newline = p_enabled;
-  d->invoke_signal("log_uses_newline_changed", Q_ARG(bool, p_enabled));
-}
-
-void AOConfig::set_log_music(bool p_enabled)
-{
-  if (d->log_music == p_enabled)
-    return;
-  d->log_music = p_enabled;
-  d->invoke_signal("log_music_changed", Q_ARG(bool, p_enabled));
+  d->log_display_music_switch = p_enabled;
+  d->invoke_signal("log_display_music_switch_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_log_is_recording(bool p_enabled)

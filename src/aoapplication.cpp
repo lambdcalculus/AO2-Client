@@ -21,8 +21,6 @@
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  discord = new AttorneyOnline::Discord();
-
   net_manager = new NetworkManager(this);
   connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)), SLOT(ms_connect_finished(bool, bool)));
 
@@ -35,14 +33,20 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   connect(config_panel, SIGNAL(reload_theme()), this, SLOT(on_config_reload_theme_requested()));
   connect(this, SIGNAL(reload_theme()), config_panel, SLOT(on_config_reload_theme_requested()));
   config_panel->hide();
+
+  discord = new DRDiscord(this);
+  discord->set_presence(config->discord_presence());
+  discord->set_hide_server(config->discord_hide_server());
+  discord->set_hide_character(config->discord_hide_character());
+  connect(config, SIGNAL(discord_presence_changed(bool)), discord, SLOT(set_presence(bool)));
+  connect(config, SIGNAL(discord_hide_server_changed(bool)), discord, SLOT(set_hide_server(bool)));
+  connect(config, SIGNAL(discord_hide_character_changed(bool)), discord, SLOT(set_hide_character(bool)));
 }
 
 AOApplication::~AOApplication()
 {
   destruct_lobby();
   destruct_courtroom();
-  delete discord;
-  delete config_panel;
 }
 
 void AOApplication::construct_lobby()
@@ -68,9 +72,10 @@ void AOApplication::construct_lobby()
   int y = (screen_geometry.height() - w_lobby->height()) / 2;
   w_lobby->move(x, y);
 
-  discord->state_lobby();
-
   w_lobby->show();
+
+  discord->set_state(DRDiscord::State::Idle);
+  discord->clear_server_name();
 }
 
 void AOApplication::destruct_lobby()
@@ -249,7 +254,7 @@ int AOApplication::get_chat_tick_interval()
 
 bool AOApplication::get_chatlog_newline()
 {
-  return config->log_uses_newline_enabled();
+  return config->log_format_use_newline_enabled();
 }
 
 bool AOApplication::get_enable_logging_enabled()
@@ -259,7 +264,7 @@ bool AOApplication::get_enable_logging_enabled()
 
 bool AOApplication::get_music_change_log_enabled()
 {
-  return config->log_music_enabled();
+  return config->log_display_music_switch_enabled();
 }
 
 void AOApplication::add_favorite_server(int p_server)

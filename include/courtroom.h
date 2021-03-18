@@ -38,6 +38,7 @@
 #include <QMap>
 #include <QPlainTextEdit>
 #include <QPropertyAnimation>
+#include <QQueue>
 #include <QRect>
 #include <QSignalMapper>
 #include <QSlider>
@@ -98,10 +99,10 @@ public:
   // same as above, but use override color as color if it is not an empty
   // string, otherwise use normal logic for color of set_font
   void set_font(QWidget *widget, QString p_identifier, QString override_color);
-  // sets font properties for QTextEdit (same as above but also text outline)
-  void set_qtextedit_font(QTextEdit *widget, QString p_identifier);
-  // same as second set_font but for qtextedit
-  void set_qtextedit_font(QTextEdit *widget, QString p_identifier, QString override_color);
+  // sets font properties for DRTextEdit (same as above but also text outline)
+  void set_drtextedit_font(DRTextEdit *widget, QString p_identifier);
+  // same as second set_font but for drtextedit
+  void set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QString override_color);
   // helper function that calls above function on the relevant widgets
   void set_fonts();
 
@@ -437,10 +438,6 @@ private:
   int emote_rows = 2;
   int max_emotes_on_page = 10;
 
-  int m_chatlog_limit = 200;
-  bool m_chatlog_newline = false;
-  bool m_chatlog_scrolldown = false;
-
   //  inmchatlog_changed;
 
   QVector<evi_type> local_evidence_list;
@@ -474,11 +471,11 @@ private:
   QVector<QString> rpc_char_list;
 
   AOImageDisplay *ui_vp_notepad_image = nullptr;
-  QTextEdit *ui_vp_notepad = nullptr;
+  DRTextEdit *ui_vp_notepad = nullptr;
 
   AOImageDisplay *ui_vp_chatbox = nullptr;
-  QTextEdit *ui_vp_showname = nullptr;
-  QTextEdit *ui_vp_message = nullptr;
+  DRTextEdit *ui_vp_showname = nullptr;
+  DRTextEdit *ui_vp_message = nullptr;
   AOImageDisplay *ui_vp_testimony = nullptr;
   AOMovie *ui_vp_effect = nullptr;
   AOMovie *ui_vp_wtce = nullptr;
@@ -489,7 +486,7 @@ private:
 
   AOImageDisplay *ui_vp_showname_image = nullptr;
 
-  QTextEdit *ui_vp_music_name = nullptr;
+  DRTextEdit *ui_vp_music_name = nullptr;
   QPropertyAnimation *music_anim = nullptr;
 
   QWidget *ui_vp_music_area = nullptr;
@@ -497,8 +494,9 @@ private:
   AOMovie *ui_vp_clock = nullptr;
   QVector<AOTimer *> ui_timers;
 
-  QTextEdit *ui_ic_chatlog = nullptr;
-  record_type_array m_ic_records;
+  DRTextEdit *ui_ic_chatlog = nullptr;
+  QList<DR::ChatRecord> m_ic_record_list;
+  QQueue<DR::ChatRecord> m_ic_record_queue;
 
   AOTextArea *ui_server_chatlog = nullptr;
 
