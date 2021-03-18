@@ -274,6 +274,7 @@ void AOApplication::server_disconnected()
 {
   if (!courtroom_constructed)
     return;
+  w_courtroom->stop_all_audio();
   call_notice("Disconnected from server.");
   construct_lobby();
   destruct_courtroom();

@@ -36,10 +36,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
 Courtroom::~Courtroom()
 {
-  // shutdown all audio
-  for (auto &family : DRAudioEngine::get_family_list())
-    for (auto &stream : family->get_stream_list())
-      stream->stop();
+  stop_all_audio();
 }
 
 void Courtroom::enter_courtroom(int p_cid)
@@ -133,7 +130,7 @@ void Courtroom::enter_courtroom(int p_cid)
   ui_sfx_list->setCurrentItem(ui_sfx_list->item(0)); // prevents undefined errors
 
   // unmute audio
-  set_audio_mute_enabled(false);
+  suppress_audio(false);
 
   testimony_in_progress = false;
 
@@ -155,7 +152,7 @@ void Courtroom::done_received()
 {
   m_cid = -1;
 
-  set_audio_mute_enabled(true);
+  suppress_audio(true);
 
   set_char_select_page();
 
@@ -2186,7 +2183,7 @@ void Courtroom::on_wtce_clicked()
 
 void Courtroom::on_change_character_clicked()
 {
-  set_audio_mute_enabled(true);
+  suppress_audio(true);
 
   set_char_select();
 
