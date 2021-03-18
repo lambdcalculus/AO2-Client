@@ -89,13 +89,11 @@ std::optional<DRAudioError> DRAudioStream::set_file(QString p_file)
   // bass events
   for (const DWORD type : {BASS_SYNC_END, BASS_SYNC_DEV_FAIL})
   {
-    HSYNC sync_handle =
-        BASS_ChannelSetSync(stream_handle, type | BASS_SYNC_MIXTIME, 0, &DRAudioStream::on_sync_callback, this);
+    const DWORD final_type = type == BASS_SYNC_DEV_FAIL ? type | BASS_SYNC_MIXTIME : type;
+    HSYNC sync_handle = BASS_ChannelSetSync(stream_handle, final_type, 0, &DRAudioStream::on_sync_callback, this);
     if (sync_handle == 0)
-      return DRAudioError(QString("failed to create sync %1 for file %2: %3")
-                              .arg(type)
-                              .arg(p_file)
-                              .arg(DRAudio::get_last_bass_error()));
+      return DRAudioError(
+          QString("failed to create sync %1 for file %2: %3").arg(type).arg(p_file, DRAudio::get_last_bass_error()));
     m_hsync_stack.push(DRAudioStreamSync{sync_handle, type});
   }
 
@@ -124,13 +122,10 @@ void DRAudioStream::on_sync_callback(HSYNC hsync, DWORD ch, DWORD data, void *us
    * the pointer we provided get deleted mid-way through the program lifetime
    */
   DRAudioStream *self = static_cast<DRAudioStream *>(userdata);
-
   for (auto &v : self->m_hsync_stack)
   {
     if (v.sync != hsync)
       continue;
-
-    const QString filePath = self->get_file().value();
 
     switch (v.type)
     {

@@ -18,12 +18,13 @@ class DRAudioStreamFamily : public QObject
 
 public:
   using ptr = QSharedPointer<DRAudioStreamFamily>;
+  using stream_list = QVector<DRAudioStream::ptr>;
 
   std::optional<DRAudioStream::ptr> create_stream(QString p_file);
   std::optional<DRAudioStream::ptr> play_stream(QString p_file);
 
   // get
-  QVector<DRAudioStream::ptr> get_stream_list() const;
+  stream_list get_stream_list() const;
   int32_t get_volume() const;
   int32_t get_capacity() const;
   DRAudio::Options get_options() const;
@@ -63,7 +64,7 @@ private:
   int32_t m_volume = 0;
   int32_t m_capacity = 0;
   DRAudio::Options m_options;
-  QVector<QSharedPointer<DRAudioStream>> m_stream_list;
+  stream_list m_stream_list;
 
 private slots:
   void on_stream_finished();
