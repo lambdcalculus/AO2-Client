@@ -9,6 +9,8 @@
 #include <QString>
 #include <QTimer>
 
+#include <optional>
+
 class DRDiscord : public QObject
 {
   Q_OBJECT
