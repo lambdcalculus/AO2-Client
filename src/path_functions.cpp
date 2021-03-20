@@ -34,7 +34,6 @@ QString AOApplication::get_base_path()
 #else
     base_path = QFileInfo(QCoreApplication::applicationDirPath() + "/../../..").canonicalFilePath();
     base_path = QFileInfo(base_path + "/base/").absoluteFilePath() + "/";
-    call_notice(base_path);
 #endif
   }
   return base_path;
@@ -142,7 +141,6 @@ QString AOApplication::find_asset_path(QStringList possible_roots, QStringList p
     for (QString ext : possible_exts)
     {
       QString full_path = get_case_sensitive_path(root + ext);
-      qDebug() << full_path;
       if (file_exists(full_path))
         return full_path;
     }
@@ -161,6 +159,5 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList exts)
       get_base_path() + "themes/default/" + p_file,
   };
 
-  //qDebug() << paths;
   return find_asset_path(paths, exts);
 }

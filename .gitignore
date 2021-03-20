@@ -10,3 +10,4 @@ docs/
 *.dll
 *.so
 *.autosave
+*DS_Store

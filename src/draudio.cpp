@@ -30,8 +30,8 @@ QString DRAudio::get_bass_error(const int32_t p_error_code)
     return "SSL/HTTPS support isn't available";
   case BASS_ERROR_ALREADY:
     return "already initialized/paused/whatever";
-//  case BASS_ERROR_NOTAUDIO:
-//    return "file does not contain audio";
+  case BASS_ERROR_NOTAUDIO:
+    return "file does not contain audio";
   case BASS_ERROR_NOCHAN:
     return "can't get a free channel";
   case BASS_ERROR_ILLTYPE:
@@ -80,8 +80,8 @@ QString DRAudio::get_bass_error(const int32_t p_error_code)
     return "the channel/file has ended";
   case BASS_ERROR_BUSY:
     return "the device is busy";
-//  case BASS_ERROR_UNSTREAMABLE:
-//    return "unstreamable file";
+  case BASS_ERROR_UNSTREAMABLE:
+    return "unstreamable file";
   case BASS_ERROR_UNKNOWN:
     return "some other mystery problem";
   default:

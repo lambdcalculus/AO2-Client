@@ -87,7 +87,7 @@ std::optional<DRAudioError> DRAudioStream::set_file(QString p_file)
   m_hstream = stream_handle;
 
   // bass events
-  for (const DWORD type : {BASS_SYNC_END})//, BASS_SYNC_DEV_FAIL})
+  for (const DWORD type : {BASS_SYNC_END, BASS_SYNC_DEV_FAIL})
   {
     HSYNC sync_handle =
         BASS_ChannelSetSync(stream_handle, type | BASS_SYNC_MIXTIME, 0, &DRAudioStream::on_sync_callback, this);
@@ -138,9 +138,9 @@ void DRAudioStream::on_sync_callback(HSYNC hsync, DWORD ch, DWORD data, void *us
       Q_EMIT self->finished();
       break;
 
-    //case BASS_SYNC_DEV_FAIL:
-    //  Q_EMIT self->device_error(QPrivateSignal());
-    //  break;
+    case BASS_SYNC_DEV_FAIL:
+      Q_EMIT self->device_error(QPrivateSignal());
+      break;
     }
   }
 }
