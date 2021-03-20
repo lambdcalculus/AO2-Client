@@ -85,7 +85,7 @@ private:
 };
 
 AOConfigPrivate::AOConfigPrivate()
-    : QObject(nullptr), cfg(QDir::currentPath() + "/base/config.ini", QSettings::IniFormat),
+    : QObject(nullptr), cfg(QFileInfo(QCoreApplication::applicationDirPath() + "/../../..").canonicalFilePath() + "/base/config.ini", QSettings::IniFormat),
       audio_engine(new DRAudioEngine(this))
 {
   Q_ASSERT_X(qApp, "initialization", "QGuiApplication is required");

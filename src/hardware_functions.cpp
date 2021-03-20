@@ -50,7 +50,10 @@ QString get_hdid()
 }
 
 #else
-
-#error This operating system is unsupported for hardware functions.
+QString get_hdid()
+{
+  return "macOSHDID";
+}
+// #error This operating system is unsupported for hardware functions.
 
 #endif

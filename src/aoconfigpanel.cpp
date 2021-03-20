@@ -256,7 +256,7 @@ void AOConfigPanel::refresh_theme_list()
   w_theme->clear();
 
   // themes
-  const QString path = QDir::currentPath() + "/base/themes";
+  const QString path = ao_app->get_application_path() + "/base/themes";
   for (QString i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
@@ -282,7 +282,7 @@ void AOConfigPanel::refresh_gamemode_list()
   // add empty entry indicating no gamemode chosen
   w_gamemode->addItem("<default>");
   // gamemodes
-  QString path = QDir::currentPath() + "/base/themes/" + m_config->theme() + "/gamemodes/";
+  QString path = ao_app->get_application_path() + "/base/themes/" + m_config->theme() + "/gamemodes/";
   for (QString i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
@@ -312,9 +312,9 @@ void AOConfigPanel::refresh_timeofday_list()
   // gamemode chosen or not
   QString path;
   if (m_config->gamemode().isEmpty())
-    path = QDir::currentPath() + "/base/themes/" + m_config->theme() + "/times/";
+    path = ao_app->get_application_path()  + "/base/themes/" + m_config->theme() + "/times/";
   else
-    path = QDir::currentPath() + "/base/themes/" + m_config->theme() + "/gamemodes/" + m_config->gamemode() + "/times/";
+    path = ao_app->get_application_path()  + "/base/themes/" + m_config->theme() + "/gamemodes/" + m_config->gamemode() + "/times/";
 
   // times of day
   for (QString i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))

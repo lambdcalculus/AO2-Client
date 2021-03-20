@@ -1,5 +1,6 @@
 #include "aoapplication.h"
 #include "courtroom.h"
+#include "debug_functions.h"
 #include "file_functions.h"
 #include <QDebug>
 #include <QDir>
@@ -20,6 +21,10 @@
 #endif
 QString base_path = "";
 
+QString AOApplication::get_application_path()
+{
+    return QFileInfo(QCoreApplication::applicationDirPath() + "/../../..").canonicalFilePath();
+}
 QString AOApplication::get_base_path()
 {
   if (base_path == "")
@@ -27,7 +32,9 @@ QString AOApplication::get_base_path()
 #ifdef BASE_OVERRIDE
     base_path = base_override;
 #else
-    base_path = QDir::currentPath() + "/base/";
+    base_path = QFileInfo(QCoreApplication::applicationDirPath() + "/../../..").canonicalFilePath();
+    base_path = QFileInfo(base_path + "/base/").absoluteFilePath() + "/";
+    call_notice(base_path);
 #endif
   }
   return base_path;
@@ -92,7 +99,7 @@ QString Courtroom::get_background_path(QString p_file)
 #ifndef CASE_SENSITIVE_FILESYSTEM
 QString AOApplication::get_case_sensitive_path(QString p_file)
 {
-  return p_file;
+  return p_file.replace("//", "/");
 }
 #else
 QString AOApplication::get_case_sensitive_path(QString p_file)
@@ -135,6 +142,7 @@ QString AOApplication::find_asset_path(QStringList possible_roots, QStringList p
     for (QString ext : possible_exts)
     {
       QString full_path = get_case_sensitive_path(root + ext);
+      qDebug() << full_path;
       if (file_exists(full_path))
         return full_path;
     }
@@ -153,5 +161,6 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList exts)
       get_base_path() + "themes/default/" + p_file,
   };
 
+  //qDebug() << paths;
   return find_asset_path(paths, exts);
 }
