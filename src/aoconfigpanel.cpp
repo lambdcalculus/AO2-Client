@@ -312,9 +312,9 @@ void AOConfigPanel::refresh_timeofday_list()
   // gamemode chosen or not
   QString path;
   if (m_config->gamemode().isEmpty())
-    path = QDir::currentPath()  + "/base/themes/" + m_config->theme() + "/times/";
+    path = QDir::currentPath() + "/base/themes/" + m_config->theme() + "/times/";
   else
-    path = QDir::currentPath()  + "/base/themes/" + m_config->theme() + "/gamemodes/" + m_config->gamemode() + "/times/";
+    path = QDir::currentPath() + "/base/themes/" + m_config->theme() + "/gamemodes/" + m_config->gamemode() + "/times/";
 
   // times of day
   for (QString i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
