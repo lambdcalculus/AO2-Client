@@ -85,7 +85,7 @@ private:
 };
 
 AOConfigPrivate::AOConfigPrivate()
-    : QObject(nullptr), cfg(QFileInfo(QCoreApplication::applicationDirPath() + "/../../..").canonicalFilePath() + "/base/config.ini", QSettings::IniFormat),
+    : QObject(nullptr), cfg(QDir::currentPath() + "/base/config.ini", QSettings::IniFormat),
       audio_engine(new DRAudioEngine(this))
 {
   Q_ASSERT_X(qApp, "initialization", "QGuiApplication is required");
@@ -237,6 +237,10 @@ static QSharedPointer<AOConfigPrivate> d;
 
 AOConfig::AOConfig(QObject *p_parent) : QObject(p_parent)
 {
+#if defined __APPLE__
+  QString path = (QFileInfo(QCoreApplication::applicationDirPath() + "/../../..").canonicalFilePath());
+  QDir::setCurrent(path);
+#endif
   // init if not created yet
   if (d == nullptr)
   {

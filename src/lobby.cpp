@@ -75,7 +75,6 @@ void Lobby::set_widgets()
 
   if (f_lobby.width < 0 || f_lobby.height < 0)
   {
-    QString home_path = QFileInfo(QCoreApplication::applicationDirPath() + "/../..").canonicalPath();
     qDebug() << "W: did not find lobby width or height in " << filename;
 
     // Most common symptom of bad config files, missing assets, or misnamed
@@ -86,7 +85,7 @@ void Lobby::set_widgets()
                 "the DRO Discord including the large 'base' folder.\n"
                 "2. If you did, check that the base folder is in the same folder "
                 "where you launched Danganronpa Online from: " +
-                ao_app->get_application_path() +
+                QDir::currentPath() +
                 "\n"
                 "3. If it is there, check that your current theme folder exists in "
                 "base/themes. According to base/config.ini, your current theme is " +

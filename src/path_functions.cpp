@@ -21,10 +21,6 @@
 #endif
 QString base_path = "";
 
-QString AOApplication::get_application_path()
-{
-    return QFileInfo(QCoreApplication::applicationDirPath() + "/../../..").canonicalFilePath();
-}
 QString AOApplication::get_base_path()
 {
   if (base_path == "")
@@ -32,8 +28,7 @@ QString AOApplication::get_base_path()
 #ifdef BASE_OVERRIDE
     base_path = base_override;
 #else
-    base_path = QFileInfo(QCoreApplication::applicationDirPath() + "/../../..").canonicalFilePath();
-    base_path = QFileInfo(base_path + "/base/").absoluteFilePath() + "/";
+    base_path = QDir::currentPath() + "/base/";
 #endif
   }
   return base_path;

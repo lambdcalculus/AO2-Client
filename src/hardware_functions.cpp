@@ -49,11 +49,37 @@ QString get_hdid()
   return "gxcpz32sa9fnwic92mfbs0";
 }
 
-#else
+#elif defined __APPLE__
+
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
+
 QString get_hdid()
 {
-  return "macOSHDID";
+  // This code is from AO.
+  CFStringRef serial;
+  char buffer[64] = {0};
+  QString hdid;
+  io_service_t platformExpert = IOServiceGetMatchingService(
+      kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
+  if (platformExpert) {
+    CFTypeRef serialNumberAsCFString = IORegistryEntryCreateCFProperty(
+        platformExpert, CFSTR(kIOPlatformSerialNumberKey), kCFAllocatorDefault,
+        0);
+    if (serialNumberAsCFString) {
+      serial = (CFStringRef)serialNumberAsCFString;
+    }
+    if (CFStringGetCString(serial, buffer, 64, kCFStringEncodingUTF8)) {
+      hdid = buffer;
+    }
+
+    IOObjectRelease(platformExpert);
+  }
+  return hdid;
 }
-// #error This operating system is unsupported for hardware functions.
+
+#else
+
+#error This operating system is unsupported for hardware functions.
 
 #endif

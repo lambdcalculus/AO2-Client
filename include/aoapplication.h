@@ -105,7 +105,6 @@ public:
   QString get_current_char();
 
   // implementation in path_functions.cpp
-  QString get_application_path();
   QString get_base_path();
   QString get_data_path();
   QString get_character_path(QString p_character, QString p_file);
