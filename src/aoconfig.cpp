@@ -237,10 +237,6 @@ static QSharedPointer<AOConfigPrivate> d;
 
 AOConfig::AOConfig(QObject *p_parent) : QObject(p_parent)
 {
-#if defined __APPLE__
-  QString path = QFileInfo(QCoreApplication::applicationDirPath() + "/../../..").canonicalFilePath();
-  QDir::setCurrent(path);
-#endif
   // init if not created yet
   if (d == nullptr)
   {
