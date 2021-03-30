@@ -978,8 +978,9 @@ void Courtroom::handle_chatmessage_3()
     return;
 
   ui_vp_player_char->stop();
-  QString f_char = m_chatmessage[CMChrName];
-  QString f_emote = m_chatmessage[CMEmote];
+  const QString f_char = m_chatmessage[CMChrName];
+  const QString f_emote = m_chatmessage[CMEmote];
+  const bool l_hide_emote = (f_emote == "../../misc/blank");
 
   ui_vp_showname_image->show();
 
@@ -1006,6 +1007,7 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_showname_image->hide();
   }
 
+  ui_vp_player_char->setHidden(l_hide_emote);
   switch (f_anim_state)
   {
   case 2:
