@@ -5,10 +5,6 @@
 #include "lobby.h"
 #include "networkmanager.h"
 
-#ifdef Q_OS_MACOS
-#include <QDir>
-#include <QFileInfo>
-#endif
 #include <QDir>
 #include <QFileInfo>
 
