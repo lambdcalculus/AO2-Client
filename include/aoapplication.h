@@ -114,6 +114,7 @@ public:
   QString get_background_path(QString p_file);
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
+  QString sanitize_path(QString p_file);
 
   /**
    * @brief Returns the first case-sensitive file that is the combination of one

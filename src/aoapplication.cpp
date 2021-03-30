@@ -9,7 +9,9 @@
 #include "aoconfigpanel.h"
 
 #include <QDebug>
+#include <QFileInfo>
 #include <QRect>
+#include <QRegularExpression>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 #include <QDesktopWidget>
@@ -179,6 +181,15 @@ QString AOApplication::get_current_char()
     return w_courtroom->get_current_char();
   else
     return "";
+}
+
+QString AOApplication::sanitize_path(QString p_file)
+{
+  QStringList list = p_file.split(QRegularExpression("[\\/]"));
+  while (!list.isEmpty())
+    if (list.takeFirst().contains(QRegularExpression("\\.{2,}")))
+      return nullptr;
+  return p_file;
 }
 
 void AOApplication::toggle_config_panel()

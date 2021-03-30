@@ -21,6 +21,8 @@
 #include <QTextCharFormat>
 #include <QTime>
 
+#include "networkmanager.h"
+
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
