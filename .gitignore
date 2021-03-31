@@ -11,3 +11,4 @@ docs/
 *.so
 *.autosave
 *DS_Store
+*.swp
