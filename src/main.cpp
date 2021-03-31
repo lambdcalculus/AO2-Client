@@ -2,6 +2,7 @@
 #include "courtroom.h"
 #include "datatypes.h"
 #include "debug_functions.h"
+#include "drpather.h"
 #include "lobby.h"
 #include "networkmanager.h"
 
@@ -20,15 +21,10 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_MACOS
   { // MacOS
     qputenv("QT_MAC_WANTS_LAYER", "1");
-
-    // pathing
-    QDir l_mac_path(QCoreApplication::applicationDirPath());
-    for (int i = 0; i < 3; ++i) // equivalent of "/../../.."
-      l_mac_path.cdUp();
-    QDir::setCurrent(l_mac_path.canonicalPath());
   }
 #endif
 
+  DRPather::correctCurrentPath();
   AOApplication app(argc, argv);
 
   app.construct_lobby();

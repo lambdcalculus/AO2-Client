@@ -1,6 +1,7 @@
 #include "aoconfig.h"
 #include "datatypes.h"
 #include "draudioengine.h"
+#include "drpather.h"
 
 // qt
 #include <QApplication>
@@ -237,13 +238,7 @@ static QSharedPointer<AOConfigPrivate> d;
 
 AOConfig::AOConfig(QObject *p_parent) : QObject(p_parent)
 {
-  #if defined __APPLE__
-    // pathing
-    QDir l_mac_path(QCoreApplication::applicationDirPath());
-    for (int i = 0; i < 3; ++i) // equivalent of "/../../.."
-      l_mac_path.cdUp();
-    QDir::setCurrent(l_mac_path.canonicalPath());
-  #endif
+  DRPather::correctCurrentPath();
 
   // init if not created yet
   if (d == nullptr)

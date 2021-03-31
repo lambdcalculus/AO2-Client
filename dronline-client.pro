@@ -54,6 +54,7 @@ HEADERS += \
   include/draudioerror.h \
   include/draudiostream.h \
   include/draudiostreamfamily.h \
+  include/drpather.h \
   include/drtextedit.h \
   include/drdiscord.h \
   include/file_functions.h \
@@ -105,6 +106,7 @@ SOURCES += \
   src/draudioerror.cpp \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \
+  src/drpather.cpp \
   src/drtextedit.cpp \
   src/drdiscord.cpp \
   src/emotes.cpp \
