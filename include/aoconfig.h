@@ -2,8 +2,10 @@
 #define AOCONFIG_H
 
 #include "datatypes.h"
-// qt
+
 #include <QObject>
+
+#include <optional>
 
 class AOConfig : public QObject
 {

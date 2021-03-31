@@ -9,7 +9,9 @@
 #include "aoconfigpanel.h"
 
 #include <QDebug>
+#include <QFileInfo>
 #include <QRect>
+#include <QRegularExpression>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 #include <QDesktopWidget>
@@ -181,6 +183,15 @@ QString AOApplication::get_current_char()
     return "";
 }
 
+QString AOApplication::sanitize_path(QString p_file)
+{
+  QStringList list = p_file.split(QRegularExpression("[\\/]"));
+  while (!list.isEmpty())
+    if (list.takeFirst().contains(QRegularExpression("\\.{2,}")))
+      return nullptr;
+  return p_file;
+}
+
 void AOApplication::toggle_config_panel()
 {
   config_panel->setVisible(!config_panel->isVisible());
@@ -274,6 +285,7 @@ void AOApplication::server_disconnected()
 {
   if (!courtroom_constructed)
     return;
+  w_courtroom->stop_all_audio();
   call_notice("Disconnected from server.");
   construct_lobby();
   destruct_courtroom();

@@ -1,3 +1,5 @@
+#define NOMINMAX
+
 #include "draudiostreamfamily.h"
 
 #include "draudioengine.h"
@@ -87,7 +89,6 @@ std::optional<DRAudioStream::ptr> DRAudioStreamFamily::create_stream(QString p_f
 
   m_stream_list.append(stream);
   update_capacity();
-
   stream->set_volume(calculate_volume());
   connect(stream.get(), SIGNAL(finished()), this, SLOT(on_stream_finished()));
 
@@ -106,7 +107,7 @@ std::optional<DRAudioStream::ptr> DRAudioStreamFamily::play_stream(QString p_fil
   return r_stream;
 }
 
-QVector<DRAudioStream::ptr> DRAudioStreamFamily::get_stream_list() const
+DRAudioStreamFamily::stream_list DRAudioStreamFamily::get_stream_list() const
 {
   return m_stream_list;
 }
@@ -161,11 +162,15 @@ void DRAudioStreamFamily::on_stream_finished()
   if (invoker == nullptr)
     return;
 
-  decltype(m_stream_list) new_stream_list;
+  stream_list new_stream_list;
   for (auto &i_stream : m_stream_list)
   {
     if (i_stream.get() == invoker)
+    {
+      if (auto file = i_stream->get_file(); file)
+        qDebug() << "removing" << file.value();
       continue;
+    }
     new_stream_list.append(std::move(i_stream));
   }
   m_stream_list = std::move(new_stream_list);

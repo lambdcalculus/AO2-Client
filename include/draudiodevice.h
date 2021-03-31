@@ -6,6 +6,8 @@
 #include <QMetaType>
 #include <QString>
 
+#include <optional>
+
 class DRAudioEngine;
 class DRAudioEnginePrivate;
 
