@@ -137,4 +137,6 @@ DISTFILES +=
 FORMS += \
   res/ui/config_panel.ui
 
+# Mac stuff
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.14
+ICON = icon.icns
