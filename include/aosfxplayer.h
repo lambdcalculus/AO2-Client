@@ -10,4 +10,5 @@ public:
   AOSfxPlayer(AOApplication *p_ao_app, QObject *p_parent = nullptr);
 
   void play(QString p_file);
+  void stop_all();
 };
