@@ -810,6 +810,8 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   previous_ic_message = f_message;
     */
 
+  m_effects_player->stop_all();
+
   text_state = 0;
   anim_state = 0;
   ui_vp_objection->stop();
