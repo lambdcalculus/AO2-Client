@@ -31,6 +31,11 @@ private:
   };
   Status m_status = Status::Done;
 
+  int current_document_height = 0;
+
+  void refresh_horizontal_alignment();
+  void refresh_vertical_alignment();
+
 private slots:
   void on_text_changed();
 };
