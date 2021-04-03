@@ -1375,6 +1375,11 @@ void Courtroom::start_chat_ticking()
 
   tick_pos = 0;
   blip_pos = 0;
+
+  // Cache these so chat_tick performs better
+  chatbox_message_outline = (ao_app->get_font_property("message_outline", fonts_ini) == 1);
+  chatbox_message_enable_highlighting = (ao_app->read_theme_ini("enable_highlighting", cc_config_ini) == "true");
+  chatbox_message_highlight_colors = ao_app->get_highlight_colors();
   chat_tick_timer->start(ao_app->get_chat_tick_interval());
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CMChrName]);
@@ -1391,7 +1396,7 @@ void Courtroom::chat_tick()
   // note: this is called fairly often(every 60 ms when char is talking)
   // do not perform heavy operations here
   QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
-  if (ao_app->get_font_property("message_outline", fonts_ini) == 1)
+  if (chatbox_message_outline)
     vp_message_format.setTextOutline(QPen(Qt::black, 1));
   else
     vp_message_format.setTextOutline(Qt::NoPen);
@@ -1450,18 +1455,17 @@ void Courtroom::chat_tick()
 
       ui_vp_message->textCursor().insertText(f_character, vp_message_format);
     }
-    else if (ao_app->read_theme_ini("enable_highlighting", cc_config_ini) == "true")
+    else if (chatbox_message_enable_highlighting)
     {
       bool highlight_found = false;
       bool render_character = true;
       // render_character should only be false if the character is a highlight
       // character specifically marked as a character that should not be
       // rendered.
-      QVector<QStringList> f_vec = ao_app->get_highlight_colors();
       if (m_color_stack.isEmpty())
         m_color_stack.push("");
 
-      for (const auto &col : f_vec)
+      for (const auto &col : chatbox_message_highlight_colors)
       {
         if (f_character == col[0][0] && m_string_color != col[1])
         {
@@ -1485,14 +1489,13 @@ void Courtroom::chat_tick()
 
       QString m_future_string_color = m_string_color;
 
-      for (const auto &col : f_vec)
+      for (const auto &col : chatbox_message_highlight_colors)
       {
         if (f_character == col[0][1] && !highlight_found)
         {
           if (m_color_stack.size() > 1)
             m_color_stack.pop();
           m_future_string_color = m_color_stack.top();
-          highlight_found = true;
           render_character = (col[2] != "0");
           break;
         }
