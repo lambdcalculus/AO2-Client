@@ -73,6 +73,7 @@ void DRTextEdit::on_text_changed()
   // QT's textChanged signal as well.
   if (m_status == Status::InProgress)
     return;
+
   m_status = Status::InProgress;
 
   refresh_horizontal_alignment();

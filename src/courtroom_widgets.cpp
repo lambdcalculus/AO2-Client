@@ -26,6 +26,7 @@ void Courtroom::create_widgets()
   keepalive_timer->start(60000);
 
   chat_tick_timer = new QTimer(this);
+  chat_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
 
   text_delay_timer = new QTimer(this);
   text_delay_timer->setSingleShot(true);
