@@ -911,8 +911,6 @@ void Courtroom::handle_chatmessage_2() // handles IC
     set_scene();
   }
 
-  set_text_color();
-
   int emote_mod = m_chatmessage[CMEmoteModifier].toInt();
 
   if (m_chatmessage[CMFlipState].toInt() == 1)
