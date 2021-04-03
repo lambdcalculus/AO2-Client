@@ -1115,6 +1115,9 @@ void Courtroom::update_ic_log(bool p_reset_log)
 
   if (p_reset_log)
   {
+    // Turn off auto align. That is because we are going to be performing a lot of text change operations
+    // but we don't necessarily care the intermediate states are not aligned
+    ui_ic_chatlog->set_auto_align(false);
     // we need all recordings
     QQueue<DR::ChatRecord> new_queue;
     while (!m_ic_record_list.isEmpty())
@@ -1279,6 +1282,12 @@ void Courtroom::update_ic_log(bool p_reset_log)
   {
     ui_ic_chatlog->moveCursor(move_type);
     vscrollbar->setValue(chatlog_scrolldown ? vscrollbar->maximum() : vscrollbar->minimum());
+  }
+
+  if (p_reset_log)
+  {
+    // We are done updating the IC chat log, now do all alignment computations
+    ui_ic_chatlog->set_auto_align(true);
   }
 }
 
@@ -1522,7 +1531,6 @@ void Courtroom::chat_tick()
         blip_pos = 0;
 
         // play blip
-        //        m_blip_player->play();
         m_blips_player->blip_tick();
       }
 

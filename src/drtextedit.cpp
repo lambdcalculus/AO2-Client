@@ -25,6 +25,22 @@ bool DRTextEdit::get_outline()
   return this->m_outline;
 }
 
+bool DRTextEdit::get_auto_align()
+{
+  return this->m_auto_align;
+}
+
+void DRTextEdit::set_auto_align(bool new_auto_align)
+{
+  if (new_auto_align == m_auto_align)
+    return;
+  m_auto_align = new_auto_align;
+
+  if (m_auto_align)
+    on_text_changed();
+  return;
+}
+
 void DRTextEdit::set_vertical_alignment(Qt::Alignment p_align)
 {
   switch (p_align)
@@ -69,6 +85,9 @@ Qt::Alignment DRTextEdit::get_horizontal_alignment()
 
 void DRTextEdit::on_text_changed()
 {
+  if (!m_auto_align)
+    return;
+
   // We need to "lock" access to on_text_changed. That is because the refresh methods trigger
   // QT's textChanged signal as well.
   if (m_status == Status::InProgress)

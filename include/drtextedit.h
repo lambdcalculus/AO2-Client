@@ -12,10 +12,12 @@ public:
   DRTextEdit(QWidget *p_parent);
 
   bool get_outline();
+  bool get_auto_align();
   Qt::Alignment get_vertical_alignment();
   Qt::Alignment get_horizontal_alignment();
 
   void set_outline(bool p_outline);
+  void set_auto_align(bool new_auto_align);
   void set_vertical_alignment(Qt::Alignment p_align);
   void set_horizontal_alignment(Qt::Alignment p_align);
 
@@ -30,6 +32,7 @@ private:
     InProgress,
   };
   Status m_status = Status::Done;
+  bool m_auto_align = true;
 
   int current_document_blocks = 0;
   int current_document_height = 0;
