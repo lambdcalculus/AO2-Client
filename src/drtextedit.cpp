@@ -69,6 +69,8 @@ Qt::Alignment DRTextEdit::get_horizontal_alignment()
 
 void DRTextEdit::on_text_changed()
 {
+  // We need to "lock" access to on_text_changed. That is because the refresh methods trigger
+  // QT's textChanged signal as well.
   if (m_status == Status::InProgress)
     return;
   m_status = Status::InProgress;
@@ -82,25 +84,44 @@ void DRTextEdit::on_text_changed()
 
 void DRTextEdit::refresh_horizontal_alignment()
 {
-  // Do computations to align text horizontally
+  // This stores the number of blocks. We use blocks here as Qt makes its horizontal
+  // alignment based on blocks (rather than apparent line breaks/places where words wrap).
+  int new_document_blocks = document()->blockCount();
+  if (document()->toPlainText().isEmpty())
+  {
+    // Qt is very special and does not set this to 0 for empty documents.
+    current_document_blocks = 0;
+    // We also don't need to do any adjusting for empty documents, so return immediately
+    return;
+  }
+  // If we have not changed the number of blocks in the document with this new incoming text change,
+  // We do not need to update anything, so we exit early.
+  if (new_document_blocks == current_document_blocks)
+    return;
+
+  // Otherwise, we have changed the number of blocks. By induction only the current block needs to be
+  // updated, which is why we can get away with doing this setAlignment once, and right here.
+  // qDebug() << this << document()->toPlainText() << new_document_blocks;
   setAlignment(m_halign);
 }
 
 void DRTextEdit::refresh_vertical_alignment()
 {
   // This stores the total height of the totality of the text saved.
-  int new_text_height = document()->size().height();
+  int new_document_height = document()->size().height();
   if (document()->toPlainText().isEmpty())
   {
     // Qt is very special and does not set this to 0 for empty documents.
-    new_text_height = 0;
+    current_document_height = 0;
+    // We also don't need to do any adjusting for empty documents, so return immediately
+    return;
   }
-  // If we have not changed the document height since the last time the text was updated
+  // If we have not changed the document height with this new incoming text change,
   // We do not need to update anything, so we exit early.
-  if (new_text_height == current_document_height)
+  if (new_document_height == current_document_height)
     return;
 
-  current_document_height = new_text_height;
+  current_document_height = new_document_height;
 
   // The way we will simulate vertical alignment is by adjusting the top margin to simulate
   // center alignment, or bottom alignment.
@@ -108,10 +129,10 @@ void DRTextEdit::refresh_vertical_alignment()
   switch (m_valign)
   {
   case Qt::AlignVCenter:
-    top_margin = (height() - new_text_height) / 2;
+    top_margin = (height() - new_document_height) / 2;
     break;
   case Qt::AlignBottom:
-    top_margin = (height() - new_text_height);
+    top_margin = (height() - new_document_height);
     break;
   default:
     break;
