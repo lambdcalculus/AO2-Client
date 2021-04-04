@@ -331,9 +331,6 @@ private:
   //////////////
   QScrollArea *note_scroll_area = nullptr;
 
-  // delay before chat messages starts ticking
-  QTimer *text_delay_timer = nullptr;
-
   // delay before sfx plays
   QTimer *sfx_delay_timer = nullptr;
 
@@ -693,7 +690,7 @@ public slots:
   void mod_called(QString p_ip);
 
 private slots:
-  void start_chat_ticking();
+  void setup_chat();
   void play_sfx();
 
   void chat_tick();

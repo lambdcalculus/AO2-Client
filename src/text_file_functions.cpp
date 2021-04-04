@@ -800,16 +800,6 @@ int AOApplication::get_sfx_delay(QString p_char, int p_emote)
     return f_result.toInt();
 }
 
-int AOApplication::get_text_delay(QString p_char, QString p_emote)
-{
-  QString f_result = read_char_ini(p_char, p_emote, "[TextDelay]", "END_OF_FILE");
-
-  if (f_result == "")
-    return -1;
-  else
-    return f_result.toInt();
-}
-
 bool AOApplication::get_blank_blip()
 {
   return config->blank_blips_enabled();

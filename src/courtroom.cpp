@@ -938,6 +938,8 @@ void Courtroom::handle_chatmessage_3()
 {
   qDebug() << "handle_chatmessage_3";
 
+  setup_chat();
+
   int f_evi_id = m_chatmessage[CMEvidenceId].toInt();
   QString f_side = m_chatmessage[CMPosition];
 
@@ -1098,7 +1100,8 @@ void Courtroom::handle_chatmessage_3()
     }
   }
 
-  start_chat_ticking();
+  chat_tick_timer->start(ao_app->get_chat_tick_interval());
+  chat_tick();
 }
 
 void Courtroom::on_chat_config_changed()
@@ -1328,7 +1331,6 @@ void Courtroom::play_preanim()
   QString f_char = m_chatmessage[CMChrName];
   // all time values in char.inis are multiplied by a constant(time_mod) to get
   // the actual time
-  int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
   int sfx_delay = m_chatmessage[CMSoundDelay].toInt() * 60;
 
   sfx_delay_timer->start(sfx_delay);
@@ -1342,9 +1344,6 @@ void Courtroom::play_preanim()
     if (ui_vp_player_char->play_pre(f_char, f_preanim))
     {
       qDebug() << "Playing" << f_anim_path;
-
-      if (text_delay >= 0)
-        text_delay_timer->start(text_delay);
 
       // finished
       return;
@@ -1369,7 +1368,7 @@ void Courtroom::realization_done()
   ui_vp_effect->stop();
 }
 
-void Courtroom::start_chat_ticking()
+void Courtroom::setup_chat()
 {
   ui_vp_message->clear();
 
@@ -1396,7 +1395,6 @@ void Courtroom::start_chat_ticking()
   chatbox_message_outline = (ao_app->get_font_property("message_outline", fonts_ini) == 1);
   chatbox_message_enable_highlighting = (ao_app->read_theme_ini("enable_highlighting", cc_config_ini) == "true");
   chatbox_message_highlight_colors = ao_app->get_highlight_colors();
-  chat_tick_timer->start(ao_app->get_chat_tick_interval());
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CMChrName]);
 
@@ -1405,14 +1403,12 @@ void Courtroom::start_chat_ticking()
 
   // means text is currently ticking
   text_state = 1;
-  chat_tick();
 }
 
 void Courtroom::chat_tick()
 {
   // note: this is called fairly often(every 60 ms when char is talking)
   // do not perform heavy operations here
-  qDebug() << QTime::currentTime();
   QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
   if (chatbox_message_outline)
     vp_message_format.setTextOutline(QPen(Qt::black, 1));
@@ -1540,9 +1536,7 @@ void Courtroom::chat_tick()
         blip_pos = 0;
 
         // play blip
-        qDebug() << "START" << QTime::currentTime();
         m_blips_player->blip_tick();
-        qDebug() << "END" << QTime::currentTime();
       }
 
       ++blip_pos;

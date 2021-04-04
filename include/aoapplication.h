@@ -383,9 +383,6 @@ public:
   // Returns the value of chat from the specific p_char's ini file
   QString get_chat(QString p_char);
 
-  // Not in use
-  int get_text_delay(QString p_char, QString p_emote);
-
   // Returns the name of p_char
   QString get_char_name(QString p_char);
 

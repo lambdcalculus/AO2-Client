@@ -28,9 +28,6 @@ void Courtroom::create_widgets()
   chat_tick_timer = new QTimer(this);
   chat_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
 
-  text_delay_timer = new QTimer(this);
-  text_delay_timer->setSingleShot(true);
-
   sfx_delay_timer = new QTimer(this);
   sfx_delay_timer->setSingleShot(true);
 
@@ -234,7 +231,6 @@ void Courtroom::connect_widgets()
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
 
-  connect(text_delay_timer, SIGNAL(timeout()), this, SLOT(start_chat_ticking()));
   connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
 
   connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
