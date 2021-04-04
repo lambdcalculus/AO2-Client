@@ -938,8 +938,6 @@ void Courtroom::handle_chatmessage_3()
 {
   qDebug() << "handle_chatmessage_3";
 
-  start_chat_ticking();
-
   int f_evi_id = m_chatmessage[CMEvidenceId].toInt();
   QString f_side = m_chatmessage[CMPosition];
 
@@ -1099,6 +1097,8 @@ void Courtroom::handle_chatmessage_3()
       break;
     }
   }
+
+  start_chat_ticking();
 }
 
 void Courtroom::on_chat_config_changed()
@@ -1318,7 +1318,7 @@ void Courtroom::play_preanim()
 {
   QString f_preanim = m_chatmessage[CMPreAnim];
 
-  if (f_preanim == "-")
+  if (f_preanim.trimmed() == "-")
   {
     // no animation, continue
     preanim_done();
@@ -1405,12 +1405,14 @@ void Courtroom::start_chat_ticking()
 
   // means text is currently ticking
   text_state = 1;
+  chat_tick();
 }
 
 void Courtroom::chat_tick()
 {
   // note: this is called fairly often(every 60 ms when char is talking)
   // do not perform heavy operations here
+  qDebug() << QTime::currentTime();
   QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
   if (chatbox_message_outline)
     vp_message_format.setTextOutline(QPen(Qt::black, 1));
@@ -1538,7 +1540,9 @@ void Courtroom::chat_tick()
         blip_pos = 0;
 
         // play blip
+        qDebug() << "START" << QTime::currentTime();
         m_blips_player->blip_tick();
+        qDebug() << "END" << QTime::currentTime();
       }
 
       ++blip_pos;
