@@ -127,7 +127,7 @@ void AOConfigPrivate::read_file()
   log_max_lines = cfg.value("chatlog_limit", 200).toInt();
   log_is_topdown = cfg.value("chatlog_scrolldown", true).toBool();
   log_display_timestamp = cfg.value("chatlog_display_timestamp", false).toBool();
-  log_display_empty_messages = cfg.value("log_display_empty_messages", false).toBool();
+  log_display_empty_messages = cfg.value("chatlog_display_empty_messages", false).toBool();
   log_format_use_newline = cfg.value("chatlog_newline", false).toBool();
   log_display_music_switch = cfg.value("music_change_log", true).toBool();
   log_is_recording = cfg.value("enable_logging", true).toBool();
