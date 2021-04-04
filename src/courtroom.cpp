@@ -1316,9 +1316,16 @@ void Courtroom::append_system_text(QString p_showname, QString p_line)
 
 void Courtroom::play_preanim()
 {
-  QString f_char = m_chatmessage[CMChrName];
   QString f_preanim = m_chatmessage[CMPreAnim];
 
+  if (f_preanim == "-")
+  {
+    // no animation, continue
+    preanim_done();
+    return;
+  }
+
+  QString f_char = m_chatmessage[CMChrName];
   // all time values in char.inis are multiplied by a constant(time_mod) to get
   // the actual time
   int text_delay = ao_app->get_text_delay(f_char, f_preanim) * time_mod;
