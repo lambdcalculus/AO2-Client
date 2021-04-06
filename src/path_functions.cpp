@@ -1,6 +1,8 @@
 #include "aoapplication.h"
 #include "courtroom.h"
+#include "drpather.h"
 #include "file_functions.h"
+
 #include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
@@ -27,7 +29,7 @@ QString AOApplication::get_base_path()
 #ifdef BASE_OVERRIDE
     base_path = base_override;
 #else
-    base_path = QDir::currentPath() + "/base/";
+    base_path = DRPather::get_application_path() + "/base/";
 #endif
   }
   return base_path;

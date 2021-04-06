@@ -9,7 +9,6 @@
 
 #include <QBrush>
 #include <QDebug>
-#include <QDir>
 #include <QFileDialog>
 #include <QFont>
 #include <QGraphicsOpacityEffect>

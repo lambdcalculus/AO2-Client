@@ -7,20 +7,19 @@
 #include <QStandardPaths>
 
 #if defined Q_OS_MACOS
-void DRPather::correctCurrentPath()
+QString DRPather::get_application_path()
 {
   QString oldPath = QDir::currentPath();
   QDir l_mac_path(QCoreApplication::applicationDirPath());
   for (int i = 0; i < 3; ++i) // equivalent of "/../../.."
     l_mac_path.cdUp();
-  QDir::setCurrent(l_mac_path.canonicalPath());
-  return;
+  return l_mac_path.canonicalPath();
 }
 #else
-void DRPather::correctCurrentPath()
+QString DRPather::get_application_path()
 {
   // For other operating systems (Windows, Linux, etc.) the directory is properly set.
-  return;
+  return QDir::currentPath();
 }
 
 #endif

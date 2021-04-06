@@ -9,14 +9,16 @@ class DRPather : QObject
 public:
   DRPather();
 
-  /* @brief Sets the current path (as given by QDir::currentPath()) to be the directory containing the base folder.
+  /* @brief Gets the directory containing the base folder and the application.
    *
-   * This function makes running QDir::currentPath() system-independent. The only edge case really is MacOS, where
-   * due to the way applications are bundled, makes QDir::currentPath() return nonsensical values by default.
+   * This function is a system-independent QDir::currentPath() system-independent. The only edge case really is MacOS,
+   * where due to the way applications are bundled, makes QDir::currentPath() return nonsensical values by default and
+   * QCoreApplication::applicationDirPath() returns the directory to the internal executable of the bundle rather
+   * than the bundle location itself.
    *
-   * @return True if the current path was changed successfully, false if it remained the same.
+   * @return Directory.
    */
-  static void correctCurrentPath();
+  static QString get_application_path();
 };
 
 #endif // DRPATHER_H

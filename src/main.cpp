@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
   }
 #endif
 
-  DRPather::correctCurrentPath();
   AOApplication app(argc, argv);
 
   app.construct_lobby();
