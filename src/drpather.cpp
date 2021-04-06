@@ -1,7 +1,7 @@
-#include "drpather.h"
-
 #include "courtroom.h"
+#include "drpather.h"
 #include "file_functions.h"
+
 #include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
@@ -9,7 +9,6 @@
 #if defined Q_OS_MACOS
 QString DRPather::get_application_path()
 {
-  QString oldPath = QDir::currentPath();
   QDir l_mac_path(QCoreApplication::applicationDirPath());
   for (int i = 0; i < 3; ++i) // equivalent of "/../../.."
     l_mac_path.cdUp();
