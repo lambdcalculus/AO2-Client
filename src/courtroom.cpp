@@ -936,7 +936,8 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
 void Courtroom::handle_chatmessage_3()
 {
-  qDebug() << "handle_chatmessage_3";
+  qDebug() << "3 start" << QTime::currentTime();
+  // qDebug() << "handle_chatmessage_3";
 
   setup_chat();
 
@@ -1106,6 +1107,7 @@ void Courtroom::handle_chatmessage_3()
   }
 
   chat_tick_timer->start(ao_app->get_chat_tick_interval());
+  // qDebug() << "3 end" << QTime::currentTime();
 }
 
 void Courtroom::on_chat_config_changed()
@@ -1572,7 +1574,7 @@ void Courtroom::hide_testimony()
 void Courtroom::play_sfx()
 {
   QString sfx_name = m_chatmessage[CMSoundName];
-  if (sfx_name == "1")
+  if (sfx_name == "1" || sfx_name == "0")
     return;
 
   m_effects_player->play(sfx_name);
