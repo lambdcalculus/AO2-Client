@@ -1319,6 +1319,11 @@ void Courtroom::append_system_text(QString p_showname, QString p_line)
 
 void Courtroom::play_preanim()
 {
+  // all time values in char.inis are multiplied by a constant(time_mod) to get
+  // the actual time
+  int sfx_delay = m_chatmessage[CMSoundDelay].toInt() * 60;
+  sfx_delay_timer->start(sfx_delay);
+
   QString f_preanim = m_chatmessage[CMPreAnim];
 
   if (f_preanim.trimmed() == "-")
@@ -1329,12 +1334,6 @@ void Courtroom::play_preanim()
   }
 
   QString f_char = m_chatmessage[CMChrName];
-  // all time values in char.inis are multiplied by a constant(time_mod) to get
-  // the actual time
-  int sfx_delay = m_chatmessage[CMSoundDelay].toInt() * 60;
-
-  sfx_delay_timer->start(sfx_delay);
-
   // set state
   anim_state = 1;
 
