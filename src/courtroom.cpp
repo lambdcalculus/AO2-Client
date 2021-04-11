@@ -984,20 +984,25 @@ void Courtroom::handle_chatmessage_3()
   const QString f_emote = m_chatmessage[CMEmote];
   const bool l_hide_emote = (f_emote == "../../misc/blank");
 
-  ui_vp_showname_image->show();
+  QString path;
+  if (!chatmessage_is_empty && ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")
+  {
+    // Asset lookup order
+    // 1. In the theme folder (gamemode-timeofday/main/default), in the character
+    // folder, look for "showname" + extensions in `exts` in order
+    // 2. In the character folder, look for
+    // "showname" + extensions in `exts` in order
 
-  // Asset lookup order
-  // 1. In the theme folder (gamemode-timeofday/main/default), in the character
-  // folder, look for "showname" + extensions in `exts` in order
-  // 2. In the character folder, look for
-  // "showname" + extensions in `exts` in order
+    path = ao_app->find_theme_asset_path("characters/" + f_char + "/showname", {".png"});
+    if (path.isEmpty())
+      path = ao_app->find_asset_path({ao_app->get_character_path(f_char, "showname")}, {".png"});
+  }
 
-  QString path = ao_app->find_theme_asset_path("characters/" + f_char + "/showname", {".png"});
-  if (path.isEmpty())
-    path = ao_app->find_asset_path({ao_app->get_character_path(f_char, "showname")}, {".png"});
-
-  if (!path.isEmpty() && !chatmessage_is_empty &&
-      ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")
+  // Path may be empty if
+  // 1. Chat message was empty
+  // 2. Enable showname images was false
+  // 3. No valid showname image was found
+  if (!path.isEmpty())
   {
     ui_vp_showname->hide();
     ui_vp_showname_image->set_image_from_path(path);
@@ -1101,7 +1106,6 @@ void Courtroom::handle_chatmessage_3()
   }
 
   chat_tick_timer->start(ao_app->get_chat_tick_interval());
-  chat_tick();
 }
 
 void Courtroom::on_chat_config_changed()
