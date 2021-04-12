@@ -720,7 +720,10 @@ void Courtroom::handle_acknowledged_ms()
   ui_sfx_list->setCurrentItem(ui_sfx_list->item(0)); // prevents undefined errors
 
   m_shout_state = 0;
+
+  qDebug() << "Shout start" << QTime::currentTime();
   draw_shout_buttons();
+  qDebug() << "Shout end" << QTime::currentTime();
 
   m_effect_state = 0;
   draw_effect_buttons();
@@ -729,6 +732,7 @@ void Courtroom::handle_acknowledged_ms()
   draw_judge_wtce_buttons();
 
   is_presenting_evidence = false;
+
   ui_evidence_present->set_image("present_disabled.png");
 }
 
@@ -803,12 +807,6 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   }
 
   QString f_message = f_showname + ": " + m_chatmessage[CMMessage] + "\n";
-
-  /*
-  if (f_message == previous_ic_message && is_system_speaking == false)
-    return;
-  previous_ic_message = f_message;
-    */
 
   m_effects_player->stop_all();
 
@@ -936,11 +934,9 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
 void Courtroom::handle_chatmessage_3()
 {
-  qDebug() << "3 start" << QTime::currentTime();
-  // qDebug() << "handle_chatmessage_3";
+  qDebug() << "handle_chatmessage_3";
 
   setup_chat();
-
   int f_evi_id = m_chatmessage[CMEvidenceId].toInt();
   QString f_side = m_chatmessage[CMPosition];
 
@@ -1046,30 +1042,7 @@ void Courtroom::handle_chatmessage_3()
   QString overlay_name = overlay.at(0);
   QString overlay_sfx = overlay.at(1);
 
-  bool do_it = ao_app->read_theme_ini("non_vanilla_effects", cc_config_ini) == "true";
-
-  if (effect == 1 && !do_it)
-  {
-    if (overlay_sfx == "")
-      overlay_sfx = ao_app->get_sfx("effect_flash");
-    m_effects_player->play(overlay_sfx);
-    ui_vp_effect->set_play_once(true);
-    if (overlay_name == "")
-      overlay_name = "effect_flash";
-    ui_vp_effect->play(overlay_name, f_char);
-    realization_timer->start(60);
-  }
-  //  else if (effect == 2)
-  //  {
-  //    if (overlay_sfx == "")
-  //      overlay_sfx = ao_app->get_sfx("effect_gloom");
-  //    m_sfx_player->play(overlay_sfx);
-  //    ui_vp_effect->set_play_once(false);
-  //    if (overlay_name == "")
-  //      overlay_name = "effect_gloom";
-  //    ui_vp_effect->play(overlay_name, f_char);
-  //  }
-  else if (do_it && effect > 0 && effect <= ui_effects.size() && effect_names.size() > 0) // check to prevent crashing
+  if (effect > 0 && effect <= ui_effects.size() && effect_names.size() > 0) // check to prevent crashing
   {
     QString s_eff = effect_names.at(effect - 1);
     QStringList f_eff = ao_app->get_effect(effect);
@@ -1107,7 +1080,6 @@ void Courtroom::handle_chatmessage_3()
   }
 
   chat_tick_timer->start(ao_app->get_chat_tick_interval());
-  // qDebug() << "3 end" << QTime::currentTime();
 }
 
 void Courtroom::on_chat_config_changed()
@@ -1982,8 +1954,10 @@ void Courtroom::draw_shout_buttons()
 {
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
+    // qDebug() << "Shout start" << QTime::currentTime();
     QString shout_file = shout_names.at(i) + ".png";
     ui_shouts[i]->set_image(shout_file);
+    // qDebug() << "Shout after set_image" << QTime::currentTime();
     if (ao_app->find_theme_asset_path(shout_file).isEmpty())
       ui_shouts[i]->setText(shout_names.at(i));
     else
