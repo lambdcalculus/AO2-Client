@@ -720,10 +720,7 @@ void Courtroom::handle_acknowledged_ms()
   ui_sfx_list->setCurrentItem(ui_sfx_list->item(0)); // prevents undefined errors
 
   m_shout_state = 0;
-
-  qDebug() << "Shout start" << QTime::currentTime();
   draw_shout_buttons();
-  qDebug() << "Shout end" << QTime::currentTime();
 
   m_effect_state = 0;
   draw_effect_buttons();
@@ -1521,6 +1518,8 @@ void Courtroom::chat_tick()
 
     ++tick_pos;
   }
+
+  ui_vp_message->repaint();
 }
 
 void Courtroom::show_testimony()
@@ -1954,10 +1953,8 @@ void Courtroom::draw_shout_buttons()
 {
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    // qDebug() << "Shout start" << QTime::currentTime();
     QString shout_file = shout_names.at(i) + ".png";
     ui_shouts[i]->set_image(shout_file);
-    // qDebug() << "Shout after set_image" << QTime::currentTime();
     if (ao_app->find_theme_asset_path(shout_file).isEmpty())
       ui_shouts[i]->setText(shout_names.at(i));
     else
