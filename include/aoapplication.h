@@ -114,6 +114,16 @@ public:
   QString get_background_path(QString p_file);
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
+
+  /**
+   * @brief Check the path for various known exploits.
+   *
+   * In order:
+   * - Directory traversal (most commonly: "../" jumps)
+   * @param p_file The path to check.
+   * @return A sanitized path. If any check fails, the path returned is an empty string. The sanitized path does not
+   * necessarily exist.
+   */
   QString sanitize_path(QString p_file);
 
   /**
