@@ -71,6 +71,7 @@ private:
 
   // general
   QLineEdit *w_username = nullptr;
+  QLineEdit *w_showname = nullptr;
   QLineEdit *w_callwords = nullptr;
   QCheckBox *w_server_alerts = nullptr;
 
@@ -117,6 +118,11 @@ private:
   QLabel *w_blip_value = nullptr;
   QSpinBox *w_blip_rate = nullptr;
   QCheckBox *w_blank_blips = nullptr;
+
+private slots:
+  void username_editing_finished();
+  void showname_editing_finished();
+  void callwords_editing_finished();
 };
 
 #endif // AOCONFIGPANEL_H

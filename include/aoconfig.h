@@ -23,6 +23,7 @@ public:
   // getters
   bool autosave() const;
   QString username() const;
+  QString showname() const;
   QString callwords() const;
   bool server_alerts_enabled() const;
   bool discord_presence() const;
@@ -65,6 +66,7 @@ public slots:
 public slots:
   void set_autosave(bool p_enabled);
   void set_username(QString p_string);
+  void set_showname(QString p_string);
   void set_callwords(QString p_string);
   void set_server_alerts(bool p_enabled);
   void set_discord_presence(const bool p_enabled);
@@ -103,6 +105,7 @@ public slots:
 signals:
   void autosave_changed(bool);
   void username_changed(QString);
+  void showname_changed(QString);
   void callwords_changed(QString);
   void server_alerts_changed(bool);
   void discord_presence_changed(bool);

@@ -131,6 +131,20 @@ public:
   // sets the character position
   void set_character_position(QString p_pos);
 
+  /**
+   * @brief Send a OOC packet (CT) out to the server.
+   * @param ooc_name The username.
+   * @param ooc_message The message.
+   */
+  void send_ooc_packet(QString ooc_name, QString ooc_message);
+
+  /**
+   * @brief Send a packet to set the showname of the user to
+   * the server.
+   * @param p_showname The showname.
+   */
+  void send_showname_packet(QString p_showname);
+
   // called when a DONE#% from the server was received
   void done_received();
 
@@ -324,6 +338,8 @@ private:
   // used to determine how often blips sound
   int blip_pos = 0;
   int rainbow_counter = 0;
+  QString m_last_showname;
+  bool m_showname_sent = false;
   bool rainbow_appended = false;
   bool note_shown = false;
   bool contains_add_button = false;
@@ -505,10 +521,11 @@ private:
   QListWidget *ui_music_list = nullptr;
   QListWidget *ui_sfx_list = nullptr;
 
+  QLineEdit *ui_ic_chat_name = nullptr;
   QLineEdit *ui_ic_chat_message = nullptr;
 
-  QLineEdit *ui_ooc_chat_message = nullptr;
   QLineEdit *ui_ooc_chat_name = nullptr;
+  QLineEdit *ui_ooc_chat_message = nullptr;
 
   QLineEdit *ui_music_search = nullptr;
 
@@ -695,9 +712,12 @@ private slots:
 
   void on_mute_list_item_changed(QListWidgetItem *p_item);
 
+  void on_showname_changed();
+  void on_chat_name_editing_finished();
   void on_chat_return_pressed();
   void on_chat_config_changed();
 
+  void on_ooc_name_editing_finished();
   void on_ooc_return_pressed();
 
   void on_music_search_edited(QString p_text);

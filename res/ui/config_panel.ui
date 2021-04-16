@@ -46,7 +46,7 @@
        <item row="0" column="1">
         <widget class="QLineEdit" name="username"/>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0">
         <widget class="QLabel" name="callwords_label">
          <property name="text">
           <string>Callwords:</string>
@@ -56,21 +56,21 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="2" column="1">
         <widget class="QLineEdit" name="callwords">
          <property name="placeholderText">
           <string>Separate words by space</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
+       <item row="3" column="0" colspan="2">
         <widget class="Line" name="line_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="3" column="0" colspan="2">
+       <item row="4" column="0" colspan="2">
         <widget class="QGroupBox" name="discord_presence">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -108,7 +108,14 @@
          </layout>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="5" column="0">
+        <widget class="QLabel" name="server_alerts_label">
+         <property name="text">
+          <string>Server alerts:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
         <widget class="QCheckBox" name="server_alerts">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -121,12 +128,15 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="server_alerts_label">
+       <item row="1" column="0">
+        <widget class="QLabel" name="showname_label">
          <property name="text">
-          <string>Server alerts:</string>
+          <string>Showname:</string>
          </property>
         </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="showname"/>
        </item>
       </layout>
      </widget>

@@ -31,6 +31,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
 
   // general
   w_username = AO_GUI_WIDGET(QLineEdit, "username");
+  w_showname = AO_GUI_WIDGET(QLineEdit, "showname");
   w_callwords = AO_GUI_WIDGET(QLineEdit, "callwords");
   w_server_alerts = AO_GUI_WIDGET(QCheckBox, "server_alerts");
   w_discord_presence = AO_GUI_WIDGET(QGroupBox, "discord_presence");
@@ -85,6 +86,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // input
   connect(m_config, SIGNAL(autosave_changed(bool)), w_autosave, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(username_changed(QString)), w_username, SLOT(setText(QString)));
+  connect(m_config, SIGNAL(showname_changed(QString)), w_showname, SLOT(setText(QString)));
   connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords, SLOT(setText(QString)));
   connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(discord_presence_changed(bool)), w_discord_presence, SLOT(setChecked(bool)));
@@ -133,8 +135,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(w_save, SIGNAL(clicked()), m_config, SLOT(save_file()));
   connect(w_autosave, SIGNAL(toggled(bool)), m_config, SLOT(set_autosave(bool)));
-  connect(w_username, SIGNAL(textEdited(QString)), m_config, SLOT(set_username(QString)));
-  connect(w_callwords, SIGNAL(textEdited(QString)), m_config, SLOT(set_callwords(QString)));
+  connect(w_username, SIGNAL(editingFinished()), this, SLOT(username_editing_finished()));
+  connect(w_showname, SIGNAL(editingFinished()), this, SLOT(showname_editing_finished()));
+  connect(w_callwords, SIGNAL(editingFinished()), this, SLOT(callwords_editing_finished()));
   connect(w_server_alerts, SIGNAL(toggled(bool)), m_config, SLOT(set_server_alerts(bool)));
 
   connect(w_discord_presence, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_presence(bool)));
@@ -179,6 +182,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // set values
   w_autosave->setChecked(m_config->autosave());
   w_username->setText(m_config->username());
+  w_showname->setText(m_config->showname());
   w_callwords->setText(m_config->callwords());
   w_server_alerts->setChecked(m_config->server_alerts_enabled());
   w_theme->setCurrentText(m_config->theme());
@@ -446,6 +450,21 @@ void AOConfigPanel::on_music_value_changed(int p_num)
 void AOConfigPanel::on_blip_value_changed(int p_num)
 {
   w_blip_value->setText(QString::number(p_num) + "%");
+}
+
+void AOConfigPanel::username_editing_finished()
+{
+  m_config->set_username(w_username->text());
+}
+
+void AOConfigPanel::showname_editing_finished()
+{
+  m_config->set_showname(w_showname->text());
+}
+
+void AOConfigPanel::callwords_editing_finished()
+{
+  m_config->set_callwords(w_callwords->text());
 }
 
 void AOConfigPanel::on_config_reload_theme_requested()
