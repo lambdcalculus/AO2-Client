@@ -46,6 +46,16 @@
        <item row="0" column="1">
         <widget class="QLineEdit" name="username"/>
        </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="showname_label">
+         <property name="text">
+          <string>Showname:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="showname"/>
+       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="callwords_label">
          <property name="text">
@@ -127,16 +137,6 @@
           <string/>
          </property>
         </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="showname_label">
-         <property name="text">
-          <string>Showname:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="showname"/>
        </item>
       </layout>
      </widget>
