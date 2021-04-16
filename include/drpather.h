@@ -1,14 +1,10 @@
-#ifndef DRPATHER_H
-#define DRPATHER_H
+#pragma once
 
-#include <QObject>
+#include <QString>
 
-class DRPather : QObject
+class DRPather
 {
-  Q_OBJECT
 public:
-  DRPather();
-
   /* @brief Gets the directory containing the base folder and the application.
    *
    * This function is a system-independent QDir::currentPath() system-independent. The only edge case really is MacOS,
@@ -20,5 +16,3 @@ public:
    */
   static QString get_application_path();
 };
-
-#endif // DRPATHER_H
