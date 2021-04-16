@@ -1,6 +1,9 @@
 #include "aoapplication.h"
+
 #include "courtroom.h"
+#include "drpather.h"
 #include "file_functions.h"
+
 #include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
@@ -11,26 +14,13 @@
 // depends. On Mac, it can be toggled. So, should the time ever come to that,
 // manually define CASE_SENSITIVE_FILESYSTEM if you're working on a Mac that
 // has, well, a case-sensitive filesystem.
-#if (defined(LINUX) || defined(__linux__))
+#ifdef Q_OS_LINUX
 #define CASE_SENSITIVE_FILESYSTEM
 #endif
 
-#ifdef BASE_OVERRIDE
-#include "base_override.h"
-#endif
-QString base_path = "";
-
 QString AOApplication::get_base_path()
 {
-  if (base_path == "")
-  {
-#ifdef BASE_OVERRIDE
-    base_path = base_override;
-#else
-    base_path = QDir::currentPath() + "/base/";
-#endif
-  }
-  return base_path;
+  return DRPather::get_application_path() + "/base/";
 }
 
 QString AOApplication::get_data_path()
@@ -92,7 +82,7 @@ QString Courtroom::get_background_path(QString p_file)
 #ifndef CASE_SENSITIVE_FILESYSTEM
 QString AOApplication::get_case_sensitive_path(QString p_file)
 {
-  return p_file;
+  return p_file.replace("//", "/");
 }
 #else
 QString AOApplication::get_case_sensitive_path(QString p_file)
