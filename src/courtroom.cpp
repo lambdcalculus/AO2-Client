@@ -309,7 +309,7 @@ void Courtroom::handle_music_anim()
   QFont f_font = ui_vp_music_name->font();
   QFontMetrics fm(f_font);
   int dist;
-  if (ao_app->read_theme_ini("enable_const_music_speed", cc_config_ini) == "true")
+  if (ao_app->read_theme_ini_bool("enable_const_music_speed", cc_config_ini))
     dist = res_b.width;
   else
     dist = fm.horizontalAdvance(ui_vp_music_name->toPlainText());
@@ -979,7 +979,7 @@ void Courtroom::handle_chatmessage_3()
   const bool l_hide_emote = (f_emote == "../../misc/blank");
 
   QString path;
-  if (!chatmessage_is_empty && ao_app->read_theme_ini("enable_showname_image", cc_config_ini) == "true")
+  if (!chatmessage_is_empty && ao_app->read_theme_ini_bool("enable_showname_image", cc_config_ini))
   {
     // Asset lookup order
     // 1. In the theme folder (gamemode-timeofday/main/default), in the character
@@ -1367,7 +1367,7 @@ void Courtroom::setup_chat()
 
   // Cache these so chat_tick performs better
   chatbox_message_outline = (ao_app->get_font_property("message_outline", fonts_ini) == 1);
-  chatbox_message_enable_highlighting = (ao_app->read_theme_ini("enable_highlighting", cc_config_ini) == "true");
+  chatbox_message_enable_highlighting = (ao_app->read_theme_ini_bool("enable_highlighting", cc_config_ini));
   chatbox_message_highlight_colors = ao_app->get_highlight_colors();
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CMChrName]);
@@ -2011,7 +2011,7 @@ void Courtroom::on_cycle_clicked()
     break;
   }
 
-  if (ao_app->read_theme_ini("enable_cycle_ding", cc_config_ini) == "true")
+  if (ao_app->read_theme_ini_bool("enable_cycle_ding", cc_config_ini))
     m_system_player->play(ao_app->get_sfx("cycle"));
 
   set_shouts();

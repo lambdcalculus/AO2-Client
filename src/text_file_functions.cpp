@@ -816,3 +816,13 @@ QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
 
   return read_ini(p_identifier, path); // Could be the empty string
 }
+
+bool AOApplication::read_theme_ini_bool(QString p_identifier, QString p_file)
+{
+  return read_theme_ini(p_identifier, p_file) == "true";
+}
+
+int AOApplication::read_theme_ini_int(QString p_identifier, QString p_file)
+{
+  return read_theme_ini(p_identifier, p_file).toInt();
+}

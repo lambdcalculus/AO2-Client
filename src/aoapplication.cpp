@@ -185,19 +185,14 @@ QString AOApplication::get_current_char()
 
 QString AOApplication::sanitize_path(QString p_file)
 {
-  // We want to avoid allowing directories with \..\ or /../, as those allow us to jump
-  // We first check if there are any .. at all
   if (!p_file.contains(".."))
-  {
-    // Don't do expensive check if there are no .. to begin with.
     return p_file;
-  }
-  // Otherwise, there are ..
-  // Check if they are actually referring to a directory, as it is possible
+
   QStringList list = p_file.split(QRegularExpression("[\\/]"));
   while (!list.isEmpty())
     if (list.takeFirst().contains(QRegularExpression("\\.{2,}")))
       return nullptr;
+
   return p_file;
 }
 

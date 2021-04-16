@@ -698,7 +698,7 @@ void Courtroom::set_widgets()
   ui_shout_down->hide();
 
   // courtroom_config.ini necessary + check for crash
-  if (ao_app->read_theme_ini("enable_single_shout", cc_config_ini) == "true" && ui_shouts.size() > 0)
+  if (ao_app->read_theme_ini_bool("enable_single_shout", cc_config_ini) && ui_shouts.size() > 0)
   {
     for (auto &shout : ui_shouts)
       move_widget(shout, "bullet");
@@ -726,7 +726,7 @@ void Courtroom::set_widgets()
   ui_effect_down->set_image("effectdown.png");
   ui_effect_down->hide();
 
-  if (ao_app->read_theme_ini("enable_single_effect", cc_config_ini) == "true" &&
+  if (ao_app->read_theme_ini_bool("enable_single_effect", cc_config_ini) &&
       ui_effects.size() > 0) // check to prevent crashing
   {
     for (auto &effect : ui_effects)
@@ -750,7 +750,7 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_wtce[i], wtce_names[i]);
   }
 
-  if (ao_app->read_theme_ini("enable_single_wtce", cc_config_ini) == "true") // courtroom_config.ini necessary
+  if (ao_app->read_theme_ini_bool("enable_single_wtce", cc_config_ini)) // courtroom_config.ini necessary
   {
     for (auto &wtce : ui_wtce)
       move_widget(wtce, "wtce");
@@ -785,7 +785,7 @@ void Courtroom::set_widgets()
   ui_config_panel->setStyleSheet("");
   ui_note_button->setStyleSheet("");
 
-  if (ao_app->read_theme_ini("enable_button_images", cc_config_ini) == "true")
+  if (ao_app->read_theme_ini_bool("enable_button_images", cc_config_ini))
   {
     // Set files, ask questions later
     // set_image first tries the gamemode-timeofday folder, then the theme
@@ -838,7 +838,7 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_label_images[i], label_images[i].toLower() + "_image");
   }
 
-  if (ao_app->read_theme_ini("enable_label_images", cc_config_ini) == "true")
+  if (ao_app->read_theme_ini_bool("enable_label_images", cc_config_ini))
   {
     for (int i = 0; i < ui_checks.size(); ++i) // loop through checks
     {
@@ -1015,7 +1015,7 @@ int Courtroom::adapt_numbered_items(QVector<T *> &item_vector, QString config_it
   // &item_vector must be a vector of size at least 1!
 
   // Redraw the new correct number of items.
-  int new_item_number = ao_app->read_theme_ini(config_item_number, cc_config_ini).toInt();
+  int new_item_number = ao_app->read_theme_ini_int(config_item_number, cc_config_ini);
   int current_item_number = item_vector.size();
   // Note we use the fact that, if config_item_number is not there,
   // read_theme_ini returns an empty string, which .toInt() would fail to
@@ -1163,7 +1163,7 @@ void Courtroom::load_effects()
     delete_widget(widget);
 
   // And create new effects
-  int effect_number = ao_app->read_theme_ini("effect_number", cc_config_ini).toInt();
+  int effect_number = ao_app->read_theme_ini_int("effect_number", cc_config_ini);
   effects_enabled.resize(effect_number);
   ui_effects.resize(effect_number);
 
@@ -1198,7 +1198,7 @@ void Courtroom::load_free_blocks()
     delete_widget(widget);
 
   // And create new free block buttons
-  int free_block_number = ao_app->read_theme_ini("free_block_number", cc_config_ini).toInt();
+  int free_block_number = ao_app->read_theme_ini_int("free_block_number", cc_config_ini);
   free_blocks_enabled.resize(free_block_number);
   ui_free_blocks.resize(free_block_number);
 
@@ -1230,7 +1230,7 @@ void Courtroom::load_shouts()
     delete_widget(widget);
 
   // And create new shouts
-  int shout_number = ao_app->read_theme_ini("shout_number", cc_config_ini).toInt();
+  int shout_number = ao_app->read_theme_ini_int("shout_number", cc_config_ini);
   shouts_enabled.resize(shout_number);
   ui_shouts.resize(shout_number);
 
@@ -1268,7 +1268,7 @@ void Courtroom::load_wtce()
     delete_widget(widget);
 
   // And create new wtce buttons
-  int wtce_number = ao_app->read_theme_ini("wtce_number", cc_config_ini).toInt();
+  int wtce_number = ao_app->read_theme_ini_int("wtce_number", cc_config_ini);
   wtce_enabled.resize(wtce_number);
   ui_wtce.resize(wtce_number);
 
@@ -1336,7 +1336,7 @@ void Courtroom::set_judge_wtce()
     wtce->hide();
 
   // check if we use a single wtce or multiple
-  const bool is_single_wtce = ao_app->read_theme_ini("enable_single_wtce", cc_config_ini) == "true";
+  const bool is_single_wtce = ao_app->read_theme_ini_bool("enable_single_wtce", cc_config_ini);
 
   // update visibility for next/previous
   ui_wtce_up->setVisible(is_judge && is_single_wtce);

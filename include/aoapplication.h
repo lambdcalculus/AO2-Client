@@ -332,6 +332,10 @@ public:
    */
   QString read_theme_ini(QString p_identifier, QString p_file);
 
+  bool read_theme_ini_bool(QString p_identifier, QString p_file);
+
+  int read_theme_ini_int(QString p_identifier, QString p_file);
+
   // Returns the coordinates of widget with p_identifier from p_file
   QPoint get_button_spacing(QString p_identifier, QString p_file);
 
