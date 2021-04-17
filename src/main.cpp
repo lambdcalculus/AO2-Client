@@ -1,5 +1,6 @@
 #include "aoapplication.h"
 #include "lobby.h"
+#include "networkmanager.h"
 
 int main(int argc, char *argv[])
 {
