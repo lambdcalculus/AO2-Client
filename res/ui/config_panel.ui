@@ -790,7 +790,7 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;font style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/font&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>System</string>
+             <string>Ignore System</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -806,7 +806,7 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;span style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/span&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Music</string>
+             <string>Ignore Music</string>
             </property>
            </widget>
           </item>
@@ -816,7 +816,7 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;font style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/font&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Effects</string>
+             <string>Ignore Effects</string>
             </property>
            </widget>
           </item>
@@ -826,7 +826,7 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the audio channel will not be suppressed when the option [&lt;font style=&quot; color:#0000ff;&quot;&gt;Suppress Background Audio&lt;/font&gt;] is enabled and activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Blips</string>
+             <string>Ignore Blips</string>
             </property>
            </widget>
           </item>
