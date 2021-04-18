@@ -895,13 +895,24 @@ void Courtroom::handle_chatmessage_2() // handles IC
   ui_vp_chatbox->hide();
   ui_vp_showname_image->hide();
 
-  QString chatbox = ao_app->get_chat(m_chatmessage[CMChrName]);
+  QString l_chatbox_name = ao_app->get_chat(m_chatmessage[CMChrName]);
 
-  if (chatbox == "")
-    ui_vp_chatbox->set_image("chatmed.png");
+  if (l_chatbox_name.isEmpty())
+  {
+    l_chatbox_name = "chatmed.png";
+
+    if (ao_config->log_display_self_highlight_enabled() && m_chatmessage[CMChrId].toInt() == m_cid)
+    {
+      const QString l_chatbox_self_name = "chatbox_self.png";
+      if (file_exists(ao_app->find_theme_asset_path(l_chatbox_self_name)))
+        l_chatbox_name = l_chatbox_self_name;
+    }
+
+    ui_vp_chatbox->set_image(l_chatbox_name);
+  }
   else
   {
-    QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
+    QString chatbox_path = ao_app->get_base_path() + "misc/" + l_chatbox_name + ".png";
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
 
