@@ -360,9 +360,6 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="toolTip">
-             <string>Extra newlines are </string>
-            </property>
             <property name="text">
              <string>Display timestamp</string>
             </property>
@@ -382,9 +379,6 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Extra newlines are </string>
             </property>
             <property name="text">
              <string>Display empty messages</string>
