@@ -51,6 +51,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // IC Chatlog
   w_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
   w_log_display_timestamp = AO_GUI_WIDGET(QCheckBox, "log_display_timestamp");
+  w_log_display_self_highlight = AO_GUI_WIDGET(QCheckBox, "log_display_self_highlight");
   w_log_format_use_newline = AO_GUI_WIDGET(QCheckBox, "log_format_use_newline");
   w_log_display_empty_messages = AO_GUI_WIDGET(QCheckBox, "log_display_empty_messages");
   w_log_display_music_switch = AO_GUI_WIDGET(QCheckBox, "log_display_music_switch");
@@ -102,6 +103,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // log
   connect(m_config, SIGNAL(log_max_lines_changed(int)), w_log_max_lines, SLOT(setValue(int)));
   connect(m_config, SIGNAL(log_display_timestamp_changed(bool)), w_log_display_timestamp, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_display_self_highlight_changed(bool)), w_log_display_self_highlight,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_format_use_newline_changed(bool)), w_log_format_use_newline, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_display_empty_messages_changed(bool)), w_log_display_empty_messages,
           SLOT(setChecked(bool)));
@@ -154,6 +157,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // out, log
   connect(w_log_max_lines, SIGNAL(valueChanged(int)), m_config, SLOT(set_log_max_lines(int)));
   connect(w_log_display_timestamp, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_timestamp(bool)));
+  connect(w_log_display_self_highlight, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_self_highlight(bool)));
   connect(w_log_format_use_newline, SIGNAL(toggled(bool)), m_config, SLOT(set_log_format_use_newline(bool)));
   connect(w_log_display_empty_messages, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_empty_messages(bool)));
   connect(w_log_display_music_switch, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_music_switch(bool)));
@@ -203,6 +207,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   }
 
   w_log_display_timestamp->setChecked(m_config->log_display_timestamp_enabled());
+  w_log_display_self_highlight->setChecked(m_config->log_display_self_highlight_enabled());
   w_log_format_use_newline->setChecked(m_config->log_format_use_newline_enabled());
   w_log_display_empty_messages->setChecked(m_config->log_display_empty_messages_enabled());
   w_log_display_music_switch->setChecked(m_config->log_display_music_switch_enabled());

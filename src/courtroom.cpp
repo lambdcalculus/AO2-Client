@@ -1145,6 +1145,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
 
   QTextCharFormat selfname_format = name_format;
 
+  if (ao_config->log_display_self_highlight_enabled())
   {
     QColor selfname_color = ao_app->get_color("ic_chatlog_selfname_color", fonts_ini);
     if (selfname_color == not_found_color)
