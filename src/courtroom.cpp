@@ -719,8 +719,9 @@ void Courtroom::handle_acknowledged_ms()
   list_sfx();
   ui_sfx_list->setCurrentItem(ui_sfx_list->item(0)); // prevents undefined errors
 
+  int old_shout_state = m_shout_state;
   m_shout_state = 0;
-  draw_shout_buttons();
+  draw_shout_button(old_shout_state - 1);
 
   m_effect_state = 0;
   draw_effect_buttons();
@@ -1952,24 +1953,32 @@ void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
 void Courtroom::draw_shout_buttons()
 {
   for (int i = 0; i < ui_shouts.size(); ++i)
-  {
-    QString shout_file = shout_names.at(i) + ".png";
-    ui_shouts[i]->set_image(shout_file);
-    if (ao_app->find_theme_asset_path(shout_file).isEmpty())
-      ui_shouts[i]->setText(shout_names.at(i));
-    else
-      ui_shouts[i]->setText("");
-  }
+    draw_shout_button(i);
+}
 
-  // Mark selected button as such
-  if (m_shout_state != 0 && ui_shouts.size() > 0)
-    ui_shouts.at(m_shout_state - 1)->set_image(shout_names.at(m_shout_state - 1) + "_selected.png");
+void Courtroom::draw_shout_button(int index)
+{
+  if (index < 0 || index >= ui_shouts.size())
+    return;
+
+  QString shout_file;
+  if (m_shout_state - 1 == index)
+    shout_file = shout_names.at(index) + "_selected.png";
+  else
+    shout_file = shout_names.at(index) + ".png";
+
+  ui_shouts[index]->set_image(shout_file);
+  if (ao_app->find_theme_asset_path(shout_file).isEmpty())
+    ui_shouts[index]->setText(shout_names.at(index));
+  else
+    ui_shouts[index]->setText("");
 }
 
 void Courtroom::on_shout_clicked()
 {
   AOButton *f_shout_button = static_cast<AOButton *>(sender());
   int f_shout_id = f_shout_button->property("shout_id").toInt();
+  int old_m_shout_state = m_shout_state;
 
   // update based on current button selected
   if (f_shout_id == m_shout_state)
@@ -1977,8 +1986,9 @@ void Courtroom::on_shout_clicked()
   else
     m_shout_state = f_shout_id;
 
-  draw_shout_buttons();
-
+  // Redraw old and new buttons
+  draw_shout_button(old_m_shout_state - 1);
+  draw_shout_button(m_shout_state - 1);
   ui_ic_chat_message->setFocus();
 }
 

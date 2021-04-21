@@ -774,6 +774,15 @@ private slots:
   void draw_shout_buttons();
 
   /**
+   * @brief Set the sprite of the given shout button, using the selected sprite if the button is selected.
+   * @param p_index Index of button to redraw.
+   * @details If a sprite cannot be found for the shout button, a regular push button is displayed for it with its
+   * shout name instead. If the index is out of bounds with respect to the number of shouts available, this method
+   * does nothing.
+   */
+  void draw_shout_button(int p_index);
+
+  /**
    * @brief a general purpose function to toggle button selection
    */
   void on_shout_clicked();
