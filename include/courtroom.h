@@ -806,8 +806,6 @@ private slots:
 
   void on_text_color_changed(int p_color);
 
-  void on_witness_testimony_clicked();
-  void on_cross_examination_clicked();
   /**
    * @brief Set the sprites of the splash buttons.
    *

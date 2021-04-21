@@ -2133,26 +2133,6 @@ void Courtroom::on_text_color_changed(int p_color)
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_witness_testimony_clicked()
-{
-  if (is_client_muted)
-    return;
-
-  ao_app->send_server_packet(new AOPacket("RT#testimony1#%"));
-
-  ui_ic_chat_message->setFocus();
-}
-
-void Courtroom::on_cross_examination_clicked()
-{
-  if (is_client_muted)
-    return;
-
-  ao_app->send_server_packet(new AOPacket("RT#testimony2#%"));
-
-  ui_ic_chat_message->setFocus();
-}
-
 void Courtroom::draw_judge_wtce_buttons()
 {
   for (int i = 0; i < wtce_names.size(); ++i)
