@@ -727,9 +727,6 @@ void Courtroom::handle_acknowledged_ms()
   m_effect_state = 0;
   draw_effect_button(old_m_effect_state - 1);
 
-  m_wtce_current = 0;
-  draw_judge_wtce_buttons();
-
   is_presenting_evidence = false;
 
   ui_evidence_present->set_image("present_disabled.png");

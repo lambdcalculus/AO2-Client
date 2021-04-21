@@ -800,7 +800,7 @@ private slots:
    * @brief Set the sprite of the given effect button, using the selected sprite if the button is selected.
    * @param p_index Index of button to redraw.
    * @details If a sprite cannot be found for the effect button, a regular push button is displayed for it with its
-   * effect name instead. If the index is out of bounds with respect to the number of effect available, this method
+   * effect name instead. If the index is out of bounds with respect to the number of effects available, this method
    * does nothing.
    */
   void draw_effect_button(int p_index);
@@ -819,10 +819,11 @@ private slots:
   /**
    * @brief Set the sprites of the splash buttons.
    *
-   * @details If a sprite cannot be found for a shout button, a regular
+   * @details If a sprite cannot be found for a splash button, a regular
    * push button is displayed for it with its shout name instead.
    */
   void draw_judge_wtce_buttons();
+
   void on_wtce_clicked();
 
   void on_change_character_clicked();
