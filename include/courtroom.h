@@ -795,6 +795,16 @@ private slots:
    * push button is displayed for it with its shout name instead.
    */
   void draw_effect_buttons();
+
+  /**
+   * @brief Set the sprite of the given effect button, using the selected sprite if the button is selected.
+   * @param p_index Index of button to redraw.
+   * @details If a sprite cannot be found for the effect button, a regular push button is displayed for it with its
+   * effect name instead. If the index is out of bounds with respect to the number of effect available, this method
+   * does nothing.
+   */
+  void draw_effect_button(int p_index);
+
   void on_effect_button_clicked();
 
   void on_mute_clicked();

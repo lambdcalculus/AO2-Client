@@ -719,12 +719,13 @@ void Courtroom::handle_acknowledged_ms()
   list_sfx();
   ui_sfx_list->setCurrentItem(ui_sfx_list->item(0)); // prevents undefined errors
 
-  int old_shout_state = m_shout_state;
+  int old_m_shout_state = m_shout_state;
   m_shout_state = 0;
-  draw_shout_button(old_shout_state - 1);
+  draw_shout_button(old_m_shout_state - 1);
 
+  int old_m_effect_state = m_effect_state;
   m_effect_state = 0;
-  draw_effect_buttons();
+  draw_effect_button(old_m_effect_state - 1);
 
   m_wtce_current = 0;
   draw_judge_wtce_buttons();
@@ -1987,8 +1988,9 @@ void Courtroom::on_shout_clicked()
     m_shout_state = f_shout_id;
 
   // Redraw old and new buttons
-  draw_shout_button(old_m_shout_state - 1);
   draw_shout_button(m_shout_state - 1);
+  if (m_shout_state != old_m_shout_state)
+    draw_shout_button(old_m_shout_state - 1);
   ui_ic_chat_message->setFocus();
 }
 
@@ -2051,19 +2053,26 @@ void Courtroom::cycle_wtce(int p_delta)
 
 void Courtroom::draw_effect_buttons()
 {
-  for (int i = 0; i < effect_names.size(); ++i)
-  {
-    QString effect_file = effect_names.at(i) + ".png";
-    ui_effects[i]->set_image(effect_file);
-    if (ao_app->find_theme_asset_path(effect_file).isEmpty())
-      ui_effects[i]->setText(effect_names.at(i));
-    else
-      ui_effects[i]->setText("");
-  }
+  for (int i = 0; i < ui_effects.size(); ++i)
+    draw_effect_button(i);
+}
 
-  // Mark selected button as such
-  if (m_effect_state != 0 && ui_effects.size() > 0)
-    ui_effects[m_effect_state - 1]->set_image(effect_names.at(m_effect_state - 1) + "_pressed.png");
+void Courtroom::draw_effect_button(int index)
+{
+  if (index < 0 || index >= ui_effects.size())
+    return;
+
+  QString effect_file;
+  if (m_effect_state - 1 == index)
+    effect_file = effect_names.at(index) + "_pressed.png";
+  else
+    effect_file = effect_names.at(index) + ".png";
+
+  ui_effects[index]->set_image(effect_file);
+  if (ao_app->find_theme_asset_path(effect_file).isEmpty())
+    ui_effects[index]->setText(effect_names.at(index));
+  else
+    ui_effects[index]->setText("");
 }
 
 void Courtroom::on_effect_button_clicked()
@@ -2071,12 +2080,17 @@ void Courtroom::on_effect_button_clicked()
   AOButton *f_button = static_cast<AOButton *>(this->sender());
 
   int f_effect_id = f_button->property("effect_id").toInt();
+  int old_m_effect_state = m_effect_state;
+
   if (m_effect_state == f_effect_id)
     m_effect_state = 0;
   else
     m_effect_state = f_effect_id;
 
-  draw_effect_buttons();
+  // Redraw old and new buttons
+  draw_effect_button(m_effect_state - 1);
+  if (m_effect_state != old_m_effect_state)
+    draw_effect_button(old_m_effect_state - 1);
 
   ui_ic_chat_message->setFocus();
 }
