@@ -34,8 +34,8 @@ private:
   Status m_status = Status::Done;
   bool m_auto_align = true;
 
-  int current_document_blocks = 0;
-  int current_document_height = 0;
+  int m_current_document_blocks = 0;
+  int m_current_document_height = 0;
 
   void refresh_horizontal_alignment();
   void refresh_vertical_alignment();

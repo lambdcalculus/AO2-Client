@@ -401,9 +401,9 @@ private:
   bool m_msg_is_first_person = false;
 
   // Cached values for chat_tick
-  bool chatbox_message_outline = false;
-  bool chatbox_message_enable_highlighting = false;
-  QVector<QStringList> chatbox_message_highlight_colors;
+  bool m_chatbox_message_outline = false;
+  bool m_chatbox_message_enable_highlighting = false;
+  QVector<QStringList> m_chatbox_message_highlight_colors;
 
   // cid and this may differ in cases of ini-editing
   QString current_char;

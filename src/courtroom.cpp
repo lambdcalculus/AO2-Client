@@ -1366,9 +1366,9 @@ void Courtroom::setup_chat()
   blip_pos = 0;
 
   // Cache these so chat_tick performs better
-  chatbox_message_outline = (ao_app->get_font_property("message_outline", fonts_ini) == 1);
-  chatbox_message_enable_highlighting = (ao_app->read_theme_ini_bool("enable_highlighting", cc_config_ini));
-  chatbox_message_highlight_colors = ao_app->get_highlight_colors();
+  m_chatbox_message_outline = (ao_app->get_font_property("message_outline", fonts_ini) == 1);
+  m_chatbox_message_enable_highlighting = (ao_app->read_theme_ini_bool("enable_highlighting", cc_config_ini));
+  m_chatbox_message_highlight_colors = ao_app->get_highlight_colors();
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CMChrName]);
 
@@ -1384,7 +1384,7 @@ void Courtroom::chat_tick()
   // note: this is called fairly often(every 60 ms when char is talking)
   // do not perform heavy operations here
   QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
-  if (chatbox_message_outline)
+  if (m_chatbox_message_outline)
     vp_message_format.setTextOutline(QPen(Qt::black, 1));
   else
     vp_message_format.setTextOutline(Qt::NoPen);
@@ -1443,7 +1443,7 @@ void Courtroom::chat_tick()
 
       ui_vp_message->textCursor().insertText(f_character, vp_message_format);
     }
-    else if (chatbox_message_enable_highlighting)
+    else if (m_chatbox_message_enable_highlighting)
     {
       bool highlight_found = false;
       bool render_character = true;
@@ -1453,7 +1453,7 @@ void Courtroom::chat_tick()
       if (m_color_stack.isEmpty())
         m_color_stack.push("");
 
-      for (const auto &col : chatbox_message_highlight_colors)
+      for (const auto &col : m_chatbox_message_highlight_colors)
       {
         if (f_character == col[0][0] && m_string_color != col[1])
         {
@@ -1477,7 +1477,7 @@ void Courtroom::chat_tick()
 
       QString m_future_string_color = m_string_color;
 
-      for (const auto &col : chatbox_message_highlight_colors)
+      for (const auto &col : m_chatbox_message_highlight_colors)
       {
         if (f_character == col[0][1] && !highlight_found)
         {
