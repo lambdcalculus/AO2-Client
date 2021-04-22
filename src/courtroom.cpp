@@ -727,9 +727,11 @@ void Courtroom::handle_acknowledged_ms()
   m_effect_state = 0;
   draw_effect_button(old_m_effect_state - 1);
 
-  is_presenting_evidence = false;
-
-  ui_evidence_present->set_image("present_disabled.png");
+  if (is_presenting_evidence)
+  {
+    is_presenting_evidence = false;
+    ui_evidence_present->set_image("present_disabled.png");
+  }
 }
 
 void Courtroom::handle_chatmessage(QStringList p_contents)
