@@ -848,7 +848,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   if (is_system_speaking)
     append_system_text(f_showname, m_chatmessage[CMMessage]);
   else
-    append_ic_text(f_showname, m_chatmessage[CMMessage], false, false);
+    append_ic_text(f_showname, m_chatmessage[CMMessage], false, false, f_char_id == m_cid);
 
   if (ao_config->log_is_recording_enabled() && (!chatmessage_is_empty || !is_system_speaking))
   {
@@ -920,13 +920,24 @@ void Courtroom::handle_chatmessage_2() // handles IC
   ui_vp_chatbox->hide();
   ui_vp_showname_image->hide();
 
-  QString chatbox = ao_app->get_chat(m_chatmessage[CMChrName]);
+  QString l_chatbox_name = ao_app->get_chat(m_chatmessage[CMChrName]);
 
-  if (chatbox == "")
-    ui_vp_chatbox->set_image("chatmed.png");
+  if (l_chatbox_name.isEmpty())
+  {
+    l_chatbox_name = "chatmed.png";
+
+    if (ao_config->log_display_self_highlight_enabled() && m_chatmessage[CMChrId].toInt() == m_cid)
+    {
+      const QString l_chatbox_self_name = "chatbox_self.png";
+      if (file_exists(ao_app->find_theme_asset_path(l_chatbox_self_name)))
+        l_chatbox_name = l_chatbox_self_name;
+    }
+
+    ui_vp_chatbox->set_image(l_chatbox_name);
+  }
   else
   {
-    QString chatbox_path = ao_app->get_base_path() + "misc/" + chatbox + ".png";
+    QString chatbox_path = ao_app->get_base_path() + "misc/" + l_chatbox_name + ".png";
     ui_vp_chatbox->set_image_from_path(chatbox_path);
   }
 
@@ -1168,6 +1179,16 @@ void Courtroom::update_ic_log(bool p_reset_log)
     showname_color = default_color;
   name_format.setForeground(showname_color);
 
+  QTextCharFormat selfname_format = name_format;
+
+  if (ao_config->log_display_self_highlight_enabled())
+  {
+    QColor selfname_color = ao_app->get_color("ic_chatlog_selfname_color", fonts_ini);
+    if (selfname_color == not_found_color)
+      selfname_color = showname_color;
+    selfname_format.setForeground(selfname_color);
+  }
+
   QTextCharFormat line_format = ui_ic_chatlog->currentCharFormat();
   line_format.setFontWeight(QFont::Normal);
   QColor message_color = ao_app->get_color("ic_chatlog_message_color", fonts_ini);
@@ -1204,6 +1225,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
   {
     DR::ChatRecord record = m_ic_record_queue.takeFirst();
     m_ic_record_list.append(record);
+    const QTextCharFormat l_record_name_format = record.is_self() ? selfname_format : name_format;
 
     if (record.get_message().trimmed().isEmpty() && !ao_config->log_display_empty_messages_enabled())
       continue;
@@ -1217,7 +1239,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
     const QString record_end = (QString(QChar::LineFeed) + (chatlog_newline ? QString(QChar::LineFeed) : ""));
 
     if (ao_config->log_display_timestamp_enabled())
-      cursor.insertText(QString("[%1] ").arg(record.get_timestamp().toString("hh:mm")), name_format);
+      cursor.insertText(QString("[%1] ").arg(record.get_timestamp().toString("hh:mm")), l_record_name_format);
 
     if (record.is_system())
     {
@@ -1232,7 +1254,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
         separator = ": ";
       else
         separator = " ";
-      cursor.insertText(record.get_name() + separator, name_format);
+      cursor.insertText(record.get_name() + separator, l_record_name_format);
       cursor.insertText(record.get_message() + record_end, line_format);
     }
   }
@@ -1308,7 +1330,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
   }
 }
 
-void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music)
+void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, bool p_self)
 {
   if (p_name.trimmed().isEmpty())
     p_name = "Anonymous";
@@ -1319,6 +1341,7 @@ void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bo
   DR::ChatRecord new_record(p_name, p_line);
   new_record.set_music(p_music);
   new_record.set_system(p_system);
+  new_record.set_self(p_self);
   m_ic_record_queue.append(new_record);
   update_ic_log(false);
 }
@@ -1328,7 +1351,7 @@ void Courtroom::append_system_text(QString p_showname, QString p_line)
   if (chatmessage_is_empty)
     return;
 
-  append_ic_text(p_showname, p_line, true, false);
+  append_ic_text(p_showname, p_line, true, false, false);
 }
 
 void Courtroom::play_preanim()
@@ -1638,7 +1661,7 @@ void Courtroom::handle_song(QStringList p_contents)
     return;
 
   QString f_song = p_contents.at(0);
-  int n_char = p_contents.at(1).toInt();
+  int l_chr_id = p_contents.at(1).toInt();
 
   for (auto &ext : audio_extensions())
   {
@@ -1651,7 +1674,7 @@ void Courtroom::handle_song(QStringList p_contents)
     }
   }
 
-  if (n_char < 0 || n_char >= char_list.size())
+  if (l_chr_id < 0 || l_chr_id >= char_list.size())
   {
     m_music_player->play(f_song);
   }
@@ -1676,16 +1699,16 @@ void Courtroom::handle_song(QStringList p_contents)
     QString str_char;
     if (f_showname.isEmpty())
     {
-      str_char = ao_app->get_showname(char_list.at(n_char).name);
+      str_char = ao_app->get_showname(char_list.at(l_chr_id).name);
     }
     else
     {
       str_char = f_showname;
     }
 
-    if (!mute_map.value(n_char))
+    if (!mute_map.value(l_chr_id))
     {
-      append_ic_text(str_char, "has played a song: " + f_song, false, true);
+      append_ic_text(str_char, "has played a song: " + f_song, false, true, l_chr_id == m_cid);
       if (ao_config->log_is_recording_enabled())
         save_textlog(str_char + " has played a song: " + f_song);
       m_music_player->play(f_song);

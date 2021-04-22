@@ -30,6 +30,10 @@ public:
   {
     return message;
   }
+  bool is_self() const
+  {
+    return self;
+  }
   bool is_system() const
   {
     return system;
@@ -40,6 +44,12 @@ public:
   }
 
   // set
+  void set_self(const bool p_enabled)
+  {
+    if (self == p_enabled)
+      return;
+    self = p_enabled;
+  }
   void set_system(bool p_enabled)
   {
     if (system == p_enabled)
@@ -57,6 +67,7 @@ private:
   QDateTime timestamp = QDateTime::currentDateTime();
   QString name;
   QString message;
+  bool self = false;
   bool system = false;
   bool music = false;
 };
