@@ -803,8 +803,6 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     f_showname = m_chatmessage[CMShowName];
   }
 
-  QString f_message = f_showname + ": " + m_chatmessage[CMMessage] + "\n";
-
   m_effects_player->stop_all();
 
   text_state = 0;
@@ -879,11 +877,6 @@ void Courtroom::handle_chatmessage_2() // handles IC
   {
     f_showname = m_chatmessage[CMShowName];
   }
-
-  // Check if char.ini has color property, which overrides the theme's default
-  // showname color
-  QString f_color = ao_app->read_char_ini(real_name, "color", "[Options]", "[Time]");
-  set_drtextedit_font(ui_vp_showname, "showname", f_color);
 
   ui_vp_showname->setText(f_showname);
 

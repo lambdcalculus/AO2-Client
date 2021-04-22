@@ -96,13 +96,8 @@ public:
   void set_widgets();
   // sets font properties based on theme ini files
   void set_font(QWidget *widget, QString p_identifier);
-  // same as above, but use override color as color if it is not an empty
-  // string, otherwise use normal logic for color of set_font
-  void set_font(QWidget *widget, QString p_identifier, QString override_color);
-  // sets font properties for DRTextEdit (same as above but also text outline)
+  // sets font properties for DRTextEdit (same as above but also text outline, and alignments)
   void set_drtextedit_font(DRTextEdit *widget, QString p_identifier);
-  // same as second set_font but for drtextedit
-  void set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QString override_color);
   // helper function that calls above function on the relevant widgets
   void set_fonts();
 

@@ -1387,11 +1387,6 @@ void Courtroom::set_dropdowns()
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
 {
-  set_font(widget, p_identifier, "");
-}
-
-void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override_color)
-{
   QString design_file = fonts_ini;
   QString class_name = widget->metaObject()->className();
 
@@ -1409,32 +1404,22 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override
   }
   widget->setFont(QFont(font_name, f_weight));
 
-  if (override_color.isEmpty())
-  {
-    QString color = ao_app->read_theme_ini(p_identifier + "_color", "courtroom_fonts.ini");
-    if (color.isEmpty())
-      color = "255, 255, 255";
-    override_color = "rgba(" + color + ", 255)";
-  }
+  QString font_color = ao_app->read_theme_ini(p_identifier + "_color", "courtroom_fonts.ini");
+  if (font_color.isEmpty())
+    font_color = "255, 255, 255";
+  QString color = "rgba(" + font_color + ", 255)";
 
   int bold = ao_app->get_font_property(p_identifier + "_bold", design_file);
   QString is_bold = (bold == 1 ? "bold" : "");
 
-  QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: " + override_color +
-                               ";\n"
-                               "font: " +
-                               is_bold + "; }";
+  QString style_sheet_string = class_name + " { " + "background-color: rgba(0, 0, 0, 0);\n" + "color: " + color +
+                               ";\n" + "font: " + is_bold + ";" + " }";
   widget->setStyleSheet(style_sheet_string);
 }
 
 void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
 {
-  set_drtextedit_font(widget, p_identifier, "");
-}
-
-void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QString override_color)
-{
-  set_font(widget, p_identifier, override_color);
+  set_font(widget, p_identifier);
   // Do outlines
   bool outline = (ao_app->get_font_property(p_identifier + "_outline", fonts_ini) == 1);
   widget->set_outline(outline);
