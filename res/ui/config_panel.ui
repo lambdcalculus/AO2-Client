@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tab_widget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -360,27 +360,15 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="toolTip">
-             <string>Extra newlines are </string>
-            </property>
             <property name="text">
-             <string>Display Timestamp</string>
+             <string>Display timestamp</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QCheckBox" name="log_format_use_newline">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Extra newlines are </string>
-            </property>
+           <widget class="QCheckBox" name="log_display_self_highlight">
             <property name="text">
-             <string>Format use newline</string>
+             <string>Display self-identification highlight</string>
             </property>
            </widget>
           </item>
@@ -391,9 +379,6 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Extra newlines are </string>
             </property>
             <property name="text">
              <string>Display empty messages</string>
@@ -410,6 +395,22 @@
             </property>
             <property name="text">
              <string>Display music switch</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="log_format_use_newline">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Extra newlines are added between the name and message.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Format use newline</string>
             </property>
            </widget>
           </item>
