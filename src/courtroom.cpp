@@ -53,6 +53,7 @@ void Courtroom::enter_courtroom(int p_cid)
   {
     ao_app->discord->clear_character_name();
     f_char = "";
+    ui_ic_chat_name->setPlaceholderText("");
   }
   else
   {
@@ -61,6 +62,7 @@ void Courtroom::enter_courtroom(int p_cid)
     if (showname_char.isEmpty())
       showname_char = f_char;
     ao_app->discord->set_character_name(showname_char);
+    ui_ic_chat_name->setPlaceholderText(showname_char);
   }
 
   current_char = f_char;

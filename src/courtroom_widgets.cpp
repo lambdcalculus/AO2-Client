@@ -624,7 +624,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_sfx_list, "sfx_list");
 
   set_size_and_pos(ui_ic_chat_name, "ic_chat_name");
-  ui_ic_chat_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ic_chat_name->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
   ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
 

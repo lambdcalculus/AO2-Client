@@ -51,6 +51,8 @@ public:
   bool ackMS_enabled = false;
 #endif
 
+  bool m_FL_showname_enabled = false;
+
   ///////////////loading info///////////////////
 
   // player number, it's hardly used but might be needed for some old servers
