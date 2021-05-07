@@ -693,6 +693,9 @@ private:
 
   void set_char_rpc();
 
+  bool is_self_iniedited();
+  bool check_fill_iniedit_showname();
+
 public slots:
   void objection_done();
   void preanim_done();
@@ -716,6 +719,7 @@ private slots:
   void on_chat_name_editing_finished();
   void on_chat_return_pressed();
   void on_chat_config_changed();
+  void on_fill_iniedit_showname_changed();
 
   void on_ooc_name_editing_finished();
   void on_ooc_return_pressed();

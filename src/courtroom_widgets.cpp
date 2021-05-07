@@ -259,6 +259,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(showname_changed(QString)), this, SLOT(on_showname_changed()));
   connect(ui_ic_chat_name, SIGNAL(editingFinished()), this, SLOT(on_chat_name_editing_finished()));
   connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_chat_return_pressed()));
+  connect(ao_config, SIGNAL(fill_iniedit_showname_changed(bool)), this, SLOT(on_fill_iniedit_showname_changed()));
 
   connect(ao_config, SIGNAL(username_changed(QString)), ui_ooc_chat_name, SLOT(setText(QString)));
   connect(ui_ooc_chat_name, SIGNAL(editingFinished()), this, SLOT(on_ooc_name_editing_finished()));

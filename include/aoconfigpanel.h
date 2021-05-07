@@ -71,7 +71,6 @@ private:
 
   // general
   QLineEdit *w_username = nullptr;
-  QLineEdit *w_showname = nullptr;
   QLineEdit *w_callwords = nullptr;
   QCheckBox *w_server_alerts = nullptr;
 
@@ -86,6 +85,8 @@ private:
   QCheckBox *w_manual_gamemode = nullptr;
   QComboBox *w_timeofday = nullptr;
   QCheckBox *w_manual_timeofday = nullptr;
+  QLineEdit *w_showname = nullptr;
+  QCheckBox *w_fill_iniedit_showname = nullptr;
   QCheckBox *w_always_pre = nullptr;
   QSpinBox *w_chat_tick_interval = nullptr;
 

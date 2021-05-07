@@ -228,6 +228,11 @@ bool AOApplication::get_manual_timeofday_enabled()
   return config->manual_timeofday_enabled();
 }
 
+bool AOApplication::get_fill_iniedit_showname_enabled()
+{
+  return config->fill_iniedit_showname_enabled();
+}
+
 bool AOApplication::get_always_pre_enabled()
 {
   return config->always_pre_enabled();
@@ -237,6 +242,7 @@ bool AOApplication::get_first_person_enabled()
 {
   return config->get_bool("first_person", false);
 }
+
 bool AOApplication::get_chatlog_scrolldown()
 {
   return config->log_is_topdown_enabled();

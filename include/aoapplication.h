@@ -250,6 +250,10 @@ public:
   // callwords) should actually tigger a server alert or not
   bool get_server_alerts_enabled();
 
+  // returns whether if playing an iniedited character, blanking out the showname box fills it with the
+  // iniedited shownamed
+  bool get_fill_iniedit_showname_enabled();
+
   // returns whatever preanimations should always play or not
   bool get_always_pre_enabled();
 

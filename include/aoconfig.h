@@ -34,6 +34,7 @@ public:
   bool manual_gamemode_enabled() const;
   QString timeofday() const;
   bool manual_timeofday_enabled() const;
+  bool fill_iniedit_showname_enabled() const;
   bool always_pre_enabled() const;
   int chat_tick_interval() const;
   int log_max_lines() const;
@@ -73,12 +74,13 @@ public slots:
   void set_discord_presence(const bool p_enabled);
   void set_discord_hide_server(const bool p_enabled);
   void set_discord_hide_character(const bool p_enabled);
-  void set_always_pre(bool p_enabled);
   void set_theme(QString p_string);
   void set_gamemode(QString p_string);
   void set_manual_gamemode(bool p_enabled);
   void set_timeofday(QString p_string);
   void set_manual_timeofday(bool p_enabled);
+  void set_fill_iniedit_showname(bool p_enabled);
+  void set_always_pre(bool p_enabled);
   void set_chat_tick_interval(int p_number);
   void set_log_max_lines(int p_number);
   void set_log_display_timestamp(bool p_enabled);
@@ -105,21 +107,29 @@ public slots:
 
   // signals
 signals:
+  // meta
   void autosave_changed(bool);
+
+  // general
   void username_changed(QString);
-  void showname_changed(QString);
   void callwords_changed(QString);
   void server_alerts_changed(bool);
   void discord_presence_changed(bool);
   void discord_hide_server_changed(bool);
   void discord_hide_character_changed(bool);
+
+  // game
   void theme_changed(QString);
   void gamemode_changed(QString);
   void manual_gamemode_changed(bool);
   void timeofday_changed(QString);
   void manual_timeofday_changed(bool);
+  void showname_changed(QString);
+  void fill_iniedit_showname_changed(bool);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);
+
+  // log
   void log_max_lines_changed(int);
   void log_display_timestamp_changed(bool);
   void log_display_self_highlight_changed(bool);

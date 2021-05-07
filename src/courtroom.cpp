@@ -149,6 +149,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   set_widget_names();
   set_widget_layers();
+  check_fill_iniedit_showname();
 }
 
 void Courtroom::done_received()
@@ -580,6 +581,8 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
 
 void Courtroom::on_showname_changed()
 {
+  if (check_fill_iniedit_showname())
+    return;
   const QString l_showname = ao_config->showname();
   send_showname_packet(l_showname);
   ui_ic_chat_name->setText(l_showname);
@@ -591,6 +594,39 @@ void Courtroom::send_showname_packet(QString p_showname)
     return;
   m_last_showname = p_showname;
   send_ooc_packet(ao_config->username(), QString("/showname %1").arg(p_showname));
+}
+
+bool Courtroom::is_self_iniedited()
+{
+  const QString l_selected_folder_name = char_list.at(m_cid).name;
+  return !(l_selected_folder_name == current_char);
+}
+
+void Courtroom::on_fill_iniedit_showname_changed()
+{
+  check_fill_iniedit_showname();
+}
+
+bool Courtroom::check_fill_iniedit_showname()
+{
+  // We only care about the case where all of the following are true:
+  // 1. Player has checked Fill Iniedit Showname
+  // 2. Player is iniedited
+  // 3. Player has an empty showname box
+  const bool l_fill = ao_config->fill_iniedit_showname_enabled();
+  if (!l_fill)
+    return false;
+
+  if (!is_self_iniedited())
+    return false;
+
+  if (!ao_config->showname().isEmpty())
+    return false;
+
+  QString l_char = ao_app->get_char_name(char_list.at(m_cid).name);
+  QString l_showname = ao_app->get_showname(l_char);
+  ao_config->set_showname(l_showname);
+  return true;
 }
 
 void Courtroom::on_chat_return_pressed()
