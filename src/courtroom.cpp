@@ -588,12 +588,26 @@ void Courtroom::on_showname_changed()
   ui_ic_chat_name->setText(l_showname);
 }
 
+bool Courtroom::update_last_showname(QString p_showname)
+{
+  if (p_showname == m_last_showname)
+    return false;
+  m_last_showname = p_showname;
+  return true;
+}
+
 void Courtroom::send_showname_packet(QString p_showname)
 {
   if (p_showname == m_last_showname)
     return;
   m_last_showname = p_showname;
-  send_ooc_packet(ao_config->username(), QString("/showname %1").arg(p_showname));
+  if (ao_app->m_FL_showname_enabled)
+  {
+    QStringList packet_contents = {p_showname};
+    ao_app->send_server_packet(new AOPacket("SN", packet_contents));
+  }
+  else
+    send_ooc_packet(ao_config->username(), QString("/showname %1").arg(p_showname));
 }
 
 bool Courtroom::is_self_iniedited()
@@ -625,7 +639,8 @@ bool Courtroom::check_fill_iniedit_showname()
 
   QString l_char = ao_app->get_char_name(char_list.at(m_cid).name);
   QString l_showname = ao_app->get_showname(l_char);
-  ao_config->set_showname(l_showname);
+
+  set_showname(l_showname);
   return true;
 }
 
@@ -1851,7 +1866,12 @@ void Courtroom::mod_called(QString p_ip)
 
 void Courtroom::on_chat_name_editing_finished()
 {
-  ao_config->set_showname(ui_ic_chat_name->text());
+  set_showname(ui_ic_chat_name->text());
+}
+
+void Courtroom::set_showname(QString p_showname)
+{
+  ao_config->set_showname(p_showname);
 }
 
 void Courtroom::on_ooc_name_editing_finished()

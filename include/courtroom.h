@@ -181,6 +181,13 @@ public:
     return current_char;
   }
 
+  // Update the last showname set by the client. Returns true if p_showname is different from the current last showname
+  // set, false otherwise.
+  bool update_last_showname(QString p_showname);
+
+  // Set the showname of the client
+  void set_showname(QString p_showname);
+
   // properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
