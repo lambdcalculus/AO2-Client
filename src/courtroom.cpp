@@ -612,6 +612,9 @@ void Courtroom::send_showname_packet(QString p_showname)
 
 bool Courtroom::is_self_iniedited()
 {
+  // Check if spectator first. Spectators are never iniedited
+  if (m_cid == -1)
+    return false;
   const QString l_selected_folder_name = char_list.at(m_cid).name;
   return !(l_selected_folder_name == current_char);
 }
@@ -625,7 +628,7 @@ bool Courtroom::check_fill_iniedit_showname()
 {
   // We only care about the case where all of the following are true:
   // 1. Player has checked Fill Iniedit Showname
-  // 2. Player is iniedited
+  // 2. Player is iniedited (and thus not spectator)
   // 3. Player has an empty showname box
   const bool l_fill = ao_config->fill_iniedit_showname_enabled();
   if (!l_fill)
