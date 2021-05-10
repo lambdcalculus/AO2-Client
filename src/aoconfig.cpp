@@ -57,7 +57,7 @@ private:
   QString timeofday;
   bool manual_timeofday;
   QString showname;
-  bool fill_iniedit_showname;
+  QString showname_placeholder;
   bool always_pre;
   int chat_tick_interval;
   int log_max_lines;
@@ -126,7 +126,6 @@ void AOConfigPrivate::read_file()
   manual_gamemode = cfg.value("manual_gamemode", false).toBool();
   timeofday = cfg.value("timeofday", "").toString();
   manual_timeofday = cfg.value("manual_timeofday", false).toBool();
-  fill_iniedit_showname = cfg.value("fill_iniedit_showname", true).toBool();
   always_pre = cfg.value("always_pre", true).toBool();
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
   log_max_lines = cfg.value("chatlog_limit", 200).toInt();
@@ -184,7 +183,6 @@ void AOConfigPrivate::save_file()
   cfg.setValue("manual_gamemode", manual_gamemode);
   cfg.setValue("timeofday", timeofday);
   cfg.setValue("manual_timeofday", manual_timeofday);
-  cfg.setValue("fill_iniedit_showname", fill_iniedit_showname);
   cfg.setValue("always_pre", always_pre);
   cfg.setValue("chat_tick_interval", chat_tick_interval);
   cfg.setValue("chatlog_limit", log_max_lines);
@@ -293,6 +291,11 @@ QString AOConfig::showname() const
   return d->showname;
 }
 
+QString AOConfig::showname_placeholder() const
+{
+  return d->showname_placeholder;
+}
+
 QString AOConfig::callwords() const
 {
   return d->callwords;
@@ -341,11 +344,6 @@ QString AOConfig::timeofday() const
 bool AOConfig::manual_timeofday_enabled() const
 {
   return d->manual_timeofday;
-}
-
-bool AOConfig::fill_iniedit_showname_enabled() const
-{
-  return d->fill_iniedit_showname;
 }
 
 bool AOConfig::always_pre_enabled() const
@@ -486,6 +484,19 @@ void AOConfig::set_showname(QString p_string)
   d->invoke_signal("showname_changed", Q_ARG(QString, p_string));
 }
 
+void AOConfig::set_showname_placeholder(QString p_string)
+{
+  if (d->showname_placeholder == p_string)
+    return;
+  d->showname_placeholder = p_string;
+  d->invoke_signal("showname_placeholder_changed", Q_ARG(QString, p_string));
+}
+
+void AOConfig::clear_showname_placeholder()
+{
+  set_showname_placeholder(nullptr);
+}
+
 void AOConfig::set_callwords(QString p_string)
 {
   if (d->callwords == p_string)
@@ -564,14 +575,6 @@ void AOConfig::set_manual_timeofday(bool p_enabled)
     return;
   d->manual_timeofday = p_enabled;
   d->invoke_signal("manual_timeofday_changed", Q_ARG(bool, p_enabled));
-}
-
-void AOConfig::set_fill_iniedit_showname(bool p_enabled)
-{
-  if (d->fill_iniedit_showname == p_enabled)
-    return;
-  d->fill_iniedit_showname = p_enabled;
-  d->invoke_signal("fill_iniedit_showname_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_always_pre(bool p_enabled)

@@ -46,7 +46,6 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_timeofday = AO_GUI_WIDGET(QComboBox, "timeofday");
   w_manual_timeofday = AO_GUI_WIDGET(QCheckBox, "manual_timeofday");
   w_showname = AO_GUI_WIDGET(QLineEdit, "showname");
-  w_fill_iniedit_showname = AO_GUI_WIDGET(QCheckBox, "fill_iniedit_showname");
   w_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
   w_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
 
@@ -105,7 +104,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(timeofday_changed(QString)), w_timeofday, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(manual_timeofday_changed(bool)), w_manual_timeofday, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(showname_changed(QString)), w_showname, SLOT(setText(QString)));
-  connect(m_config, SIGNAL(fill_iniedit_showname_changed(bool)), w_fill_iniedit_showname, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(showname_placeholder_changed(QString)), this,
+          SLOT(on_showname_placeholder_changed(QString)));
   connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(chat_tick_interval_changed(int)), w_chat_tick_interval, SLOT(setValue(int)));
 
@@ -164,7 +164,6 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_timeofday, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_timeofday_index_changed(QString)));
   connect(w_manual_timeofday, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_timeofday(bool)));
   connect(w_showname, SIGNAL(editingFinished()), this, SLOT(showname_editing_finished()));
-  connect(w_fill_iniedit_showname, SIGNAL(toggled(bool)), m_config, SLOT(set_fill_iniedit_showname(bool)));
   connect(w_always_pre, SIGNAL(toggled(bool)), m_config, SLOT(set_always_pre(bool)));
   connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
 
@@ -211,7 +210,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_timeofday->setCurrentText(m_config->timeofday());
   w_manual_timeofday->setChecked(m_config->manual_timeofday_enabled());
   w_showname->setText(m_config->showname());
-  w_fill_iniedit_showname->setChecked(m_config->fill_iniedit_showname_enabled());
+  on_showname_placeholder_changed(m_config->showname_placeholder());
   w_always_pre->setChecked(m_config->always_pre_enabled());
   w_chat_tick_interval->setValue(m_config->chat_tick_interval());
 
@@ -409,6 +408,13 @@ void AOConfigPanel::on_timeofday_index_changed(QString p_text)
 {
   Q_UNUSED(p_text);
   m_config->set_timeofday(w_timeofday->currentData().toString());
+}
+
+void AOConfigPanel::on_showname_placeholder_changed(QString p_text)
+{
+  const QString l_showname(p_text.trimmed().isEmpty() ? "Showname" : p_text);
+  w_showname->setPlaceholderText(l_showname);
+  w_showname->setToolTip(l_showname);
 }
 
 void AOConfigPanel::on_log_is_topdown_changed(bool p_enabled)

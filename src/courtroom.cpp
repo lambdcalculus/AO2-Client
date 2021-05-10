@@ -45,32 +45,30 @@ void Courtroom::enter_courtroom(int p_cid)
   bool changed_character = (m_cid != p_cid);
   m_cid = p_cid;
 
-  QString f_char;
+  QString l_chr_name;
 
   set_char_rpc();
 
-  if (m_cid == -1)
+  if (is_spectating())
   {
     ao_app->discord->clear_character_name();
-    f_char = "";
-    ui_ic_chat_name->setPlaceholderText("");
+    ao_config->clear_showname_placeholder();
   }
   else
   {
-    f_char = ao_app->get_char_name(char_list.at(m_cid).name);
-    QString showname_char = ao_app->get_showname(f_char);
-    if (showname_char.isEmpty())
-      showname_char = f_char;
-    ao_app->discord->set_character_name(showname_char);
-    ui_ic_chat_name->setPlaceholderText(showname_char);
+    l_chr_name = ao_app->get_char_name(char_list.at(m_cid).name);
+    const QString l_ini_showname = ao_app->get_showname(l_chr_name);
+    const QString l_final_showname = l_ini_showname.trimmed().isEmpty() ? l_chr_name : l_ini_showname;
+    ao_app->discord->set_character_name(l_final_showname);
+    ao_config->set_showname_placeholder(l_final_showname);
   }
 
-  current_char = f_char;
+  current_char = l_chr_name;
 
   current_emote_page = 0;
   current_emote = 0;
 
-  if (m_cid == -1)
+  if (is_spectating())
     ui_emotes->hide();
   else
     ui_emotes->show();
@@ -99,7 +97,7 @@ void Courtroom::enter_courtroom(int p_cid)
   // can be omitted), I am keeping it in case we expand set_character_position
   // to do more.
   if (changed_character)
-    set_character_position(ao_app->get_char_side(f_char));
+    set_character_position(ao_app->get_char_side(l_chr_name));
   else
     set_character_position(ui_pos_dropdown->currentText());
 
@@ -141,7 +139,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   ui_char_select_background->hide();
 
-  ui_ic_chat_message->setEnabled(m_cid != -1);
+  ui_ic_chat_message->setEnabled(!is_spectating());
   ui_ic_chat_message->setFocus();
 
   for (int i = 0; i < ui_timers.length(); ++i)
@@ -149,7 +147,6 @@ void Courtroom::enter_courtroom(int p_cid)
 
   set_widget_names();
   set_widget_layers();
-  check_fill_iniedit_showname();
 }
 
 void Courtroom::done_received()
@@ -579,75 +576,38 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
     save_textlog("(OOC)" + p_name + ": " + p_message);
 }
 
-void Courtroom::on_showname_changed()
+void Courtroom::on_showname_changed(QString p_showname)
 {
-  if (check_fill_iniedit_showname())
-    return;
-  const QString l_showname = ao_config->showname();
-  send_showname_packet(l_showname);
-  ui_ic_chat_name->setText(l_showname);
-}
-
-bool Courtroom::update_last_showname(QString p_showname)
-{
-  if (p_showname == m_last_showname)
-    return false;
-  m_last_showname = p_showname;
-  return true;
+  ui_ic_chat_showname->setText(p_showname);
+  send_showname_packet(p_showname);
 }
 
 void Courtroom::send_showname_packet(QString p_showname)
 {
-  if (p_showname == m_last_showname)
-    return;
-  m_last_showname = p_showname;
   if (ao_app->m_FL_showname_enabled)
   {
-    QStringList packet_contents = {p_showname};
-    ao_app->send_server_packet(new AOPacket("SN", packet_contents));
+    QStringList l_content = {p_showname};
+    ao_app->send_server_packet(new AOPacket("SN", l_content));
   }
   else
+  {
     send_ooc_packet(ao_config->username(), QString("/showname %1").arg(p_showname));
+  }
 }
 
-bool Courtroom::is_self_iniedited()
+bool Courtroom::is_spectating()
 {
-  // Check if spectator first. Spectators are never iniedited
-  if (m_cid == -1)
-    return false;
-  const QString l_selected_folder_name = char_list.at(m_cid).name;
-  return !(l_selected_folder_name == current_char);
+  return m_cid == -1;
 }
 
-void Courtroom::on_fill_iniedit_showname_changed()
+void Courtroom::on_showname_placeholder_changed(QString p_showname_placeholder)
 {
-  check_fill_iniedit_showname();
+  const QString l_showname(p_showname_placeholder.trimmed().isEmpty() ? "Showname" : p_showname_placeholder);
+  ui_ic_chat_showname->setPlaceholderText(l_showname);
+  ui_ic_chat_showname->setToolTip(l_showname);
 }
 
-bool Courtroom::check_fill_iniedit_showname()
-{
-  // We only care about the case where all of the following are true:
-  // 1. Player has checked Fill Iniedit Showname
-  // 2. Player is iniedited (and thus not spectator)
-  // 3. Player has an empty showname box
-  const bool l_fill = ao_config->fill_iniedit_showname_enabled();
-  if (!l_fill)
-    return false;
-
-  if (!is_self_iniedited())
-    return false;
-
-  if (!ao_config->showname().isEmpty())
-    return false;
-
-  QString l_char = ao_app->get_char_name(char_list.at(m_cid).name);
-  QString l_showname = ao_app->get_showname(l_char);
-
-  set_showname(l_showname);
-  return true;
-}
-
-void Courtroom::on_chat_return_pressed()
+void Courtroom::on_ic_message_return_pressed()
 {
   if (ui_ic_chat_message->text() == "" || is_client_muted)
     return;
@@ -657,12 +617,7 @@ void Courtroom::on_chat_return_pressed()
 
   if (!m_showname_sent)
   {
-    const QString l_showname = ao_config->showname().trimmed();
-    if (!l_showname.isEmpty())
-    {
-      m_showname_sent = true;
-      send_showname_packet(l_showname);
-    }
+    send_showname_packet(ao_config->showname());
   }
 
   //  qDebug() << "prev_emote = " << prev_emote << "current_emote = " <<
@@ -1867,9 +1822,9 @@ void Courtroom::mod_called(QString p_ip)
   }
 }
 
-void Courtroom::on_chat_name_editing_finished()
+void Courtroom::on_ic_showname_editing_finished()
 {
-  set_showname(ui_ic_chat_name->text());
+  set_showname(ui_ic_chat_showname->text());
 }
 
 void Courtroom::set_showname(QString p_showname)

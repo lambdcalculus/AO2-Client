@@ -729,11 +729,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
     if (!courtroom_constructed)
       goto end;
-    QString l_showname = f_contents.at(0);
+    const QString l_showname = f_contents.at(0);
     // By updating now, we prevent the client from sending an SN back when we later on go ahead and modify the
     // showname box.
-    w_courtroom->update_last_showname(l_showname);
-    w_courtroom->set_showname(l_showname);
+    config->set_showname(l_showname);
   }
 
 end:

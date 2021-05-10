@@ -24,6 +24,7 @@ public:
   bool autosave() const;
   QString username() const;
   QString showname() const;
+  QString showname_placeholder() const;
   QString callwords() const;
   bool server_alerts_enabled() const;
   bool discord_presence() const;
@@ -34,7 +35,6 @@ public:
   bool manual_gamemode_enabled() const;
   QString timeofday() const;
   bool manual_timeofday_enabled() const;
-  bool fill_iniedit_showname_enabled() const;
   bool always_pre_enabled() const;
   int chat_tick_interval() const;
   int log_max_lines() const;
@@ -69,6 +69,8 @@ public slots:
   void set_autosave(bool p_enabled);
   void set_username(QString p_string);
   void set_showname(QString p_string);
+  void set_showname_placeholder(QString p_string);
+  void clear_showname_placeholder();
   void set_callwords(QString p_string);
   void set_server_alerts(bool p_enabled);
   void set_discord_presence(const bool p_enabled);
@@ -79,7 +81,6 @@ public slots:
   void set_manual_gamemode(bool p_enabled);
   void set_timeofday(QString p_string);
   void set_manual_timeofday(bool p_enabled);
-  void set_fill_iniedit_showname(bool p_enabled);
   void set_always_pre(bool p_enabled);
   void set_chat_tick_interval(int p_number);
   void set_log_max_lines(int p_number);
@@ -125,7 +126,7 @@ signals:
   void timeofday_changed(QString);
   void manual_timeofday_changed(bool);
   void showname_changed(QString);
-  void fill_iniedit_showname_changed(bool);
+  void showname_placeholder_changed(QString);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);
 
