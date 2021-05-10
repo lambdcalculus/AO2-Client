@@ -61,6 +61,10 @@ void Courtroom::enter_courtroom(int p_cid)
     if (showname_char.isEmpty())
       showname_char = f_char;
     ao_app->discord->set_character_name(showname_char);
+
+    QStringList l_content{f_char, showname_char};
+    AOPacket *l_packet = new AOPacket("chrini", l_content);
+    ao_app->send_server_packet(l_packet);
   }
 
   current_char = f_char;
