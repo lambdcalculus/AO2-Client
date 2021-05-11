@@ -288,7 +288,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_chat_config_changed()));
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
-  connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(on_sfx_search_edited()));
+  connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(on_sfx_search_edited(QString)));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
@@ -304,7 +304,7 @@ void Courtroom::connect_widgets()
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_hidden, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
-  connect(ui_sfx_list, SIGNAL(currentRowChanged(int)), this, SLOT(on_sfx_widget_list_row_changed()));
+  connect(ui_sfx_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_sfx_list_clicked(QModelIndex)));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
@@ -1247,7 +1247,7 @@ void Courtroom::load_shouts()
     l_button->stackUnder(ui_shout_up);
     l_button->stackUnder(ui_shout_down);
 
-    connect(l_button, SIGNAL(clicked(bool)), this, SLOT(on_shout_button_clicked(bool)));
+    connect(l_button, SIGNAL(clicked(bool)), this, SLOT(on_shout_button_clicked()));
     connect(l_button, SIGNAL(toggled(bool)), this, SLOT(on_shout_button_toggled(bool)));
   }
 
