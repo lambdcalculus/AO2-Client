@@ -442,8 +442,7 @@ QString Courtroom::current_sfx_file()
   QListWidgetItem *l_item = ui_sfx_list->currentItem();
   if (l_item == nullptr)
     return nullptr;
-  return ui_sfx_list->currentRow() == 0 ? ao_app->get_sfx_name(current_char, current_emote)
-                                        : m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).file;
+  return m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).file;
 }
 
 void Courtroom::update_sfx_list()
@@ -454,7 +453,7 @@ void Courtroom::update_sfx_list()
 
   // items
   m_sfx_list.clear();
-  m_sfx_list.append(DR::SFX("Default", nullptr));
+  m_sfx_list.append(DR::SFX("Default", ao_app->get_sfx_name(current_char, current_emote)));
   m_sfx_list.append(DR::SFX("Silence", nullptr));
 
   const QStringList l_sfx_list = ao_app->get_sfx_list();
