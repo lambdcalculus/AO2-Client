@@ -617,6 +617,7 @@ void Courtroom::on_ic_message_return_pressed()
 
   if (!m_showname_sent)
   {
+    m_showname_sent = true;
     send_showname_packet(ao_config->showname());
   }
 
