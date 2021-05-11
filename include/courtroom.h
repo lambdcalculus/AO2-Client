@@ -171,7 +171,10 @@ public:
 
   void list_areas();
 
-  void list_sfx();
+  QString current_sfx_file();
+  void update_sfx_list();
+  void update_sfx_widget_list();
+  void clear_sfx_widget_list_selection();
 
   void list_note_files();
 
@@ -303,7 +306,6 @@ private:
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
   QVector<QString> area_list;
-  QVector<QString> sfx_names;
   QVector<QString> area_names;
   QVector<QString> note_list;
 
@@ -447,7 +449,6 @@ private:
 
   int current_clock = -1;
   int timer_number = 0;
-  int current_sfx_id = -1;
 
   QString current_background = "gs4";
 
@@ -500,7 +501,11 @@ private:
   QListWidget *ui_mute_list = nullptr;
   QListWidget *ui_area_list = nullptr;
   QListWidget *ui_music_list = nullptr;
+
   QListWidget *ui_sfx_list = nullptr;
+  QVector<DR::SFX> m_sfx_list;
+  QColor m_sfx_color_found;
+  QColor m_sfx_color_missing;
 
   QLineEdit *ui_ic_chat_message = nullptr;
 
@@ -697,13 +702,14 @@ private slots:
 
   void on_ooc_return_pressed();
 
-  void on_music_search_edited(QString p_text);
+  void on_music_search_edited();
   void on_music_list_clicked();
   void on_area_list_clicked();
   void on_music_list_double_clicked(QModelIndex p_model);
   void on_area_list_double_clicked(QModelIndex p_model);
 
-  void on_sfx_search_edited(QString p_text);
+  void on_sfx_search_edited();
+  void on_sfx_widget_list_row_changed();
 
   void select_emote(int p_id);
 
@@ -821,8 +827,6 @@ private slots:
   void on_pre_clicked();
   void on_flip_clicked();
   void on_hidden_clicked();
-
-  void on_sfx_list_clicked(QModelIndex p_index);
 
   void on_evidence_button_clicked();
 
