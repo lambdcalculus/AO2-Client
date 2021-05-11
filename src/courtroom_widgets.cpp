@@ -103,6 +103,11 @@ void Courtroom::create_widgets()
   ui_music_list = new QListWidget(this);
   ui_sfx_list = new QListWidget(this);
 
+  ui_ic_chat_showname = new QLineEdit(this);
+  ui_ic_chat_showname->setFrame(false);
+  ui_ic_chat_showname->setPlaceholderText("Showname");
+  ui_ic_chat_showname->setText(ao_config->showname());
+
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
 
@@ -248,10 +253,14 @@ void Courtroom::connect_widgets()
   connect(ui_mute_list, SIGNAL(itemChanged(QListWidgetItem *)), this,
           SLOT(on_mute_list_item_changed(QListWidgetItem *)));
 
-  connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_chat_return_pressed()));
+  connect(ao_config, SIGNAL(showname_changed(QString)), this, SLOT(on_showname_changed(QString)));
+  connect(ao_config, SIGNAL(showname_placeholder_changed(QString)), this,
+          SLOT(on_showname_placeholder_changed(QString)));
+  connect(ui_ic_chat_showname, SIGNAL(editingFinished()), ao_config, SLOT(on_ic_showname_editing_finished()));
+  connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
 
-  connect(ui_ooc_chat_name, SIGNAL(textEdited(QString)), ao_config, SLOT(set_username(QString)));
   connect(ao_config, SIGNAL(username_changed(QString)), ui_ooc_chat_name, SLOT(setText(QString)));
+  connect(ui_ooc_chat_name, SIGNAL(editingFinished()), this, SLOT(on_ooc_name_editing_finished()));
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
 
   connect(ui_music_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_music_list_clicked()));
@@ -343,6 +352,7 @@ void Courtroom::reset_widget_names()
       {"area_list", ui_area_list},
       {"music_list", ui_music_list},
       {"sfx_list", ui_sfx_list},
+      {"ic_chat_name", ui_ic_chat_showname},
       {"ao2_ic_chat_message", ui_ic_chat_message},
       // ui_muted
       {"ooc_chat_message", ui_ooc_chat_message},
@@ -612,7 +622,11 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_sfx_list, "sfx_list");
 
+  set_size_and_pos(ui_ic_chat_showname, "ic_chat_name");
+  ui_ic_chat_showname->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message");
+  ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
+
   set_size_and_pos(ui_vp_chatbox, "ao2_chatbox");
 
   set_size_and_pos(ui_vp_music_area, "music_area");
@@ -629,8 +643,6 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_vp_clock, "clock");
   ui_vp_clock->hide();
-
-  ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
 
   ui_vp_chatbox->set_image("chatmed.png");
   ui_vp_chatbox->hide();

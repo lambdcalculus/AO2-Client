@@ -77,7 +77,7 @@ void Courtroom::reset_emote_page()
   current_emote_page = 0;
   current_emote = 0;
 
-  if (m_cid == -1)
+  if (is_spectating())
     ui_emotes->hide();
   else
     ui_emotes->show();
@@ -91,7 +91,7 @@ void Courtroom::set_emote_page()
   ui_emote_left->hide();
   ui_emote_right->hide();
 
-  if (m_cid == -1)
+  if (is_spectating())
     return;
 
   int total_emotes = ao_app->get_emote_number(current_char);

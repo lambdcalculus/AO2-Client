@@ -45,6 +45,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   w_manual_gamemode = AO_GUI_WIDGET(QCheckBox, "manual_gamemode");
   w_timeofday = AO_GUI_WIDGET(QComboBox, "timeofday");
   w_manual_timeofday = AO_GUI_WIDGET(QCheckBox, "manual_timeofday");
+  w_showname = AO_GUI_WIDGET(QLineEdit, "showname");
   w_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
   w_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
 
@@ -85,18 +86,26 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   refresh_timeofday_list();
 
   // input
+  // meta
   connect(m_config, SIGNAL(autosave_changed(bool)), w_autosave, SLOT(setChecked(bool)));
+
+  // general
   connect(m_config, SIGNAL(username_changed(QString)), w_username, SLOT(setText(QString)));
   connect(m_config, SIGNAL(callwords_changed(QString)), w_callwords, SLOT(setText(QString)));
   connect(m_config, SIGNAL(server_alerts_changed(bool)), w_server_alerts, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(discord_presence_changed(bool)), w_discord_presence, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(discord_hide_server_changed(bool)), w_discord_hide_server, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(discord_hide_character_changed(bool)), w_discord_hide_character, SLOT(setChecked(bool)));
+
+  // game
   connect(m_config, SIGNAL(theme_changed(QString)), w_theme, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(gamemode_changed(QString)), w_gamemode, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(manual_gamemode_changed(bool)), w_manual_gamemode, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(timeofday_changed(QString)), w_timeofday, SLOT(setCurrentText(QString)));
   connect(m_config, SIGNAL(manual_timeofday_changed(bool)), w_manual_timeofday, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(showname_changed(QString)), w_showname, SLOT(setText(QString)));
+  connect(m_config, SIGNAL(showname_placeholder_changed(QString)), this,
+          SLOT(on_showname_placeholder_changed(QString)));
   connect(m_config, SIGNAL(always_pre_changed(bool)), w_always_pre, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(chat_tick_interval_changed(int)), w_chat_tick_interval, SLOT(setValue(int)));
 
@@ -134,23 +143,27 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
           SLOT(on_favorite_audio_device_changed(DRAudioDevice)));
 
   // output
+  // meta
   connect(w_close, SIGNAL(clicked()), this, SLOT(close()));
   connect(w_save, SIGNAL(clicked()), m_config, SLOT(save_file()));
   connect(w_autosave, SIGNAL(toggled(bool)), m_config, SLOT(set_autosave(bool)));
-  connect(w_username, SIGNAL(textEdited(QString)), m_config, SLOT(set_username(QString)));
-  connect(w_callwords, SIGNAL(textEdited(QString)), m_config, SLOT(set_callwords(QString)));
-  connect(w_server_alerts, SIGNAL(toggled(bool)), m_config, SLOT(set_server_alerts(bool)));
 
+  // general
+  connect(w_username, SIGNAL(editingFinished()), this, SLOT(username_editing_finished()));
+  connect(w_callwords, SIGNAL(editingFinished()), this, SLOT(callwords_editing_finished()));
+  connect(w_server_alerts, SIGNAL(toggled(bool)), m_config, SLOT(set_server_alerts(bool)));
   connect(w_discord_presence, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_presence(bool)));
   connect(w_discord_hide_server, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_hide_server(const bool)));
   connect(w_discord_hide_character, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_hide_character(const bool)));
 
+  // game
   connect(w_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
   connect(w_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(w_gamemode, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_gamemode_index_changed(QString)));
   connect(w_manual_gamemode, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_gamemode(bool)));
   connect(w_timeofday, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_timeofday_index_changed(QString)));
   connect(w_manual_timeofday, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_timeofday(bool)));
+  connect(w_showname, SIGNAL(editingFinished()), this, SLOT(showname_editing_finished()));
   connect(w_always_pre, SIGNAL(toggled(bool)), m_config, SLOT(set_always_pre(bool)));
   connect(w_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
 
@@ -182,15 +195,22 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(w_blank_blips, SIGNAL(toggled(bool)), m_config, SLOT(set_blank_blips(bool)));
 
   // set values
+  // meta
   w_autosave->setChecked(m_config->autosave());
+
+  // general
   w_username->setText(m_config->username());
   w_callwords->setText(m_config->callwords());
   w_server_alerts->setChecked(m_config->server_alerts_enabled());
+
+  // game
   w_theme->setCurrentText(m_config->theme());
   w_gamemode->setCurrentText(m_config->gamemode());
   w_manual_gamemode->setChecked(m_config->manual_gamemode_enabled());
   w_timeofday->setCurrentText(m_config->timeofday());
   w_manual_timeofday->setChecked(m_config->manual_timeofday_enabled());
+  w_showname->setText(m_config->showname());
+  on_showname_placeholder_changed(m_config->showname_placeholder());
   w_always_pre->setChecked(m_config->always_pre_enabled());
   w_chat_tick_interval->setValue(m_config->chat_tick_interval());
 
@@ -390,6 +410,13 @@ void AOConfigPanel::on_timeofday_index_changed(QString p_text)
   m_config->set_timeofday(w_timeofday->currentData().toString());
 }
 
+void AOConfigPanel::on_showname_placeholder_changed(QString p_text)
+{
+  const QString l_showname(p_text.trimmed().isEmpty() ? "Showname" : p_text);
+  w_showname->setPlaceholderText(l_showname);
+  w_showname->setToolTip(l_showname);
+}
+
 void AOConfigPanel::on_log_is_topdown_changed(bool p_enabled)
 {
   w_log_orientation_top_down->setChecked(p_enabled);
@@ -453,6 +480,21 @@ void AOConfigPanel::on_music_value_changed(int p_num)
 void AOConfigPanel::on_blip_value_changed(int p_num)
 {
   w_blip_value->setText(QString::number(p_num) + "%");
+}
+
+void AOConfigPanel::username_editing_finished()
+{
+  m_config->set_username(w_username->text());
+}
+
+void AOConfigPanel::showname_editing_finished()
+{
+  m_config->set_showname(w_showname->text());
+}
+
+void AOConfigPanel::callwords_editing_finished()
+{
+  m_config->set_callwords(w_callwords->text());
 }
 
 void AOConfigPanel::on_config_reload_theme_requested()

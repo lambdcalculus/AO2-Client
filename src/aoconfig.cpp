@@ -56,6 +56,8 @@ private:
   bool manual_gamemode;
   QString timeofday;
   bool manual_timeofday;
+  QString showname;
+  QString showname_placeholder;
   bool always_pre;
   int chat_tick_interval;
   int log_max_lines;
@@ -108,6 +110,7 @@ void AOConfigPrivate::read_file()
 {
   autosave = cfg.value("autosave", true).toBool();
   username = cfg.value("username").toString();
+  showname = cfg.value("showname").toString();
   callwords = cfg.value("callwords").toString();
   server_alerts = cfg.value("server_alerts", true).toBool();
 
@@ -167,6 +170,7 @@ void AOConfigPrivate::save_file()
 {
   cfg.setValue("autosave", autosave);
   cfg.setValue("username", username);
+  cfg.setValue("showname", showname);
   cfg.setValue("callwords", callwords);
   cfg.setValue("server_alerts", server_alerts);
 
@@ -280,6 +284,16 @@ bool AOConfig::autosave() const
 QString AOConfig::username() const
 {
   return d->username;
+}
+
+QString AOConfig::showname() const
+{
+  return d->showname;
+}
+
+QString AOConfig::showname_placeholder() const
+{
+  return d->showname_placeholder;
 }
 
 QString AOConfig::callwords() const
@@ -460,6 +474,27 @@ void AOConfig::set_username(QString p_string)
     return;
   d->username = p_string;
   d->invoke_signal("username_changed", Q_ARG(QString, p_string));
+}
+
+void AOConfig::set_showname(QString p_string)
+{
+  if (d->showname == p_string)
+    return;
+  d->showname = p_string;
+  d->invoke_signal("showname_changed", Q_ARG(QString, p_string));
+}
+
+void AOConfig::set_showname_placeholder(QString p_string)
+{
+  if (d->showname_placeholder == p_string)
+    return;
+  d->showname_placeholder = p_string;
+  d->invoke_signal("showname_placeholder_changed", Q_ARG(QString, p_string));
+}
+
+void AOConfig::clear_showname_placeholder()
+{
+  set_showname_placeholder(nullptr);
 }
 
 void AOConfig::set_callwords(QString p_string)

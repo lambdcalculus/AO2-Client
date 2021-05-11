@@ -126,6 +126,20 @@ public:
   // sets the character position
   void set_character_position(QString p_pos);
 
+  /**
+   * @brief Send a OOC packet (CT) out to the server.
+   * @param ooc_name The username.
+   * @param ooc_message The message.
+   */
+  void send_ooc_packet(QString ooc_name, QString ooc_message);
+
+  /**
+   * @brief Send a packet to set the showname of the user to
+   * the server.
+   * @param p_showname The showname.
+   */
+  void send_showname_packet(QString p_showname);
+
   // called when a DONE#% from the server was received
   void done_received();
 
@@ -161,6 +175,9 @@ public:
   {
     return current_char;
   }
+
+  // Set the showname of the client
+  void set_showname(QString p_showname);
 
   // properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
@@ -322,6 +339,7 @@ private:
   // used to determine how often blips sound
   int blip_pos = 0;
   int rainbow_counter = 0;
+  bool m_showname_sent = false;
   bool rainbow_appended = false;
   bool note_shown = false;
   bool contains_add_button = false;
@@ -509,10 +527,11 @@ private:
   QColor m_sfx_color_found;
   QColor m_sfx_color_missing;
 
+  QLineEdit *ui_ic_chat_showname = nullptr;
   QLineEdit *ui_ic_chat_message = nullptr;
 
-  QLineEdit *ui_ooc_chat_message = nullptr;
   QLineEdit *ui_ooc_chat_name = nullptr;
+  QLineEdit *ui_ooc_chat_message = nullptr;
 
   QLineEdit *ui_music_search = nullptr;
 
@@ -680,6 +699,8 @@ private:
 
   void set_char_rpc();
 
+  bool is_spectating();
+
 public slots:
   void objection_done();
   void preanim_done();
@@ -699,9 +720,13 @@ private slots:
 
   void on_mute_list_item_changed(QListWidgetItem *p_item);
 
-  void on_chat_return_pressed();
+  void on_showname_changed(QString);
+  void on_showname_placeholder_changed(QString);
+  void on_ic_showname_editing_finished();
+  void on_ic_message_return_pressed();
   void on_chat_config_changed();
 
+  void on_ooc_name_editing_finished();
   void on_ooc_return_pressed();
 
   void on_music_search_edited();

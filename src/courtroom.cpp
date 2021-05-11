@@ -45,34 +45,34 @@ void Courtroom::enter_courtroom(int p_cid)
   bool changed_character = (m_cid != p_cid);
   m_cid = p_cid;
 
-  QString f_char;
+  QString l_chr_name;
 
   set_char_rpc();
 
-  if (m_cid == -1)
+  if (is_spectating())
   {
     ao_app->discord->clear_character_name();
-    f_char = "";
+    ao_config->clear_showname_placeholder();
   }
   else
   {
-    f_char = ao_app->get_char_name(char_list.at(m_cid).name);
-    QString showname_char = ao_app->get_showname(f_char);
-    if (showname_char.isEmpty())
-      showname_char = f_char;
-    ao_app->discord->set_character_name(showname_char);
+    l_chr_name = ao_app->get_char_name(char_list.at(m_cid).name);
+    const QString l_ini_showname = ao_app->get_showname(l_chr_name);
+    const QString l_final_showname = l_ini_showname.trimmed().isEmpty() ? l_chr_name : l_ini_showname;
+    ao_app->discord->set_character_name(l_final_showname);
+    ao_config->set_showname_placeholder(l_final_showname);
 
-    QStringList l_content{f_char, showname_char};
-    AOPacket *l_packet = new AOPacket("chrini", l_content);
+    QStringList l_content{l_chr_name, l_final_showname};
+    AOPacket *l_packet = new AOPacket("chrini", l_final_showname);
     ao_app->send_server_packet(l_packet);
   }
 
-  current_char = f_char;
+  current_char = l_chr_name;
 
   current_emote_page = 0;
   current_emote = 0;
 
-  if (m_cid == -1)
+  if (is_spectating())
     ui_emotes->hide();
   else
     ui_emotes->show();
@@ -101,7 +101,7 @@ void Courtroom::enter_courtroom(int p_cid)
   // can be omitted), I am keeping it in case we expand set_character_position
   // to do more.
   if (changed_character)
-    set_character_position(ao_app->get_char_side(f_char));
+    set_character_position(ao_app->get_char_side(l_chr_name));
   else
     set_character_position(ui_pos_dropdown->currentText());
 
@@ -142,7 +142,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   ui_char_select_background->hide();
 
-  ui_ic_chat_message->setEnabled(m_cid != -1);
+  ui_ic_chat_message->setEnabled(!is_spectating());
   ui_ic_chat_message->setFocus();
 
   for (int i = 0; i < ui_timers.length(); ++i)
@@ -615,13 +615,50 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
     save_textlog("(OOC)" + p_name + ": " + p_message);
 }
 
-void Courtroom::on_chat_return_pressed()
+void Courtroom::on_showname_changed(QString p_showname)
+{
+  ui_ic_chat_showname->setText(p_showname);
+  send_showname_packet(p_showname);
+}
+
+void Courtroom::send_showname_packet(QString p_showname)
+{
+  if (ao_app->m_FL_showname_enabled)
+  {
+    QStringList l_content = {p_showname};
+    ao_app->send_server_packet(new AOPacket("SN", l_content));
+  }
+  else
+  {
+    send_ooc_packet(ao_config->username(), QString("/showname %1").arg(p_showname));
+  }
+}
+
+bool Courtroom::is_spectating()
+{
+  return m_cid == -1;
+}
+
+void Courtroom::on_showname_placeholder_changed(QString p_showname_placeholder)
+{
+  const QString l_showname(p_showname_placeholder.trimmed().isEmpty() ? "Showname" : p_showname_placeholder);
+  ui_ic_chat_showname->setPlaceholderText(l_showname);
+  ui_ic_chat_showname->setToolTip(l_showname);
+}
+
+void Courtroom::on_ic_message_return_pressed()
 {
   if (ui_ic_chat_message->text() == "" || is_client_muted)
     return;
 
   if ((anim_state < 3 || text_state < 2) && m_shout_state == 0)
     return;
+
+  if (!m_showname_sent)
+  {
+    m_showname_sent = true;
+    send_showname_packet(ao_config->showname());
+  }
 
   //  qDebug() << "prev_emote = " << prev_emote << "current_emote = " <<
   //  current_emote;
@@ -1751,6 +1788,33 @@ void Courtroom::set_character_position(QString p_pos)
   set_judge_enabled(p_pos == "jud");
 }
 
+void Courtroom::send_ooc_packet(QString ooc_name, QString ooc_message)
+{
+  if (ooc_name.trimmed().isEmpty())
+  {
+    bool ok;
+    do
+    {
+      ooc_name = QInputDialog::getText(this, "Enter a name",
+                                       "You must have a name to talk in OOC chat. Enter a name: ", QLineEdit::Normal,
+                                       "user", &ok);
+    } while (ok && ooc_name.isEmpty());
+    if (!ok)
+      return;
+
+    ao_config->set_username(ooc_name);
+  }
+
+  if (ooc_message.trimmed().isEmpty())
+  {
+    append_server_chatmessage("CLIENT", "You cannot send an empty message.");
+    return;
+  }
+
+  QStringList l_content{ooc_name, ooc_message};
+  ao_app->send_server_packet(new AOPacket("CT", l_content));
+}
+
 void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
@@ -1763,32 +1827,27 @@ void Courtroom::mod_called(QString p_ip)
   }
 }
 
+void Courtroom::on_ic_showname_editing_finished()
+{
+  set_showname(ui_ic_chat_showname->text());
+}
+
+void Courtroom::set_showname(QString p_showname)
+{
+  ao_config->set_showname(p_showname);
+}
+
+void Courtroom::on_ooc_name_editing_finished()
+{
+  ao_config->set_username(ui_ooc_chat_name->text());
+}
+
 void Courtroom::on_ooc_return_pressed()
 {
-  QString ooc_name = ui_ooc_chat_name->text();
-  QString ooc_message = ui_ooc_chat_message->text();
+  const QString ooc_name = ui_ooc_chat_name->text();
+  const QString ooc_message = ui_ooc_chat_message->text();
 
-  if (ooc_message.isEmpty())
-  {
-    append_server_chatmessage("CLIENT", "You cannot send an empty message.");
-    return;
-  }
-  if (ooc_name.isEmpty())
-  {
-    bool ok;
-    QString name;
-    do
-    {
-      ooc_name = QInputDialog::getText(this, "Enter a name",
-                                       "You must have a name to talk in OOC chat. Enter a name: ", QLineEdit::Normal,
-                                       "user", &ok);
-    } while (ok && ooc_name.isEmpty());
-    if (!ok)
-      return;
-
-    ao_config->set_username(ooc_name);
-  }
-  else if (ooc_message.startsWith("/rainbow") && !rainbow_appended)
+  if (ooc_message.startsWith("/rainbow") && !rainbow_appended)
   {
     ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
@@ -1856,16 +1915,10 @@ void Courtroom::on_ooc_return_pressed()
       timer_id = ooc_message.mid(space_location + 1).toInt();
     pause_timer(timer_id);
   }
-  QStringList packet_contents;
-  packet_contents.append(ooc_name);
-  packet_contents.append(ooc_message);
 
-  AOPacket *f_packet = new AOPacket("CT", packet_contents);
-
-  ao_app->send_server_packet(f_packet);
+  send_ooc_packet(ooc_name, ooc_message);
 
   ui_ooc_chat_message->clear();
-
   ui_ooc_chat_message->setFocus();
 }
 

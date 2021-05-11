@@ -23,6 +23,8 @@ public:
   // getters
   bool autosave() const;
   QString username() const;
+  QString showname() const;
+  QString showname_placeholder() const;
   QString callwords() const;
   bool server_alerts_enabled() const;
   bool discord_presence() const;
@@ -66,17 +68,20 @@ public slots:
 public slots:
   void set_autosave(bool p_enabled);
   void set_username(QString p_string);
+  void set_showname(QString p_string);
+  void set_showname_placeholder(QString p_string);
+  void clear_showname_placeholder();
   void set_callwords(QString p_string);
   void set_server_alerts(bool p_enabled);
   void set_discord_presence(const bool p_enabled);
   void set_discord_hide_server(const bool p_enabled);
   void set_discord_hide_character(const bool p_enabled);
-  void set_always_pre(bool p_enabled);
   void set_theme(QString p_string);
   void set_gamemode(QString p_string);
   void set_manual_gamemode(bool p_enabled);
   void set_timeofday(QString p_string);
   void set_manual_timeofday(bool p_enabled);
+  void set_always_pre(bool p_enabled);
   void set_chat_tick_interval(int p_number);
   void set_log_max_lines(int p_number);
   void set_log_display_timestamp(bool p_enabled);
@@ -103,20 +108,29 @@ public slots:
 
   // signals
 signals:
+  // meta
   void autosave_changed(bool);
+
+  // general
   void username_changed(QString);
   void callwords_changed(QString);
   void server_alerts_changed(bool);
   void discord_presence_changed(bool);
   void discord_hide_server_changed(bool);
   void discord_hide_character_changed(bool);
+
+  // game
   void theme_changed(QString);
   void gamemode_changed(QString);
   void manual_gamemode_changed(bool);
   void timeofday_changed(QString);
   void manual_timeofday_changed(bool);
+  void showname_changed(QString);
+  void showname_placeholder_changed(QString);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);
+
+  // log
   void log_max_lines_changed(int);
   void log_display_timestamp_changed(bool);
   void log_display_self_highlight_changed(bool);
