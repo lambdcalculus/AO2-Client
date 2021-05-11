@@ -52,6 +52,7 @@ public:
 #endif
 
   bool m_FL_showname_enabled = false;
+  bool m_FL_chrini_enabled = false;
 
   ///////////////loading info///////////////////
 

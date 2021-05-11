@@ -62,9 +62,12 @@ void Courtroom::enter_courtroom(int p_cid)
     ao_app->discord->set_character_name(l_final_showname);
     ao_config->set_showname_placeholder(l_final_showname);
 
-    QStringList l_content{l_chr_name, l_final_showname};
-    AOPacket *l_packet = new AOPacket("chrini", l_content);
-    ao_app->send_server_packet(l_packet);
+    if (ao_app->m_FL_chrini_enabled)
+    {
+      QStringList l_content{l_chr_name, l_final_showname};
+      AOPacket *l_packet = new AOPacket("chrini", l_content);
+      ao_app->send_server_packet(l_packet);
+    }
   }
 
   current_char = l_chr_name;

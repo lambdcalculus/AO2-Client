@@ -143,6 +143,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     ackMS_enabled = false;
 #endif
     m_FL_showname_enabled = false;
+    m_FL_chrini_enabled = false;
 
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
@@ -168,10 +169,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "FL")
   {
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    if (f_packet.contains("ackMS", Qt::CaseInsensitive))
-      ackMS_enabled = true;
-    if (f_packet.contains("showname", Qt::CaseInsensitive))
-      m_FL_showname_enabled = true;
+    ackMS_enabled = f_packet.contains("ackMS", Qt::CaseInsensitive);
+    m_FL_showname_enabled = f_packet.contains("showname", Qt::CaseInsensitive);
+    m_FL_chrini_enabled = f_packet.contains("chrini", Qt::CaseInsensitive);
 #endif
   }
   else if (header == "PN")
