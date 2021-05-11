@@ -96,13 +96,8 @@ public:
   void set_widgets();
   // sets font properties based on theme ini files
   void set_font(QWidget *widget, QString p_identifier);
-  // same as above, but use override color as color if it is not an empty
-  // string, otherwise use normal logic for color of set_font
-  void set_font(QWidget *widget, QString p_identifier, QString override_color);
-  // sets font properties for DRTextEdit (same as above but also text outline)
+  // sets font properties for DRTextEdit (same as above but also text outline, and alignments)
   void set_drtextedit_font(DRTextEdit *widget, QString p_identifier);
-  // same as second set_font but for drtextedit
-  void set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QString override_color);
   // helper function that calls above function on the relevant widgets
   void set_fonts();
 
@@ -176,7 +171,10 @@ public:
 
   void list_areas();
 
-  void list_sfx();
+  QString current_sfx_file();
+  void update_sfx_list();
+  void update_sfx_widget_list();
+  void clear_sfx_widget_list_selection();
 
   void list_note_files();
 
@@ -308,7 +306,6 @@ private:
   QVector<evi_type> evidence_list;
   QVector<QString> music_list;
   QVector<QString> area_list;
-  QVector<QString> sfx_names;
   QVector<QString> area_names;
   QVector<QString> note_list;
 
@@ -401,9 +398,9 @@ private:
   bool m_msg_is_first_person = false;
 
   // Cached values for chat_tick
-  bool chatbox_message_outline = false;
-  bool chatbox_message_enable_highlighting = false;
-  QVector<QStringList> chatbox_message_highlight_colors;
+  bool m_chatbox_message_outline = false;
+  bool m_chatbox_message_enable_highlighting = false;
+  QVector<QStringList> m_chatbox_message_highlight_colors;
 
   // cid and this may differ in cases of ini-editing
   QString current_char;
@@ -452,7 +449,6 @@ private:
 
   int current_clock = -1;
   int timer_number = 0;
-  int current_sfx_id = -1;
 
   QString current_background = "gs4";
 
@@ -505,7 +501,11 @@ private:
   QListWidget *ui_mute_list = nullptr;
   QListWidget *ui_area_list = nullptr;
   QListWidget *ui_music_list = nullptr;
+
   QListWidget *ui_sfx_list = nullptr;
+  QVector<DR::SFX> m_sfx_list;
+  QColor m_sfx_color_found;
+  QColor m_sfx_color_missing;
 
   QLineEdit *ui_ic_chat_message = nullptr;
 
@@ -702,13 +702,14 @@ private slots:
 
   void on_ooc_return_pressed();
 
-  void on_music_search_edited(QString p_text);
+  void on_music_search_edited();
   void on_music_list_clicked();
   void on_area_list_clicked();
   void on_music_list_double_clicked(QModelIndex p_model);
   void on_area_list_double_clicked(QModelIndex p_model);
 
-  void on_sfx_search_edited(QString p_text);
+  void on_sfx_search_edited();
+  void on_sfx_widget_list_row_changed();
 
   void select_emote(int p_id);
 
@@ -771,21 +772,13 @@ private slots:
    * @details If a sprite cannot be found for a shout button, a regular
    * push button is displayed for it with its shout name instead.
    */
-  void draw_shout_buttons();
-
-  /**
-   * @brief Set the sprite of the given shout button, using the selected sprite if the button is selected.
-   * @param p_index Index of button to redraw.
-   * @details If a sprite cannot be found for the shout button, a regular push button is displayed for it with its
-   * shout name instead. If the index is out of bounds with respect to the number of shouts available, this method
-   * does nothing.
-   */
-  void draw_shout_button(int p_index);
+  void reset_shout_buttons();
 
   /**
    * @brief a general purpose function to toggle button selection
    */
-  void on_shout_clicked();
+  void on_shout_button_clicked(const bool);
+  void on_shout_button_toggled(const bool);
 
   /**
    * @brief Set the sprites of the effect buttons, and mark the currently
@@ -794,18 +787,9 @@ private slots:
    * @details If a sprite cannot be found for a shout button, a regular
    * push button is displayed for it with its shout name instead.
    */
-  void draw_effect_buttons();
-
-  /**
-   * @brief Set the sprite of the given effect button, using the selected sprite if the button is selected.
-   * @param p_index Index of button to redraw.
-   * @details If a sprite cannot be found for the effect button, a regular push button is displayed for it with its
-   * effect name instead. If the index is out of bounds with respect to the number of effects available, this method
-   * does nothing.
-   */
-  void draw_effect_button(int p_index);
-
-  void on_effect_button_clicked();
+  void reset_effect_buttons();
+  void on_effect_button_clicked(const bool);
+  void on_effect_button_toggled(const bool);
 
   void on_mute_clicked();
 
@@ -816,14 +800,15 @@ private slots:
 
   void on_text_color_changed(int p_color);
 
+  void on_witness_testimony_clicked();
+  void on_cross_examination_clicked();
   /**
    * @brief Set the sprites of the splash buttons.
    *
-   * @details If a sprite cannot be found for a splash button, a regular
+   * @details If a sprite cannot be found for a shout button, a regular
    * push button is displayed for it with its shout name instead.
    */
-  void draw_judge_wtce_buttons();
-
+  void reset_wtce_buttons();
   void on_wtce_clicked();
 
   void on_change_character_clicked();
@@ -842,8 +827,6 @@ private slots:
   void on_pre_clicked();
   void on_flip_clicked();
   void on_hidden_clicked();
-
-  void on_sfx_list_clicked(QModelIndex p_index);
 
   void on_evidence_button_clicked();
 

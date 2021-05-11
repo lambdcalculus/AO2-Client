@@ -288,7 +288,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_chat_config_changed()));
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
-  connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(on_sfx_search_edited(QString)));
+  connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(on_sfx_search_edited()));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
@@ -304,7 +304,7 @@ void Courtroom::connect_widgets()
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_hidden, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
-  connect(ui_sfx_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_sfx_list_clicked(QModelIndex)));
+  connect(ui_sfx_list, SIGNAL(currentRowChanged(int)), this, SLOT(on_sfx_widget_list_row_changed()));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
@@ -688,7 +688,7 @@ void Courtroom::set_widgets()
   //  ui_shouts[0]->show();
   //  ui_shouts[1]->show();
   //  ui_shouts[2]->show();
-  draw_shout_buttons();
+  reset_shout_buttons();
 
   set_size_and_pos(ui_shout_up, "shout_up");
   ui_shout_up->set_image("shoutup.png");
@@ -717,7 +717,7 @@ void Courtroom::set_widgets()
   {
     set_size_and_pos(ui_effects[i], effect_names[i]);
   }
-  draw_effect_buttons();
+  reset_effect_buttons();
 
   set_size_and_pos(ui_effect_up, "effect_up");
   ui_effect_up->set_image("effectup.png");
@@ -757,7 +757,7 @@ void Courtroom::set_widgets()
     qDebug() << "AA: single wtce";
   }
   set_judge_wtce();
-  draw_judge_wtce_buttons();
+  reset_wtce_buttons();
 
   for (int i = 0; i < free_block_names.size(); ++i)
   {
@@ -1169,15 +1169,16 @@ void Courtroom::load_effects()
 
   for (int i = 0; i < ui_effects.size(); ++i)
   {
-    ui_effects[i] = new AOButton(this, ao_app);
-    ui_effects[i]->setProperty("effect_id", i + 1);
-    ui_effects[i]->stackUnder(ui_effect_up);
-    ui_effects[i]->stackUnder(ui_effect_down);
-  }
+    AOButton *l_button = new AOButton(this, ao_app);
+    ui_effects.replace(i, l_button);
+    l_button->setCheckable(true);
+    l_button->setProperty("effect_id", i + 1);
+    l_button->stackUnder(ui_effect_up);
+    l_button->stackUnder(ui_effect_down);
 
-  // And connect their actions
-  for (auto &effect : ui_effects)
-    connect(effect, SIGNAL(clicked(bool)), this, SLOT(on_effect_button_clicked()));
+    connect(l_button, SIGNAL(clicked(bool)), this, SLOT(on_effect_button_clicked(bool)));
+    connect(l_button, SIGNAL(toggled(bool)), this, SLOT(on_effect_button_toggled(bool)));
+  }
 
   // And add names
   effect_names.clear();
@@ -1186,8 +1187,11 @@ void Courtroom::load_effects()
     QStringList names = ao_app->get_effect(i);
     if (!names.isEmpty())
     {
-      QString name = names.at(0).trimmed();
-      effect_names.append(name);
+      const QString l_name = names.at(0).trimmed();
+      effect_names.append(l_name);
+      AOButton *l_button = ui_effects.at(i - 1);
+      l_button->setProperty("effect_name", l_name);
+      Q_EMIT l_button->toggled(l_button->isChecked());
     }
   }
 }
@@ -1236,15 +1240,16 @@ void Courtroom::load_shouts()
 
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    ui_shouts[i] = new AOButton(this, ao_app);
-    ui_shouts[i]->setProperty("shout_id", i + 1);
-    ui_shouts[i]->stackUnder(ui_shout_up);
-    ui_shouts[i]->stackUnder(ui_shout_down);
-  }
+    AOButton *l_button = new AOButton(this, ao_app);
+    ui_shouts.replace(i, l_button);
+    l_button->setCheckable(true);
+    l_button->setProperty("shout_id", i + 1);
+    l_button->stackUnder(ui_shout_up);
+    l_button->stackUnder(ui_shout_down);
 
-  // And connect their actions
-  for (auto &shout : ui_shouts)
-    connect(shout, SIGNAL(clicked(bool)), this, SLOT(on_shout_clicked()));
+    connect(l_button, SIGNAL(clicked(bool)), this, SLOT(on_shout_button_clicked(bool)));
+    connect(l_button, SIGNAL(toggled(bool)), this, SLOT(on_shout_button_toggled(bool)));
+  }
 
   // And add names
   shout_names.clear();
@@ -1255,8 +1260,11 @@ void Courtroom::load_shouts()
     {
       qDebug() << "SHOUT " << name << " " << ui_shouts[i - 1];
       shout_names.append(name);
-      widget_names[name] = ui_shouts[i - 1];
-      ui_shouts[i - 1]->setObjectName(name);
+      AOButton *l_button = ui_shouts.at(i - 1);
+      widget_names.insert(name, l_button);
+      l_button->setObjectName(name);
+      l_button->setProperty("shout_name", name);
+      Q_EMIT l_button->toggled(l_button->isChecked());
     }
   }
   qDebug() << widget_names;
@@ -1387,11 +1395,6 @@ void Courtroom::set_dropdowns()
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
 {
-  set_font(widget, p_identifier, "");
-}
-
-void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override_color)
-{
   QString design_file = fonts_ini;
   QString class_name = widget->metaObject()->className();
 
@@ -1409,32 +1412,22 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override
   }
   widget->setFont(QFont(font_name, f_weight));
 
-  if (override_color.isEmpty())
-  {
-    QString color = ao_app->read_theme_ini(p_identifier + "_color", "courtroom_fonts.ini");
-    if (color.isEmpty())
-      color = "255, 255, 255";
-    override_color = "rgba(" + color + ", 255)";
-  }
+  QString font_color = ao_app->read_theme_ini(p_identifier + "_color", "courtroom_fonts.ini");
+  if (font_color.isEmpty())
+    font_color = "255, 255, 255";
+  QString color = "rgba(" + font_color + ", 255)";
 
   int bold = ao_app->get_font_property(p_identifier + "_bold", design_file);
   QString is_bold = (bold == 1 ? "bold" : "");
 
-  QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: " + override_color +
-                               ";\n"
-                               "font: " +
-                               is_bold + "; }";
+  QString style_sheet_string = class_name + " { " + "background-color: rgba(0, 0, 0, 0);\n" + "color: " + color +
+                               ";\n" + "font: " + is_bold + ";" + " }";
   widget->setStyleSheet(style_sheet_string);
 }
 
 void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
 {
-  set_drtextedit_font(widget, p_identifier, "");
-}
-
-void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QString override_color)
-{
-  set_font(widget, p_identifier, override_color);
+  set_font(widget, p_identifier);
   // Do outlines
   bool outline = (ao_app->get_font_property(p_identifier + "_outline", fonts_ini) == 1);
   widget->set_outline(outline);
