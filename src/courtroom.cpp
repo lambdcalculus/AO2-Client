@@ -1113,7 +1113,7 @@ void Courtroom::handle_chatmessage_3()
     if (overlay_sfx == "")
       overlay_sfx = ao_app->get_sfx(s_eff);
     //    qDebug() << overlay_sfx << ao_app->get_sfx(s_eff);
-    m_effects_player->play(overlay_sfx);
+    m_effects_player->play_effect(overlay_sfx);
     ui_vp_effect->set_play_once(once);
     if (overlay_name == "")
       overlay_name = s_eff;
@@ -1619,11 +1619,11 @@ void Courtroom::hide_testimony()
 
 void Courtroom::play_sfx()
 {
-  QString sfx_name = m_chatmessage[CMSoundName];
-  if (sfx_name == "1" || sfx_name == "0")
+  const QString l_effect = m_chatmessage[CMSoundName];
+  if (l_effect.isEmpty() || l_effect == "0" || l_effect == "1")
     return;
-
-  m_effects_player->play(sfx_name);
+  const QString l_chr = m_chatmessage[CMChrName];
+  m_effects_player->play_character_effect(l_chr, l_effect);
 }
 
 void Courtroom::set_text_color()
@@ -1751,7 +1751,7 @@ void Courtroom::handle_wtce(QString p_wtce)
     p_wtce.chop(1); // looking for the 'testimony' part
     if (p_wtce == "testimony")
     {
-      m_effects_player->play(ao_app->get_sfx(wtce_names[index - 1]));
+      m_effects_player->play_effect(ao_app->get_sfx(wtce_names[index - 1]));
       ui_vp_wtce->play(wtce_names[index - 1]);
       if (index == 1)
       {
@@ -1864,15 +1864,15 @@ void Courtroom::on_ooc_return_pressed()
   }
   else if (ooc_message.startsWith("/rollp"))
   {
-    m_effects_player->play(ao_app->get_sfx("dice"));
+    m_effects_player->play_effect(ao_app->get_sfx("dice"));
   }
   else if (ooc_message.startsWith("/roll"))
   {
-    m_effects_player->play(ao_app->get_sfx("dice"));
+    m_effects_player->play_effect(ao_app->get_sfx("dice"));
   }
   else if (ooc_message.startsWith("/coinflip"))
   {
-    m_effects_player->play(ao_app->get_sfx("coinflip"));
+    m_effects_player->play_effect(ao_app->get_sfx("coinflip"));
   }
   else if (ooc_message.startsWith("/tr "))
   {
