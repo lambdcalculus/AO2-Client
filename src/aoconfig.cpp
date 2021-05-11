@@ -46,7 +46,6 @@ private:
   // data
   bool autosave;
   QString username;
-  QString showname;
   QString callwords;
   bool server_alerts;
   bool discord_presence = false;
@@ -57,6 +56,8 @@ private:
   bool manual_gamemode;
   QString timeofday;
   bool manual_timeofday;
+  QString showname;
+  QString showname_placeholder;
   bool always_pre;
   int chat_tick_interval;
   int log_max_lines;
@@ -290,6 +291,11 @@ QString AOConfig::showname() const
   return d->showname;
 }
 
+QString AOConfig::showname_placeholder() const
+{
+  return d->showname_placeholder;
+}
+
 QString AOConfig::callwords() const
 {
   return d->callwords;
@@ -476,6 +482,19 @@ void AOConfig::set_showname(QString p_string)
     return;
   d->showname = p_string;
   d->invoke_signal("showname_changed", Q_ARG(QString, p_string));
+}
+
+void AOConfig::set_showname_placeholder(QString p_string)
+{
+  if (d->showname_placeholder == p_string)
+    return;
+  d->showname_placeholder = p_string;
+  d->invoke_signal("showname_placeholder_changed", Q_ARG(QString, p_string));
+}
+
+void AOConfig::clear_showname_placeholder()
+{
+  set_showname_placeholder(nullptr);
 }
 
 void AOConfig::set_callwords(QString p_string)

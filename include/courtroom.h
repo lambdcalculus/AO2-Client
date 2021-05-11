@@ -181,6 +181,9 @@ public:
     return current_char;
   }
 
+  // Set the showname of the client
+  void set_showname(QString p_showname);
+
   // properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
 
@@ -338,7 +341,6 @@ private:
   // used to determine how often blips sound
   int blip_pos = 0;
   int rainbow_counter = 0;
-  QString m_last_showname;
   bool m_showname_sent = false;
   bool rainbow_appended = false;
   bool note_shown = false;
@@ -521,7 +523,7 @@ private:
   QListWidget *ui_music_list = nullptr;
   QListWidget *ui_sfx_list = nullptr;
 
-  QLineEdit *ui_ic_chat_name = nullptr;
+  QLineEdit *ui_ic_chat_showname = nullptr;
   QLineEdit *ui_ic_chat_message = nullptr;
 
   QLineEdit *ui_ooc_chat_name = nullptr;
@@ -693,6 +695,8 @@ private:
 
   void set_char_rpc();
 
+  bool is_spectating();
+
 public slots:
   void objection_done();
   void preanim_done();
@@ -712,9 +716,10 @@ private slots:
 
   void on_mute_list_item_changed(QListWidgetItem *p_item);
 
-  void on_showname_changed();
-  void on_chat_name_editing_finished();
-  void on_chat_return_pressed();
+  void on_showname_changed(QString);
+  void on_showname_placeholder_changed(QString);
+  void on_ic_showname_editing_finished();
+  void on_ic_message_return_pressed();
   void on_chat_config_changed();
 
   void on_ooc_name_editing_finished();

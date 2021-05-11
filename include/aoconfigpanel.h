@@ -45,6 +45,7 @@ private slots:
   void on_reload_theme_clicked();
   void on_gamemode_index_changed(QString p_text);
   void on_timeofday_index_changed(QString p_text);
+  void on_showname_placeholder_changed(QString p_text);
   void on_log_is_topdown_changed(bool p_enabled);
   void on_device_current_index_changed(int p_index);
   void on_audio_device_changed(DRAudioDevice p_device);
@@ -71,7 +72,6 @@ private:
 
   // general
   QLineEdit *w_username = nullptr;
-  QLineEdit *w_showname = nullptr;
   QLineEdit *w_callwords = nullptr;
   QCheckBox *w_server_alerts = nullptr;
 
@@ -86,6 +86,7 @@ private:
   QCheckBox *w_manual_gamemode = nullptr;
   QComboBox *w_timeofday = nullptr;
   QCheckBox *w_manual_timeofday = nullptr;
+  QLineEdit *w_showname = nullptr;
   QCheckBox *w_always_pre = nullptr;
   QSpinBox *w_chat_tick_interval = nullptr;
 
