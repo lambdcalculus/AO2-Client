@@ -71,6 +71,19 @@ private:
   bool system = false;
   bool music = false;
 };
+
+struct SFX
+{
+public:
+  SFX() = default;
+  SFX(QString p_name, QString p_file, bool p_is_found = false)
+      : name(p_name.trimmed()), file(p_file.trimmed()), is_found(p_is_found)
+  {}
+
+  QString name;
+  QString file;
+  bool is_found;
+};
 } // namespace DR
 
 struct server_type

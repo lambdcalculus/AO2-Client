@@ -170,6 +170,8 @@ void Courtroom::select_emote(int p_id)
   else
     ui_pre->setChecked(false);
 
+  select_default_sfx();
+
   ui_emote_dropdown->setCurrentIndex(current_emote);
 
   ui_ic_chat_message->setFocus();
