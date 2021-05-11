@@ -110,13 +110,13 @@ void DRTextEdit::refresh_horizontal_alignment()
   if (document()->toPlainText().isEmpty())
   {
     // Qt is very special and does not set this to 0 for empty documents.
-    current_document_blocks = 0;
+    m_current_document_blocks = 0;
     // We also don't need to do any adjusting for empty documents, so return immediately
     return;
   }
   // If we have not changed the number of blocks in the document with this new incoming text change,
   // We do not need to update anything, so we exit early.
-  if (new_document_blocks == current_document_blocks)
+  if (new_document_blocks == m_current_document_blocks)
     return;
 
   // Otherwise, we have changed the number of blocks. By induction only the current block needs to be
@@ -132,16 +132,16 @@ void DRTextEdit::refresh_vertical_alignment()
   if (document()->toPlainText().isEmpty())
   {
     // Qt is very special and does not set this to 0 for empty documents.
-    current_document_height = 0;
+    m_current_document_height = 0;
     // We also don't need to do any adjusting for empty documents, so return immediately
     return;
   }
   // If we have not changed the document height with this new incoming text change,
   // We do not need to update anything, so we exit early.
-  if (new_document_height == current_document_height)
+  if (new_document_height == m_current_document_height)
     return;
 
-  current_document_height = new_document_height;
+  m_current_document_height = new_document_height;
 
   // The way we will simulate vertical alignment is by adjusting the top margin to simulate
   // center alignment, or bottom alignment.

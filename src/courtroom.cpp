@@ -1968,7 +1968,7 @@ void Courtroom::on_shout_button_clicked(const bool p_checked)
     i_button->setChecked(false);
   }
   m_shout_state = p_checked ? l_id : 0;
-
+  
   ui_ic_chat_message->setFocus();
 }
 

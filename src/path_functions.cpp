@@ -11,7 +11,7 @@
 // depends. On Mac, it can be toggled. So, should the time ever come to that,
 // manually define CASE_SENSITIVE_FILESYSTEM if you're working on a Mac that
 // has, well, a case-sensitive filesystem.
-#if (defined(LINUX) || defined(__linux__))
+#ifdef Q_OS_LINUX
 #define CASE_SENSITIVE_FILESYSTEM
 #endif
 
