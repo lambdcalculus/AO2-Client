@@ -128,8 +128,7 @@ void Courtroom::enter_courtroom(int p_cid)
   list_music();
   list_areas();
   update_sfx_list();
-
-  ui_sfx_list->setCurrentItem(ui_sfx_list->item(0)); // prevents undefined errors
+  select_default_sfx();
 
   // unmute audio
   suppress_audio(false);
@@ -491,7 +490,14 @@ void Courtroom::update_sfx_widget_list()
   on_sfx_widget_list_row_changed();
 }
 
-void Courtroom::clear_sfx_widget_list_selection()
+void Courtroom::select_default_sfx()
+{
+  if (ui_sfx_list->count() == 0)
+    return;
+  ui_sfx_list->setCurrentRow(0);
+}
+
+void Courtroom::clear_sfx_selection()
 {
   ui_sfx_list->setCurrentRow(-1);
 }
@@ -504,7 +510,6 @@ void Courtroom::on_sfx_search_editing_finished()
 void Courtroom::on_sfx_widget_list_row_changed()
 {
   const int p_current_row = ui_sfx_list->currentRow();
-  ui_pre->setChecked(p_current_row != -1);
 
   for (int i = 0; i < ui_sfx_list->count(); ++i)
   {
@@ -514,6 +519,8 @@ void Courtroom::on_sfx_widget_list_row_changed()
     QColor i_color = l_is_found ? m_sfx_color_found : m_sfx_color_missing;
     if (i == p_current_row)
     {
+      ui_pre->setChecked(ui_pre->isChecked() || l_is_found);
+
       // Calculate the amount of lightness it would take to light up the row. We
       // also limit it to 1.0, as giving lightness values above 1.0 to QColor does
       // nothing. +0.4 is just an arbitrarily chosen number.
@@ -737,7 +744,7 @@ void Courtroom::handle_acknowledged_ms()
   reset_shout_buttons();
   reset_effect_buttons();
   reset_wtce_buttons();
-  clear_sfx_widget_list_selection();
+  clear_sfx_selection();
 
   is_presenting_evidence = false;
   ui_evidence_present->set_image("present_disabled.png");

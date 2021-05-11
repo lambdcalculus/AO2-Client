@@ -174,7 +174,8 @@ public:
   QString current_sfx_file();
   void update_sfx_list();
   void update_sfx_widget_list();
-  void clear_sfx_widget_list_selection();
+  void select_default_sfx();
+  void clear_sfx_selection();
 
   void list_note_files();
 
