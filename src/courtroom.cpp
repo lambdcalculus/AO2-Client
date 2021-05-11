@@ -707,7 +707,6 @@ void Courtroom::on_ic_message_return_pressed()
   packet_contents.append(f_side);
 
   // sfx file
-  qDebug() << "foo" << current_sfx_file();
   packet_contents.append(current_sfx_file());
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
