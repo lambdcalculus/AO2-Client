@@ -800,16 +800,6 @@ int AOApplication::get_sfx_delay(QString p_char, int p_emote)
     return f_result.toInt();
 }
 
-int AOApplication::get_text_delay(QString p_char, QString p_emote)
-{
-  QString f_result = read_char_ini(p_char, p_emote, "[TextDelay]", "END_OF_FILE");
-
-  if (f_result == "")
-    return -1;
-  else
-    return f_result.toInt();
-}
-
 bool AOApplication::get_blank_blip()
 {
   return config->blank_blips_enabled();
@@ -825,4 +815,14 @@ QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
     return "";
 
   return read_ini(p_identifier, path); // Could be the empty string
+}
+
+bool AOApplication::read_theme_ini_bool(QString p_identifier, QString p_file)
+{
+  return read_theme_ini(p_identifier, p_file) == "true";
+}
+
+int AOApplication::read_theme_ini_int(QString p_identifier, QString p_file)
+{
+  return read_theme_ini(p_identifier, p_file).toInt();
 }

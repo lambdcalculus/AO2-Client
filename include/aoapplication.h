@@ -114,6 +114,16 @@ public:
   QString get_background_path(QString p_file);
   QString get_default_background_path(QString p_file);
   QString get_evidence_path(QString p_file);
+
+  /**
+   * @brief Check the path for various known exploits.
+   *
+   * In order:
+   * - Directory traversal (most commonly: "../" jumps)
+   * @param p_file The path to check.
+   * @return A sanitized path. If any check fails, the path returned is an empty string. The sanitized path does not
+   * necessarily exist.
+   */
   QString sanitize_path(QString p_file);
 
   /**
@@ -332,6 +342,10 @@ public:
    */
   QString read_theme_ini(QString p_identifier, QString p_file);
 
+  bool read_theme_ini_bool(QString p_identifier, QString p_file);
+
+  int read_theme_ini_int(QString p_identifier, QString p_file);
+
   // Returns the coordinates of widget with p_identifier from p_file
   QPoint get_button_spacing(QString p_identifier, QString p_file);
 
@@ -382,9 +396,6 @@ public:
 
   // Returns the value of chat from the specific p_char's ini file
   QString get_chat(QString p_char);
-
-  // Not in use
-  int get_text_delay(QString p_char, QString p_emote);
 
   // Returns the name of p_char
   QString get_char_name(QString p_char);

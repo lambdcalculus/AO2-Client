@@ -25,9 +25,7 @@ void Courtroom::create_widgets()
   keepalive_timer->start(60000);
 
   chat_tick_timer = new QTimer(this);
-
-  text_delay_timer = new QTimer(this);
-  text_delay_timer->setSingleShot(true);
+  chat_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
 
   sfx_delay_timer = new QTimer(this);
   sfx_delay_timer->setSingleShot(true);
@@ -232,7 +230,6 @@ void Courtroom::connect_widgets()
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
 
-  connect(text_delay_timer, SIGNAL(timeout()), this, SLOT(start_chat_ticking()));
   connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
 
   connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(chat_tick()));
@@ -291,7 +288,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_chat_config_changed()));
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
-  connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(on_sfx_search_edited(QString)));
+  connect(ui_sfx_search, SIGNAL(editingFinished()), this, SLOT(on_sfx_search_editing_finished()));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
@@ -307,7 +304,7 @@ void Courtroom::connect_widgets()
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_hidden, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
-  connect(ui_sfx_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_sfx_list_clicked(QModelIndex)));
+  connect(ui_sfx_list, SIGNAL(currentRowChanged(int)), this, SLOT(on_sfx_widget_list_row_changed()));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
@@ -691,7 +688,7 @@ void Courtroom::set_widgets()
   //  ui_shouts[0]->show();
   //  ui_shouts[1]->show();
   //  ui_shouts[2]->show();
-  draw_shout_buttons();
+  reset_shout_buttons();
 
   set_size_and_pos(ui_shout_up, "shout_up");
   ui_shout_up->set_image("shoutup.png");
@@ -701,7 +698,7 @@ void Courtroom::set_widgets()
   ui_shout_down->hide();
 
   // courtroom_config.ini necessary + check for crash
-  if (ao_app->read_theme_ini("enable_single_shout", cc_config_ini) == "true" && ui_shouts.size() > 0)
+  if (ao_app->read_theme_ini_bool("enable_single_shout", cc_config_ini) && ui_shouts.size() > 0)
   {
     for (auto &shout : ui_shouts)
       move_widget(shout, "bullet");
@@ -720,7 +717,7 @@ void Courtroom::set_widgets()
   {
     set_size_and_pos(ui_effects[i], effect_names[i]);
   }
-  draw_effect_buttons();
+  reset_effect_buttons();
 
   set_size_and_pos(ui_effect_up, "effect_up");
   ui_effect_up->set_image("effectup.png");
@@ -729,7 +726,7 @@ void Courtroom::set_widgets()
   ui_effect_down->set_image("effectdown.png");
   ui_effect_down->hide();
 
-  if (ao_app->read_theme_ini("enable_single_effect", cc_config_ini) == "true" &&
+  if (ao_app->read_theme_ini_bool("enable_single_effect", cc_config_ini) &&
       ui_effects.size() > 0) // check to prevent crashing
   {
     for (auto &effect : ui_effects)
@@ -753,14 +750,14 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_wtce[i], wtce_names[i]);
   }
 
-  if (ao_app->read_theme_ini("enable_single_wtce", cc_config_ini) == "true") // courtroom_config.ini necessary
+  if (ao_app->read_theme_ini_bool("enable_single_wtce", cc_config_ini)) // courtroom_config.ini necessary
   {
     for (auto &wtce : ui_wtce)
       move_widget(wtce, "wtce");
     qDebug() << "AA: single wtce";
   }
   set_judge_wtce();
-  draw_judge_wtce_buttons();
+  reset_wtce_buttons();
 
   for (int i = 0; i < free_block_names.size(); ++i)
   {
@@ -788,7 +785,7 @@ void Courtroom::set_widgets()
   ui_config_panel->setStyleSheet("");
   ui_note_button->setStyleSheet("");
 
-  if (ao_app->read_theme_ini("enable_button_images", cc_config_ini) == "true")
+  if (ao_app->read_theme_ini_bool("enable_button_images", cc_config_ini))
   {
     // Set files, ask questions later
     // set_image first tries the gamemode-timeofday folder, then the theme
@@ -841,7 +838,7 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_label_images[i], label_images[i].toLower() + "_image");
   }
 
-  if (ao_app->read_theme_ini("enable_label_images", cc_config_ini) == "true")
+  if (ao_app->read_theme_ini_bool("enable_label_images", cc_config_ini))
   {
     for (int i = 0; i < ui_checks.size(); ++i) // loop through checks
     {
@@ -1018,7 +1015,7 @@ int Courtroom::adapt_numbered_items(QVector<T *> &item_vector, QString config_it
   // &item_vector must be a vector of size at least 1!
 
   // Redraw the new correct number of items.
-  int new_item_number = ao_app->read_theme_ini(config_item_number, cc_config_ini).toInt();
+  int new_item_number = ao_app->read_theme_ini_int(config_item_number, cc_config_ini);
   int current_item_number = item_vector.size();
   // Note we use the fact that, if config_item_number is not there,
   // read_theme_ini returns an empty string, which .toInt() would fail to
@@ -1166,21 +1163,22 @@ void Courtroom::load_effects()
     delete_widget(widget);
 
   // And create new effects
-  int effect_number = ao_app->read_theme_ini("effect_number", cc_config_ini).toInt();
+  int effect_number = ao_app->read_theme_ini_int("effect_number", cc_config_ini);
   effects_enabled.resize(effect_number);
   ui_effects.resize(effect_number);
 
   for (int i = 0; i < ui_effects.size(); ++i)
   {
-    ui_effects[i] = new AOButton(this, ao_app);
-    ui_effects[i]->setProperty("effect_id", i + 1);
-    ui_effects[i]->stackUnder(ui_effect_up);
-    ui_effects[i]->stackUnder(ui_effect_down);
-  }
+    AOButton *l_button = new AOButton(this, ao_app);
+    ui_effects.replace(i, l_button);
+    l_button->setCheckable(true);
+    l_button->setProperty("effect_id", i + 1);
+    l_button->stackUnder(ui_effect_up);
+    l_button->stackUnder(ui_effect_down);
 
-  // And connect their actions
-  for (auto &effect : ui_effects)
-    connect(effect, SIGNAL(clicked(bool)), this, SLOT(on_effect_button_clicked()));
+    connect(l_button, SIGNAL(clicked(bool)), this, SLOT(on_effect_button_clicked(bool)));
+    connect(l_button, SIGNAL(toggled(bool)), this, SLOT(on_effect_button_toggled(bool)));
+  }
 
   // And add names
   effect_names.clear();
@@ -1189,8 +1187,11 @@ void Courtroom::load_effects()
     QStringList names = ao_app->get_effect(i);
     if (!names.isEmpty())
     {
-      QString name = names.at(0).trimmed();
-      effect_names.append(name);
+      const QString l_name = names.at(0).trimmed();
+      effect_names.append(l_name);
+      AOButton *l_button = ui_effects.at(i - 1);
+      l_button->setProperty("effect_name", l_name);
+      Q_EMIT l_button->toggled(l_button->isChecked());
     }
   }
 }
@@ -1201,7 +1202,7 @@ void Courtroom::load_free_blocks()
     delete_widget(widget);
 
   // And create new free block buttons
-  int free_block_number = ao_app->read_theme_ini("free_block_number", cc_config_ini).toInt();
+  int free_block_number = ao_app->read_theme_ini_int("free_block_number", cc_config_ini);
   free_blocks_enabled.resize(free_block_number);
   ui_free_blocks.resize(free_block_number);
 
@@ -1233,21 +1234,22 @@ void Courtroom::load_shouts()
     delete_widget(widget);
 
   // And create new shouts
-  int shout_number = ao_app->read_theme_ini("shout_number", cc_config_ini).toInt();
+  int shout_number = ao_app->read_theme_ini_int("shout_number", cc_config_ini);
   shouts_enabled.resize(shout_number);
   ui_shouts.resize(shout_number);
 
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    ui_shouts[i] = new AOButton(this, ao_app);
-    ui_shouts[i]->setProperty("shout_id", i + 1);
-    ui_shouts[i]->stackUnder(ui_shout_up);
-    ui_shouts[i]->stackUnder(ui_shout_down);
-  }
+    AOButton *l_button = new AOButton(this, ao_app);
+    ui_shouts.replace(i, l_button);
+    l_button->setCheckable(true);
+    l_button->setProperty("shout_id", i + 1);
+    l_button->stackUnder(ui_shout_up);
+    l_button->stackUnder(ui_shout_down);
 
-  // And connect their actions
-  for (auto &shout : ui_shouts)
-    connect(shout, SIGNAL(clicked(bool)), this, SLOT(on_shout_clicked()));
+    connect(l_button, SIGNAL(clicked(bool)), this, SLOT(on_shout_button_clicked(bool)));
+    connect(l_button, SIGNAL(toggled(bool)), this, SLOT(on_shout_button_toggled(bool)));
+  }
 
   // And add names
   shout_names.clear();
@@ -1258,8 +1260,11 @@ void Courtroom::load_shouts()
     {
       qDebug() << "SHOUT " << name << " " << ui_shouts[i - 1];
       shout_names.append(name);
-      widget_names[name] = ui_shouts[i - 1];
-      ui_shouts[i - 1]->setObjectName(name);
+      AOButton *l_button = ui_shouts.at(i - 1);
+      widget_names.insert(name, l_button);
+      l_button->setObjectName(name);
+      l_button->setProperty("shout_name", name);
+      Q_EMIT l_button->toggled(l_button->isChecked());
     }
   }
   qDebug() << widget_names;
@@ -1271,7 +1276,7 @@ void Courtroom::load_wtce()
     delete_widget(widget);
 
   // And create new wtce buttons
-  int wtce_number = ao_app->read_theme_ini("wtce_number", cc_config_ini).toInt();
+  int wtce_number = ao_app->read_theme_ini_int("wtce_number", cc_config_ini);
   wtce_enabled.resize(wtce_number);
   ui_wtce.resize(wtce_number);
 
@@ -1339,7 +1344,7 @@ void Courtroom::set_judge_wtce()
     wtce->hide();
 
   // check if we use a single wtce or multiple
-  const bool is_single_wtce = ao_app->read_theme_ini("enable_single_wtce", cc_config_ini) == "true";
+  const bool is_single_wtce = ao_app->read_theme_ini_bool("enable_single_wtce", cc_config_ini);
 
   // update visibility for next/previous
   ui_wtce_up->setVisible(is_judge && is_single_wtce);
@@ -1390,11 +1395,6 @@ void Courtroom::set_dropdowns()
 
 void Courtroom::set_font(QWidget *widget, QString p_identifier)
 {
-  set_font(widget, p_identifier, "");
-}
-
-void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override_color)
-{
   QString design_file = fonts_ini;
   QString class_name = widget->metaObject()->className();
 
@@ -1412,32 +1412,22 @@ void Courtroom::set_font(QWidget *widget, QString p_identifier, QString override
   }
   widget->setFont(QFont(font_name, f_weight));
 
-  if (override_color.isEmpty())
-  {
-    QString color = ao_app->read_theme_ini(p_identifier + "_color", "courtroom_fonts.ini");
-    if (color.isEmpty())
-      color = "255, 255, 255";
-    override_color = "rgba(" + color + ", 255)";
-  }
+  QString font_color = ao_app->read_theme_ini(p_identifier + "_color", "courtroom_fonts.ini");
+  if (font_color.isEmpty())
+    font_color = "255, 255, 255";
+  QString color = "rgba(" + font_color + ", 255)";
 
   int bold = ao_app->get_font_property(p_identifier + "_bold", design_file);
   QString is_bold = (bold == 1 ? "bold" : "");
 
-  QString style_sheet_string = class_name + " { background-color: rgba(0, 0, 0, 0);\n" + "color: " + override_color +
-                               ";\n"
-                               "font: " +
-                               is_bold + "; }";
+  QString style_sheet_string = class_name + " { " + "background-color: rgba(0, 0, 0, 0);\n" + "color: " + color +
+                               ";\n" + "font: " + is_bold + ";" + " }";
   widget->setStyleSheet(style_sheet_string);
 }
 
 void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
 {
-  set_drtextedit_font(widget, p_identifier, "");
-}
-
-void Courtroom::set_drtextedit_font(DRTextEdit *widget, QString p_identifier, QString override_color)
-{
-  set_font(widget, p_identifier, override_color);
+  set_font(widget, p_identifier);
   // Do outlines
   bool outline = (ao_app->get_font_property(p_identifier + "_outline", fonts_ini) == 1);
   widget->set_outline(outline);
