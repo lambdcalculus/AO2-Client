@@ -127,9 +127,8 @@ void Courtroom::enter_courtroom(int p_cid)
 
   list_music();
   list_areas();
-  list_sfx();
-
-  ui_sfx_list->setCurrentItem(ui_sfx_list->item(0)); // prevents undefined errors
+  update_sfx_list();
+  select_default_sfx();
 
   // unmute audio
   suppress_audio(false);
@@ -437,68 +436,104 @@ void Courtroom::list_areas()
   }
 }
 
-void Courtroom::list_sfx()
+QString Courtroom::current_sfx_file()
 {
+  QListWidgetItem *l_item = ui_sfx_list->currentItem();
+  if (l_item == nullptr)
+    return nullptr;
+  const QString l_file = m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).file;
+  return l_file == m_sfx_default_file ? ao_app->get_sfx_name(current_char, current_emote) : l_file;
+}
+
+void Courtroom::update_sfx_list()
+{
+  // colors
+  m_sfx_color_found = ao_app->get_color("found_song_color", design_ini);
+  m_sfx_color_missing = ao_app->get_color("missing_song_color", design_ini);
+
+  // items
+  m_sfx_list.clear();
+  m_sfx_list.append(DR::SFX("Default", m_sfx_default_file));
+  m_sfx_list.append(DR::SFX("Silence", nullptr));
+
+  const QStringList l_sfx_list = ao_app->get_sfx_list();
+  for (const QString &i_sfx_line : l_sfx_list)
+  {
+    const QStringList l_sfx_entry = i_sfx_line.split("=", DR::SkipEmptyParts);
+
+    const QString l_name = l_sfx_entry.at(l_sfx_entry.size() - 1).trimmed();
+    const QString l_file = QString(l_sfx_entry.size() >= 2 ? l_sfx_entry.at(0) : nullptr).trimmed();
+    const bool l_is_found = !ao_app->find_asset_path({ao_app->get_sounds_path(l_file)}, audio_extensions()).isEmpty();
+    m_sfx_list.append(DR::SFX(l_name, l_file, l_is_found));
+  }
+
+  update_sfx_widget_list();
+}
+
+void Courtroom::update_sfx_widget_list()
+{
+  QSignalBlocker l_blocker(ui_sfx_list);
   ui_sfx_list->clear();
-  sfx_names.clear();
-  current_sfx_id = -1; // Restart current SFX, because it may no longer be valid
 
-  QString f_file = design_ini;
-
-  QStringList sfx_list = ao_app->get_sfx_list();
-
-  QBrush found_brush(ao_app->get_color("found_song_color", f_file));
-  QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
-
-  // Add hardcoded items
-  // FIXME: Rewrite
-  ui_sfx_list->addItem("Default");
-  ui_sfx_list->addItem("Silence");
-
-  sfx_names.append("1"); // Default
-  sfx_names.append("1"); // Silence
-
-  QString default_sfx_root = ao_app->get_sounds_path("1");
-  QString default_sfx_path = ao_app->find_asset_path({default_sfx_root}, audio_extensions());
-  if (!default_sfx_path.isEmpty())
+  const QString l_name_filter = ui_sfx_search->text();
+  for (int i = 0; i < m_sfx_list.length(); ++i)
   {
-    ui_sfx_list->item(0)->setBackground(found_brush);
-    ui_sfx_list->item(1)->setBackground(found_brush);
-  }
-  else
-  {
-    ui_sfx_list->item(0)->setBackground(missing_brush);
-    ui_sfx_list->item(1)->setBackground(missing_brush);
+    const DR::SFX &i_sfx = m_sfx_list.at(i);
+    if (!i_sfx.name.contains(l_name_filter, Qt::CaseInsensitive))
+      continue;
+    QListWidgetItem *l_item = new QListWidgetItem;
+    l_item->setText(i_sfx.name);
+    l_item->setData(Qt::UserRole, i);
+    ui_sfx_list->addItem(l_item);
   }
 
-  // Now add the other SFXs given by the character's sound.ini
-  for (int n_sfx = 0; n_sfx < sfx_list.size(); ++n_sfx)
-  {
-    QStringList sfx = sfx_list.at(n_sfx).split("=");
-    QString i_sfx = sfx.at(0).trimmed();
-    QString d_sfx = "";
-    sfx_names.append(i_sfx);
-    if (sfx_list.at(n_sfx).split("=").size() < 2)
-      d_sfx = i_sfx;
-    else
-      d_sfx = sfx.at(1).trimmed();
+  on_sfx_widget_list_row_changed();
+}
 
-    if (i_sfx.toLower().contains(ui_sfx_search->text().toLower()))
+void Courtroom::select_default_sfx()
+{
+  if (ui_sfx_list->count() == 0)
+    return;
+  ui_sfx_list->setCurrentRow(0);
+}
+
+void Courtroom::clear_sfx_selection()
+{
+  ui_sfx_list->setCurrentRow(-1);
+}
+
+void Courtroom::on_sfx_search_editing_finished()
+{
+  update_sfx_list();
+}
+
+void Courtroom::on_sfx_widget_list_row_changed()
+{
+  const int p_current_row = ui_sfx_list->currentRow();
+
+  for (int i = 0; i < ui_sfx_list->count(); ++i)
+  {
+    QListWidgetItem *l_item = ui_sfx_list->item(i);
+    const bool l_is_found = m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).is_found;
+
+    QColor i_color = l_is_found ? m_sfx_color_found : m_sfx_color_missing;
+    if (i == p_current_row)
     {
-      ui_sfx_list->addItem(d_sfx);
-      int last_index = ui_sfx_list->count() - 1;
-      ui_sfx_list->item(last_index)->setStatusTip(QString::number(n_sfx + 2));
+      ui_pre->setChecked(ui_pre->isChecked() || l_is_found);
 
-      // Apply appropriate color whether SFX exists or not
-      QString sfx_root = ao_app->get_sounds_path(i_sfx);
-      QString sfx_path = ao_app->find_asset_path({sfx_root}, audio_extensions());
+      // Calculate the amount of lightness it would take to light up the row. We
+      // also limit it to 1.0, as giving lightness values above 1.0 to QColor does
+      // nothing. +0.4 is just an arbitrarily chosen number.
+      const double l_final_lightness = qMin(1.0, i_color.lightnessF() + 0.4);
 
-      if (!sfx_path.isEmpty())
-        ui_sfx_list->item(last_index)->setBackground(found_brush);
-      else
-        ui_sfx_list->item(last_index)->setBackground(missing_brush);
+      // This is just the reverse of the above, basically. We set the colour, and we
+      // set the brush to have that colour.
+      i_color.setHslF(i_color.hueF(), i_color.saturationF(), l_final_lightness);
     }
+
+    l_item->setBackground(i_color);
   }
+  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::list_note_files()
@@ -631,20 +666,9 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.append(f_side);
 
-  //  packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
-  //  packet_contents.append(ui_sfx_search->text());
-
-  int row = ui_sfx_list->currentRow();
-  if (row == -1 || row == 0) // default
-    packet_contents.append(ao_app->get_sfx_name(current_char, current_emote));
-  else if (QListWidgetItem *item = ui_sfx_list->item(row)) // selection
-  {
-    double d_ind = item->statusTip().toDouble();
-    int ind = int(d_ind);
-    qDebug() << ind;
-    packet_contents.append(sfx_names.at(ind));
-    //    packet_contents.append(sfx_names.at(row));
-  }
+  // sfx file
+  qDebug() << "foo" << current_sfx_file();
+  packet_contents.append(current_sfx_file());
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
@@ -716,12 +740,11 @@ void Courtroom::handle_acknowledged_ms()
 
   // reset states
   ui_pre->setChecked(ao_config->always_pre_enabled());
-  list_sfx();
-  ui_sfx_list->setCurrentItem(ui_sfx_list->item(0)); // prevents undefined errors
 
   reset_shout_buttons();
   reset_effect_buttons();
   reset_wtce_buttons();
+  clear_sfx_selection();
 
   is_presenting_evidence = false;
   ui_evidence_present->set_image("present_disabled.png");
@@ -1820,19 +1843,10 @@ void Courtroom::on_ooc_return_pressed()
   ui_ooc_chat_message->setFocus();
 }
 
-void Courtroom::on_music_search_edited(QString p_text)
+void Courtroom::on_music_search_edited()
 {
-  // preventing compiler warnings
-  p_text += "a";
   list_music();
   list_areas();
-}
-
-void Courtroom::on_sfx_search_edited(QString p_text)
-{
-  // preventing compiler warnings
-  p_text += "a";
-  list_sfx();
 }
 
 void Courtroom::on_pos_dropdown_changed(int p_index)
@@ -1961,7 +1975,6 @@ void Courtroom::on_shout_button_clicked(const bool p_checked)
       continue;
     i_button->setChecked(false);
   }
-
   m_shout_state = p_checked ? l_id : 0;
 
   ui_ic_chat_message->setFocus();
@@ -2360,52 +2373,6 @@ void Courtroom::closeEvent(QCloseEvent *event)
 {
   Q_EMIT closing();
   QMainWindow::closeEvent(event);
-}
-
-void Courtroom::on_sfx_list_clicked(QModelIndex p_index)
-{
-  if (p_index.isValid())
-    ui_pre->setChecked(p_index.isValid());
-
-  QListWidgetItem *new_sfx = ui_sfx_list->currentItem();
-
-  QBrush found_brush(ao_app->get_color("found_song_color", design_ini));
-  QBrush missing_brush(ao_app->get_color("missing_song_color", design_ini));
-
-  if (current_sfx_id != -1)
-  {
-    QListWidgetItem *old_sfx = ui_sfx_list->item(current_sfx_id);
-
-    // Apply appropriate color whether SFX exists or not
-    QString sfx_root = ao_app->get_sounds_path(sfx_names.at(current_sfx_id));
-    QString sfx_path = ao_app->find_asset_path({sfx_root}, audio_extensions());
-
-    if (!sfx_path.isEmpty())
-      old_sfx->setBackground(found_brush);
-    else
-      old_sfx->setBackground(missing_brush);
-  }
-
-  // Grab the colour of the selected row's brush.
-  QBrush selected_brush = new_sfx->background();
-  QColor selected_col = selected_brush.color();
-
-  // Calculate the amount of lightness it would take to light up the row. We
-  // also limit it to 1.0, as giving lightness values above 1.0 to QColor does
-  // nothing. +0.4 is just an arbitrarily chosen number.
-  double final_lightness = qMin(1.0, selected_col.lightnessF() + 0.4);
-
-  // This is just the reverse of the above, basically. We set the colour, and we
-  // set the brush to have that colour.
-  selected_col.setHslF(selected_col.hueF(), selected_col.saturationF(), final_lightness);
-  selected_brush.setColor(selected_col);
-
-  // Finally, we set the selected SFX's background to be the lightened-up brush.
-  new_sfx->setBackground(selected_brush);
-
-  current_sfx_id = ui_sfx_list->currentRow();
-
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_set_notes_clicked()
