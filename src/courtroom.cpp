@@ -495,7 +495,7 @@ void Courtroom::clear_sfx_widget_list_selection()
   ui_sfx_list->setCurrentRow(-1);
 }
 
-void Courtroom::on_sfx_search_edited()
+void Courtroom::on_sfx_search_editing_finished()
 {
   update_sfx_list();
 }

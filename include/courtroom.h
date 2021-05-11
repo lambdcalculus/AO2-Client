@@ -708,7 +708,7 @@ private slots:
   void on_music_list_double_clicked(QModelIndex p_model);
   void on_area_list_double_clicked(QModelIndex p_model);
 
-  void on_sfx_search_edited();
+  void on_sfx_search_editing_finished();
   void on_sfx_widget_list_row_changed();
 
   void select_emote(int p_id);
