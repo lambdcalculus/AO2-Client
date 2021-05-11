@@ -442,7 +442,8 @@ QString Courtroom::current_sfx_file()
   QListWidgetItem *l_item = ui_sfx_list->currentItem();
   if (l_item == nullptr)
     return nullptr;
-  return m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).file;
+  const QString l_file = m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).file;
+  return l_file == m_sfx_default_file ? ao_app->get_sfx_name(current_char, current_emote) : l_file;
 }
 
 void Courtroom::update_sfx_list()
@@ -453,7 +454,7 @@ void Courtroom::update_sfx_list()
 
   // items
   m_sfx_list.clear();
-  m_sfx_list.append(DR::SFX("Default", ao_app->get_sfx_name(current_char, current_emote)));
+  m_sfx_list.append(DR::SFX("Default", m_sfx_default_file));
   m_sfx_list.append(DR::SFX("Silence", nullptr));
 
   const QStringList l_sfx_list = ao_app->get_sfx_list();
@@ -659,6 +660,7 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.append(f_side);
 
   // sfx file
+  qDebug() << "foo" << current_sfx_file();
   packet_contents.append(current_sfx_file());
 
   int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);

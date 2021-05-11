@@ -504,6 +504,7 @@ private:
 
   QListWidget *ui_sfx_list = nullptr;
   QVector<DR::SFX> m_sfx_list;
+  const QString m_sfx_default_file = "__DEFAULT__";
   QColor m_sfx_color_found;
   QColor m_sfx_color_missing;
 
