@@ -17,8 +17,7 @@ void AOSfxPlayer::play(QString p_file)
 
 void AOSfxPlayer::play_effect(QString p_effect)
 {
-  const QString l_target_file = ao_app->find_asset_path({ao_app->get_sounds_path(p_effect)}, audio_extensions());
-  play(l_target_file);
+  play(ao_app->find_asset_path({ao_app->get_sounds_path(p_effect)}, audio_extensions()));
 }
 
 void AOSfxPlayer::play_character_effect(QString p_chr, QString p_effect)
