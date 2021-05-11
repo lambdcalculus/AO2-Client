@@ -86,7 +86,7 @@ void Courtroom::enter_courtroom(int p_cid)
   m_effect_state = 0;
   m_effect_current = 0;
   m_wtce_current = 0;
-  draw_judge_wtce_buttons();
+  reset_wtce_buttons();
 
   // setup chat
   on_chat_config_changed();
@@ -719,17 +719,11 @@ void Courtroom::handle_acknowledged_ms()
   list_sfx();
   ui_sfx_list->setCurrentItem(ui_sfx_list->item(0)); // prevents undefined errors
 
-  m_shout_state = 0;
-  draw_shout_buttons();
-
-  m_effect_state = 0;
-  draw_effect_buttons();
-
-  m_wtce_current = 0;
-  draw_judge_wtce_buttons();
+  reset_shout_buttons();
+  reset_effect_buttons();
+  reset_wtce_buttons();
 
   is_presenting_evidence = false;
-
   ui_evidence_present->set_image("present_disabled.png");
 }
 
@@ -1942,37 +1936,51 @@ void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::draw_shout_buttons()
+void Courtroom::reset_shout_buttons()
 {
-  for (int i = 0; i < ui_shouts.size(); ++i)
-  {
-    QString shout_file = shout_names.at(i) + ".png";
-    ui_shouts[i]->set_image(shout_file);
-    if (ao_app->find_theme_asset_path(shout_file).isEmpty())
-      ui_shouts[i]->setText(shout_names.at(i));
-    else
-      ui_shouts[i]->setText("");
-  }
-
-  // Mark selected button as such
-  if (m_shout_state != 0 && ui_shouts.size() > 0)
-    ui_shouts.at(m_shout_state - 1)->set_image(shout_names.at(m_shout_state - 1) + "_selected.png");
+  for (AOButton *i_button : qAsConst(ui_shouts))
+    i_button->setChecked(false);
+  m_shout_state = 0;
 }
 
-void Courtroom::on_shout_clicked()
+void Courtroom::on_shout_button_clicked(const bool p_checked)
 {
-  AOButton *f_shout_button = static_cast<AOButton *>(sender());
-  int f_shout_id = f_shout_button->property("shout_id").toInt();
+  AOButton *l_button = dynamic_cast<AOButton *>(sender());
+  if (l_button == nullptr)
+    return;
 
-  // update based on current button selected
-  if (f_shout_id == m_shout_state)
-    m_shout_state = 0;
-  else
-    m_shout_state = f_shout_id;
+  bool l_ok = false;
+  const int l_id = l_button->property("shout_id").toInt(&l_ok);
+  if (!l_ok)
+    return;
 
-  draw_shout_buttons();
+  // disable all other buttons
+  for (AOButton *i_button : qAsConst(ui_shouts))
+  {
+    if (i_button == l_button)
+      continue;
+    i_button->setChecked(false);
+  }
+
+  m_shout_state = p_checked ? l_id : 0;
 
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_shout_button_toggled(const bool p_checked)
+{
+  AOButton *l_button = dynamic_cast<AOButton *>(sender());
+  if (l_button == nullptr)
+    return;
+
+  const QString l_name = l_button->property("shout_name").toString();
+  if (l_name.isEmpty())
+    return;
+
+  const QString l_image_name(QString("%1%2.png").arg(l_name, QString(p_checked ? "_selected" : nullptr)));
+  l_button->set_image(l_image_name);
+  if (ao_app->find_theme_asset_path(l_image_name).isEmpty())
+    l_button->setText(l_name);
 }
 
 void Courtroom::on_cycle_clicked()
@@ -2032,36 +2040,50 @@ void Courtroom::cycle_wtce(int p_delta)
   set_judge_wtce();
 }
 
-void Courtroom::draw_effect_buttons()
+void Courtroom::reset_effect_buttons()
 {
-  for (int i = 0; i < effect_names.size(); ++i)
-  {
-    QString effect_file = effect_names.at(i) + ".png";
-    ui_effects[i]->set_image(effect_file);
-    if (ao_app->find_theme_asset_path(effect_file).isEmpty())
-      ui_effects[i]->setText(effect_names.at(i));
-    else
-      ui_effects[i]->setText("");
-  }
-
-  // Mark selected button as such
-  if (m_effect_state != 0 && ui_effects.size() > 0)
-    ui_effects[m_effect_state - 1]->set_image(effect_names.at(m_effect_state - 1) + "_pressed.png");
+  for (AOButton *i_button : qAsConst(ui_effects))
+    i_button->setChecked(false);
+  m_effect_state = 0;
 }
 
-void Courtroom::on_effect_button_clicked()
+void Courtroom::on_effect_button_clicked(const bool p_checked)
 {
-  AOButton *f_button = static_cast<AOButton *>(this->sender());
+  AOButton *l_button = dynamic_cast<AOButton *>(sender());
+  if (l_button == nullptr)
+    return;
 
-  int f_effect_id = f_button->property("effect_id").toInt();
-  if (m_effect_state == f_effect_id)
-    m_effect_state = 0;
-  else
-    m_effect_state = f_effect_id;
+  bool l_ok = false;
+  const int l_id = l_button->property("effect_id").toInt(&l_ok);
+  if (!l_ok)
+    return;
 
-  draw_effect_buttons();
+  // disable all other buttons
+  for (AOButton *i_button : qAsConst(ui_effects))
+  {
+    if (i_button == l_button)
+      continue;
+    i_button->setChecked(false);
+  }
 
+  m_effect_state = p_checked ? l_id : 0;
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_effect_button_toggled(const bool p_checked)
+{
+  AOButton *l_button = dynamic_cast<AOButton *>(sender());
+  if (l_button == nullptr)
+    return;
+
+  const QString l_name = l_button->property("effect_name").toString();
+  if (l_name.isEmpty())
+    return;
+
+  const QString l_image_name(QString("%1%2.png").arg(l_name, QString(p_checked ? "_pressed" : nullptr)));
+  l_button->set_image(l_image_name);
+  if (ao_app->find_theme_asset_path(l_image_name).isEmpty())
+    l_button->setText(l_name);
 }
 
 void Courtroom::on_mute_clicked()
@@ -2136,7 +2158,7 @@ void Courtroom::on_cross_examination_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::draw_judge_wtce_buttons()
+void Courtroom::reset_wtce_buttons()
 {
   for (int i = 0; i < wtce_names.size(); ++i)
   {
@@ -2147,6 +2169,8 @@ void Courtroom::draw_judge_wtce_buttons()
     else
       ui_wtce[i]->setText("");
   }
+
+  m_wtce_current = 0;
 
   // Unlike the other reset functions, the judge buttons are of immediate
   // action and thus are immediately unpressed after being pressed.

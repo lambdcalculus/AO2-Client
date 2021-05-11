@@ -766,12 +766,13 @@ private slots:
    * @details If a sprite cannot be found for a shout button, a regular
    * push button is displayed for it with its shout name instead.
    */
-  void draw_shout_buttons();
+  void reset_shout_buttons();
 
   /**
    * @brief a general purpose function to toggle button selection
    */
-  void on_shout_clicked();
+  void on_shout_button_clicked(const bool);
+  void on_shout_button_toggled(const bool);
 
   /**
    * @brief Set the sprites of the effect buttons, and mark the currently
@@ -780,8 +781,9 @@ private slots:
    * @details If a sprite cannot be found for a shout button, a regular
    * push button is displayed for it with its shout name instead.
    */
-  void draw_effect_buttons();
-  void on_effect_button_clicked();
+  void reset_effect_buttons();
+  void on_effect_button_clicked(const bool);
+  void on_effect_button_toggled(const bool);
 
   void on_mute_clicked();
 
@@ -800,7 +802,7 @@ private slots:
    * @details If a sprite cannot be found for a shout button, a regular
    * push button is displayed for it with its shout name instead.
    */
-  void draw_judge_wtce_buttons();
+  void reset_wtce_buttons();
   void on_wtce_clicked();
 
   void on_change_character_clicked();
