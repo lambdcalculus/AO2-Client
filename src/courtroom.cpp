@@ -441,9 +441,9 @@ QString Courtroom::current_sfx_file()
 {
   QListWidgetItem *l_item = ui_sfx_list->currentItem();
   if (l_item == nullptr)
-    return "0";
-  const QString l_file = m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).file;
-  return l_file.isEmpty() ? "0" : l_file;
+    return nullptr;
+  return ui_sfx_list->currentRow() == 0 ? ao_app->get_sfx_name(current_char, current_emote)
+                                        : m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).file;
 }
 
 void Courtroom::update_sfx_list()
@@ -1968,7 +1968,7 @@ void Courtroom::on_shout_button_clicked(const bool p_checked)
     i_button->setChecked(false);
   }
   m_shout_state = p_checked ? l_id : 0;
-  
+
   ui_ic_chat_message->setFocus();
 }
 
