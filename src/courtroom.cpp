@@ -63,7 +63,7 @@ void Courtroom::enter_courtroom(int p_cid)
     ao_config->set_showname_placeholder(l_final_showname);
 
     QStringList l_content{l_chr_name, l_final_showname};
-    AOPacket *l_packet = new AOPacket("chrini", l_final_showname);
+    AOPacket *l_packet = new AOPacket("chrini", l_content);
     ao_app->send_server_packet(l_packet);
   }
 
