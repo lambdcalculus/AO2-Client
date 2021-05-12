@@ -47,8 +47,6 @@ void Courtroom::enter_courtroom(int p_cid)
 
   QString l_chr_name;
 
-  set_char_rpc();
-
   if (is_spectating())
   {
     ao_app->discord->clear_character_name();
@@ -69,11 +67,11 @@ void Courtroom::enter_courtroom(int p_cid)
       ao_app->send_server_packet(l_packet);
     }
   }
-
   current_char = l_chr_name;
+  m_emote_list = ao_app->get_emote_list(current_char);
 
+  m_current_emote_id = 0;
   current_emote_page = 0;
-  current_emote = 0;
 
   if (is_spectating())
     ui_emotes->hide();
@@ -255,31 +253,6 @@ void Courtroom::set_scene()
   ui_vp_desk->set_image(f_desk_image);
 }
 
-void Courtroom::set_char_rpc()
-{
-  rpc_char_list.clear();
-
-  QFile config_file(ao_app->get_base_path() + rpc_ini);
-  if (!config_file.open(QIODevice::ReadOnly))
-  {
-    qDebug() << "Error reading" << ao_app->get_base_path() + rpc_ini;
-    return;
-  }
-
-  QTextStream in(&config_file);
-
-  while (!in.atEnd())
-  {
-    QString f_line = in.readLine().trimmed();
-
-    QStringList line_elements = f_line.split("-");
-
-    rpc_char_list.append(line_elements.at(1).trimmed().toLower());
-  }
-
-  config_file.close();
-}
-
 void Courtroom::set_taken(int n_char, bool p_taken)
 {
   if (n_char >= char_list.size())
@@ -448,7 +421,7 @@ QString Courtroom::current_sfx_file()
   if (l_item == nullptr)
     return nullptr;
   const QString l_file = m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).file;
-  return l_file == m_sfx_default_file ? ao_app->get_sfx_name(current_char, current_emote) : l_file;
+  return l_file == m_sfx_default_file ? get_current_emote().sound_file : l_file;
 }
 
 void Courtroom::update_sfx_list()
@@ -686,59 +659,60 @@ void Courtroom::on_ic_message_return_pressed()
 
   QStringList packet_contents;
 
-  QString f_side = ao_app->get_char_side(current_char);
+  const DREmote &l_emote = get_emote(m_current_emote_id);
 
-  QString f_desk_mod = "chat";
+  const QString l_desk_modifier =
+      l_emote.desk_modifier == -1 ? QString("chat") : QString::number(l_emote.desk_modifier);
+  packet_contents.append(l_desk_modifier);
 
-  f_desk_mod = QString::number(ao_app->get_desk_mod(current_char, current_emote));
-  if (f_desk_mod == "-1")
-    f_desk_mod = "chat";
-
-  packet_contents.append(f_desk_mod);
-
-  packet_contents.append(ao_app->get_pre_emote(current_char, current_emote));
+  packet_contents.append(l_emote.anim);
 
   packet_contents.append(current_char);
 
   if (ui_hidden->isChecked())
     packet_contents.append("../../misc/blank");
   else
-    packet_contents.append(ao_app->get_emote(current_char, current_emote));
+    packet_contents.append(l_emote.dialog);
 
   packet_contents.append(ui_ic_chat_message->text());
 
-  packet_contents.append(f_side);
+  const QString l_side = ao_app->get_char_side(current_char);
+  packet_contents.append(l_side);
 
   // sfx file
-  packet_contents.append(current_sfx_file());
+  const QString l_sound_file = current_sfx_file();
+  packet_contents.append(l_sound_file.isEmpty() ? "0" : l_sound_file);
+  // TODO remove empty string workaround for pre-DRO 1.0.0
 
-  int f_emote_mod = ao_app->get_emote_mod(current_char, current_emote);
-
+  int l_emote_modifier = l_emote.modifier;
   // needed or else legacy won't understand what we're saying
   if (m_shout_state > 0)
   {
-    if (f_emote_mod == 5)
-      f_emote_mod = 6;
+    if (l_emote_modifier == 5)
+      l_emote_modifier = 6;
     else
-      f_emote_mod = 2;
+      l_emote_modifier = 2;
   }
   else if (ui_pre->isChecked())
   {
-    if (f_emote_mod == 0)
-      f_emote_mod = 1;
+    if (l_emote_modifier == 0)
+      l_emote_modifier = 1;
   }
   else
   {
-    if (f_emote_mod == 1)
-      f_emote_mod = 0;
-    else if (f_emote_mod == 4)
-      f_emote_mod = 5;
+    if (l_emote_modifier == 1)
+      l_emote_modifier = 0;
+    else if (l_emote_modifier == 4)
+      l_emote_modifier = 5;
   }
 
-  packet_contents.append(QString::number(f_emote_mod));
+  packet_contents.append(QString::number(l_emote_modifier));
   packet_contents.append(QString::number(m_cid));
 
-  packet_contents.append(QString::number(ao_app->get_sfx_delay(current_char, current_emote)));
+  if (l_emote.sound_file == current_sfx_file())
+    packet_contents.append(QString::number(l_emote.sound_delay));
+  else
+    packet_contents.append("0");
 
   QString f_obj_state;
 
@@ -771,8 +745,6 @@ void Courtroom::on_ic_message_return_pressed()
     f_text_color = QString::number(m_text_color);
 
   packet_contents.append(f_text_color);
-  prev_emote = current_emote;
-
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -832,7 +804,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     // possible the server crafted a message with the same char_id
     // as the client, but the client did not send that message, but it is
     // the best we can do.
-    if (!ao_app->ackMS_enabled)
+    if (!ao_app->m_FL_ackMS_enabled)
     {
       handle_acknowledged_ms();
     }
@@ -897,7 +869,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     if (objection_mod >= 1 && objection_mod <= ui_shouts.size() && ui_shouts.size() > 0) // check to prevent crashing
     {
       ui_vp_objection->play_interjection(f_char, shout_names.at(objection_mod - 1));
-      m_shouts_player->play(shout_names.at(objection_mod - 1) + ".wav", f_char);
+      m_shouts_player->play(f_char, shout_names.at(objection_mod - 1));
     }
     else
       qDebug() << "W: Shout identifier unknown" << objection_mod;
@@ -1077,7 +1049,7 @@ void Courtroom::handle_chatmessage_3()
   case 2:
     if (m_msg_is_first_person == false)
     {
-      ui_vp_player_char->play_talking(f_char, f_emote);
+      ui_vp_player_char->play_talk(f_char, f_emote);
     }
     anim_state = 2;
     break;
@@ -1095,7 +1067,6 @@ void Courtroom::handle_chatmessage_3()
 
   int effect = m_chatmessage[CMEffectState].toInt();
   QStringList offset = ao_app->get_effect_offset(f_char, effect);
-
   ui_vp_effect->move(ui_viewport->x() + offset.at(0).toInt(), ui_viewport->y() + offset.at(1).toInt());
 
   QStringList overlay = ao_app->get_overlay(f_char, effect);

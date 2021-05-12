@@ -22,21 +22,17 @@ void AOSfxPlayer::play_effect(QString p_effect)
 
 void AOSfxPlayer::play_character_effect(QString p_chr, QString p_effect)
 {
-  play_character_effect(QStringList{p_chr}, p_effect);
-}
+  QStringList l_file_list;
+  for (const QString &i_chr : ao_app->get_char_include_tree(p_chr))
+    l_file_list.append(ao_app->get_character_path(i_chr, QString("sounds/%1").arg(p_effect)));
 
-void AOSfxPlayer::play_character_effect(QStringList p_chr_list, QString p_effect)
-{
-  QStringList l_path_list;
-  for (const QString &i_character : p_chr_list)
-    l_path_list.append(ao_app->get_character_path(i_character, QString("sounds/%1").arg(p_effect)));
-
-  const QString l_target_file = ao_app->find_asset_path(l_path_list, audio_extensions());
+  const QString l_target_file = ao_app->find_asset_path(l_file_list, audio_extensions());
   if (l_target_file.isEmpty())
   {
     play_effect(p_effect);
     return;
   }
+
   play(l_target_file);
 }
 
