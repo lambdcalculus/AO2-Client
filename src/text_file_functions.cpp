@@ -715,7 +715,6 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
     for (auto rit = r_emote_list.crbegin(); rit != r_emote_list.crend(); ++rit)
     {
       const DREmote &rit_emote = *rit;
-
       if (it_emote.dialog == rit_emote.dialog)
       {
         l_filtered_list.append(rit_emote);
