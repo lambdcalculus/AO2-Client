@@ -820,7 +820,6 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
 
   QString f_showname;
   qDebug() << "handle_chatmessage";
-  qDebug() << m_chatmessage[CMShowName] << ao_app->get_showname(char_list.at(f_char_id).name);
 
   // We actually DO wanna fail here if the showname is empty but the system is
   // speaking.
