@@ -122,6 +122,12 @@ QString AOApplication::find_asset_path(QStringList possible_roots, QStringList p
 {
   for (QString &root : possible_roots)
   {
+    // Check if parent folder actually exists. If it does not, none of the following files would exist
+    QFileInfo file(root);
+    QString file_parent_dir = sanitize_path(get_case_sensitive_path(file.absolutePath()));
+    if (!dir_exists(file_parent_dir))
+      continue;
+
     for (QString &ext : possible_exts)
     {
       QString full_path = sanitize_path(get_case_sensitive_path(root + ext));
@@ -145,13 +151,18 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList exts)
     if (!timeofday.isEmpty()) {
       paths.append(root + "/gamemodes/" + gamemode + "/times/" + timeofday + "/" + p_file);
     }
-    paths.append(root + "/gamemodes/" + get_gamemode() + "/" + p_file);
+    paths.append(root + "/gamemodes/" + gamemode + "/" + p_file);
   }
   if (!timeofday.isEmpty()) {
     paths.append(root + "/times/" + timeofday + "/" + p_file);
   }
   paths.append(root + "/" + p_file);
-  paths.append(get_base_path() + "themes/default/" + p_file);
+
+  // Check if default folder exists. We do this here as it is cheaper than doing it in find_asset_path
+  // (as we know there should not be capitalization or folder jumping shenanigans here.
+  QString default_theme_path = get_base_path() + "themes/default/";
+  if (dir_exists(default_theme_path))
+    paths.append(default_theme_path + p_file);
 
   return find_asset_path(paths, exts);
 }
