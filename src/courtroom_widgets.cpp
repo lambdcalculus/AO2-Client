@@ -256,7 +256,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(showname_changed(QString)), this, SLOT(on_showname_changed(QString)));
   connect(ao_config, SIGNAL(showname_placeholder_changed(QString)), this,
           SLOT(on_showname_placeholder_changed(QString)));
-  connect(ui_ic_chat_showname, SIGNAL(editingFinished()), ao_config, SLOT(on_ic_showname_editing_finished()));
+  connect(ui_ic_chat_showname, SIGNAL(editingFinished()), this, SLOT(on_ic_showname_editing_finished()));
   connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
 
   connect(ao_config, SIGNAL(username_changed(QString)), ui_ooc_chat_name, SLOT(setText(QString)));
@@ -296,7 +296,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(log_display_music_switch_changed(bool)), this, SLOT(on_chat_config_changed()));
   connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_chat_config_changed()));
 
-  connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
+  connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited()));
   connect(ui_sfx_search, SIGNAL(editingFinished()), this, SLOT(on_sfx_search_editing_finished()));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
