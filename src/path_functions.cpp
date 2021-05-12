@@ -122,15 +122,21 @@ QString AOApplication::find_asset_path(QStringList possible_roots, QStringList p
 {
   for (QString &root : possible_roots)
   {
+    // We can assume that possible_exts will only be populated with hardcoded strings.
+    // Therefore, the only place where sanitize_path could catch something bad is in the root.
+    // So, check that now, so we don't need to check later.
+    if (sanitize_path(root).isEmpty())
+      continue;
+
     // Check if parent folder actually exists. If it does not, none of the following files would exist
     QFileInfo file(root);
-    QString file_parent_dir = sanitize_path(get_case_sensitive_path(file.absolutePath()));
+    QString file_parent_dir = get_case_sensitive_path(file.absolutePath());
     if (!dir_exists(file_parent_dir))
       continue;
 
     for (QString &ext : possible_exts)
     {
-      QString full_path = sanitize_path(get_case_sensitive_path(root + ext));
+      QString full_path = get_case_sensitive_path(root + ext);
       if (file_exists(full_path))
         return full_path;
     }
