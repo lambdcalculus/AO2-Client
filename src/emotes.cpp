@@ -156,7 +156,6 @@ void Courtroom::select_emote(int p_id)
   const int l_min = current_emote_page * max_emotes_on_page;
   const int l_max = (max_emotes_on_page - 1) + current_emote_page * max_emotes_on_page;
 
-  qDebug() << m_emote_list.length() << m_current_emote_id;
   const DREmote &l_prev_emote = get_emote(m_current_emote_id);
   if (m_current_emote_id >= l_min && m_current_emote_id <= l_max)
     ui_emote_list.at(m_current_emote_id % max_emotes_on_page)->set_image(l_prev_emote, false);

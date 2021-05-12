@@ -612,6 +612,9 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
   QStringList l_chr_list = get_char_include(p_chr);
   l_chr_list.append(p_chr);
 
+#ifdef QT_DEBUG
+  qDebug().noquote() << QString("Compiling char.ini for character <%1>").arg(p_chr);
+#endif
   for (const QString &i_chr : l_chr_list)
   {
     if (!dir_exists(get_character_folder_path(i_chr)))
@@ -620,7 +623,9 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
           << QString("Parent character <%1> not found, character <%2> cannot use it.").arg(i_chr, p_chr);
       continue;
     }
+#ifdef QT_DEBUG
     qDebug().noquote() << QString("Adding <%1>").arg(i_chr);
+#endif
 
     QSettings l_chrini(get_character_path(i_chr, "char.ini"), QSettings::IniFormat);
     l_chrini.setIniCodec("UTF-8");
