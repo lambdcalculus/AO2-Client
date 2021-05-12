@@ -702,19 +702,28 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
     }
   }
 
-  // remove duplicate emotes
+  // remove duplicate emotes and bring the last one to the front
   QVector<DREmote> l_filtered_list;
-  QStringList l_filter_list;
-  while (!r_emote_list.isEmpty())
+  QStringList l_dialog_filter_list;
+  for (auto it = r_emote_list.cbegin(); it != r_emote_list.cend(); ++it)
   {
-    const DREmote i_emote = r_emote_list.takeFirst();
-    if (l_filter_list.contains(i_emote.dialog))
+    const DREmote &it_emote = *it;
+    if (l_dialog_filter_list.contains(it_emote.dialog))
       continue;
-    l_filter_list.append(i_emote.dialog);
-    l_filtered_list.append(std::move(i_emote));
+    l_dialog_filter_list.append(it_emote.dialog);
+
+    for (auto rit = r_emote_list.crbegin(); rit != r_emote_list.crend(); ++rit)
+    {
+      const DREmote &rit_emote = *rit;
+
+      if (it_emote.dialog == rit_emote.dialog)
+      {
+        l_filtered_list.append(rit_emote);
+        break;
+      }
+    }
   }
   r_emote_list = std::move(l_filtered_list);
-
   return r_emote_list;
 }
 
