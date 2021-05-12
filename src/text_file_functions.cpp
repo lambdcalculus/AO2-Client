@@ -573,9 +573,6 @@ QStringList AOApplication::get_char_include(QString p_chr)
     r_list.append(l_target_chr);
     l_queue.append(read_char_ini(l_target_chr, "options", "include").toStringList());
   }
-
-  for (QString &i_chr : r_list)
-    i_chr = i_chr.trimmed();
   r_list.removeAll(p_chr);
 
   return r_list;
