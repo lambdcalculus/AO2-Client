@@ -558,13 +558,26 @@ QString AOApplication::get_char_name(QString p_chr)
   return read_char_ini(p_chr, "options", "name", p_chr).toString();
 }
 
+#include <QQueue>
+
 QStringList AOApplication::get_char_include(QString p_chr)
 {
-  QStringList r_list =
-      read_char_ini(p_chr, "options", "include").toStringList().join(",").split(",", DR::SkipEmptyParts);
+  QStringList r_list;
+
+  QStringList l_queue{p_chr};
+  while (!l_queue.isEmpty())
+  {
+    const QString l_target_chr = l_queue.takeFirst().trimmed();
+    if (r_list.contains(l_target_chr) || l_target_chr.isEmpty())
+      continue;
+    r_list.append(l_target_chr);
+    l_queue.append(read_char_ini(l_target_chr, "options", "include").toStringList());
+  }
+
   for (QString &i_chr : r_list)
     i_chr = i_chr.trimmed();
-  r_list.removeDuplicates();
+  r_list.removeAll(p_chr);
+
   return r_list;
 }
 
@@ -601,7 +614,6 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
 
   QStringList l_chr_list = get_char_include(p_chr);
   l_chr_list.append(p_chr);
-  l_chr_list.removeDuplicates();
 
   for (const QString &i_chr : l_chr_list)
   {
