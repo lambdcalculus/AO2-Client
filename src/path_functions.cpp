@@ -135,14 +135,23 @@ QString AOApplication::find_asset_path(QStringList possible_roots, QStringList p
 
 QString AOApplication::find_theme_asset_path(QString p_file, QStringList exts)
 {
-  QStringList paths{
-      get_base_path() + "themes/" + get_theme() + "/gamemodes/" + get_gamemode() + "/times/" + get_timeofday() + "/" +
-          p_file,
-      get_base_path() + "themes/" + get_theme() + "/gamemodes/" + get_gamemode() + "/" + p_file,
-      get_base_path() + "themes/" + get_theme() + "/times/" + get_timeofday() + "/" + p_file,
-      get_base_path() + "themes/" + get_theme() + "/" + p_file,
-      get_base_path() + "themes/default/" + p_file,
-  };
+  QStringList paths;
+
+  // Only add gamemode and/or time of day if non empty.
+  QString gamemode = get_gamemode();
+  QString timeofday = get_timeofday();
+  QString root = get_base_path() + "themes/" + get_theme();
+  if (!gamemode.isEmpty()) {
+    if (!timeofday.isEmpty()) {
+      paths.append(root + "/gamemodes/" + gamemode + "/times/" + timeofday + "/" + p_file);
+    }
+    paths.append(root + "/gamemodes/" + get_gamemode() + "/" + p_file);
+  }
+  if (!timeofday.isEmpty()) {
+    paths.append(root + "/times/" + timeofday + "/" + p_file);
+  }
+  paths.append(root + "/" + p_file);
+  paths.append(get_base_path() + "themes/default/" + p_file);
 
   return find_asset_path(paths, exts);
 }
