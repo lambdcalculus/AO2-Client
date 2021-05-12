@@ -564,6 +564,7 @@ QStringList AOApplication::get_char_include(QString p_chr)
       read_char_ini(p_chr, "options", "include").toStringList().join(",").split(",", DR::SkipEmptyParts);
   for (QString &i_chr : r_list)
     i_chr = i_chr.trimmed();
+  r_list.removeDuplicates();
   return r_list;
 }
 
@@ -600,6 +601,7 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
 
   QStringList l_chr_list = get_char_include(p_chr);
   l_chr_list.append(p_chr);
+  l_chr_list.removeDuplicates();
 
   for (const QString &i_chr : l_chr_list)
   {
