@@ -167,6 +167,7 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_ext_l
 
   if (!l_timeofday.isEmpty())
     l_path_list.append(l_theme_root + "/times/" + l_timeofday + "/" + p_file);
+
   l_path_list.append(l_theme_root + "/" + p_file);
 
   // Check if default folder exists. We do this here as it is cheaper than doing it in find_asset_path
