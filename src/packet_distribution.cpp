@@ -140,7 +140,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     f_hdid = get_hdid();
 
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    ackMS_enabled = false;
+    m_FL_ackMS_enabled = false;
 #endif
     m_FL_showname_enabled = false;
     m_FL_chrini_enabled = false;
@@ -169,7 +169,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "FL")
   {
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    ackMS_enabled = f_packet.contains("ackMS", Qt::CaseInsensitive);
+    m_FL_ackMS_enabled = f_packet.contains("ackMS", Qt::CaseInsensitive);
     m_FL_showname_enabled = f_packet.contains("showname", Qt::CaseInsensitive);
     m_FL_chrini_enabled = f_packet.contains("chrini", Qt::CaseInsensitive);
 #endif
@@ -503,7 +503,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
           w_courtroom->fix_last_area();
           w_courtroom->append_music(f_contents.at(n_element));
           areas--;
-          //              qDebug() << "wtf!!" << f_contents.at(n_element);
         }
         else
         {

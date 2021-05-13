@@ -28,10 +28,16 @@ QString AOApplication::get_data_path()
   return get_base_path() + "data/";
 }
 
-QString AOApplication::get_character_path(QString p_character, QString p_file)
+QString AOApplication::get_character_folder_path(QString p_chr)
 {
-  QString path = get_base_path() + "characters/" + p_character + "/" + p_file;
-  return get_case_sensitive_path(path);
+  QString r_path = get_base_path() + "characters/" + p_chr;
+  return get_case_sensitive_path(r_path);
+}
+
+QString AOApplication::get_character_path(QString p_chr, QString p_file)
+{
+  const QString r_path = get_character_folder_path(p_chr) + "/" + p_file;
+  return get_case_sensitive_path(r_path);
 }
 
 QString AOApplication::get_sounds_path(QString p_file)

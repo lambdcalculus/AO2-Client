@@ -12,6 +12,5 @@ public:
   void play(QString p_file);
   void play_effect(QString p_effect);
   void play_character_effect(QString p_character, QString p_effect);
-  void play_character_effect(QStringList p_character_list, QString p_effect);
   void stop_all();
 };

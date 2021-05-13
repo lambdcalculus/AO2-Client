@@ -88,7 +88,6 @@ public:
       QString malplaced = area_list.last();
       area_list.removeLast();
       append_music(malplaced);
-      //      qDebug() << "what" << malplaced;
     }
   }
 
@@ -449,9 +448,9 @@ private:
   int char_rows = 9;
   int max_chars_on_page = 90;
 
+  QVector<DREmote> m_emote_list;
+  int m_current_emote_id = 0;
   int current_emote_page = 0;
-  int current_emote = 0;
-  int prev_emote = 0;
   int emote_columns = 5;
   int emote_rows = 2;
   int max_emotes_on_page = 10;
@@ -481,11 +480,6 @@ private:
   AOEvidenceDisplay *ui_vp_evidence_display = nullptr;
 
   AONoteArea *ui_note_area = nullptr;
-
-  //  AONotepad *ui_vp_notepad = nullptr;
-  // list of characters that require a second application ID
-  // note that since it's hardcoded, it won't be of much use in other servers
-  QVector<QString> rpc_char_list;
 
   AOImageDisplay *ui_vp_notepad_image = nullptr;
   DRTextEdit *ui_vp_notepad = nullptr;
@@ -689,6 +683,8 @@ private:
   void reset_emote_page();
   void set_emote_page();
   void set_emote_dropdown();
+  DREmote get_emote(const int id);
+  DREmote get_current_emote();
 
   void construct_evidence();
   void set_evidence_page();
@@ -696,8 +692,6 @@ private:
   void load_note();
   void save_note();
   void save_textlog(QString p_text);
-
-  void set_char_rpc();
 
   bool is_spectating();
 

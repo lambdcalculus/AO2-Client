@@ -8,6 +8,20 @@
 
 #include <memory>
 
+class DREmote
+{
+public:
+  QString character;
+  QString key;
+  QString comment;
+  QString anim;
+  QString dialog;
+  int modifier = 0;
+  int desk_modifier = -1;
+  QString sound_file;
+  int sound_delay = 0;
+};
+
 namespace DR
 {
 class ChatRecord
