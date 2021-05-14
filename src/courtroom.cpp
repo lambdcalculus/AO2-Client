@@ -42,11 +42,15 @@ Courtroom::~Courtroom()
 
 void Courtroom::enter_courtroom(int p_cid)
 {
-  bool changed_character = (m_cid != p_cid);
+  bool l_changed_chr_id = (m_cid != p_cid);
   m_cid = p_cid;
 
-  QString l_chr_name;
+  QLineEdit *l_current_field = ui_ic_chat_message;
+  if (ui_ooc_chat_message->hasFocus())
+    l_current_field = ui_ooc_chat_message;
+  const int l_current_cursor_pos = l_current_field->cursorPosition();
 
+  QString l_chr_name;
   if (is_spectating())
   {
     ao_app->discord->clear_character_name();
@@ -67,20 +71,36 @@ void Courtroom::enter_courtroom(int p_cid)
       ao_app->send_server_packet(l_packet);
     }
   }
+  const bool l_changed_chr = l_chr_name != current_char;
   current_char = l_chr_name;
-  m_emote_list = ao_app->get_emote_list(current_char);
 
+  const int l_prev_emote_count = m_emote_list.count();
+  m_emote_list = ao_app->get_emote_list(current_char);
   m_current_emote_id = 0;
   current_emote_page = 0;
 
-  if (is_spectating())
-    ui_emotes->hide();
-  else
-    ui_emotes->show();
-
+  if (l_prev_emote_count >= m_emote_list.count())
+    current_emote_page = 0;
   set_emote_page();
+
+  const QString l_prev_emote = ui_emote_dropdown->currentText();
   set_emote_dropdown();
-  ui_pre->setChecked(ui_pre || ao_config->always_pre_enabled());
+
+  if (l_changed_chr)
+  {
+    ui_pre->setChecked(ui_pre->isChecked() || ao_config->always_pre_enabled());
+  }
+  else
+  {
+    for (int i = 0; i < ui_emote_dropdown->count(); ++i)
+    {
+      if (l_prev_emote == ui_emote_dropdown->itemText(i))
+      {
+        ui_emote_dropdown->setCurrentIndex(i);
+        break;
+      }
+    }
+  }
 
   current_evidence_page = 0;
   current_evidence = 0;
@@ -101,7 +121,7 @@ void Courtroom::enter_courtroom(int p_cid)
   // position, otherwise use the old one. Even if the else is useless now (it
   // can be omitted), I am keeping it in case we expand set_character_position
   // to do more.
-  if (changed_character)
+  if (l_changed_chr_id)
     set_character_position(ao_app->get_char_side(l_chr_name));
   else
     set_character_position(ui_pos_dropdown->currentText());
@@ -139,18 +159,21 @@ void Courtroom::enter_courtroom(int p_cid)
 
   testimony_in_progress = false;
 
-  // ui_server_chatlog->setHtml(ui_server_chatlog->toHtml());
-
   ui_char_select_background->hide();
-
-  ui_ic_chat_message->setEnabled(!is_spectating());
-  ui_ic_chat_message->setFocus();
 
   for (int i = 0; i < ui_timers.length(); ++i)
     ui_timers[i]->redraw();
 
   set_widget_names();
   set_widget_layers();
+
+  ui_emotes->setHidden(is_spectating());
+  ui_emote_dropdown->setHidden(is_spectating());
+  ui_ic_chat_message->setEnabled(!is_spectating());
+
+  // restore line field focus
+  l_current_field->setFocus();
+  l_current_field->setCursorPosition(l_current_cursor_pos);
 }
 
 void Courtroom::done_received()
