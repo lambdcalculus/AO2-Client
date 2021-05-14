@@ -91,17 +91,6 @@ void Courtroom::enter_courtroom(int p_cid)
   {
     ui_pre->setChecked(ui_pre->isChecked() || ao_config->always_pre_enabled());
   }
-  else
-  {
-    for (int i = 0; i < ui_emote_dropdown->count(); ++i)
-    {
-      if (l_prev_emote == ui_emote_dropdown->itemText(i))
-      {
-        ui_emote_dropdown->setCurrentIndex(i);
-        break;
-      }
-    }
-  }
 
   current_evidence_page = 0;
   current_evidence = 0;
