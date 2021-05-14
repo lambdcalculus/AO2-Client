@@ -449,8 +449,8 @@ private:
   int max_chars_on_page = 90;
 
   QVector<DREmote> m_emote_list;
-  int m_current_emote_id = 0;
-  int current_emote_page = 0;
+  int m_emote_id = 0;
+  int m_emote_page = 0;
   int emote_columns = 5;
   int emote_rows = 2;
   int max_emotes_on_page = 10;
