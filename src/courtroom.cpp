@@ -42,7 +42,66 @@ Courtroom::~Courtroom()
 
 void Courtroom::enter_courtroom(int p_cid)
 {
-  bool l_changed_chr_id = (m_cid != p_cid);
+  // unmute audio
+  suppress_audio(false);
+
+  const int l_prev_emote_id = m_emote_id;
+  const int l_prev_emote_page = m_emote_page;
+
+  // widgets ===================================================================
+  current_evidence_page = 0;
+  current_evidence = 0;
+
+  m_shout_state = 0;
+  m_shout_current = 0;
+  m_effect_state = 0;
+  m_effect_current = 0;
+  m_wtce_current = 0;
+  reset_wtce_buttons();
+
+  // setup chat
+  on_chat_config_changed();
+
+  set_evidence_page();
+
+  // Update widgets first, then check if everything is valid
+  // This will also handle showing the correct shouts, effects and wtce buttons,
+  // and cycling through them if the buttons that are supposed to be displayed
+  // do not exist It will also take care of free blocks
+
+  set_widgets();
+
+  check_shouts();
+  if (m_shout_current < shouts_enabled.length() && !shouts_enabled[m_shout_current])
+    cycle_shout(1);
+
+  check_effects();
+  if (m_effect_current < effects_enabled.length() && !effects_enabled[m_effect_current])
+    cycle_effect(1);
+
+  check_wtce();
+  if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current]))
+    cycle_wtce(1);
+
+  check_free_blocks();
+
+  ui_flip->show();
+
+  list_music();
+  list_areas();
+
+  testimony_in_progress = false;
+
+  set_widget_names();
+  set_widget_layers();
+
+  for (int i = 0; i < ui_timers.length(); ++i)
+    ui_timers[i]->redraw();
+
+  ui_char_select_background->hide();
+
+  // character =================================================================
+  const bool l_changed_chr_id = (m_cid != p_cid);
   m_cid = p_cid;
 
   QLineEdit *l_current_field = ui_ic_chat_message;
@@ -76,39 +135,21 @@ void Courtroom::enter_courtroom(int p_cid)
 
   const int l_prev_emote_count = m_emote_list.count();
   m_emote_list = ao_app->get_emote_list(current_char);
-  m_current_emote_id = 0;
-  current_emote_page = 0;
-
-  if (l_prev_emote_count >= m_emote_list.count())
-    current_emote_page = 0;
-  set_emote_page();
 
   const QString l_prev_emote = ui_emote_dropdown->currentText();
   set_emote_dropdown();
 
-  if (l_changed_chr)
+  if (l_changed_chr || l_prev_emote_count != m_emote_list.count())
   {
     ui_pre->setChecked(ui_pre->isChecked() || ao_config->always_pre_enabled());
   }
   else
   {
+    m_emote_id = l_prev_emote_id;
+    m_emote_page = l_prev_emote_page;
     ui_emote_dropdown->setCurrentText(l_prev_emote);
   }
-
-  current_evidence_page = 0;
-  current_evidence = 0;
-
-  m_shout_state = 0;
-  m_shout_current = 0;
-  m_effect_state = 0;
-  m_effect_current = 0;
-  m_wtce_current = 0;
-  reset_wtce_buttons();
-
-  // setup chat
-  on_chat_config_changed();
-
-  set_evidence_page();
+  set_emote_page();
 
   // Refresh character position. If the character was changed, use the new
   // position, otherwise use the old one. Even if the else is useless now (it
@@ -119,46 +160,8 @@ void Courtroom::enter_courtroom(int p_cid)
   else
     set_character_position(ui_pos_dropdown->currentText());
 
-  // Update widgets first, then check if everything is valid
-  // This will also handle showing the correct shouts, effects and wtce buttons,
-  // and cycling through them if the buttons that are supposed to be displayed
-  // do not exist It will also take care of free blocks
-
-  set_widgets();
-
-  check_shouts();
-  if (m_shout_current < shouts_enabled.length() && !shouts_enabled[m_shout_current])
-    cycle_shout(1);
-
-  check_effects();
-  if (m_effect_current < effects_enabled.length() && !effects_enabled[m_effect_current])
-    cycle_effect(1);
-
-  check_wtce();
-  if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current]))
-    cycle_wtce(1);
-
-  check_free_blocks();
-
-  ui_flip->show();
-
-  list_music();
-  list_areas();
   update_sfx_list();
   select_default_sfx();
-
-  // unmute audio
-  suppress_audio(false);
-
-  testimony_in_progress = false;
-
-  ui_char_select_background->hide();
-
-  for (int i = 0; i < ui_timers.length(); ++i)
-    ui_timers[i]->redraw();
-
-  set_widget_names();
-  set_widget_layers();
 
   ui_emotes->setHidden(is_spectating());
   ui_emote_dropdown->setHidden(is_spectating());
@@ -675,7 +678,7 @@ void Courtroom::on_ic_message_return_pressed()
 
   QStringList packet_contents;
 
-  const DREmote &l_emote = get_emote(m_current_emote_id);
+  const DREmote &l_emote = get_emote(m_emote_id);
 
   const QString l_desk_modifier =
       l_emote.desk_modifier == -1 ? QString("chat") : QString::number(l_emote.desk_modifier);
