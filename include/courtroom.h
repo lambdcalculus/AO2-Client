@@ -262,20 +262,6 @@ public:
   // handle server-side clock animation and display
   void handle_clock(QString time);
 
-  /**
-   * @brief Handle server request to change to given gamemode. If manual
-   * gamemode configuration is on, this method does nothing.
-   * @param gamemode Gamemode to change to.
-   */
-  void handle_gamemode(QString gamemode);
-
-  /**
-   * @brief Handle server request to change to given time of day. If manual
-   * time of day configuration is on, this method does nothing.
-   * @param timeofday Time of day to change to.
-   */
-  void handle_timeofday(QString timeofday);
-
   void play_preanim();
 
   // plays the witness testimony or cross examination animation based on
@@ -309,6 +295,7 @@ signals:
 private:
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
+  QTimer *m_reload_delay = nullptr;
 
   int m_courtroom_width = 714;
   int m_courtroom_height = 668;

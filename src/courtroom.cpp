@@ -27,6 +27,14 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
 
+  m_reload_delay = new QTimer(this);
+  m_reload_delay->setInterval(200);
+  m_reload_delay->setSingleShot(true);
+  connect(m_reload_delay, SIGNAL(timeout()), this, SLOT(on_app_reload_theme_requested()));
+  connect(ao_config, SIGNAL(theme_changed(QString)), m_reload_delay, SLOT(start()));
+  connect(ao_config, SIGNAL(gamemode_changed(QString)), m_reload_delay, SLOT(start()));
+  connect(ao_config, SIGNAL(timeofday_changed(QString)), m_reload_delay, SLOT(start()));
+
   create_widgets();
   connect_widgets();
 
@@ -42,6 +50,8 @@ Courtroom::~Courtroom()
 
 void Courtroom::enter_courtroom(int p_cid)
 {
+  qDebug() << "enter_courtroom";
+
   // unmute audio
   suppress_audio(false);
 
@@ -343,28 +353,6 @@ void Courtroom::handle_clock(QString time)
   }
   ui_vp_clock->play(clock_filename);
   ui_vp_clock->show();
-}
-
-void Courtroom::handle_gamemode(QString gamemode)
-{
-  // only manual gamemode changes are allowed
-  if (ao_app->get_manual_gamemode_enabled())
-    return;
-  if (ao_app->get_gamemode() == gamemode)
-    return;
-  ao_app->set_gamemode(gamemode);
-  on_app_reload_theme_requested();
-}
-
-void Courtroom::handle_timeofday(QString timeofday)
-{
-  // only manual gamemode changes are allowed
-  if (ao_app->get_manual_timeofday_enabled())
-    return;
-  if (ao_app->get_timeofday() == timeofday)
-    return;
-  ao_app->set_timeofday(timeofday);
-  on_app_reload_theme_requested();
 }
 
 void Courtroom::list_music()
@@ -1128,7 +1116,7 @@ void Courtroom::handle_chatmessage_3()
     }
   }
 
-  chat_tick_timer->start(ao_app->get_chat_tick_interval());
+  chat_tick_timer->start(ao_config->chat_tick_interval());
 }
 
 void Courtroom::on_chat_config_changed()
@@ -1569,7 +1557,7 @@ void Courtroom::chat_tick()
     if ((f_message.at(tick_pos) != ' ' || ao_config->blank_blips_enabled()))
     {
 
-      if (blip_pos % ao_app->read_blip_rate() == 0)
+      if (blip_pos % ao_config->blip_rate() == 0)
       {
         blip_pos = 0;
 
@@ -1809,7 +1797,7 @@ void Courtroom::send_ooc_packet(QString ooc_name, QString ooc_message)
 void Courtroom::mod_called(QString p_ip)
 {
   ui_server_chatlog->append(p_ip);
-  if (ao_app->get_server_alerts_enabled())
+  if (ao_config->server_alerts_enabled())
   {
     m_system_player->play(ao_app->get_sfx("mod_call"));
     ao_app->alert(this);

@@ -171,7 +171,7 @@ void Courtroom::select_emote(int p_id)
   if (l_prev_emote_id == m_emote_id) // toggle
     ui_pre->setChecked(!ui_pre->isChecked());
   else
-    ui_pre->setChecked(emote_mod == 1 || ao_app->get_always_pre_enabled());
+    ui_pre->setChecked(emote_mod == 1 || ao_config->always_pre_enabled());
 
   select_default_sfx();
 
