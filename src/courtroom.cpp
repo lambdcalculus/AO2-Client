@@ -85,6 +85,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   const QString l_prev_emote = ui_emote_dropdown->currentText();
   set_emote_dropdown();
+  ui_emote_dropdown->setCurrentText(l_prev_emote);
 
   if (l_changed_chr)
   {
