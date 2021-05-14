@@ -85,11 +85,14 @@ void Courtroom::enter_courtroom(int p_cid)
 
   const QString l_prev_emote = ui_emote_dropdown->currentText();
   set_emote_dropdown();
-  ui_emote_dropdown->setCurrentText(l_prev_emote);
 
   if (l_changed_chr)
   {
     ui_pre->setChecked(ui_pre->isChecked() || ao_config->always_pre_enabled());
+  }
+  else
+  {
+    ui_emote_dropdown->setCurrentText(l_prev_emote);
   }
 
   current_evidence_page = 0;
