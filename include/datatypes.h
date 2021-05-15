@@ -108,17 +108,6 @@ struct server_type
   int port;
 };
 
-struct emote_type
-{
-  QString comment;
-  QString preanim;
-  QString anim;
-  int mod;
-  QString sfx_name;
-  int sfx_delay;
-  int sfx_duration;
-};
-
 struct char_type
 {
   QString name;
@@ -132,30 +121,6 @@ struct evi_type
   QString name;
   QString description;
   QString image;
-};
-
-struct chatmessage_type
-{
-  QString message;
-  QString character;
-  QString side;
-  QString sfx_name;
-  QString pre_emote;
-  QString emote;
-  int emote_modifier;
-  int objection_modifier;
-  int realization;
-  int text_color;
-  int evidence;
-  int cid;
-  int sfx_delay;
-  int flip;
-};
-
-struct area_type
-{
-  QString name;
-  QString background;
 };
 
 struct pos_size_type

@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QStringList>
-#include <QVector>
 
 QStringList animated_or_static_extensions();
 QStringList animated_extensions();

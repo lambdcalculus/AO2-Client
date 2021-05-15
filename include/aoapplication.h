@@ -87,27 +87,16 @@ public:
   ///////////////////////////////////////////
 
   void set_favorite_list();
-  QVector<server_type> &get_favorite_list()
-  {
-    return favorite_list;
-  }
+  QVector<server_type> &get_favorite_list();
   void add_favorite_server(int p_server);
 
-  void set_server_list();
-  QVector<server_type> &get_server_list()
-  {
-    return server_list;
-  }
-
-  // reads the theme from config.ini and sets it accordingly
-  void set_theme_name(QString p_name);
+  QVector<server_type> &get_server_list();
 
   // Returns the character the player has currently selected
   QString get_current_char();
 
   // implementation in path_functions.cpp
   QString get_base_path();
-  QString get_data_path();
   QString get_character_folder_path(QString character);
   QString get_character_path(QString p_character, QString p_file);
   // QString get_demothings_path();
@@ -188,7 +177,6 @@ public:
   QString get_case_sensitive_path(QString p_file);
 
   ////// Functions for accessing the config panel //////
-
   void toggle_config_panel();
 
   ////// Functions for reading and writing files //////

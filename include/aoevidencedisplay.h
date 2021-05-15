@@ -16,7 +16,6 @@ public:
   AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app);
 
   void show_evidence(QString p_evidence_image, bool is_left_side);
-  QLabel *get_evidence_icon();
   void reset();
 
 private:

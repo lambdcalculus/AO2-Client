@@ -14,7 +14,6 @@ public:
 
   void set_image(QString p_image);
   void set_image_from_path(QString p_path);
-  void set_size_and_pos(QString identifier);
 
   AOApplication *ao_app = nullptr;
   QString image_path;

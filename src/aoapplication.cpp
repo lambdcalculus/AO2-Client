@@ -163,6 +163,11 @@ void AOApplication::set_favorite_list()
   favorite_list = read_serverlist_txt();
 }
 
+QVector<server_type> &AOApplication::get_favorite_list()
+{
+  return favorite_list;
+}
+
 QString AOApplication::get_current_char()
 {
   if (courtroom_constructed)
@@ -222,6 +227,11 @@ void AOApplication::add_favorite_server(int p_server)
   QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
 
   write_to_serverlist_txt(server_line);
+}
+
+QVector<server_type> &AOApplication::get_server_list()
+{
+  return server_list;
 }
 
 void AOApplication::server_disconnected()

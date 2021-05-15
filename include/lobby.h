@@ -46,7 +46,6 @@ public:
   {
     ui_loading_background->hide();
   }
-  QString get_chatlog();
   int get_selected_server();
 
   void set_loading_value(int p_value);

@@ -310,13 +310,6 @@ void Lobby::set_loading_text(QString p_text)
   ui_loading_text->append(p_text);
 }
 
-QString Lobby::get_chatlog()
-{
-  QString return_value = ui_chatbox->toPlainText();
-
-  return return_value;
-}
-
 int Lobby::get_selected_server()
 {
   return ui_server_list->currentRow();
