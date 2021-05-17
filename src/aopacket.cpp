@@ -20,11 +20,21 @@ AOPacket::AOPacket(QString p_header, QStringList &p_contents)
   m_contents = p_contents;
 }
 
+QString AOPacket::get_header()
+{
+  return m_header;
+}
+
+QStringList &AOPacket::get_contents()
+{
+  return m_contents;
+}
+
 QString AOPacket::to_string()
 {
   QString f_string = m_header;
 
-  for (QString i_string : m_contents)
+  for (const QString &i_string : qAsConst(m_contents))
   {
     f_string += ("#" + i_string);
   }
