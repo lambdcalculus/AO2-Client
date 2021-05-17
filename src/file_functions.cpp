@@ -15,7 +15,7 @@ QStringList animated_extensions()
 
 QStringList audio_extensions()
 {
-  return QStringList{".wav", ".ogg", ".opus", ".mp3"};
+  return QStringList{"", ".wav", ".ogg", ".opus", ".mp3"};
 }
 
 bool file_exists(QString file_path)
