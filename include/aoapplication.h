@@ -7,7 +7,6 @@
 
 #include <QApplication>
 #include <QFile>
-#include <QPointer>
 #include <QVector>
 
 class NetworkManager;
@@ -30,10 +29,10 @@ public:
 
   NetworkManager *net_manager = nullptr;
 
-  QPointer<Lobby> m_lobby = nullptr;
+  Lobby *m_lobby = nullptr;
   bool lobby_constructed = false;
 
-  QPointer<Courtroom> m_courtroom = nullptr;
+  Courtroom *m_courtroom = nullptr;
   bool courtroom_constructed = false;
 
   void construct_lobby();
