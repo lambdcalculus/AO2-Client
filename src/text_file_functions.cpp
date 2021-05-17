@@ -16,7 +16,7 @@ QStringList AOApplication::get_callwords()
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
   return config->callwords().split(" ", QString::SkipEmptyParts);
 #else
-  return config->callwords().split(" ", Qt::SkipEmptyParts);
+  return ao_config->callwords().split(" ", Qt::SkipEmptyParts);
 #endif
 }
 
@@ -298,11 +298,11 @@ QMap<DR::Color, DR::ColorInfo> AOApplication::get_chatmessage_colors()
   if (path.isEmpty())
   {
     qInfo().noquote() << QString("[color] theme %1 is missing file: %2, using default colors instead")
-                             .arg(config->theme())
+                             .arg(ao_config->theme())
                              .arg(file_name);
     return color_map;
   }
-  qInfo().noquote() << QString("[color] loading colors for theme %1").arg(config->theme());
+  qInfo().noquote() << QString("[color] loading colors for theme %1").arg(ao_config->theme());
 
   QSettings color_settings(path, QSettings::IniFormat);
 

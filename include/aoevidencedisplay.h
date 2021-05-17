@@ -20,10 +20,9 @@ public:
 
 private:
   AOApplication *ao_app = nullptr;
-  AOSfxPlayer *sfx_player = nullptr;
+  AOSfxPlayer *dr_sfx = nullptr;
   QMovie *m_movie = nullptr;
   QLabel *w_icon = nullptr;
-  int m_loop_number = 0;
 
 private slots:
   void frame_change(int p_frame);

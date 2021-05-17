@@ -7,6 +7,7 @@
 
 #include <QApplication>
 #include <QFile>
+#include <QPointer>
 #include <QVector>
 
 class NetworkManager;
@@ -23,14 +24,16 @@ public:
   AOApplication(int &argc, char **argv);
   ~AOApplication();
 
-  NetworkManager *net_manager = nullptr;
-  Lobby *w_lobby = nullptr;
-  Courtroom *w_courtroom = nullptr;
-  DRDiscord *discord = nullptr;
-  AOConfig *config = nullptr;
-  AOConfigPanel *config_panel = nullptr;
+  AOConfig *ao_config = nullptr;
+  AOConfigPanel *ao_config_panel = nullptr;
+  DRDiscord *dr_discord = nullptr;
 
+  NetworkManager *net_manager = nullptr;
+
+  QPointer<Lobby> m_lobby = nullptr;
   bool lobby_constructed = false;
+
+  QPointer<Courtroom> m_courtroom = nullptr;
   bool courtroom_constructed = false;
 
   void construct_lobby();

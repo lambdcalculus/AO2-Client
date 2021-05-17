@@ -122,7 +122,7 @@ void Courtroom::enter_courtroom(int p_cid)
   QString l_chr_name;
   if (is_spectating())
   {
-    ao_app->discord->clear_character_name();
+    ao_app->dr_discord->clear_character_name();
     ao_config->clear_showname_placeholder();
   }
   else
@@ -130,7 +130,7 @@ void Courtroom::enter_courtroom(int p_cid)
     l_chr_name = ao_app->get_char_name(char_list.at(m_cid).name);
     const QString l_ini_showname = ao_app->get_showname(l_chr_name);
     const QString l_final_showname = l_ini_showname.trimmed().isEmpty() ? l_chr_name : l_ini_showname;
-    ao_app->discord->set_character_name(l_final_showname);
+    ao_app->dr_discord->set_character_name(l_final_showname);
     ao_config->set_showname_placeholder(l_final_showname);
 
     if (ao_app->m_FL_chrini_enabled)
@@ -2352,8 +2352,8 @@ void Courtroom::on_back_to_lobby_clicked()
   hide();
 
   ao_app->construct_lobby();
-  ao_app->w_lobby->list_servers();
-  ao_app->w_lobby->set_choose_a_server();
+  ao_app->m_lobby->list_servers();
+  ao_app->m_lobby->set_choose_a_server();
   ao_app->destruct_courtroom();
 }
 

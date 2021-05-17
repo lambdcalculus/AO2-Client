@@ -12,7 +12,7 @@ AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
 
   m_movie = new QMovie(this);
   w_icon = new QLabel(this);
-  sfx_player = new AOSfxPlayer(ao_app, this);
+  dr_sfx = new AOSfxPlayer(ao_app, this);
 
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
@@ -53,31 +53,21 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
 
   this->setMovie(m_movie);
 
-  m_loop_number = 0;
   m_movie->start();
-  sfx_player->play_effect(ao_app->get_sfx("evidence_present"));
+  dr_sfx->play_effect(ao_app->get_sfx("evidence_present"));
 }
 
-void AOEvidenceDisplay::frame_change(int p_frame_index)
+void AOEvidenceDisplay::frame_change(int p_frame)
 {
-  const int l_frame_num = p_frame_index + 1;
-  if (l_frame_num < m_movie->frameCount())
-    return;
-
-  if ((p_frame_index + 1) < m_movie->frameCount())
-    return;
-  if (p_frame_index == (m_movie->frameCount() - 1))
+  if (p_frame == (m_movie->frameCount() - 1))
   {
-    QTimer::singleShot(m_movie->nextFrameDelay(), this, [this]() {
-      m_movie->stop();
-      w_icon->show();
-      clear();
-    });
     // we need this or else the last frame wont show
     delay(m_movie->nextFrameDelay());
+
     m_movie->stop();
+    this->clear();
+
     w_icon->show();
-    clear();
   }
 }
 

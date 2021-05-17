@@ -51,7 +51,7 @@ QString AOApplication::get_background_path(QString p_file)
 {
   if (courtroom_constructed)
   {
-    return get_case_sensitive_path(w_courtroom->get_background_path(p_file));
+    return get_case_sensitive_path(m_courtroom->get_background_path(p_file));
   }
   // this function being called when the courtroom isn't constructed makes no
   // sense
@@ -201,9 +201,9 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_ext_l
   QStringList l_path_list;
 
   // Only add gamemode and/or time of day if non empty.
-  const QString l_gamemode = config->gamemode();
-  const QString l_timeofday = config->timeofday();
-  const QString l_theme_root = get_base_path() + "themes/" + config->theme();
+  const QString l_gamemode = ao_config->gamemode();
+  const QString l_timeofday = ao_config->timeofday();
+  const QString l_theme_root = get_base_path() + "themes/" + ao_config->theme();
 
   if (!l_gamemode.isEmpty())
   {

@@ -56,30 +56,12 @@ public:
   explicit Courtroom(AOApplication *p_ao_app);
   ~Courtroom();
 
-  void append_char(char_type p_char)
-  {
-    char_list.append(p_char);
-  }
-  void append_evidence(evi_type p_evi)
-  {
-    evidence_list.append(p_evi);
-  }
-  void append_music(QString f_music)
-  {
-    music_list.append(f_music);
-  }
-  void append_area(QString f_area)
-  {
-    area_list.append(f_area);
-  }
-  void clear_music()
-  {
-    music_list.clear();
-  }
-  void clear_areas()
-  {
-    area_list.clear();
-  }
+  void append_char(char_type p_char);
+  void append_evidence(evi_type p_evi);
+  void append_music(QString f_music);
+  void append_area(QString f_area);
+  void clear_music();
+  void clear_areas();
 
   void fix_last_area()
   {
