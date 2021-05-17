@@ -385,7 +385,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       { // look for first song
         const QString &i_value = f_contents.at(i);
-        for (const QString &i_ext : audio_extensions())
+        for (const QString &i_ext : audio_extensions(true))
         {
           if (!i_value.endsWith(i_ext, Qt::CaseInsensitive))
             continue;
