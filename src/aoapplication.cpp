@@ -1,7 +1,7 @@
 #include "aoapplication.h"
 
-#include "courtroom.h"
 #include "debug_functions.h"
+#include "courtroom.h"
 #include "lobby.h"
 #include "networkmanager.h"
 
@@ -171,6 +171,15 @@ QString AOApplication::get_current_char()
     return "";
 }
 
+/**
+ * @brief Check the path for various known exploits.
+ *
+ * In order:
+ * - Directory traversal (most commonly: "../" jumps)
+ * @param p_file The path to check.
+ * @return A sanitized path. If any check fails, the path returned is an empty string. The sanitized path does not
+ * necessarily exist.
+ */
 QString AOApplication::sanitize_path(QString p_file)
 {
   if (!p_file.contains(".."))

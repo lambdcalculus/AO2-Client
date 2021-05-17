@@ -6,7 +6,6 @@
 
 #include <QLabel>
 
-// This class represents a static theme-dependent image
 class AOImageDisplay : public QLabel
 {
 public:

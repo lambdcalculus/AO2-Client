@@ -80,13 +80,29 @@ QString Courtroom::get_background_path(QString p_file)
   return ao_app->get_base_path() + "background/" + current_background + "/" + p_file;
 }
 
-#ifndef CASE_SENSITIVE_FILESYSTEM
+/**
+ * @brief Returns the 'correct' path for the file given as the parameter by
+ * trying to match the case of the actual path.
+ *
+ * @details This function is mostly used on case-sensitive file systems, like
+ * ext4, generally used on Linux. On FAT, there is no difference between
+ * "file" and "FILE". On ext4, those are two different files. This results in
+ * assets that are detected correctly on Windows not being detected on Linux.
+ *
+ * For this reason, the implementation of this function is system-dependent:
+ * on case-insensitive systems, it just returns the parameter itself.
+ *
+ * @param p_file The path whose casing must be checked against the actual
+ * directory structure.
+ *
+ * @return The parameter path with fixed casing.
+ */
 QString AOApplication::get_case_sensitive_path(QString p_file)
+#ifndef CASE_SENSITIVE_FILESYSTEM
 {
   return p_file.replace("//", "/");
 }
 #else
-QString AOApplication::get_case_sensitive_path(QString p_file)
 {
   // First, check to see if the file already exists as it is.
   if (QFile(p_file).exists())
@@ -119,6 +135,21 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
 }
 #endif
 
+/**
+ * @brief Returns the first case-sensitive file that is the combination of one
+ * of the given root and extensions, or empty string if no combination exists.
+ *
+ * @details A root is matched to all given extensions in order before
+ * continuing to the next root.
+ *
+ * @param possible_roots The potential roots the filepath could have.
+ * Case-insensitive.
+ * @param possible_exts The potential extensions the filepath could have.
+ * Case-insensitive.
+ *
+ * @return The first case-sensitive root+extension path for which a file
+ * exists, or an empty string, if not one does.
+ */
 QString AOApplication::find_asset_path(QStringList p_root_list, QStringList p_ext_list)
 {
   for (QString &i_root : p_root_list)
@@ -144,6 +175,27 @@ QString AOApplication::find_asset_path(QStringList p_root_list, QStringList p_ex
   return nullptr;
 }
 
+/**
+ * @brief Returns the first case-sensitive file in the theme folder that is
+ * of the form name+extension, or empty string if it fails.
+ *
+ * @details The p_exts list is browsed in order. A name+extension file is
+ * searched in order in the following directories before checking the next
+ * extension:
+ * 1. The current time of day folder in the current gamemode folder
+ * 2. The current gamemode folder
+ * 3. The current time of day folder
+ * 4. The current theme folder.
+ * The first path that is matched is the one that is returned. If no file
+ * is found at all, it returns an empty string.
+ *
+ * @param p_name Name of the file to look for. Case-insensitive.
+ * @param p_exts The potential extensions the filepath could have.
+ * Case-insensitive.
+ *
+ * @return The first case-sensitive root+extension path that corresponds to an
+ * actual file, or an empty string, if not one does.
+ */
 QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_ext_list)
 {
   QStringList l_path_list;

@@ -22,14 +22,12 @@ public:
   int sound_delay = 0;
 };
 
-namespace DR
-{
-class ChatRecord
+class DRChatRecord
 {
 public:
-  using list = QVector<ChatRecord>;
+  using list = QVector<DRChatRecord>;
 
-  ChatRecord(QString p_name, QString p_message) : name(p_name), message(p_message)
+  DRChatRecord(QString p_name, QString p_message) : name(p_name), message(p_message)
   {}
 
   QDateTime get_timestamp() const
@@ -86,11 +84,11 @@ private:
   bool music = false;
 };
 
-struct SFX
+struct DRSfx
 {
 public:
-  SFX() = default;
-  SFX(QString p_name, QString p_file, bool p_is_found = false)
+  DRSfx() = default;
+  DRSfx(QString p_name, QString p_file, bool p_is_found = false)
       : name(p_name.trimmed()), file(p_file.trimmed()), is_found(p_is_found)
   {}
 
@@ -98,7 +96,6 @@ public:
   QString file;
   bool is_found;
 };
-} // namespace DR
 
 struct server_type
 {

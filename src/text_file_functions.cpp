@@ -119,6 +119,14 @@ QVector<server_type> AOApplication::read_serverlist_txt()
   return f_server_list;
 }
 
+/**
+ * @brief Reads p_path and returns the value associated with key
+ * p_identifier. If the file or key do not exist, return empty.
+ *
+ * @param p_identifier Key to look for.
+ * @param p_path Full path to ini file
+ * @return Value associated with key, or empty if not found.
+ */
 QString AOApplication::read_ini(QString p_identifier, QString p_path)
 {
   QFile ini;
@@ -702,6 +710,22 @@ QStringList AOApplication::get_overlay(QString p_chr, int p_overlay)
   return r_overlay;
 }
 
+/**
+ * @brief Searches p_file in theme folder and returns the value associated
+ * with key p_identifier. If the file or key do not exist, return empty.
+ *
+ * @details p_file is looked for in the following directories. The earliest
+ * directory where it is found is the one that is considered.
+ * 1. The current time of day folder in the current gamemode folder
+ * 2. The current gamemode folder
+ * 3. The current time of day folder
+ * 4. The current theme folder.
+ * 5. The default theme folder.
+ *
+ * @param p_identifier Key to look for.
+ * @param p_file Name of file+ini to look for.
+ * @return Value associated with key, or empty if not found.
+ */
 QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
 {
   // File lookup order

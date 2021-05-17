@@ -10,11 +10,11 @@ AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
 {
   ao_app = p_ao_app;
 
-  evidence_movie = new QMovie(this);
-  evidence_icon = new QLabel(this);
+  m_movie = new QMovie(this);
+  w_icon = new QLabel(this);
   sfx_player = new AOSfxPlayer(ao_app, this);
 
-  connect(evidence_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
+  connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
 }
 
 void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_side)
@@ -42,38 +42,48 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
 
   pos_size_type icon_dimensions = ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
 
-  evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
-  evidence_icon->resize(icon_dimensions.width, icon_dimensions.height);
-  evidence_icon->setPixmap(f_pixmap.scale(evidence_icon->size()));
+  w_icon->move(icon_dimensions.x, icon_dimensions.y);
+  w_icon->resize(icon_dimensions.width, icon_dimensions.height);
+  w_icon->setPixmap(f_pixmap.scale(w_icon->size()));
 
   QString f_path = ao_app->find_theme_asset_path(gif_name);
-  evidence_movie->setFileName(f_path);
-  if (evidence_movie->frameCount() < 1)
+  m_movie->setFileName(f_path);
+  if (m_movie->frameCount() < 1)
     return;
 
-  this->setMovie(evidence_movie);
+  this->setMovie(m_movie);
 
-  evidence_movie->start();
+  m_loop_number = 0;
+  m_movie->start();
   sfx_player->play_effect(ao_app->get_sfx("evidence_present"));
 }
 
-void AOEvidenceDisplay::frame_change(int p_frame)
+void AOEvidenceDisplay::frame_change(int p_frame_index)
 {
-  if (p_frame == (evidence_movie->frameCount() - 1))
+  const int l_frame_num = p_frame_index + 1;
+  if (l_frame_num < m_movie->frameCount())
+    return;
+
+  if ((p_frame_index + 1) < m_movie->frameCount())
+    return;
+  if (p_frame_index == (m_movie->frameCount() - 1))
   {
+    QTimer::singleShot(m_movie->nextFrameDelay(), this, [this]() {
+      m_movie->stop();
+      w_icon->show();
+      clear();
+    });
     // we need this or else the last frame wont show
-    delay(evidence_movie->nextFrameDelay());
-
-    evidence_movie->stop();
-    this->clear();
-
-    evidence_icon->show();
+    delay(m_movie->nextFrameDelay());
+    m_movie->stop();
+    w_icon->show();
+    clear();
   }
 }
 
 void AOEvidenceDisplay::reset()
 {
-  evidence_movie->stop();
-  evidence_icon->hide();
+  m_movie->stop();
+  w_icon->hide();
   this->clear();
 }

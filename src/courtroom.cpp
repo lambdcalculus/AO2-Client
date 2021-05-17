@@ -439,8 +439,8 @@ void Courtroom::update_sfx_list()
 
   // items
   m_sfx_list.clear();
-  m_sfx_list.append(DR::SFX("Default", m_sfx_default_file));
-  m_sfx_list.append(DR::SFX("Silence", nullptr));
+  m_sfx_list.append(DRSfx("Default", m_sfx_default_file));
+  m_sfx_list.append(DRSfx("Silence", nullptr));
 
   const QStringList l_sfx_list = ao_app->get_sfx_list();
   for (const QString &i_sfx_line : l_sfx_list)
@@ -450,7 +450,7 @@ void Courtroom::update_sfx_list()
     const QString l_name = l_sfx_entry.at(l_sfx_entry.size() - 1).trimmed();
     const QString l_file = QString(l_sfx_entry.size() >= 2 ? l_sfx_entry.at(0) : nullptr).trimmed();
     const bool l_is_found = !ao_app->find_asset_path({ao_app->get_sounds_path(l_file)}, audio_extensions()).isEmpty();
-    m_sfx_list.append(DR::SFX(l_name, l_file, l_is_found));
+    m_sfx_list.append(DRSfx(l_name, l_file, l_is_found));
   }
 
   update_sfx_widget_list();
@@ -464,7 +464,7 @@ void Courtroom::update_sfx_widget_list()
   const QString l_name_filter = ui_sfx_search->text();
   for (int i = 0; i < m_sfx_list.length(); ++i)
   {
-    const DR::SFX &i_sfx = m_sfx_list.at(i);
+    const DRSfx &i_sfx = m_sfx_list.at(i);
     if (!i_sfx.name.contains(l_name_filter, Qt::CaseInsensitive))
       continue;
     QListWidgetItem *l_item = new QListWidgetItem;
@@ -604,6 +604,11 @@ void Courtroom::on_showname_changed(QString p_showname)
   send_showname_packet(p_showname);
 }
 
+/**
+ * @brief Send a packet to set the showname of the user to
+ * the server.
+ * @param p_showname The showname.
+ */
 void Courtroom::send_showname_packet(QString p_showname)
 {
   if (ao_app->m_FL_showname_enabled)
@@ -1137,7 +1142,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
     // but we don't necessarily care the intermediate states are not aligned
     ui_ic_chatlog->set_auto_align(false);
     // we need all recordings
-    QQueue<DR::ChatRecord> new_queue;
+    QQueue<DRChatRecord> new_queue;
     while (!m_ic_record_list.isEmpty())
       new_queue.append(m_ic_record_list.takeFirst());
     new_queue.append(m_ic_record_queue);
@@ -1207,7 +1212,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
 
   while (!m_ic_record_queue.isEmpty())
   {
-    DR::ChatRecord record = m_ic_record_queue.takeFirst();
+    DRChatRecord record = m_ic_record_queue.takeFirst();
     m_ic_record_list.append(record);
     const QTextCharFormat l_record_name_format = record.is_self() ? selfname_format : name_format;
 
@@ -1247,7 +1252,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
   // this is always going to amount to at least the current length of records
   int block_count = m_ic_record_list.length() + 1; // there's always one extra block
   // to do that, we need to go through the records
-  for (DR::ChatRecord &record : m_ic_record_list)
+  for (DRChatRecord &record : m_ic_record_list)
     if (!record.is_system())
       if (chatlog_newline)
         block_count += 2; // if newline is actived, it always inserts two extra
@@ -1328,7 +1333,7 @@ void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bo
   if (p_line.trimmed().isEmpty())
     p_line = p_line.trimmed();
 
-  DR::ChatRecord new_record(p_name, p_line);
+  DRChatRecord new_record(p_name, p_line);
   new_record.set_music(p_music);
   new_record.set_system(p_system);
   new_record.set_self(p_self);
@@ -1336,6 +1341,12 @@ void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bo
   update_ic_log(false);
 }
 
+/**
+ * @brief Appends a message arriving from system to the IC chatlog.
+ *
+ * @param p_showname The showname used by the system. Can be an empty string.
+ * @param p_line The message that the system is sending.
+ */
 void Courtroom::append_system_text(QString p_showname, QString p_line)
 {
   if (chatmessage_is_empty)
@@ -1767,6 +1778,11 @@ void Courtroom::set_character_position(QString p_pos)
   set_judge_enabled(p_pos == "jud");
 }
 
+/**
+ * @brief Send a OOC packet (CT) out to the server.
+ * @param ooc_name The username.
+ * @param ooc_message The message.
+ */
 void Courtroom::send_ooc_packet(QString ooc_name, QString ooc_message)
 {
   if (ooc_name.trimmed().isEmpty())
@@ -2008,6 +2024,13 @@ void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
   ui_ic_chat_message->setFocus();
 }
 
+/**
+ * @brief Set the sprites of the shout buttons, and mark the currently
+ * selected shout as such.
+ *
+ * @details If a sprite cannot be found for a shout button, a regular
+ * push button is displayed for it with its shout name instead.
+ */
 void Courtroom::reset_shout_buttons()
 {
   for (AOButton *i_button : qAsConst(ui_shouts))
@@ -2090,6 +2113,11 @@ void Courtroom::on_cycle_clicked()
   ui_ic_chat_message->setFocus();
 }
 
+/**
+ * @brief Selects the shout p_delta slots ahead of the current one, wrapping
+ * around if needed. If p_delta is negative, look -p_delta slots behind.
+ * @param Shout slots to advance. May be negative.
+ */
 void Courtroom::cycle_shout(int p_delta)
 {
   int n = ui_shouts.size();
@@ -2097,6 +2125,11 @@ void Courtroom::cycle_shout(int p_delta)
   set_shouts();
 }
 
+/**
+ * @brief Selects the effect p_delta slots ahead of the current one, wrapping
+ * around if needed. If p_delta is negative, look -p_delta slots behind.
+ * @param Shout slots to advance. May be negative.
+ */
 void Courtroom::cycle_effect(int p_delta)
 {
   int n = ui_effects.size();
@@ -2104,6 +2137,11 @@ void Courtroom::cycle_effect(int p_delta)
   set_effects();
 }
 
+/**
+ * @brief Selects the splash p_delta slots ahead of the current one, wrapping
+ * around if needed. If p_delta is negative, look -p_delta slots behind.
+ * @param Shout slots to advance. May be negative.
+ */
 void Courtroom::cycle_wtce(int p_delta)
 {
   int n = ui_wtce.size();
@@ -2111,6 +2149,13 @@ void Courtroom::cycle_wtce(int p_delta)
   set_judge_wtce();
 }
 
+/**
+ * @brief Set the sprites of the effect buttons, and mark the currently
+ * selected effect as such.
+ *
+ * @details If a sprite cannot be found for a shout button, a regular
+ * push button is displayed for it with its shout name instead.
+ */
 void Courtroom::reset_effect_buttons()
 {
   for (AOButton *i_button : qAsConst(ui_effects))
@@ -2229,6 +2274,12 @@ void Courtroom::on_cross_examination_clicked()
   ui_ic_chat_message->setFocus();
 }
 
+/**
+ * @brief Set the sprites of the splash buttons.
+ *
+ * @details If a sprite cannot be found for a shout button, a regular
+ * push button is displayed for it with its shout name instead.
+ */
 void Courtroom::reset_wtce_buttons()
 {
   for (int i = 0; i < wtce_names.size(); ++i)

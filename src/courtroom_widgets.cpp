@@ -1213,7 +1213,7 @@ void Courtroom::load_free_blocks()
 
   // And add names
   free_block_names.clear();
-  for (int i = 0; i <= ui_free_blocks.size(); ++i)
+  for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
     QString name = "free_block_" + ao_app->get_spbutton("[FREE BLOCKS]", i + 1).trimmed();
     if (!name.isEmpty())
@@ -1301,6 +1301,10 @@ void Courtroom::load_wtce()
   }
 }
 
+/**
+ * @brief Show the currently selected shout button, hide the remaining ones.
+ * If no shouts exist, this method does nothing.
+ */
 void Courtroom::set_shouts()
 {
   for (auto &shout : ui_shouts)
@@ -1309,6 +1313,10 @@ void Courtroom::set_shouts()
     ui_shouts[m_shout_current]->show(); // check to prevent crashing
 }
 
+/**
+ * @brief Show the currently selected effect button, hide the remaining ones.
+ * If no effects exist, this method does nothing.
+ */
 void Courtroom::set_effects()
 {
   for (auto &effect : ui_effects)
@@ -1332,6 +1340,10 @@ void Courtroom::set_judge_enabled(bool p_enabled)
   set_judge_wtce();
 }
 
+/**
+ * @brief Show the currently selected splash button, hide the remaining ones.
+ * If no splashes exist, this method does nothing.
+ */
 void Courtroom::set_judge_wtce()
 {
   // hide all wtce before enabling visibility
@@ -1361,6 +1373,9 @@ void Courtroom::set_judge_wtce()
   }
 }
 
+/**
+ * @brief Show all free blocks and restart their animations.
+ */
 void Courtroom::set_free_blocks()
 {
   for (int i = 0; i < ui_free_blocks.size(); i++)
