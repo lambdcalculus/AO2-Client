@@ -13,11 +13,7 @@
 
 QStringList AOApplication::get_callwords()
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-  return config->callwords().split(" ", QString::SkipEmptyParts);
-#else
-  return ao_config->callwords().split(" ", Qt::SkipEmptyParts);
-#endif
+  return ao_config->callwords().split(" ", DR::SkipEmptyParts);
 }
 
 QString AOApplication::read_note(QString filename)
