@@ -1506,14 +1506,14 @@ void Courtroom::set_mute_list()
   mute_map.clear();
 
   // maps which characters are muted based on cid, none are muted by default
-  for (int n_cid = 0; n_cid < char_list.size(); n_cid++)
+  for (int n_cid = 0; n_cid < m_chr_list.size(); n_cid++)
   {
     mute_map.insert(n_cid, false);
   }
 
   QStringList sorted_mute_list;
 
-  for (char_type i_char : char_list)
+  for (char_type i_char : m_chr_list)
     sorted_mute_list.append(i_char.name);
 
   sorted_mute_list.sort();

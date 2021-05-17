@@ -58,20 +58,8 @@ public:
 
   void append_char(char_type p_char);
   void append_evidence(evi_type p_evi);
-  void append_music(QString f_music);
-  void append_area(QString f_area);
-  void clear_music();
-  void clear_areas();
-
-  void fix_last_area()
-  {
-    if (area_list.size() > 0)
-    {
-      QString malplaced = area_list.last();
-      area_list.removeLast();
-      append_music(malplaced);
-    }
-  }
+  void set_area_list(QStringList area_list);
+  void set_music_list(QStringList music_list);
 
   // sets position of widgets based on theme ini files
   void set_widgets();
@@ -138,14 +126,8 @@ public:
   QString get_background_path(QString p_file);
 
   // cid = character id, returns the cid of the currently selected character
-  int get_cid()
-  {
-    return m_cid;
-  }
-  QString get_current_char()
-  {
-    return current_char;
-  }
+  int get_cid();
+  QString get_current_char();
 
   // Set the showname of the client
   void set_showname(QString p_showname);
@@ -257,11 +239,10 @@ private:
   int m_viewport_width = 256;
   int m_viewport_height = 192;
 
-  QVector<char_type> char_list;
-  QVector<evi_type> evidence_list;
-  QVector<QString> music_list;
-  QVector<QString> area_list;
-  QVector<QString> area_names;
+  QVector<char_type> m_chr_list;
+  QVector<evi_type> m_evidence_list;
+  QStringList m_area_list;
+  QStringList m_music_list;
   QVector<QString> note_list;
 
   QSignalMapper *char_button_mapper = nullptr;

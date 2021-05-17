@@ -48,6 +48,26 @@ Courtroom::~Courtroom()
   stop_all_audio();
 }
 
+void Courtroom::append_char(char_type p_char)
+{
+  m_chr_list.append(p_char);
+}
+
+void Courtroom::append_evidence(evi_type p_evi)
+{
+  m_evidence_list.append(p_evi);
+}
+
+void Courtroom::set_area_list(QStringList area_list)
+{
+  m_area_list = area_list;
+}
+
+void Courtroom::set_music_list(QStringList music_list)
+{
+  m_music_list = music_list;
+}
+
 void Courtroom::enter_courtroom(int p_cid)
 {
   qDebug() << "enter_courtroom";
@@ -127,7 +147,7 @@ void Courtroom::enter_courtroom(int p_cid)
   }
   else
   {
-    l_chr_name = ao_app->get_char_name(char_list.at(m_cid).name);
+    l_chr_name = ao_app->get_char_name(m_chr_list.at(m_cid).name);
     const QString l_ini_showname = ao_app->get_showname(l_chr_name);
     const QString l_final_showname = l_ini_showname.trimmed().isEmpty() ? l_chr_name : l_ini_showname;
     ao_app->dr_discord->set_character_name(l_final_showname);
@@ -284,19 +304,19 @@ void Courtroom::set_scene()
 
 void Courtroom::set_taken(int n_char, bool p_taken)
 {
-  if (n_char >= char_list.size())
+  if (n_char >= m_chr_list.size())
   {
     qDebug() << "W: set_taken attempted to set an index bigger than char_list size";
     return;
   }
 
   char_type f_char;
-  f_char.name = char_list.at(n_char).name;
-  f_char.description = char_list.at(n_char).description;
+  f_char.name = m_chr_list.at(n_char).name;
+  f_char.description = m_chr_list.at(n_char).description;
   f_char.taken = p_taken;
-  f_char.evidence_string = char_list.at(n_char).evidence_string;
+  f_char.evidence_string = m_chr_list.at(n_char).evidence_string;
 
-  char_list.replace(n_char, f_char);
+  m_chr_list.replace(n_char, f_char);
 }
 
 void Courtroom::set_background(QString p_background)
@@ -366,9 +386,9 @@ void Courtroom::list_music()
 
   int n_listed_songs = 0;
 
-  for (int n_song = 0; n_song < music_list.size(); ++n_song)
+  for (int n_song = 0; n_song < m_music_list.size(); ++n_song)
   {
-    QString i_song = music_list.at(n_song);
+    QString i_song = m_music_list.at(n_song);
 
     if (i_song.toLower().contains(ui_music_search->text().toLower()))
     {
@@ -404,11 +424,11 @@ void Courtroom::list_areas()
 
   int n_listed_areas = 0;
 
-  for (int n_area = 0; n_area < area_list.size(); ++n_area)
+  for (int n_area = 0; n_area < m_area_list.size(); ++n_area)
   {
     QString i_area = "";
 
-    i_area.append(area_list.at(n_area));
+    i_area.append(m_area_list.at(n_area));
 
     if (i_area.toLower().contains(ui_music_search->text().toLower()))
     {
@@ -797,7 +817,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   else
     is_system_speaking = false;
 
-  if (f_char_id < 0 || f_char_id >= char_list.size())
+  if (f_char_id < 0 || f_char_id >= m_chr_list.size())
     return;
 
   if (mute_map.value(m_chatmessage[CMChrId].toInt()))
@@ -838,7 +858,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   // Having an empty showname for system is actually what we expect.
   if (m_chatmessage[CMShowName].isEmpty() && !is_system_speaking)
   {
-    f_showname = ao_app->get_showname(char_list.at(f_char_id).name);
+    f_showname = ao_app->get_showname(m_chr_list.at(f_char_id).name);
   }
   else
   {
@@ -907,7 +927,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
     on_app_reload_theme_requested();
   }
 
-  QString real_name = char_list.at(m_chatmessage[CMChrId].toInt()).name;
+  QString real_name = m_chr_list.at(m_chatmessage[CMChrId].toInt()).name;
 
   QString f_showname;
 
@@ -1661,6 +1681,16 @@ void Courtroom::set_ban(int p_cid)
   ao_app->destruct_courtroom();
 }
 
+int Courtroom::get_cid()
+{
+  return m_cid;
+}
+
+QString Courtroom::get_current_char()
+{
+  return current_char;
+}
+
 void Courtroom::handle_song(QStringList p_contents)
 {
   if (p_contents.size() < 2)
@@ -1680,7 +1710,7 @@ void Courtroom::handle_song(QStringList p_contents)
     }
   }
 
-  if (l_chr_id < 0 || l_chr_id >= char_list.size())
+  if (l_chr_id < 0 || l_chr_id >= m_chr_list.size())
   {
     m_music_player->play(f_song);
   }
@@ -1705,7 +1735,7 @@ void Courtroom::handle_song(QStringList p_contents)
     QString str_char;
     if (f_showname.isEmpty())
     {
-      str_char = ao_app->get_showname(char_list.at(l_chr_id).name);
+      str_char = ao_app->get_showname(m_chr_list.at(l_chr_id).name);
     }
     else
     {
@@ -1971,13 +2001,13 @@ void Courtroom::on_mute_list_item_changed(QListWidgetItem *p_item)
 {
   int f_cid = -1;
 
-  for (int n_char = 0; n_char < char_list.size(); n_char++)
+  for (int n_char = 0; n_char < m_chr_list.size(); n_char++)
   {
-    if (char_list.at(n_char).name == p_item->text())
+    if (m_chr_list.at(n_char).name == p_item->text())
       f_cid = n_char;
   }
 
-  if (f_cid < 0 || f_cid >= char_list.size())
+  if (f_cid < 0 || f_cid >= m_chr_list.size())
   {
     qDebug() << "W: " << p_item->text() << " not present in char_list";
     return;

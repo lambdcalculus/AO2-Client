@@ -304,6 +304,16 @@ void Lobby::set_drtextedit_font(DRTextEdit *widget, QString p_identifier)
   widget->set_vertical_alignment(valignment);
 }
 
+void Lobby::show_loading_overlay()
+{
+  ui_loading_background->show();
+}
+
+void Lobby::hide_loading_overlay()
+{
+  ui_loading_background->hide();
+}
+
 void Lobby::set_loading_text(QString p_text)
 {
   ui_loading_text->clear();
