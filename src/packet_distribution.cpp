@@ -406,6 +406,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (header == "SM")
     {
       loaded_music = music_list_size;
+      m_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" +
+                                QString::number(music_list_size));
       int total_loading_size = char_list_size + evidence_list_size + music_list_size;
       int loading_value =
           ((loaded_chars + loaded_evidence + loaded_music) / static_cast<double>(total_loading_size)) * 100;
