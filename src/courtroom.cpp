@@ -105,8 +105,8 @@ void Courtroom::enter_courtroom(int p_cid)
   set_widget_names();
   set_widget_layers();
 
-  for (int i = 0; i < ui_timers.length(); ++i)
-    ui_timers[i]->redraw();
+  for (AOTimer *i_timer : ui_timers)
+    i_timer->redraw();
 
   ui_char_select_background->hide();
 
@@ -2233,12 +2233,11 @@ void Courtroom::reset_wtce_buttons()
 {
   for (int i = 0; i < wtce_names.size(); ++i)
   {
-    QString wtce_file = wtce_names.at(i) + ".png";
-    ui_wtce[i]->set_image(wtce_file);
-    if (ao_app->find_theme_asset_path(wtce_file).isEmpty())
-      ui_wtce[i]->setText(wtce_names.at(i));
-    else
-      ui_wtce[i]->setText("");
+    const QString l_name = wtce_names.at(i);
+    const QString l_file = l_name + ".png";
+    AOButton *l_button = ui_wtce.at(i);
+    l_button->set_image(l_file);
+    l_button->setText(ao_app->find_theme_asset_path(l_file).isEmpty() ? l_name : nullptr);
   }
 
   m_wtce_current = 0;
@@ -2441,42 +2440,42 @@ void Courtroom::on_set_notes_clicked()
     note_scroll_area->hide();
 }
 
-void Courtroom::resume_timer(int timer_id)
+void Courtroom::resume_timer(int p_id)
 {
-  if (timer_id >= timer_number || timer_id < 0)
+  if (p_id < 0 || p_id >= ui_timers.length())
     return;
-
-  ui_timers[timer_id]->resume();
+  AOTimer *l_timer = ui_timers.at(p_id);
+  l_timer->resume();
 }
 
-void Courtroom::set_timer_time(int timer_id, int new_time)
+void Courtroom::set_timer_time(int p_id, int new_time)
 {
-  if (timer_id >= timer_number || timer_id < 0)
+  if (p_id < 0 || p_id >= ui_timers.length())
     return;
-
-  ui_timers[timer_id]->set_time(QTime(0, 0).addMSecs(new_time));
+  AOTimer *l_timer = ui_timers.at(p_id);
+  l_timer->set_time(QTime(0, 0).addMSecs(new_time));
 }
 
-void Courtroom::set_timer_timestep(int timer_id, int timestep_length)
+void Courtroom::set_timer_timestep(int p_id, int timestep_length)
 {
-  if (timer_id >= timer_number || timer_id < 0)
+  if (p_id < 0 || p_id >= ui_timers.length())
     return;
-
-  ui_timers[timer_id]->set_timestep_length(timestep_length);
+  AOTimer *l_timer = ui_timers.at(p_id);
+  l_timer->set_timestep_length(timestep_length);
 }
 
-void Courtroom::set_timer_firing(int timer_id, int firing_interval)
+void Courtroom::set_timer_firing(int p_id, int firing_interval)
 {
-  if (timer_id >= timer_number || timer_id < 0)
+  if (p_id < 0 || p_id >= ui_timers.length())
     return;
-
-  ui_timers[timer_id]->set_firing_interval(firing_interval);
+  AOTimer *l_timer = ui_timers.at(p_id);
+  l_timer->set_firing_interval(firing_interval);
 }
 
-void Courtroom::pause_timer(int timer_id)
+void Courtroom::pause_timer(int p_id)
 {
-  if (timer_id >= timer_number || timer_id < 0)
+  if (p_id < 0 || p_id >= ui_timers.length())
     return;
-
-  ui_timers[timer_id]->pause();
+  AOTimer *l_timer = ui_timers.at(p_id);
+  l_timer->pause();
 }

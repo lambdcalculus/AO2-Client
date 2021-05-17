@@ -133,11 +133,6 @@ void AOApplication::destruct_courtroom()
   net_manager->disconnect_from_server();
 }
 
-QString AOApplication::get_version_string()
-{
-  return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION);
-}
-
 void AOApplication::on_config_theme_changed()
 {
   Q_EMIT reload_theme();

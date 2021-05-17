@@ -68,22 +68,6 @@ public:
 
   bool courtroom_loaded = false;
 
-  //////////////////versioning///////////////
-
-  int get_release()
-  {
-    return RELEASE;
-  }
-  int get_major_version()
-  {
-    return MAJOR_VERSION;
-  }
-  int get_minor_version()
-  {
-    return MINOR_VERSION;
-  }
-  QString get_version_string();
-
   ///////////////////////////////////////////
 
   void set_favorite_list();
@@ -313,10 +297,6 @@ signals:
   void reload_theme();
 
 private:
-  const int RELEASE = 1;
-  const int MAJOR_VERSION = 0;
-  const int MINOR_VERSION = 0;
-
   QVector<server_type> server_list;
   QVector<server_type> favorite_list;
 

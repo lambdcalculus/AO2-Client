@@ -711,7 +711,7 @@ QString AOApplication::read_theme_ini(QString p_identifier, QString p_file)
   if (path.isEmpty())
     return "";
 
-  return read_ini(p_identifier, path); // Could be the empty string
+  return read_ini(p_identifier, path); // may be an empty string
 }
 
 bool AOApplication::read_theme_ini_bool(QString p_identifier, QString p_file)

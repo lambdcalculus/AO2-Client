@@ -412,16 +412,18 @@ void Courtroom::reset_widget_names()
 
 void Courtroom::insert_widget_name(QString p_widget_name, QWidget *p_widget)
 {
-  // insert entry
-  widget_names[p_widget_name] = p_widget;
-  // set name
+  if (widget_names.contains(p_widget_name))
+    qWarning() << QString("[WARNING] Widget <%1> is already defined").arg(p_widget_name);
+  widget_names.insert(p_widget_name, p_widget);
   p_widget->setObjectName(p_widget_name);
 }
 
-void Courtroom::insert_widget_names(QVector<QString> &p_widget_names, QVector<QWidget *> &p_widgets)
+void Courtroom::insert_widget_names(QVector<QString> &p_name_list, QVector<QWidget *> &p_widget_list)
 {
-  for (int i = 0; i < p_widgets.length(); ++i)
-    insert_widget_name(p_widget_names[i], p_widgets[i]);
+  if (p_name_list.length() != p_widget_list.length())
+    qFatal("[WARNING] Length of names and widgets differs!");
+  for (int i = 0; i < p_widget_list.length(); ++i)
+    insert_widget_name(p_name_list[i], p_widget_list[i]);
 }
 
 void Courtroom::set_widget_names()
@@ -683,23 +685,10 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_prosecution_bar, "prosecution_bar");
   ui_prosecution_bar->set_image("prosecutionbar" + QString::number(prosecution_bar_state) + ".png");
 
-  //  set_size_and_pos(ui_shouts[0], "hold_it");
-  //  ui_shouts[0]->show();
-  //  set_size_and_pos(ui_shouts[1], "objection");
-  //  ui_shouts[1]->show();
-  //  set_size_and_pos(ui_shouts[2], "take_that");
-  //  ui_shouts[2]->show();
-  //  set_size_and_pos(ui_shouts[3], "custom_objection");
-  //  set_size_and_pos(ui_shouts[4], "got_it");
-  //  set_size_and_pos(ui_shouts[5], "cross_swords");
-  //  set_size_and_pos(ui_shouts[6], "counter_alt");
   for (int i = 0; i < shout_names.size(); ++i)
   {
     set_size_and_pos(ui_shouts[i], shout_names[i]);
   }
-  //  ui_shouts[0]->show();
-  //  ui_shouts[1]->show();
-  //  ui_shouts[2]->show();
   reset_shout_buttons();
 
   set_size_and_pos(ui_shout_up, "shout_up");
@@ -721,10 +710,6 @@ void Courtroom::set_widgets()
     ui_shout_down->show();
   }
 
-  //  set_size_and_pos(ui_effects[0], "effect_flash");
-  //  set_size_and_pos(ui_effects[1], "effect_gloom");
-  //  set_size_and_pos(ui_effects[2], "effect_question");
-  //  set_size_and_pos(ui_effects[3], "effect_pow");
   for (int i = 0; i < effect_names.size(); ++i)
   {
     set_size_and_pos(ui_effects[i], effect_names[i]);
@@ -981,7 +966,7 @@ void Courtroom::set_widgets()
     contains_add_button = true;
   }
 
-  timer_number = adapt_numbered_items(ui_timers, "timer_number", "timer");
+  adapt_numbered_items(ui_timers, "timer_number", "timer");
   set_dropdowns();
   set_fonts();
 }
@@ -1228,14 +1213,14 @@ void Courtroom::load_free_blocks()
 
   // And add names
   free_block_names.clear();
-  for (int i = 1; i <= ui_free_blocks.size(); ++i)
+  for (int i = 0; i <= ui_free_blocks.size(); ++i)
   {
-    QString name = "free_block_" + ao_app->get_spbutton("[FREE BLOCKS]", i).trimmed();
+    QString name = "free_block_" + ao_app->get_spbutton("[FREE BLOCKS]", i + 1).trimmed();
     if (!name.isEmpty())
     {
       free_block_names.append(name);
-      widget_names[name] = ui_free_blocks[i - 1];
-      ui_free_blocks[i - 1]->setObjectName(name);
+      widget_names[name] = ui_free_blocks[i];
+      ui_free_blocks[i]->setObjectName(name);
     }
   }
 }
@@ -1288,21 +1273,19 @@ void Courtroom::load_wtce()
     delete_widget(widget);
 
   // And create new wtce buttons
-  int wtce_number = ao_app->read_theme_ini_int("wtce_number", cc_config_ini);
-  wtce_enabled.resize(wtce_number);
-  ui_wtce.resize(wtce_number);
+  const int l_wtce_count = ao_app->read_theme_ini_int("wtce_number", cc_config_ini);
+  wtce_enabled.resize(l_wtce_count);
 
-  for (int i = 0; i < ui_wtce.size(); ++i)
+  ui_wtce.clear();
+  for (int i = 0; i < l_wtce_count; ++i)
   {
-    ui_wtce[i] = new AOButton(this, ao_app);
-    ui_wtce[i]->setProperty("wtce_id", i + 1);
-    ui_wtce[i]->stackUnder(ui_wtce_up);
-    ui_wtce[i]->stackUnder(ui_wtce_down);
+    AOButton *l_button = new AOButton(this, ao_app);
+    ui_wtce.append(l_button);
+    l_button->setProperty("wtce_id", i + 1);
+    l_button->stackUnder(ui_wtce_up);
+    l_button->stackUnder(ui_wtce_down);
+    connect(l_button, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
   }
-
-  // And connect their actions
-  for (auto &wtce : ui_wtce)
-    connect(wtce, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
 
   // And add names
   wtce_names.clear();
@@ -1495,9 +1478,11 @@ void Courtroom::set_fonts()
   set_font(ui_sfx_list, "sfx_list");
   set_drtextedit_font(ui_vp_music_name, "music_name");
   set_drtextedit_font(ui_vp_notepad, "notepad");
-  for (int i = 0; i < timer_number; i++)
+
+  for (int i = 0; i < ui_timers.length(); ++i)
   {
-    set_drtextedit_font(ui_timers[i], "timer_" + QString::number(i));
+    AOTimer *i_timer = ui_timers.at(i);
+    set_drtextedit_font(i_timer, QString("timer_%1").arg(i));
   }
 }
 

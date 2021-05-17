@@ -5,6 +5,7 @@
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
+#include "version.h"
 
 #include <QCryptographicHash>
 #include <QDebug>
@@ -86,9 +87,9 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     int f_major = version_contents.at(1).toInt();
     int f_minor = version_contents.at(2).toInt();
 
-    if (get_release() > f_release)
+    if (get_release_version() > f_release)
       goto end;
-    else if (get_release() == f_release)
+    else if (get_release_version() == f_release)
     {
       if (get_major_version() > f_major)
         goto end;

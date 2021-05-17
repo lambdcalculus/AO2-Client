@@ -6,6 +6,7 @@
 #include "drpather.h"
 #include "drtextedit.h"
 #include "networkmanager.h"
+#include "version.h"
 
 #include <QDebug>
 #include <QImageReader>
@@ -118,7 +119,7 @@ void Lobby::set_widgets()
   ui_connect->set_image("connect.png");
 
   set_size_and_pos(ui_version, "version");
-  ui_version->setText("Version: " + ao_app->get_version_string());
+  ui_version->setText("Version: " + get_version_string());
 
   set_size_and_pos(ui_about, "about");
   ui_about->set_image("about.png");
@@ -406,7 +407,7 @@ void Lobby::on_about_clicked()
                    "<p>Running on Qt version %2 with the BASS audio engine.<br>"
                    "APNG plugin loaded: %3"
                    "<p>Built on %4")
-                    .arg(ao_app->get_version_string())
+                    .arg(get_version_string())
                     .arg(QLatin1String(QT_VERSION_STR))
                     .arg(hasApng ? tr("Yes") : tr("No"))
                     .arg(QLatin1String(__DATE__));

@@ -453,7 +453,6 @@ private:
   int max_evidence_on_page = 18;
 
   int current_clock = -1;
-  int timer_number = 0;
 
   QString current_background = "gs4";
 
