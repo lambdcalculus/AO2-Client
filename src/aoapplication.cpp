@@ -166,7 +166,7 @@ QVector<server_type> &AOApplication::get_favorite_list()
 QString AOApplication::get_current_char()
 {
   if (courtroom_constructed)
-    return m_courtroom->get_current_char();
+    return m_courtroom->get_current_character();
   else
     return "";
 }

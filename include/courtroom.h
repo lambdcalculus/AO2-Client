@@ -126,8 +126,9 @@ public:
   QString get_background_path(QString p_file);
 
   // cid = character id, returns the cid of the currently selected character
-  int get_cid();
-  QString get_current_char();
+  int get_character_id();
+  QString get_base_character();
+  QString get_current_character();
 
   // Set the showname of the client
   void set_showname(QString p_showname);
@@ -330,7 +331,6 @@ private:
 
   // character id, which index of the char_list the player is
   int m_cid = -1;
-
   // if enabled, disable showing our own sprites when we talk in ic
   bool m_msg_is_first_person = false;
 
@@ -338,9 +338,6 @@ private:
   bool m_chatbox_message_outline = false;
   bool m_chatbox_message_enable_highlighting = false;
   QVector<QStringList> m_chatbox_message_highlight_colors;
-
-  // cid and this may differ in cases of ini-editing
-  QString current_char;
 
   QString current_file;
 
@@ -455,6 +452,7 @@ private:
   AOButton *ui_emote_right = nullptr;
 
   QComboBox *ui_emote_dropdown = nullptr;
+  QComboBox *ui_ini_dropdown = nullptr;
   QComboBox *ui_pos_dropdown = nullptr;
 
   AOImageDisplay *ui_defense_bar = nullptr;
@@ -620,6 +618,7 @@ private slots:
 
   void on_showname_changed(QString);
   void on_showname_placeholder_changed(QString);
+  void on_character_ini_changed(QString);
   void on_ic_showname_editing_finished();
   void on_ic_message_return_pressed();
   void on_chat_config_changed();
@@ -644,6 +643,7 @@ private slots:
   void on_emote_right_clicked();
 
   void on_emote_dropdown_changed(int p_index);
+  void on_ini_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
 
   void on_evidence_name_edited();

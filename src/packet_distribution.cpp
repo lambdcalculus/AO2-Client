@@ -516,7 +516,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   {
     if (courtroom_constructed && f_contents.size() > 0)
     {
-      int f_cid = m_courtroom->get_cid();
+      int f_cid = m_courtroom->get_character_id();
       int remote_cid = f_contents.at(0).toInt();
 
       if (f_cid != remote_cid && remote_cid != -1)
