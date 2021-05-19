@@ -139,7 +139,36 @@ void Courtroom::enter_courtroom(int p_cid)
     l_current_field = ui_ooc_chat_message;
   const int l_current_cursor_pos = l_current_field->cursorPosition();
 
-  QString l_chr_name;
+  const QString l_chr_name = get_current_character();
+  { // repopulate ini-swapper
+    QSignalBlocker b_ini_list(ui_ini_dropdown);
+    ui_ini_dropdown->clear();
+
+    QStringList l_name_list{"Default"};
+    const QString l_path = ao_app->get_base_path() + "/characters";
+    const QFileInfoList &l_info_list = QDir(l_path).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    for (const QFileInfo &i_info : l_info_list)
+    {
+      const QString l_name = i_info.fileName();
+      if (get_base_character() == l_name)
+        continue;
+      if (!file_exists(ao_app->get_character_path(l_name, "char.ini")))
+        continue;
+      l_name_list.append(l_name);
+    }
+
+    QPixmap l_blank_image(64, 64);
+    l_blank_image.fill(Qt::transparent);
+    for (int i = 0; i < l_name_list.length(); ++i)
+    {
+      const QString &i_name = l_name_list.at(i);
+      const QString l_real_name = i == 0 ? get_base_character() : i_name;
+      const QString l_icon_file = ao_app->get_character_path(l_real_name, "char_icon.png");
+      ui_ini_dropdown->addItem(file_exists(l_icon_file) ? QIcon(l_icon_file) : QIcon(l_blank_image), i_name);
+    }
+    ui_ini_dropdown->setCurrentText(get_current_character());
+  }
+
   if (is_spectating())
   {
     ao_app->dr_discord->clear_character_name();
@@ -147,9 +176,8 @@ void Courtroom::enter_courtroom(int p_cid)
   }
   else
   {
-    l_chr_name = ao_app->get_char_name(m_chr_list.at(m_cid).name);
-    const QString l_ini_showname = ao_app->get_showname(l_chr_name);
-    const QString l_final_showname = l_ini_showname.trimmed().isEmpty() ? l_chr_name : l_ini_showname;
+    const QString l_showname = ao_app->get_showname(l_chr_name);
+    const QString l_final_showname = l_showname.trimmed().isEmpty() ? l_chr_name : l_showname;
     ao_app->dr_discord->set_character_name(l_final_showname);
     ao_config->set_showname_placeholder(l_final_showname);
 
@@ -160,11 +188,11 @@ void Courtroom::enter_courtroom(int p_cid)
       ao_app->send_server_packet(l_packet);
     }
   }
-  const bool l_changed_chr = l_chr_name != current_char;
-  current_char = l_chr_name;
+  const bool l_changed_chr = l_chr_name != get_current_character();
+  QString l_current_chr = l_chr_name;
 
   const int l_prev_emote_count = m_emote_list.count();
-  m_emote_list = ao_app->get_emote_list(current_char);
+  m_emote_list = ao_app->get_emote_list(l_current_chr);
 
   const QString l_prev_emote = ui_emote_dropdown->currentText();
   set_emote_dropdown();
@@ -195,6 +223,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   ui_emotes->setHidden(is_spectating());
   ui_emote_dropdown->setHidden(is_spectating());
+  ui_ini_dropdown->setHidden(is_spectating());
   ui_ic_chat_message->setEnabled(!is_spectating());
 
   // restore line field focus
@@ -654,6 +683,12 @@ void Courtroom::on_showname_placeholder_changed(QString p_showname_placeholder)
   ui_ic_chat_showname->setToolTip(l_showname);
 }
 
+void Courtroom::on_character_ini_changed(QString p_base_chr)
+{
+  Q_UNUSED(p_base_chr)
+  enter_courtroom(m_cid);
+}
+
 void Courtroom::on_ic_message_return_pressed()
 {
   if (ui_ic_chat_message->text() == "" || is_client_muted)
@@ -699,7 +734,7 @@ void Courtroom::on_ic_message_return_pressed()
 
   packet_contents.append(l_emote.anim);
 
-  packet_contents.append(current_char);
+  packet_contents.append(get_current_character());
 
   if (ui_hidden->isChecked())
     packet_contents.append("../../misc/blank");
@@ -708,7 +743,7 @@ void Courtroom::on_ic_message_return_pressed()
 
   packet_contents.append(ui_ic_chat_message->text());
 
-  const QString l_side = ao_app->get_char_side(current_char);
+  const QString l_side = ao_app->get_char_side(get_current_character());
   packet_contents.append(l_side);
 
   // sfx file
@@ -1681,14 +1716,19 @@ void Courtroom::set_ban(int p_cid)
   ao_app->destruct_courtroom();
 }
 
-int Courtroom::get_cid()
+int Courtroom::get_character_id()
 {
   return m_cid;
 }
 
-QString Courtroom::get_current_char()
+QString Courtroom::get_base_character()
 {
-  return current_char;
+  return is_spectating() ? nullptr : m_chr_list.at(m_cid).name;
+}
+
+QString Courtroom::get_current_character()
+{
+  return ao_config->character_ini(get_base_character());
 }
 
 void Courtroom::handle_song(QStringList p_contents)

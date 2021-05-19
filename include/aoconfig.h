@@ -25,6 +25,7 @@ public:
   QString username() const;
   QString showname() const;
   QString showname_placeholder() const;
+  QString character_ini(QString base_character) const;
   QString callwords() const;
   bool server_alerts_enabled() const;
   bool discord_presence() const;
@@ -71,6 +72,7 @@ public slots:
   void set_showname(QString p_string);
   void set_showname_placeholder(QString p_string);
   void clear_showname_placeholder();
+  void set_character_ini(QString base_character, QString target_character);
   void set_callwords(QString p_string);
   void set_server_alerts(bool p_enabled);
   void set_discord_presence(const bool p_enabled);
@@ -127,6 +129,7 @@ signals:
   void manual_timeofday_changed(bool);
   void showname_changed(QString);
   void showname_placeholder_changed(QString);
+  void character_ini_changed(QString base_character);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);
 

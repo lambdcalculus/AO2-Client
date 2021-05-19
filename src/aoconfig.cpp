@@ -58,6 +58,7 @@ private:
   bool manual_timeofday;
   QString showname;
   QString showname_placeholder;
+  QMap<QString, QString> ini_map;
   bool always_pre;
   int chat_tick_interval;
   int log_max_lines;
@@ -162,6 +163,20 @@ void AOConfigPrivate::read_file()
   audio_engine->get_family(DRAudio::Family::FBlip)->set_volume(blip_volume);
   audio_engine->get_family(DRAudio::Family::FBlip)->set_ignore_suppression(effect_ignore_suppression);
 
+  { // ini swap
+    cfg.beginGroup("character_ini");
+
+    ini_map.clear();
+    for (const QString &i_key : cfg.childKeys())
+    {
+      const QString i_value = cfg.value(i_key).toString();
+      if (i_key == i_value || i_value.trimmed().isEmpty())
+        continue;
+      ini_map.insert(i_key, i_value);
+    }
+
+    cfg.endGroup();
+  }
   // audio device
   update_favorite_device();
 }
@@ -209,6 +224,17 @@ void AOConfigPrivate::save_file()
   cfg.setValue("blip_ignore_suppression", blip_ignore_suppression);
   cfg.setValue("blip_rate", blip_rate);
   cfg.setValue("blank_blips", blank_blips);
+
+  cfg.remove("character_ini");
+  { // ini swap
+    cfg.beginGroup("character_ini");
+
+    for (auto it = ini_map.cbegin(); it != ini_map.cend(); ++it)
+      cfg.setValue(it.key(), it.value());
+
+    cfg.endGroup();
+  }
+
   cfg.sync();
 }
 
@@ -294,6 +320,13 @@ QString AOConfig::showname() const
 QString AOConfig::showname_placeholder() const
 {
   return d->showname_placeholder;
+}
+
+QString AOConfig::character_ini(QString p_base_chr) const
+{
+  if (d->ini_map.contains(p_base_chr))
+    return d->ini_map[p_base_chr];
+  return p_base_chr;
 }
 
 QString AOConfig::callwords() const
@@ -531,6 +564,22 @@ void AOConfig::set_showname_placeholder(QString p_string)
 void AOConfig::clear_showname_placeholder()
 {
   set_showname_placeholder(nullptr);
+}
+
+void AOConfig::set_character_ini(QString p_base_chr, QString p_target_chr)
+{
+  if (d->ini_map.contains(p_base_chr))
+  {
+    if (d->ini_map[p_base_chr] == p_target_chr)
+      return;
+  }
+  else if (p_base_chr == p_target_chr)
+    return;
+  if (p_base_chr == p_target_chr)
+    d->ini_map.remove(p_base_chr);
+  else
+    d->ini_map.insert(p_base_chr, p_target_chr);
+  d->invoke_signal("character_ini_changed", Q_ARG(QString, p_base_chr));
 }
 
 void AOConfig::set_callwords(QString p_string)

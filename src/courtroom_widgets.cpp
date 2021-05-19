@@ -91,6 +91,8 @@ void Courtroom::create_widgets()
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
 
+  ui_ini_dropdown = new QComboBox(this);
+
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
 
@@ -248,6 +250,7 @@ void Courtroom::connect_widgets()
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 
   connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
+  connect(ui_ini_dropdown, SIGNAL(activated(int)), this, SLOT(on_ini_dropdown_changed(int)));
   connect(ui_pos_dropdown, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed(int)));
 
   connect(ui_mute_list, SIGNAL(itemChanged(QListWidgetItem *)), this,
@@ -256,6 +259,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(showname_changed(QString)), this, SLOT(on_showname_changed(QString)));
   connect(ao_config, SIGNAL(showname_placeholder_changed(QString)), this,
           SLOT(on_showname_placeholder_changed(QString)));
+  connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(on_character_ini_changed(QString)));
   connect(ui_ic_chat_showname, SIGNAL(editingFinished()), this, SLOT(on_ic_showname_editing_finished()));
   connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
 
@@ -368,6 +372,7 @@ void Courtroom::reset_widget_names()
       {"emote_left", ui_emote_left},
       {"emote_right", ui_emote_right},
       {"emote_dropdown", ui_emote_dropdown},
+      {"ini_dropdown", ui_ini_dropdown},
       {"pos_dropdown", ui_pos_dropdown},
       {"defense_bar", ui_defense_bar},
       {"prosecution_bar", ui_prosecution_bar},
@@ -676,6 +681,8 @@ void Courtroom::set_widgets()
   ui_emote_right->set_image("arrow_right.png");
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown");
+
+  set_size_and_pos(ui_ini_dropdown, "ini_dropdown");
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown");
 
@@ -1066,8 +1073,8 @@ void Courtroom::check_effects()
 
   for (int i = 0; i < ui_effects.size(); ++i)
   {
-    QString path =
-        ao_app->find_asset_path({ao_app->get_character_path(current_char, effect_names.at(i))}, animated_extensions());
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_current_character(), effect_names.at(i))},
+                                           animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(effect_names.at(i), animated_extensions());
     effects_enabled[i] = (!path.isEmpty());
@@ -1085,8 +1092,8 @@ void Courtroom::check_free_blocks()
 
   for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
-    QString path = ao_app->find_asset_path({ao_app->get_character_path(current_char, free_block_names.at(i))},
-                                           animated_extensions());
+    QString path = ao_app->find_asset_path(
+        {ao_app->get_character_path(get_current_character(), free_block_names.at(i))}, animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(free_block_names.at(i), animated_extensions());
     free_blocks_enabled[i] = (!path.isEmpty());
@@ -1104,8 +1111,8 @@ void Courtroom::check_shouts()
 
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    QString path =
-        ao_app->find_asset_path({ao_app->get_character_path(current_char, shout_names.at(i))}, animated_extensions());
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_current_character(), shout_names.at(i))},
+                                           animated_extensions());
 
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(shout_names.at(i), animated_extensions());
@@ -1125,8 +1132,8 @@ void Courtroom::check_wtce()
 
   for (int i = 0; i < ui_wtce.size(); ++i)
   {
-    QString path =
-        ao_app->find_asset_path({ao_app->get_character_path(current_char, wtce_names.at(i))}, animated_extensions());
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_current_character(), wtce_names.at(i))},
+                                           animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(wtce_names.at(i), animated_extensions());
     wtce_enabled[i] = (!path.isEmpty());
@@ -1396,8 +1403,9 @@ void Courtroom::set_dropdown(QWidget *widget, QString target_tag)
 void Courtroom::set_dropdowns()
 {
   set_dropdown(ui_text_color, "[TEXT COLOR]");
-  set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
   set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]");
+  set_dropdown(ui_ini_dropdown, "[INI DROPDOWN]");
+  set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
   set_dropdown(ui_mute_list, "[MUTE LIST]");
   set_dropdown(ui_ic_chat_message, "[IC LINE]");
   set_dropdown(ui_ooc_chat_message, "[OOC LINE]");
