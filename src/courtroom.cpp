@@ -157,12 +157,14 @@ void Courtroom::enter_courtroom(int p_cid)
       l_name_list.append(l_name);
     }
 
+    QPixmap l_blank_image(64, 64);
+    l_blank_image.fill(Qt::transparent);
     for (int i = 0; i < l_name_list.length(); ++i)
     {
       const QString &i_name = l_name_list.at(i);
       const QString l_real_name = i == 0 ? get_base_character() : i_name;
       const QString l_icon_file = ao_app->get_character_path(l_real_name, "char_icon.png");
-      ui_ini_dropdown->addItem(QIcon(l_icon_file), i_name);
+      ui_ini_dropdown->addItem(file_exists(l_icon_file) ? QIcon(l_icon_file) : QIcon(l_blank_image), i_name);
     }
     ui_ini_dropdown->setCurrentText(get_current_character());
   }
@@ -683,6 +685,7 @@ void Courtroom::on_showname_placeholder_changed(QString p_showname_placeholder)
 
 void Courtroom::on_character_ini_changed(QString p_base_chr)
 {
+  Q_UNUSED(p_base_chr)
   enter_courtroom(m_cid);
 }
 
