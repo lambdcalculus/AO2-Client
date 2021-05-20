@@ -500,16 +500,24 @@ QStringList AOApplication::get_sfx_list()
   return r_sfx_list;
 }
 
+QString drLookupKey(const QStringList &keyList, const QString &targetKey)
+{
+  const QString finalTargetKey = targetKey.toLower();
+  for (const QString &i_key : qAsConst(keyList))
+    if (i_key.toLower() == finalTargetKey)
+      return i_key;
+  return targetKey;
+}
+
 // returns whatever is to the right of "search_line =" within target_tag and
 // terminator_tag, trimmed returns the empty string if the search line couldnt
 // be found
-
 QVariant AOApplication::read_char_ini(QString p_chr, QString p_group, QString p_key, QVariant p_def)
 {
   QSettings s(get_character_path(p_chr, "char.ini"), QSettings::IniFormat);
   s.setIniCodec("UTF-8");
-  s.beginGroup(p_group);
-  return s.value(p_key, p_def);
+  s.beginGroup(drLookupKey(s.childGroups(), p_group));
+  return s.value(drLookupKey(s.childKeys(), p_key), p_def);
 }
 
 QVariant AOApplication::read_char_ini(QString p_chr, QString p_group, QString p_key)
@@ -596,13 +604,14 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
 
     QStringList l_keys;
     { // recover all numbered keys, ignore words
-      l_chrini.beginGroup("emotions");
+      const QStringList l_group_list = l_chrini.childGroups();
+      l_chrini.beginGroup(drLookupKey(l_group_list, "emotions"));
       l_keys = l_chrini.childKeys();
       l_chrini.endGroup();
 
       // remove keywords
-      l_keys.removeAll("firstmode");
-      l_keys.removeAll("number");
+      l_keys.removeAll(drLookupKey(l_keys, "firstmode"));
+      l_keys.removeAll(drLookupKey(l_keys, "number"));
 
       // remove all negative and non-numbers
       for (int i = 0; i < l_keys.length(); ++i)
@@ -625,7 +634,8 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
 
     for (const QString &i_key : qAsConst(l_keys))
     {
-      l_chrini.beginGroup("emotions");
+      const QStringList l_group_list = l_chrini.childGroups();
+      l_chrini.beginGroup(drLookupKey(l_group_list, "emotions"));
       const QStringList l_emotions = l_chrini.value(i_key).toString().split("#", DR::KeepEmptyParts);
       l_chrini.endGroup();
 
@@ -653,11 +663,11 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
       if (DeskModifier < l_emotions.length())
         l_emote.desk_modifier = l_emotions.at(DeskModifier).toInt();
 
-      l_chrini.beginGroup("soundn");
+      l_chrini.beginGroup(drLookupKey(l_group_list, "soundn"));
       l_emote.sound_file = l_chrini.value(i_key).toString();
       l_chrini.endGroup();
 
-      l_chrini.beginGroup("soundt");
+      l_chrini.beginGroup(drLookupKey(l_group_list, "soundt"));
       l_emote.sound_delay = qMax(l_chrini.value(i_key).toInt(), 0);
       l_chrini.endGroup();
 
