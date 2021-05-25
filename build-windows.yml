@@ -1,6 +1,6 @@
 # Original code from skyedeving and oldmud0
 # at https://github.com/AttorneyOnline/AO2-Client/blob/master/.github/workflows/build.yml
-name: build
+name: build-windows
 
 on:
   push:
