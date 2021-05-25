@@ -82,7 +82,7 @@ jobs:
       working-directory: ${{env.parentworkspace}}
       run: aqt tool -O ./Qt windows tools_mingw 7.3.0-1-202004170606 qt.tools.win32_mingw730
 
-    - name: Update PATH
+    - name: Setup MinGW
       shell: bash
       working-directory: ${{env.parentworkspace}}
       # For whatever reason, qmake insists on using the MinGW64 installation that came with the host machine rather than the newly installed MinGW32
