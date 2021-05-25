@@ -52,19 +52,11 @@ jobs:
       run: |
         curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-mingw73_32-5.14.1.zip -o apng.zip
         unzip apng.zip
-        
-    - name: Cache Qt
-      id: cache-qt
-      uses: actions/cache@v1
-      with:
-        path: ../Qt
-        key: ${{ runner.os }}-qt5
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
         version: '5.14.2'
-        cached: ${{steps.cache-qt.outputs.cache-hit}}
         arch: 'win32_mingw73'
 
     - name: Install AQt
