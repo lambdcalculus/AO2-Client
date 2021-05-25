@@ -2,11 +2,7 @@
 # at https://github.com/AttorneyOnline/AO2-Client/blob/master/.github/workflows/build.yml
 name: build-windows
 
-on:
-  push:
-    branches: [ actions ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
