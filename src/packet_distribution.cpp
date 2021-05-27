@@ -138,6 +138,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 #endif
     m_FL_showname_enabled = false;
     m_FL_chrini_enabled = false;
+    m_FL_chat_speed = false;
 
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
@@ -163,10 +164,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "FL")
   {
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    m_FL_ackMS_enabled = f_packet.contains("ackMS", Qt::CaseInsensitive);
-    m_FL_showname_enabled = f_packet.contains("showname", Qt::CaseInsensitive);
-    m_FL_chrini_enabled = f_packet.contains("chrini", Qt::CaseInsensitive);
+    m_FL_ackMS_enabled = f_contents.contains("ackMS", Qt::CaseInsensitive);
 #endif
+    m_FL_showname_enabled = f_contents.contains("showname", Qt::CaseInsensitive);
+    m_FL_chrini_enabled = f_contents.contains("chrini", Qt::CaseInsensitive);
+    m_FL_chat_speed = f_contents.contains("chat_speed", Qt::CaseInsensitive);
   }
   else if (header == "PN")
   {
@@ -436,6 +438,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       m_courtroom->set_background(f_contents.at(0));
       m_courtroom->set_scene();
     }
+  }
+  else if (header == "chat_tick_rate")
+  {
+    if (courtroom_constructed)
+      m_courtroom->set_tick_rate(f_contents.isEmpty() ? std::nullopt : std::optional<int>(f_contents.at(0).toInt()));
   }
   // server accepting char request(CC) packet
   else if (header == "PV")

@@ -89,6 +89,8 @@ public:
   // it's a legacy bg
   void set_background(QString p_background);
 
+  void set_tick_rate(const std::optional<int> &tick_rate);
+
   // sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
 
@@ -253,6 +255,8 @@ private:
 
   // maintains a timer for how fast messages tick onto screen
   QTimer *chat_tick_timer = nullptr;
+  std::optional<int> m_server_chat_tick_rate;
+  int m_chat_tick_speed = 0;
   // which tick position(character in chat message) we are at
   int tick_pos = 0;
   // used to determine how often blips sound
@@ -612,7 +616,9 @@ private slots:
   void setup_chat();
   void play_sfx();
 
-  void chat_tick();
+  void start_chat_timer();
+  void next_chat_letter();
+  void post_chat();
 
   void on_mute_list_item_changed(QListWidgetItem *p_item);
 

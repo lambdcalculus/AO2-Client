@@ -354,6 +354,11 @@ void Courtroom::set_background(QString p_background)
   current_background = p_background;
 }
 
+void Courtroom::set_tick_rate(const std::optional<int> &tick_rate)
+{
+  m_server_chat_tick_rate = tick_rate;
+}
+
 void Courtroom::handle_music_anim()
 {
   QString file_a = design_ini;
@@ -858,7 +863,8 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   if (mute_map.value(m_chatmessage[CMChrId].toInt()))
     return;
 
-  chatmessage_is_empty = m_chatmessage[CMMessage] == " " || m_chatmessage[CMMessage] == "";
+  const QString l_message = QString(m_chatmessage[CMMessage]).remove(Qt::Key_BraceLeft).remove(Qt::Key_BraceRight);
+  chatmessage_is_empty = l_message.trimmed().isEmpty();
   m_msg_is_first_person = false;
 
   // reset our ui state if client just spoke
@@ -912,13 +918,13 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   ui_vp_effect->stop();
 
   if (is_system_speaking)
-    append_system_text(f_showname, m_chatmessage[CMMessage]);
+    append_system_text(f_showname, l_message);
   else
-    append_ic_text(f_showname, m_chatmessage[CMMessage], false, false, f_char_id == m_cid);
+    append_ic_text(f_showname, l_message, false, false, f_char_id == m_cid);
 
   if (ao_config->log_is_recording_enabled() && (!chatmessage_is_empty || !is_system_speaking))
   {
-    save_textlog(f_showname + ": " + m_chatmessage[CMMessage]);
+    save_textlog(f_showname + ": " + l_message);
   }
 
   int objection_mod = m_chatmessage[CMShoutModifier].toInt();
@@ -1176,7 +1182,7 @@ void Courtroom::handle_chatmessage_3()
     }
   }
 
-  chat_tick_timer->start(ao_config->chat_tick_interval());
+  start_chat_timer();
 }
 
 void Courtroom::on_chat_config_changed()
@@ -1480,6 +1486,7 @@ void Courtroom::setup_chat()
 
   ui_vp_chatbox->show();
 
+  m_chat_tick_speed = 0;
   tick_pos = 0;
   blip_pos = 0;
 
@@ -1497,8 +1504,24 @@ void Courtroom::setup_chat()
   text_state = 1;
 }
 
-void Courtroom::chat_tick()
+void Courtroom::start_chat_timer()
 {
+  double l_tick_rate = ao_config->chat_tick_interval();
+  if (m_server_chat_tick_rate.has_value())
+    l_tick_rate = qMax(m_server_chat_tick_rate.value(), 0);
+  l_tick_rate = qBound(l_tick_rate * (1.0 - qBound(0.4 * m_chat_tick_speed, -1.0, 1.0)), 0.0, l_tick_rate * 2.0);
+  chat_tick_timer->start(l_tick_rate);
+}
+
+void Courtroom::next_chat_letter()
+{
+  const QString &f_message = m_chatmessage[CMMessage];
+  if (tick_pos >= f_message.length())
+  {
+    post_chat();
+    return;
+  }
+
   // note: this is called fairly often(every 60 ms when char is talking)
   // do not perform heavy operations here
   QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
@@ -1507,137 +1530,142 @@ void Courtroom::chat_tick()
   else
     vp_message_format.setTextOutline(Qt::NoPen);
 
-  QString f_message = m_chatmessage[CMMessage];
-
-  if (tick_pos >= f_message.size())
+  const QChar f_character = f_message.at(tick_pos);
+  if (f_character == Qt::Key_BraceLeft || f_character == Qt::Key_BraceRight) // { or }
   {
-    text_state = 2;
-    chat_tick_timer->stop();
-    anim_state = 3;
-
-    if (m_msg_is_first_person == false)
-    {
-      ui_vp_player_char->play_idle(m_chatmessage[CMChrName], m_chatmessage[CMEmote]);
-    }
-
-    m_string_color = "";
-    m_color_stack.clear();
+    ++tick_pos;
+    const bool is_positive = f_character == Qt::Key_BraceRight;
+    m_chat_tick_speed = qBound(m_chat_tick_speed + (is_positive ? 1 : -1), -3, 3);
+    next_chat_letter();
+    return;
   }
-
-  else
+  else if (f_character == Qt::Key_Space)
   {
-    QString f_character = f_message.at(tick_pos);
+    ui_vp_message->insertPlainText(f_character);
+  }
+  else if (m_chatmessage[CMTextColor].toInt() == DR::CRainbow)
+  {
+    QString html_color;
 
-    if (f_character == " ")
-      ui_vp_message->insertPlainText(" ");
-    else if (m_chatmessage[CMTextColor].toInt() == DR::CRainbow)
+    switch (rainbow_counter)
     {
-      QString html_color;
-
-      switch (rainbow_counter)
-      {
-      case 0:
-        html_color = "#BA1518";
-        break;
-      case 1:
-        html_color = "#D55900";
-        break;
-      case 2:
-        html_color = "#E7CE4E";
-        break;
-      case 3:
-        html_color = "#65C856";
-        break;
-      default:
-        html_color = "#1596C8";
-        rainbow_counter = -1;
-      }
-
-      ++rainbow_counter;
-      // Apply color to the next character
-      QColor text_color;
-      text_color.setNamedColor(html_color);
-      vp_message_format.setForeground(text_color);
-
-      ui_vp_message->textCursor().insertText(f_character, vp_message_format);
+    case 0:
+      html_color = "#BA1518";
+      break;
+    case 1:
+      html_color = "#D55900";
+      break;
+    case 2:
+      html_color = "#E7CE4E";
+      break;
+    case 3:
+      html_color = "#65C856";
+      break;
+    default:
+      html_color = "#1596C8";
+      rainbow_counter = -1;
     }
-    else if (m_chatbox_message_enable_highlighting)
+
+    ++rainbow_counter;
+    // Apply color to the next character
+    QColor text_color;
+    text_color.setNamedColor(html_color);
+    vp_message_format.setForeground(text_color);
+
+    ui_vp_message->textCursor().insertText(f_character, vp_message_format);
+  }
+  else if (m_chatbox_message_enable_highlighting)
+  {
+    bool highlight_found = false;
+    bool render_character = true;
+    // render_character should only be false if the character is a highlight
+    // character specifically marked as a character that should not be
+    // rendered.
+    if (m_color_stack.isEmpty())
+      m_color_stack.push("");
+
+    for (const auto &col : qAsConst(m_chatbox_message_highlight_colors))
     {
-      bool highlight_found = false;
-      bool render_character = true;
-      // render_character should only be false if the character is a highlight
-      // character specifically marked as a character that should not be
-      // rendered.
-      if (m_color_stack.isEmpty())
-        m_color_stack.push("");
-
-      for (const auto &col : m_chatbox_message_highlight_colors)
+      if (f_character == col[0][0] && m_string_color != col[1])
       {
-        if (f_character == col[0][0] && m_string_color != col[1])
-        {
-          m_color_stack.push(col[1]);
-          m_string_color = m_color_stack.top();
-          highlight_found = true;
-          render_character = (col[2] != "0");
-          break;
-        }
+        m_color_stack.push(col[1]);
+        m_string_color = m_color_stack.top();
+        highlight_found = true;
+        render_character = (col[2] != "0");
+        break;
       }
-
-      // Apply color to the next character
-      if (m_string_color.isEmpty())
-        vp_message_format.setForeground(m_base_string_color);
-      else
-      {
-        QColor textColor;
-        textColor.setNamedColor(m_string_color);
-        vp_message_format.setForeground(textColor);
-      }
-
-      QString m_future_string_color = m_string_color;
-
-      for (const auto &col : m_chatbox_message_highlight_colors)
-      {
-        if (f_character == col[0][1] && !highlight_found)
-        {
-          if (m_color_stack.size() > 1)
-            m_color_stack.pop();
-          m_future_string_color = m_color_stack.top();
-          render_character = (col[2] != "0");
-          break;
-        }
-      }
-
-      if (render_character)
-        ui_vp_message->textCursor().insertText(f_character, vp_message_format);
-
-      m_string_color = m_future_string_color;
     }
+
+    // Apply color to the next character
+    if (m_string_color.isEmpty())
+      vp_message_format.setForeground(m_base_string_color);
     else
     {
-      ui_vp_message->textCursor().insertText(f_character, vp_message_format);
+      QColor textColor;
+      textColor.setNamedColor(m_string_color);
+      vp_message_format.setForeground(textColor);
     }
 
-    QScrollBar *scroll = ui_vp_message->verticalScrollBar();
-    scroll->setValue(scroll->maximum());
+    QString m_future_string_color = m_string_color;
 
-    if ((f_message.at(tick_pos) != ' ' || ao_config->blank_blips_enabled()))
+    for (const auto &col : qAsConst(m_chatbox_message_highlight_colors))
     {
-
-      if (blip_pos % ao_config->blip_rate() == 0)
+      if (f_character == col[0][1] && !highlight_found)
       {
-        blip_pos = 0;
-
-        // play blip
-        m_blips_player->blip_tick();
+        if (m_color_stack.size() > 1)
+          m_color_stack.pop();
+        m_future_string_color = m_color_stack.top();
+        render_character = (col[2] != "0");
+        break;
       }
-
-      ++blip_pos;
     }
 
-    ++tick_pos;
+    if (render_character)
+      ui_vp_message->textCursor().insertText(f_character, vp_message_format);
+
+    m_string_color = m_future_string_color;
+  }
+  else
+  {
+    ui_vp_message->textCursor().insertText(f_character, vp_message_format);
+  }
+
+  QScrollBar *scroll = ui_vp_message->verticalScrollBar();
+  scroll->setValue(scroll->maximum());
+
+  if ((f_message.at(tick_pos) != ' ' || ao_config->blank_blips_enabled()))
+  {
+
+    if (blip_pos % ao_config->blip_rate() == 0)
+    {
+      blip_pos = 0;
+
+      // play blip
+      m_blips_player->blip_tick();
+    }
+
+    ++blip_pos;
   }
 
   ui_vp_message->repaint();
+
+  ++tick_pos;
+  start_chat_timer();
+}
+
+void Courtroom::post_chat()
+{
+  text_state = 2;
+  chat_tick_timer->stop();
+  anim_state = 3;
+
+  if (m_msg_is_first_person == false)
+  {
+    ui_vp_player_char->play_idle(m_chatmessage[CMChrName], m_chatmessage[CMEmote]);
+  }
+
+  m_string_color = "";
+  m_color_stack.clear();
 }
 
 void Courtroom::show_testimony()
