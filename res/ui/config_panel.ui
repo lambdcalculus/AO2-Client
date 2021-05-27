@@ -276,7 +276,7 @@
           <string> ms</string>
          </property>
          <property name="minimum">
-          <number>10</number>
+          <number>0</number>
          </property>
          <property name="maximum">
           <number>999</number>
