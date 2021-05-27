@@ -1506,11 +1506,10 @@ void Courtroom::setup_chat()
 
 void Courtroom::start_chat_timer()
 {
-  float l_tick_rate = ao_config->chat_tick_interval();
+  double l_tick_rate = ao_config->chat_tick_interval();
   if (m_server_chat_tick_rate.has_value())
     l_tick_rate = qMax(m_server_chat_tick_rate.value(), 0);
-  l_tick_rate = qBound(l_tick_rate * (1.0f - qBound(0.4f * m_chat_tick_speed, -1.0f, 1.0f)), 0.0f, l_tick_rate * 2.0f);
-  qDebug() << "start_chat_timer" << l_tick_rate;
+  l_tick_rate = qBound(l_tick_rate * (1.0 - qBound(0.4 * m_chat_tick_speed, -1.0, 1.0)), 0.0, l_tick_rate * 2.0);
   chat_tick_timer->start(l_tick_rate);
 }
 
