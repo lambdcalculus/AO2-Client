@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include <QPropertyAnimation>
 #include <QRegExp>
+#include <QRegularExpression>
 #include <QScrollBar>
 #include <QTextCharFormat>
 #include <QTime>
@@ -863,7 +864,9 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   if (mute_map.value(m_chatmessage[CMChrId].toInt()))
     return;
 
-  const QString l_message = QString(m_chatmessage[CMMessage]).remove(Qt::Key_BraceLeft).remove(Qt::Key_BraceRight);
+  const QString l_message = QString(m_chatmessage[CMMessage])
+                                .remove(QRegularExpression("(?<!\\\\)(\\{|\\})"))
+                                .replace(QRegularExpression("\\\\(\\{|\\})"), "\\1");
   chatmessage_is_empty = l_message.trimmed().isEmpty();
   m_msg_is_first_person = false;
 
@@ -1488,6 +1491,7 @@ void Courtroom::setup_chat()
 
   m_chat_tick_speed = 0;
   tick_pos = 0;
+  ignore_next_character = false;
   blip_pos = 0;
 
   // Cache these so chat_tick performs better
@@ -1531,7 +1535,14 @@ void Courtroom::next_chat_letter()
     vp_message_format.setTextOutline(Qt::NoPen);
 
   const QChar f_character = f_message.at(tick_pos);
-  if (f_character == Qt::Key_BraceLeft || f_character == Qt::Key_BraceRight) // { or }
+  if (!ignore_next_character && f_character == Qt::Key_Backslash)
+  {
+    ++tick_pos;
+    ignore_next_character = true;
+    next_chat_letter();
+    return;
+  }
+  else if (!ignore_next_character && (f_character == Qt::Key_BraceLeft || f_character == Qt::Key_BraceRight)) // { or }
   {
     ++tick_pos;
     const bool is_positive = f_character == Qt::Key_BraceRight;
@@ -1650,6 +1661,7 @@ void Courtroom::next_chat_letter()
   ui_vp_message->repaint();
 
   ++tick_pos;
+  ignore_next_character = false;
   start_chat_timer();
 }
 

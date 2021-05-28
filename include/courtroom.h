@@ -259,6 +259,7 @@ private:
   int m_chat_tick_speed = 0;
   // which tick position(character in chat message) we are at
   int tick_pos = 0;
+  bool ignore_next_character = false;
   // used to determine how often blips sound
   int blip_pos = 0;
   int rainbow_counter = 0;
