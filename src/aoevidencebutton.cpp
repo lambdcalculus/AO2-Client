@@ -58,6 +58,11 @@ void AOEvidenceButton::set_theme_image(QString p_image)
   this->setStyleSheet("border-image:url(\"" + path + "\")");
 }
 
+void AOEvidenceButton::set_id(int p_id)
+{
+  m_id = p_id;
+}
+
 void AOEvidenceButton::set_selected(bool p_selected)
 {
   if (p_selected)

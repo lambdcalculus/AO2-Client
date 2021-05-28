@@ -11,9 +11,11 @@ class AOImageDisplay : public QLabel
 public:
   AOImageDisplay(QWidget *parent, AOApplication *p_ao_app);
 
+  QString get_image();
   void set_image(QString p_image);
   void set_image_from_path(QString p_path);
 
+private:
   AOApplication *ao_app = nullptr;
   QString image_path;
 };

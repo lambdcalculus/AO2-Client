@@ -29,11 +29,11 @@ public:
 public slots:
   void on_config_reload_theme_requested();
 
-protected:
-  void showEvent(QShowEvent *event);
-
 signals:
   void reload_theme();
+
+protected:
+  void showEvent(QShowEvent *event) override;
 
 private:
   void refresh_theme_list();
@@ -60,25 +60,20 @@ private slots:
 private:
   // FIXME This dependency shouldn't have come to exist.
   AOApplication *ao_app = nullptr;
-
   // driver
   AOConfig *m_config = nullptr;
   DRAudioEngine *m_engine = nullptr;
-
   // behaviour
   QPushButton *w_save = nullptr;
   QPushButton *w_close = nullptr;
   QCheckBox *w_autosave = nullptr;
-
   // general
   QLineEdit *w_username = nullptr;
   QLineEdit *w_callwords = nullptr;
   QCheckBox *w_server_alerts = nullptr;
-
   QGroupBox *w_discord_presence = nullptr;
   QCheckBox *w_discord_hide_server = nullptr;
   QCheckBox *w_discord_hide_character = nullptr;
-
   // game
   QComboBox *w_theme = nullptr;
   QPushButton *w_reload_theme = nullptr;
@@ -89,7 +84,6 @@ private:
   QLineEdit *w_showname = nullptr;
   QCheckBox *w_always_pre = nullptr;
   QSpinBox *w_chat_tick_interval = nullptr;
-
   // IC Chatlog
   QSpinBox *w_log_max_lines = nullptr;
   QCheckBox *w_log_display_timestamp = nullptr;
@@ -100,7 +94,6 @@ private:
   QRadioButton *w_log_orientation_top_down = nullptr;
   QRadioButton *w_log_orientation_bottom_up = nullptr;
   QCheckBox *w_log_is_recording = nullptr;
-
   // audio
   QComboBox *w_device = nullptr;
   QCheckBox *w_favorite_device = nullptr;

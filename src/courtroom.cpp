@@ -172,17 +172,17 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (is_spectating())
   {
-    ao_app->dr_discord->clear_character_name();
+    ao_app->get_discord()->clear_character_name();
     ao_config->clear_showname_placeholder();
   }
   else
   {
     const QString l_showname = ao_app->get_showname(l_chr_name);
     const QString l_final_showname = l_showname.trimmed().isEmpty() ? l_chr_name : l_showname;
-    ao_app->dr_discord->set_character_name(l_final_showname);
+    ao_app->get_discord()->set_character_name(l_final_showname);
     ao_config->set_showname_placeholder(l_final_showname);
 
-    if (ao_app->m_FL_chrini_enabled)
+    if (ao_app->has_character_declaration_feature())
     {
       QStringList l_content{l_chr_name, l_final_showname};
       AOPacket *l_packet = new AOPacket("chrini", l_content);
@@ -666,7 +666,7 @@ void Courtroom::on_showname_changed(QString p_showname)
  */
 void Courtroom::send_showname_packet(QString p_showname)
 {
-  if (ao_app->m_FL_showname_enabled)
+  if (ao_app->has_showname_declaration_feature())
   {
     QStringList l_content = {p_showname};
     ao_app->send_server_packet(new AOPacket("SN", l_content));
@@ -880,7 +880,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     // possible the server crafted a message with the same char_id
     // as the client, but the client did not send that message, but it is
     // the best we can do.
-    if (!ao_app->m_FL_ackMS_enabled)
+    if (!ao_app->has_message_acknowledgement_feature())
     {
       handle_acknowledged_ms();
     }
@@ -2462,8 +2462,8 @@ void Courtroom::on_back_to_lobby_clicked()
   hide();
 
   ao_app->construct_lobby();
-  ao_app->m_lobby->list_servers();
-  ao_app->m_lobby->set_choose_a_server();
+  ao_app->get_lobby()->list_servers();
+  ao_app->get_lobby()->set_choose_a_server();
   ao_app->destruct_courtroom();
 }
 
@@ -2481,7 +2481,7 @@ void Courtroom::on_char_select_right_clicked()
 
 void Courtroom::on_spectator_clicked()
 {
-  QString content = "CC#" + QString::number(ao_app->s_pv) + "#-1#" + get_hdid() + "#%";
+  QString content = "CC#" + QString::number(ao_app->get_client_id()) + "#-1#" + get_hdid() + "#%";
   ao_app->send_server_packet(new AOPacket(content));
   enter_courtroom(-1);
 

@@ -796,23 +796,23 @@ void Courtroom::set_widgets()
     // set_image first tries the gamemode-timeofday folder, then the theme
     // folder, then falls back to the default theme
     ui_change_character->set_image("changecharacter.png");
-    if (ui_change_character->image_path.isEmpty())
+    if (ui_change_character->get_image().isEmpty())
       ui_change_character->setText("Change Character");
 
     ui_call_mod->set_image("callmod.png");
-    if (ui_call_mod->image_path.isEmpty())
+    if (ui_call_mod->get_image().isEmpty())
       ui_call_mod->setText("Call Mod");
 
     ui_switch_area_music->set_image("switch_area_music.png");
-    if (ui_switch_area_music->image_path.isEmpty())
+    if (ui_switch_area_music->get_image().isEmpty())
       ui_switch_area_music->setText("A/M");
 
     ui_config_panel->set_image("config_panel.png");
-    if (ui_config_panel->image_path.isEmpty())
+    if (ui_config_panel->get_image().isEmpty())
       ui_config_panel->setText("Config");
 
     ui_note_button->set_image("notebutton.png");
-    if (ui_note_button->image_path.isEmpty())
+    if (ui_note_button->get_image().isEmpty())
       ui_note_button->setText("Notes");
   }
 
@@ -850,7 +850,7 @@ void Courtroom::set_widgets()
       QString image = label_images[i].toLower() + ".png";
       ui_label_images[i]->set_image(image);
 
-      if (!ui_label_images[i]->image_path.isEmpty())
+      if (!ui_label_images[i]->get_image().isEmpty())
         ui_checks[i]->setText("");
       else
         ui_checks[i]->setText(label_images[i]);
@@ -862,7 +862,7 @@ void Courtroom::set_widgets()
       QString image = label_images[j].toLower() + ".png";
       ui_label_images[j]->set_image(image);
 
-      if (!ui_label_images[j]->image_path.isEmpty())
+      if (!ui_label_images[j]->get_image().isEmpty())
         ui_labels[i]->setText("");
       else
         ui_labels[i]->setText(label_images[j]);

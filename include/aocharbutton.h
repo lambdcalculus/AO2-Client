@@ -14,7 +14,6 @@ class AOCharButton : public QPushButton
 
 public:
   AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos);
-  AOApplication *ao_app = nullptr;
 
   void reset();
   void set_taken();
@@ -24,12 +23,13 @@ signals:
   void mouse_entered(AOCharButton *p_caller);
   void mouse_left();
 
-private:
-  AOImageDisplay *ui_taken = nullptr;
-
 protected:
   void enterEvent(QEvent *e);
   void leaveEvent(QEvent *e);
+
+private:
+  AOApplication *ao_app = nullptr;
+  AOImageDisplay *ui_taken = nullptr;
 };
 
 #endif // AOCHARBUTTON_H

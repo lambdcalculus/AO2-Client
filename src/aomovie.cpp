@@ -76,6 +76,10 @@ void AOMovie::play(QString p_file, QString p_char)
   m_movie->start();
 }
 
+///
+/// \brief Searches and play the first interjection file it can find based on
+/// the provided character name and interjection name.
+///
 void AOMovie::play_interjection(QString p_char_name, QString p_interjection_name)
 {
   m_movie->stop();
@@ -144,6 +148,11 @@ void AOMovie::combo_resize(int w, int h)
   m_movie->setScaledSize(f_size);
 }
 
+/*
+ * @brief Returns the state of the current movie. Refer to QMovie::state()
+ * for more details.
+ * @returns Current movie status
+ */
 QMovie::MovieState AOMovie::state()
 {
   return m_movie->state();

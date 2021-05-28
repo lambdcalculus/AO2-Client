@@ -30,11 +30,9 @@ signals:
 
 private:
   AOApplication *ao_app = nullptr;
-
   QMovie *m_movie = nullptr;
   QTimer *m_frame_timer = nullptr;
   QImage m_current_frame;
-
   bool m_mirror = false;
   bool m_play_once = false;
 

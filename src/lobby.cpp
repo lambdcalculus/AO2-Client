@@ -455,7 +455,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   ui_description->append(f_last_server.desc);
   ui_description->ensureCursorVisible();
 
-  ao_app->net_manager->connect_to_server(f_last_server);
+  ao_app->get_network_manager()->connect_to_server(f_last_server);
 }
 
 void Lobby::on_chatfield_return_pressed()

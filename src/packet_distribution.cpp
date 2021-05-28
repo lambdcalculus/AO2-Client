@@ -134,11 +134,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     f_hdid = get_hdid();
 
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    m_FL_ackMS_enabled = false;
+    feature_ackMS = false;
 #endif
-    m_FL_showname_enabled = false;
-    m_FL_chrini_enabled = false;
-    m_FL_chat_speed = false;
+    feature_showname = false;
+    feature_chrini = false;
+    feature_chat_speed = false;
 
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
@@ -164,11 +164,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   else if (header == "FL")
   {
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    m_FL_ackMS_enabled = f_contents.contains("ackMS", Qt::CaseInsensitive);
+    feature_ackMS = f_contents.contains("ackMS", Qt::CaseInsensitive);
 #endif
-    m_FL_showname_enabled = f_contents.contains("showname", Qt::CaseInsensitive);
-    m_FL_chrini_enabled = f_contents.contains("chrini", Qt::CaseInsensitive);
-    m_FL_chat_speed = f_contents.contains("chat_speed", Qt::CaseInsensitive);
+    feature_showname = f_contents.contains("showname", Qt::CaseInsensitive);
+    feature_chrini = f_contents.contains("chrini", Qt::CaseInsensitive);
+    feature_chat_speed = f_contents.contains("chat_speed", Qt::CaseInsensitive);
   }
   else if (header == "PN")
   {

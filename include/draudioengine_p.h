@@ -30,13 +30,6 @@ private:
   friend class DRAudioEngine;
   friend class DRAudioEngineData;
 
-  void update_device();
-  void update_device_list();
-  void update_options();
-  void update_volume();
-
-  void check_stream_error();
-
   QObjectList children;
   QPointer<DRAudioEngine> engine;
 
@@ -52,6 +45,12 @@ private:
 
   QMap<QString, DRAudioDevice> device_map;
   QMap<DRAudio::Family, DRAudioStreamFamily::ptr> family_map;
+
+  void update_device();
+  void update_device_list();
+  void update_options();
+  void update_volume();
+  void check_stream_error();
 
 private slots:
   void on_event_tick();

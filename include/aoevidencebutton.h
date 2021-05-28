@@ -17,12 +17,19 @@ public:
   void reset();
   void set_image(QString p_image);
   void set_theme_image(QString p_image);
-  void set_id(int p_id)
-  {
-    m_id = p_id;
-  }
+  void set_id(int p_id);
 
   void set_selected(bool p_selected);
+
+signals:
+  void evidence_clicked(int p_id);
+  void evidence_double_clicked(int p_id);
+  void on_hover(int p_id, bool p_state);
+
+protected:
+  void enterEvent(QEvent *e);
+  void leaveEvent(QEvent *e);
+  void mouseDoubleClickEvent(QMouseEvent *e);
 
 private:
   AOApplication *ao_app = nullptr;
@@ -31,16 +38,6 @@ private:
   AOImageDisplay *ui_selector = nullptr;
 
   int m_id = 0;
-
-protected:
-  void enterEvent(QEvent *e);
-  void leaveEvent(QEvent *e);
-  void mouseDoubleClickEvent(QMouseEvent *e);
-
-signals:
-  void evidence_clicked(int p_id);
-  void evidence_double_clicked(int p_id);
-  void on_hover(int p_id, bool p_state);
 
 private slots:
   void on_clicked();

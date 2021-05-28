@@ -6,6 +6,8 @@
 #include <QScrollBar>
 #include <QTextCursor>
 
+const QRegExp AOTextArea::omnis_dank_url_regex = QRegExp("\\b(https?://\\S+\\.\\S+)\\b");
+
 AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent)
 {}
 

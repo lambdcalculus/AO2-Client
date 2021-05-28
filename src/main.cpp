@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 #ifdef QT_NO_DEBUG
   app.net_manager->connect_to_master();
 #endif
-  app.m_lobby->show();
+  app.get_lobby()->show();
 
   return app.exec();
 }

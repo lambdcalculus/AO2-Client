@@ -6,6 +6,13 @@
 
 #include <cstring>
 
+const QString NetworkManager::ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
+const QString NetworkManager::ms_nosrv_hostname = "master.aceattorneyonline.com";
+
+const int NetworkManager::ms_port = 27016;
+const int NetworkManager::timeout_milliseconds = 2000;
+const int NetworkManager::ms_reconnect_delay_ms = 7000;
+
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
   ao_app = parent;

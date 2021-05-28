@@ -41,43 +41,34 @@ public:
   void show_loading_overlay();
   void hide_loading_overlay();
   int get_selected_server();
-
   void set_loading_value(int p_value);
-
-  bool public_servers_selected = true;
 
 private:
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
-  AOImageDisplay *ui_background = nullptr;
+  server_type f_last_server;
+  bool public_servers_selected = true;
 
+  // ui
+  AOImageDisplay *ui_background = nullptr;
   AOButton *ui_public_servers = nullptr;
   AOButton *ui_favorites = nullptr;
-
   AOButton *ui_refresh = nullptr;
   AOButton *ui_add_to_fav = nullptr;
   AOButton *ui_connect = nullptr;
-
   DRTextEdit *ui_version = nullptr;
   AOButton *ui_about = nullptr;
-
   QListWidget *ui_server_list = nullptr;
-
   DRTextEdit *ui_player_count = nullptr;
   AOTextArea *ui_description = nullptr;
-
   AOTextArea *ui_chatbox = nullptr;
-
   QLineEdit *ui_chatname = nullptr;
   QLineEdit *ui_chatmessage = nullptr;
-
   AOImageDisplay *ui_loading_background = nullptr;
   DRTextEdit *ui_loading_text = nullptr;
   QProgressBar *ui_progress_bar = nullptr;
   AOButton *ui_cancel = nullptr;
-
-  server_type f_last_server;
 
   void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 

@@ -12,9 +12,6 @@
 
 class ManualTimer
 {
-  QTime current_time;
-  int timestep_length;
-
 public:
   QTime get_time()
   {
@@ -37,6 +34,10 @@ public:
   {
     current_time = current_time.addMSecs(timestep_length);
   }
+
+private:
+  QTime current_time;
+  int timestep_length;
 };
 
 class AOTimer : public DRTextEdit
@@ -45,19 +46,6 @@ class AOTimer : public DRTextEdit
 
 public:
   AOTimer(QWidget *p_parent);
-
-private:
-  ManualTimer old_manual_timer; // Pre-update manual timer
-  ManualTimer manual_timer;
-  QTimer firing_timer;
-
-  QTime start_time = QTime(0, 0);
-  // All of this is in miliseconds
-  int manual_timer_timestep_length = -12;
-  int firing_timer_length = 12;
-  int time_spent_in_timestep = 0;
-
-  bool paused;
 
 public slots:
   void update_time();
@@ -71,6 +59,17 @@ public slots:
   void set_concentrate_mode();
   void set_normal_mode();
   void set_fast_forward_mode();
+
+private:
+  ManualTimer old_manual_timer; // Pre-update manual timer
+  ManualTimer manual_timer;
+  QTimer firing_timer;
+  QTime start_time = QTime(0, 0);
+  // All of this is in miliseconds
+  int manual_timer_timestep_length = -12;
+  int firing_timer_length = 12;
+  int time_spent_in_timestep = 0;
+  bool paused;
 };
 
 #endif // AOTIMER_H

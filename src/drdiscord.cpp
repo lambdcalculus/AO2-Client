@@ -46,7 +46,6 @@ DRDiscord::DRDiscord(QObject *f_parent) : QObject(f_parent)
 DRDiscord::~DRDiscord()
 {
   this->disconnect(m_waiter);
-
   stop();
 }
 

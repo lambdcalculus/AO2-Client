@@ -13,6 +13,11 @@ AOImageDisplay::AOImageDisplay(QWidget *parent, AOApplication *p_ao_app) : QLabe
   ao_app = p_ao_app;
 }
 
+QString AOImageDisplay::get_image()
+{
+  return image_path;
+}
+
 void AOImageDisplay::set_image(QString p_image)
 {
   QString f_path = ao_app->find_theme_asset_path(p_image);
