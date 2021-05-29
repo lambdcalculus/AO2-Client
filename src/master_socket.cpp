@@ -50,8 +50,8 @@ void AOApplication::_p_handle_master_packet(AOPacket p_packet)
 {
   p_packet.net_decode();
 
-  QString l_header = p_packet.get_header();
-  QStringList l_content = p_packet.get_contents();
+  const QString l_header = p_packet.get_header();
+  const QStringList l_content = p_packet.get_contents();
 
   if (l_header != "CHECK")
     qDebug().noquote() << "M/R:" << p_packet.to_string();

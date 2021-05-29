@@ -28,8 +28,8 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
 {
   p_packet.net_decode();
 
-  QString l_header = p_packet.get_header();
-  QStringList l_content = p_packet.get_contents();
+  const QString l_header = p_packet.get_header();
+  const QStringList l_content = p_packet.get_contents();
 
   if (l_header != "checkconnection")
     qDebug().noquote() << "S/R:" << p_packet.to_string();
@@ -42,9 +42,6 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     if (l_content.size() == 0)
       return;
 
-    QString f_hdid;
-    f_hdid = get_hdid();
-
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
     feature_ackMS = false;
 #endif
@@ -52,7 +49,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     feature_chrini = false;
     feature_chat_speed = false;
 
-    send_server_packet(AOPacket("HI#" + f_hdid + "#%"));
+    send_server_packet(AOPacket("HI#" + get_hdid() + "#%"));
   }
   else if (l_header == "ID")
   {
