@@ -248,7 +248,7 @@ void Courtroom::enter_courtroom(int p_cid)
   l_current_field->setFocus();
   l_current_field->setCursorPosition(l_current_cursor_pos);
 
-  if (!is_showname_sent)
+  if (!is_first_showname_sent)
     send_showname_packet(ao_config->showname());
 }
 
@@ -671,10 +671,9 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
     save_textlog("(OOC)" + p_name + ": " + p_message);
 }
 
-void Courtroom::on_showname_changed(QString p_showname)
+void Courtroom::ignore_next_showname()
 {
-  ui_ic_chat_showname->setText(p_showname);
-  send_showname_packet(p_showname);
+  is_next_showname_ignored = true;
 }
 
 /**
@@ -684,7 +683,14 @@ void Courtroom::on_showname_changed(QString p_showname)
  */
 void Courtroom::send_showname_packet(QString p_showname)
 {
-  is_showname_sent = true;
+  is_first_showname_sent = true;
+
+  if (is_next_showname_ignored)
+  {
+    is_next_showname_ignored = false;
+    return;
+  }
+
   if (ao_app->has_showname_declaration_feature())
   {
     QStringList l_content = {p_showname};
@@ -694,6 +700,12 @@ void Courtroom::send_showname_packet(QString p_showname)
   {
     send_ooc_packet(ao_config->username(), QString("/showname %1").arg(p_showname));
   }
+}
+
+void Courtroom::on_showname_changed(QString p_showname)
+{
+  ui_ic_chat_showname->setText(p_showname);
+  send_showname_packet(p_showname);
 }
 
 bool Courtroom::is_spectating()

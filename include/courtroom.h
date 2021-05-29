@@ -88,6 +88,7 @@ public:
 
   void send_ooc_packet(QString ooc_name, QString ooc_message);
 
+  void ignore_next_showname();
   void send_showname_packet(QString p_showname);
 
   // called when a DONE#% from the server was received
@@ -246,7 +247,8 @@ private:
   // used to determine how often blips sound
   int m_blip_step = 0;
   int m_rainbow_step = 0;
-  bool is_showname_sent = false;
+  bool is_first_showname_sent = false;
+  bool is_next_showname_ignored = false;
   bool is_rainbow_enabled = false;
   bool is_note_shown = false;
   bool contains_add_button = false;

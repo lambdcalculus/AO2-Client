@@ -546,15 +546,11 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
   }
   else if (l_header == "SN")
   {
-    // Server-set showname.
-    // This has priority over user-set showname.
     if (l_content.size() != 1)
       return;
     if (!is_courtroom_constructed)
       return;
-    const QString l_showname = l_content.at(0);
-    // By updating now, we prevent the client from sending an SN back when we later on go ahead and modify the
-    // showname box.
-    ao_config->set_showname(l_showname);
+    m_courtroom->ignore_next_showname();
+    ao_config->set_showname(l_content.at(0));
   }
 }
