@@ -1,5 +1,7 @@
 #include "courtroom.h"
 
+#include "theme.h"
+
 #include <QDebug>
 #include <QFileDialog>
 
@@ -32,8 +34,8 @@ void Courtroom::construct_evidence()
   ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                          "color: white;");
 
-  set_size_and_pos(ui_evidence, "evidence_background");
-  set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
+  set_size_and_pos(ui_evidence, "evidence_background", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_buttons, "evidence_buttons", INI_DESIGN, ao_app);
 
   QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
 

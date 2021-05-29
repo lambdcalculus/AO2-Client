@@ -63,10 +63,6 @@ public:
 
   // sets position of widgets based on theme ini files
   void set_widgets();
-  // sets font properties based on theme ini files
-  void set_font(QWidget *widget, QString p_identifier);
-  // sets font properties for DRTextEdit (same as above but also text outline, and alignments)
-  void set_drtextedit_font(DRTextEdit *widget, QString p_identifier);
   // helper function that calls above function on the relevant widgets
   void set_fonts();
 
@@ -77,9 +73,6 @@ public:
   void set_dropdowns();
 
   void set_window_title(QString p_title);
-
-  // reads theme inis and sets size and pos based on the identifier
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
   // sets status as taken on character with cid n_char and places proper shading
   // on charselect
@@ -293,10 +286,10 @@ private:
   QString shownames_ini = "configs/shownames.ini";
 
   // theme files locations
-  QString design_ini = "courtroom_design.ini";
-  QString fonts_ini = "courtroom_fonts.ini";
-  QString cc_config_ini = "courtroom_config.ini";
-  QString cc_sounds_ini = "courtroom_sounds.ini";
+  static const QString INI_DESIGN;
+  static const QString INI_FONTS;
+  static const QString INI_CONFIG;
+  static const QString INI_SOUNDS;
 
   // every time point in char.inis times this equals the final time
   const int time_mod = 40;
