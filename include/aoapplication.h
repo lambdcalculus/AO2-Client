@@ -1,15 +1,15 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
+#include "aopacket.h"
 #include "datatypes.h"
 
 class AOConfig;
 class AOConfigPanel;
-class AOPacket;
 class Courtroom;
 class DRDiscord;
+class DRServerSocket;
 class Lobby;
-class NetworkManager;
 
 #include <QApplication>
 #include <QVector>
@@ -19,11 +19,20 @@ class AOApplication : public QApplication
   Q_OBJECT
 
 public:
+  static const QString MASTER_HOST;
+  static const int MASTER_PORT;
+  static const int MASTER_RECONNECT_DELAY;
+
   AOApplication(int &argc, char **argv);
   ~AOApplication();
 
   int get_client_id() const;
   void set_client_id(int id);
+
+  void send_master_packet(AOPacket *packet);
+  void request_server_list();
+  void connect_to_server(server_type server);
+  void send_server_packet(AOPacket *packet);
 
   Lobby *get_lobby() const;
   void construct_lobby();
@@ -35,18 +44,10 @@ public:
 
   DRDiscord *get_discord() const;
 
-  NetworkManager *get_network_manager();
-
   bool has_message_acknowledgement_feature() const;
   bool has_character_declaration_feature() const;
   bool has_showname_declaration_feature() const;
   bool has_chat_speed_feature() const;
-
-  void ms_packet_received(AOPacket *p_packet);
-  void server_packet_received(AOPacket *p_packet);
-
-  void send_ms_packet(AOPacket *p_packet);
-  void send_server_packet(AOPacket *p_packet, bool encoded = true);
 
   ///////////////////////////////////////////
 
@@ -200,7 +201,8 @@ private:
   AOConfigPanel *ao_config_panel = nullptr;
   DRDiscord *dr_discord = nullptr;
 
-  NetworkManager *m_network_manager = nullptr;
+  DRServerSocket *m_master_socket = nullptr;
+  DRServerSocket *m_server_socket = nullptr;
 
   Lobby *m_lobby = nullptr;
   bool is_lobby_constructed = false;
@@ -234,7 +236,10 @@ private:
   QVector<server_type> m_favorite_server_list;
 
 private slots:
-  void ms_connect_finished(bool connected, bool will_retry);
+  void _p_send_master_handshake();
+  void _p_handle_master_error(QString);
+  void _p_handle_master_packet(AOPacket);
+  void _p_handle_server_packet(AOPacket);
   void on_courtroom_closing();
   void on_courtroom_destroyed();
   void on_config_theme_changed();

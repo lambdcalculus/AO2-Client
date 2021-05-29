@@ -6,8 +6,8 @@
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
+#include "drserversocket.h"
 #include "lobby.h"
-#include "networkmanager.h"
 
 #include <QRegularExpression>
 
@@ -17,28 +17,45 @@
 #include <QScreen>
 #endif
 
+const QString AOApplication::MASTER_HOST = "master.aceattorneyonline.com";
+const int AOApplication::MASTER_PORT = 27016;
+const int AOApplication::MASTER_RECONNECT_DELAY = 5000;
+
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  m_network_manager = new NetworkManager(this);
-  connect(m_network_manager, SIGNAL(ms_connect_finished(bool, bool)), this, SLOT(ms_connect_finished(bool, bool)));
-
   ao_config = new AOConfig(this);
+  ao_config_panel = new AOConfigPanel(this);
+  dr_discord = new DRDiscord(this);
+  m_master_socket = new DRServerSocket(this);
+  m_server_socket = new DRServerSocket(this);
+
   connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(on_config_theme_changed()));
   connect(ao_config, SIGNAL(gamemode_changed(QString)), this, SLOT(on_config_gamemode_changed()));
   connect(ao_config, SIGNAL(timeofday_changed(QString)), this, SLOT(on_config_timeofday_changed()));
 
-  ao_config_panel = new AOConfigPanel(this);
   connect(ao_config_panel, SIGNAL(reload_theme()), this, SLOT(on_config_reload_theme_requested()));
   connect(this, SIGNAL(reload_theme()), ao_config_panel, SLOT(on_config_reload_theme_requested()));
   ao_config_panel->hide();
 
-  dr_discord = new DRDiscord(this);
   dr_discord->set_presence(ao_config->discord_presence());
   dr_discord->set_hide_server(ao_config->discord_hide_server());
   dr_discord->set_hide_character(ao_config->discord_hide_character());
   connect(ao_config, SIGNAL(discord_presence_changed(bool)), dr_discord, SLOT(set_presence(bool)));
   connect(ao_config, SIGNAL(discord_hide_server_changed(bool)), dr_discord, SLOT(set_hide_server(bool)));
   connect(ao_config, SIGNAL(discord_hide_character_changed(bool)), dr_discord, SLOT(set_hide_character(bool)));
+
+  connect(m_master_socket, SIGNAL(connected_to_server()), this, SLOT(_p_send_master_handshake()));
+  connect(m_master_socket, SIGNAL(socket_error(QString)), this, SLOT(_p_handle_master_error(QString)));
+  connect(m_master_socket, SIGNAL(packet_received(AOPacket)), this, SLOT(_p_handle_master_packet(AOPacket)));
+
+  connect(m_server_socket, SIGNAL(connected_to_server()), this, SLOT(_p_send_master_handshake()));
+  connect(m_server_socket, SIGNAL(packet_received(AOPacket)), this, SLOT(_p_handle_server_packet(AOPacket)));
+
+  server_type l_server;
+  l_server.name = "Master Server";
+  l_server.ip = MASTER_HOST;
+  l_server.port = MASTER_PORT;
+  m_master_socket->connect_to_server(l_server, true);
 }
 
 AOApplication::~AOApplication()
@@ -148,17 +165,12 @@ void AOApplication::destruct_courtroom()
   }
 
   // gracefully close our connection to the current server
-  m_network_manager->disconnect_from_server();
+  m_server_socket->disconnect_from_server();
 }
 
 DRDiscord *AOApplication::get_discord() const
 {
   return dr_discord;
-}
-
-NetworkManager *AOApplication::get_network_manager()
-{
-  return m_network_manager;
 }
 
 bool AOApplication::has_message_acknowledgement_feature() const
@@ -301,38 +313,6 @@ void AOApplication::loading_cancelled()
   destruct_courtroom();
 
   m_lobby->hide_loading_overlay();
-}
-
-void AOApplication::ms_connect_finished(bool connected, bool will_retry)
-{
-  if (connected)
-  {
-    AOPacket *f_packet = new AOPacket("ALL#%");
-    send_ms_packet(f_packet);
-  }
-  else
-  {
-    if (!is_lobby_constructed)
-    {
-      return;
-    }
-    else if (will_retry)
-    {
-      m_lobby->append_error("Error connecting to master server. Will try again in " +
-                            QString::number(m_network_manager->MASTER_RECONNECT_DELAY / 1000.f) + " seconds.");
-    }
-    else
-    {
-      call_error("There was an error connecting to the master server.\n"
-                 "We deploy multiple master servers to mitigate any possible "
-                 "downtime, "
-                 "but the client appears to have exhausted all possible "
-                 "methods of finding "
-                 "and connecting to one.\n"
-                 "Please check your Internet connection and firewall, and "
-                 "please try again.");
-    }
-  }
 }
 
 void AOApplication::on_courtroom_closing()

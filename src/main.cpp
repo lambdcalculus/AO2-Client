@@ -1,7 +1,6 @@
 #include "aoapplication.h"
 
 #include "lobby.h"
-#include "networkmanager.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,9 +20,6 @@ int main(int argc, char *argv[])
   AOApplication app(argc, argv);
 
   app.construct_lobby();
-#ifdef QT_NO_DEBUG
-  app.get_network_manager()->connect_to_master();
-#endif
   app.get_lobby()->show();
 
   return app.exec();

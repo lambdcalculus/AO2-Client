@@ -14,7 +14,7 @@ AOPacket::AOPacket(QString p_packet_string)
   }
 }
 
-AOPacket::AOPacket(QString p_header, QStringList &p_contents)
+AOPacket::AOPacket(QString p_header, const QStringList &p_contents)
 {
   m_header = p_header;
   m_contents = p_contents;

@@ -9,7 +9,6 @@
 #include "debug_functions.h"
 #include "drpather.h"
 #include "drtextedit.h"
-#include "networkmanager.h"
 #include "theme.h"
 #include "version.h"
 
@@ -277,10 +276,7 @@ void Lobby::on_refresh_pressed()
 void Lobby::on_refresh_released()
 {
   ui_refresh->set_image("refresh.png");
-
-  AOPacket *f_packet = new AOPacket("ALL#%");
-
-  ao_app->send_ms_packet(f_packet);
+  ao_app->request_server_list();
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -370,7 +366,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   ui_description->append(m_last_server.desc);
   ui_description->ensureCursorVisible();
 
-  ao_app->get_network_manager()->connect_to_server(m_last_server);
+  ao_app->connect_to_server(m_last_server);
 }
 
 void Lobby::on_chatfield_return_pressed()
@@ -384,7 +380,7 @@ void Lobby::on_chatfield_return_pressed()
 
   AOPacket *f_packet = new AOPacket(f_header, f_contents);
 
-  ao_app->send_ms_packet(f_packet);
+  ao_app->send_master_packet(f_packet);
 
   ui_chatmessage->clear();
 }

@@ -33,8 +33,8 @@ DRDiscord::DRDiscord(QObject *f_parent) : QObject(f_parent)
   m_waiter->setInterval(std::chrono::seconds(1));
   m_waiter->setSingleShot(true);
   connect(m_waiter, SIGNAL(timeout()), this, SLOT(on_update_queued()));
-  connect(this, SIGNAL(options_changed(Options)), m_waiter, SLOT(start()));
-  connect(this, SIGNAL(state_changed(State)), m_waiter, SLOT(start()));
+  connect(this, SIGNAL(options_changed(DRDiscord::Options)), m_waiter, SLOT(start()));
+  connect(this, SIGNAL(state_changed(DRDiscord::State)), m_waiter, SLOT(start()));
   connect(this, SIGNAL(server_name_changed(QString)), m_waiter, SLOT(start()));
   connect(this, SIGNAL(server_name_cleared()), m_waiter, SLOT(start()));
   connect(this, SIGNAL(character_name_changed(QString)), m_waiter, SLOT(start()));

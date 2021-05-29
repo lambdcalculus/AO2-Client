@@ -5,132 +5,42 @@
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
+#include "drserversocket.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
-#include "networkmanager.h"
 #include "version.h"
 
 #include <QDebug>
 
-void AOApplication::ms_packet_received(AOPacket *p_packet)
+void AOApplication::connect_to_server(server_type p_server)
 {
-  p_packet->net_decode();
-
-  QString header = p_packet->get_header();
-  QStringList f_contents = p_packet->get_contents();
-
-  if (header != "CHECK")
-    qDebug() << "R(ms):" << p_packet->to_string();
-
-  if (header == "ALL")
-  {
-    m_server_list.clear();
-
-    for (const QString &i_string : p_packet->get_contents())
-    {
-      server_type f_server;
-      QStringList sub_contents = i_string.split("&");
-
-      if (sub_contents.size() < 4)
-      {
-        qDebug() << "W: malformed packet";
-        continue;
-      }
-
-      f_server.name = sub_contents.at(0);
-      f_server.desc = sub_contents.at(1);
-      f_server.ip = sub_contents.at(2);
-      f_server.port = sub_contents.at(3).toInt();
-
-      m_server_list.append(f_server);
-    }
-
-    if (is_lobby_constructed)
-    {
-      m_lobby->list_servers();
-    }
-  }
-  else if (header == "CT")
-  {
-    QString f_name, f_message;
-
-    if (f_contents.size() == 1)
-    {
-      f_name = "";
-      f_message = f_contents.at(0);
-    }
-    else if (f_contents.size() >= 2)
-    {
-      f_name = f_contents.at(0);
-      f_message = f_contents.at(1);
-    }
-    else
-      goto end;
-
-    if (is_lobby_constructed)
-    {
-      m_lobby->append_chatmessage(f_name, f_message);
-    }
-  }
-  else if (header == "AO2CHECK")
-  {
-    send_ms_packet(new AOPacket("ID#DRO#" + get_version_string() + "#%"));
-    send_ms_packet(new AOPacket("HI#" + get_hdid() + "#%"));
-
-    if (f_contents.size() < 1)
-      goto end;
-
-    QStringList version_contents = f_contents.at(0).split(".");
-
-    if (version_contents.size() < 3)
-      goto end;
-
-    int f_release = version_contents.at(0).toInt();
-    int f_major = version_contents.at(1).toInt();
-    int f_minor = version_contents.at(2).toInt();
-
-    if (get_release_version() > f_release)
-      goto end;
-    else if (get_release_version() == f_release)
-    {
-      if (get_major_version() > f_major)
-        goto end;
-      else if (get_major_version() == f_major)
-      {
-        if (get_minor_version() >= f_minor)
-          goto end;
-      }
-    }
-
-    call_notice("Outdated version! Your version: " + get_version_string() +
-                "\nPlease go to aceattorneyonline.com to update.");
-    destruct_courtroom();
-    destruct_lobby();
-  }
-
-end:
-  delete p_packet;
+  m_server_socket->connect_to_server(p_server, false);
 }
 
-void AOApplication::server_packet_received(AOPacket *p_packet)
+void AOApplication::send_server_packet(AOPacket *p_packet)
 {
-  p_packet->net_decode();
+  qDebug().noquote() << "S/S:" << p_packet->to_string();
+  m_server_socket->send_packet(*p_packet);
+}
 
-  QString header = p_packet->get_header();
-  QStringList f_contents = p_packet->get_contents();
-  QString f_packet = p_packet->to_string();
+void AOApplication::_p_handle_server_packet(AOPacket p_packet)
+{
+  p_packet.net_decode();
 
-  if (header != "checkconnection")
-    qDebug() << "R:" << f_packet;
+  QString l_header = p_packet.get_header();
+  QStringList l_content = p_packet.get_contents();
 
-  if (header == "decryptor")
+  if (l_header != "checkconnection")
+    qDebug().noquote() << "S/R:" << p_packet.to_string();
+
+  if (l_header == "decryptor")
   {
     // This packet is maintained as is for legacy purposes,
     // even though its sole argument is no longer used for anything
     // productive
-    if (f_contents.size() == 0)
-      goto end;
+    if (l_content.size() == 0)
+      return;
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -145,51 +55,51 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
     send_server_packet(hi_packet);
   }
-  else if (header == "ID")
+  else if (l_header == "ID")
   {
-    if (f_contents.size() < 2)
-      goto end;
+    if (l_content.size() < 2)
+      return;
 
-    m_client_id = f_contents.at(0).toInt();
-    m_server_software = f_contents.at(1);
+    m_client_id = l_content.at(0).toInt();
+    m_server_software = l_content.at(1);
 
     send_server_packet(new AOPacket("ID#DRO#" + get_version_string() + "#%"));
   }
-  else if (header == "CT")
+  else if (l_header == "CT")
   {
-    if (f_contents.size() < 2)
-      goto end;
+    if (l_content.size() < 2)
+      return;
 
     if (is_courtroom_constructed)
-      m_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1));
+      m_courtroom->append_server_chatmessage(l_content.at(0), l_content.at(1));
   }
-  else if (header == "FL")
+  else if (l_header == "FL")
   {
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    feature_ackMS = f_contents.contains("ackMS", Qt::CaseInsensitive);
+    feature_ackMS = l_content.contains("ackMS", Qt::CaseInsensitive);
 #endif
-    feature_showname = f_contents.contains("showname", Qt::CaseInsensitive);
-    feature_chrini = f_contents.contains("chrini", Qt::CaseInsensitive);
-    feature_chat_speed = f_contents.contains("chat_speed", Qt::CaseInsensitive);
+    feature_showname = l_content.contains("showname", Qt::CaseInsensitive);
+    feature_chrini = l_content.contains("chrini", Qt::CaseInsensitive);
+    feature_chat_speed = l_content.contains("chat_speed", Qt::CaseInsensitive);
   }
-  else if (header == "PN")
+  else if (l_header == "PN")
   {
-    if (f_contents.size() < 2)
-      goto end;
+    if (l_content.size() < 2)
+      return;
 
-    m_lobby->set_player_count(f_contents.at(0).toInt(), f_contents.at(1).toInt());
+    m_lobby->set_player_count(l_content.at(0).toInt(), l_content.at(1).toInt());
   }
-  else if (header == "SI")
+  else if (l_header == "SI")
   {
-    if (f_contents.size() != 3)
-      goto end;
+    if (l_content.size() != 3)
+      return;
 
-    m_character_count = f_contents.at(0).toInt();
-    m_evidence_count = f_contents.at(1).toInt();
-    m_music_count = f_contents.at(2).toInt();
+    m_character_count = l_content.at(0).toInt();
+    m_evidence_count = l_content.at(1).toInt();
+    m_music_count = l_content.at(2).toInt();
 
     if (m_character_count < 1 || m_evidence_count < 0 || m_music_count < 0)
-      goto end;
+      return;
 
     m_loaded_characters = 0;
     m_loaded_evidence = 0;
@@ -253,22 +163,22 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     dr_discord->set_state(DRDiscord::State::Connected);
     dr_discord->set_server_name(server_name);
   }
-  else if (header == "CI")
+  else if (l_header == "CI")
   {
     if (!is_courtroom_constructed)
-      goto end;
+      return;
 
-    for (int n_element = 0; n_element < f_contents.size(); n_element += 2)
+    for (int n_element = 0; n_element < l_content.size(); n_element += 2)
     {
-      if (f_contents.at(n_element).toInt() != m_loaded_characters)
+      if (l_content.at(n_element).toInt() != m_loaded_characters)
         break;
 
       // this means we are on the last element and checking n + 1 element will
       // be game over so
-      if (n_element == f_contents.size() - 1)
+      if (n_element == l_content.size() - 1)
         break;
 
-      QStringList sub_elements = f_contents.at(n_element + 1).split("&");
+      QStringList sub_elements = l_content.at(n_element + 1).split("&");
       if (sub_elements.size() < 2)
         break;
 
@@ -293,22 +203,22 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     send_server_packet(new AOPacket("RE#%"));
   }
-  else if (header == "EI")
+  else if (l_header == "EI")
   {
     if (!is_courtroom_constructed)
-      goto end;
+      return;
 
     // +1 because evidence starts at 1 rather than 0 for whatever reason
     // enjoy fanta
-    if (f_contents.at(0).toInt() != m_loaded_evidence + 1)
-      goto end;
+    if (l_content.at(0).toInt() != m_loaded_evidence + 1)
+      return;
 
-    if (f_contents.size() < 2)
-      goto end;
+    if (l_content.size() < 2)
+      return;
 
-    QStringList sub_elements = f_contents.at(1).split("&");
+    QStringList sub_elements = l_content.at(1).split("&");
     if (sub_elements.size() < 4)
-      goto end;
+      return;
 
     evi_type f_evi;
     f_evi.name = sub_elements.at(0);
@@ -328,28 +238,28 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     QString next_packet_number = QString::number(m_loaded_evidence);
     send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
   }
-  else if (header == "CharsCheck")
+  else if (l_header == "CharsCheck")
   {
     if (!is_courtroom_constructed)
-      goto end;
+      return;
 
-    for (int n_char = 0; n_char < f_contents.size(); ++n_char)
+    for (int n_char = 0; n_char < l_content.size(); ++n_char)
     {
-      if (f_contents.at(n_char) == "-1")
+      if (l_content.at(n_char) == "-1")
         m_courtroom->set_taken(n_char, true);
       else
         m_courtroom->set_taken(n_char, false);
     }
   }
 
-  else if (header == "SC")
+  else if (l_header == "SC")
   {
     if (!is_courtroom_constructed)
-      goto end;
+      return;
 
-    for (int n_element = 0; n_element < f_contents.size(); ++n_element)
+    for (int n_element = 0; n_element < l_content.size(); ++n_element)
     {
-      QStringList sub_elements = f_contents.at(n_element).split("&");
+      QStringList sub_elements = l_content.at(n_element).split("&");
 
       char_type f_char;
       f_char.name = sub_elements.at(0);
@@ -373,20 +283,20 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     send_server_packet(new AOPacket("RM#%"));
   }
-  else if (header == "SM" || header == "FM")
+  else if (l_header == "SM" || l_header == "FM")
   {
     if (!is_courtroom_constructed)
-      goto end;
+      return;
 
     QStringList l_area_list;
     QStringList l_music_list;
 
-    for (int i = 0; i < f_contents.length(); ++i)
+    for (int i = 0; i < l_content.length(); ++i)
     {
       bool l_found_music = false;
 
       { // look for first song
-        const QString &i_value = f_contents.at(i);
+        const QString &i_value = l_content.at(i);
         for (const QString &i_ext : audio_extensions(true))
         {
           if (!i_value.endsWith(i_ext, Qt::CaseInsensitive))
@@ -398,14 +308,14 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
       if (!l_found_music)
         continue;
-      l_area_list = f_contents.mid(0, i - 1);
-      l_music_list = f_contents.mid(i - 1);
+      l_area_list = l_content.mid(0, i - 1);
+      l_music_list = l_content.mid(i - 1);
       break;
     }
     m_courtroom->set_area_list(l_area_list);
     m_courtroom->set_music_list(l_music_list);
 
-    if (header == "SM")
+    if (l_header == "SM")
     {
       m_loaded_music = m_music_count;
       m_lobby->set_loading_text("Loading music:\n" + QString::number(m_loaded_music) + "/" +
@@ -417,10 +327,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       send_server_packet(new AOPacket("RD#%"));
     }
   }
-  else if (header == "DONE")
+  else if (l_header == "DONE")
   {
     if (!is_courtroom_constructed)
-      goto end;
+      return;
 
     m_courtroom->done_received();
 
@@ -428,65 +338,65 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     destruct_lobby();
   }
-  else if (header == "BN")
+  else if (l_header == "BN")
   {
-    if (f_contents.size() < 1)
-      goto end;
+    if (l_content.size() < 1)
+      return;
 
     if (is_courtroom_constructed)
     {
-      m_courtroom->set_background(f_contents.at(0));
+      m_courtroom->set_background(l_content.at(0));
       m_courtroom->set_scene();
     }
   }
-  else if (header == "chat_tick_rate")
+  else if (l_header == "chat_tick_rate")
   {
     if (is_courtroom_constructed)
-      m_courtroom->set_tick_rate(f_contents.isEmpty() ? std::nullopt : std::optional<int>(f_contents.at(0).toInt()));
+      m_courtroom->set_tick_rate(l_content.isEmpty() ? std::nullopt : std::optional<int>(l_content.at(0).toInt()));
   }
   // server accepting char request(CC) packet
-  else if (header == "PV")
+  else if (l_header == "PV")
   {
-    if (f_contents.size() < 3)
-      goto end;
+    if (l_content.size() < 3)
+      return;
 
     if (is_courtroom_constructed)
-      m_courtroom->enter_courtroom(f_contents.at(2).toInt());
+      m_courtroom->enter_courtroom(l_content.at(2).toInt());
   }
-  else if (header == "MS")
+  else if (l_header == "MS")
   {
     if (is_courtroom_constructed && is_courtroom_loaded)
-      m_courtroom->handle_chatmessage(p_packet->get_contents());
+      m_courtroom->handle_chatmessage(p_packet.get_contents());
   }
-  else if (header == "ackMS")
+  else if (l_header == "ackMS")
   {
     if (is_courtroom_constructed && is_courtroom_loaded)
       m_courtroom->handle_acknowledged_ms();
   }
-  else if (header == "MC")
+  else if (l_header == "MC")
   {
     if (is_courtroom_constructed && is_courtroom_loaded)
-      m_courtroom->handle_song(p_packet->get_contents());
+      m_courtroom->handle_song(p_packet.get_contents());
   }
-  else if (header == "RT")
+  else if (l_header == "RT")
   {
-    if (f_contents.size() < 1)
-      goto end;
+    if (l_content.size() < 1)
+      return;
     if (is_courtroom_constructed)
-      m_courtroom->handle_wtce(f_contents.at(0));
+      m_courtroom->handle_wtce(l_content.at(0));
   }
-  else if (header == "HP")
+  else if (l_header == "HP")
   {
-    if (is_courtroom_constructed && f_contents.size() > 1)
-      m_courtroom->set_hp_bar(f_contents.at(0).toInt(), f_contents.at(1).toInt());
+    if (is_courtroom_constructed && l_content.size() > 1)
+      m_courtroom->set_hp_bar(l_content.at(0).toInt(), l_content.at(1).toInt());
   }
-  else if (header == "LE")
+  else if (l_header == "LE")
   {
     if (is_courtroom_constructed)
     {
       QVector<evi_type> f_evi_list;
 
-      for (const QString &f_string : f_contents)
+      for (const QString &f_string : l_content)
       {
         QStringList sub_contents = f_string.split("&");
 
@@ -504,174 +414,144 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       m_courtroom->set_evidence_list(f_evi_list);
     }
   }
-  else if (header == "IL")
+  else if (l_header == "IL")
   {
-    if (is_courtroom_constructed && f_contents.size() > 0)
-      m_courtroom->set_ip_list(f_contents.at(0));
+    if (is_courtroom_constructed && l_content.size() > 0)
+      m_courtroom->set_ip_list(l_content.at(0));
   }
-  else if (header == "MU")
+  else if (l_header == "MU")
   {
-    if (is_courtroom_constructed && f_contents.size() > 0)
-      m_courtroom->set_mute(true, f_contents.at(0).toInt());
+    if (is_courtroom_constructed && l_content.size() > 0)
+      m_courtroom->set_mute(true, l_content.at(0).toInt());
   }
-  else if (header == "UM")
+  else if (l_header == "UM")
   {
-    if (is_courtroom_constructed && f_contents.size() > 0)
-      m_courtroom->set_mute(false, f_contents.at(0).toInt());
+    if (is_courtroom_constructed && l_content.size() > 0)
+      m_courtroom->set_mute(false, l_content.at(0).toInt());
   }
-  else if (header == "KK")
+  else if (l_header == "KK")
   {
-    if (is_courtroom_constructed && f_contents.size() > 0)
+    if (is_courtroom_constructed && l_content.size() > 0)
     {
       int f_cid = m_courtroom->get_character_id();
-      int remote_cid = f_contents.at(0).toInt();
+      int remote_cid = l_content.at(0).toInt();
 
       if (f_cid != remote_cid && remote_cid != -1)
-        goto end;
+        return;
 
       call_notice("You have been kicked.");
       construct_lobby();
       destruct_courtroom();
     }
   }
-  else if (header == "KB")
+  else if (l_header == "KB")
   {
-    if (is_courtroom_constructed && f_contents.size() > 0)
-      m_courtroom->set_ban(f_contents.at(0).toInt());
+    if (is_courtroom_constructed && l_content.size() > 0)
+      m_courtroom->set_ban(l_content.at(0).toInt());
   }
-  else if (header == "BD")
+  else if (l_header == "BD")
   {
     call_notice("You are banned on this server.");
   }
-  else if (header == "ZZ")
+  else if (l_header == "ZZ")
   {
-    if (is_courtroom_constructed && f_contents.size() > 0)
-      m_courtroom->mod_called(f_contents.at(0));
+    if (is_courtroom_constructed && l_content.size() > 0)
+      m_courtroom->mod_called(l_content.at(0));
   }
-  else if (header == "CL")
+  else if (l_header == "CL")
   {
-    qDebug() << f_contents;
-    m_courtroom->handle_clock(f_contents.at(1));
+    qDebug() << l_content;
+    m_courtroom->handle_clock(l_content.at(1));
   }
-  else if (header == "GM")
+  else if (l_header == "GM")
   {
-    if (f_contents.length() < 1)
-      goto end;
+    if (l_content.length() < 1)
+      return;
     if (ao_config->manual_gamemode_enabled())
-      goto end;
-    ao_config->set_gamemode(f_contents.at(0));
+      return;
+    ao_config->set_gamemode(l_content.at(0));
   }
-  else if (header == "TOD")
+  else if (l_header == "TOD")
   {
-    if (f_contents.length() < 1)
-      goto end;
+    if (l_content.length() < 1)
+      return;
     if (ao_config->manual_timeofday_enabled())
-      goto end;
-    ao_config->set_timeofday(f_contents.at(0));
+      return;
+    ao_config->set_timeofday(l_content.at(0));
   }
-  else if (header == "TR")
+  else if (l_header == "TR")
   {
     // Timer resume
-    if (f_contents.size() != 1)
-      goto end;
+    if (l_content.size() != 1)
+      return;
     if (!is_courtroom_constructed)
-      goto end;
-    int timer_id = f_contents.at(0).toInt();
+      return;
+    int timer_id = l_content.at(0).toInt();
     m_courtroom->resume_timer(timer_id);
   }
-  else if (header == "TST")
+  else if (l_header == "TST")
   {
     // Timer set time
-    if (f_contents.size() != 2)
-      goto end;
+    if (l_content.size() != 2)
+      return;
     if (!is_courtroom_constructed)
-      goto end;
-    int timer_id = f_contents.at(0).toInt();
-    int new_time = f_contents.at(1).toInt();
+      return;
+    int timer_id = l_content.at(0).toInt();
+    int new_time = l_content.at(1).toInt();
     m_courtroom->set_timer_time(timer_id, new_time);
   }
-  else if (header == "TSS")
+  else if (l_header == "TSS")
   {
     // Timer set timeStep length
-    if (f_contents.size() != 2)
-      goto end;
+    if (l_content.size() != 2)
+      return;
     if (!is_courtroom_constructed)
-      goto end;
-    int timer_id = f_contents.at(0).toInt();
-    int timestep_length = f_contents.at(1).toInt();
+      return;
+    int timer_id = l_content.at(0).toInt();
+    int timestep_length = l_content.at(1).toInt();
     m_courtroom->set_timer_timestep(timer_id, timestep_length);
   }
-  else if (header == "TSF")
+  else if (l_header == "TSF")
   {
     // Timer set Firing interval
-    if (f_contents.size() != 2)
-      goto end;
+    if (l_content.size() != 2)
+      return;
     if (!is_courtroom_constructed)
-      goto end;
-    int timer_id = f_contents.at(0).toInt();
-    int firing_interval = f_contents.at(1).toInt();
+      return;
+    int timer_id = l_content.at(0).toInt();
+    int firing_interval = l_content.at(1).toInt();
     m_courtroom->set_timer_firing(timer_id, firing_interval);
   }
-  else if (header == "TP")
+  else if (l_header == "TP")
   {
     // Timer pause
-    if (f_contents.size() != 1)
-      goto end;
+    if (l_content.size() != 1)
+      return;
     if (!is_courtroom_constructed)
-      goto end;
-    int timer_id = f_contents.at(0).toInt();
+      return;
+    int timer_id = l_content.at(0).toInt();
     m_courtroom->pause_timer(timer_id);
   }
-  else if (header == "SP")
+  else if (l_header == "SP")
   {
     // Set position
-    if (f_contents.size() != 1)
-      goto end;
+    if (l_content.size() != 1)
+      return;
     if (!is_courtroom_constructed)
-      goto end;
-    m_courtroom->set_character_position(f_contents.at(0));
+      return;
+    m_courtroom->set_character_position(l_content.at(0));
   }
-  else if (header == "SN")
+  else if (l_header == "SN")
   {
     // Server-set showname.
     // This has priority over user-set showname.
-    if (f_contents.size() != 1)
-      goto end;
+    if (l_content.size() != 1)
+      return;
     if (!is_courtroom_constructed)
-      goto end;
-    const QString l_showname = f_contents.at(0);
+      return;
+    const QString l_showname = l_content.at(0);
     // By updating now, we prevent the client from sending an SN back when we later on go ahead and modify the
     // showname box.
     ao_config->set_showname(l_showname);
   }
-
-end:
-
-  delete p_packet;
-}
-
-void AOApplication::send_ms_packet(AOPacket *p_packet)
-{
-  p_packet->net_encode();
-
-  QString f_packet = p_packet->to_string();
-
-  m_network_manager->ship_ms_packet(f_packet);
-
-  qDebug() << "S(ms):" << f_packet;
-
-  delete p_packet;
-}
-
-void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
-{
-  if (encoded)
-    p_packet->net_encode();
-
-  QString f_packet = p_packet->to_string();
-
-  qDebug() << "S:" << f_packet;
-  m_network_manager->ship_server_packet(f_packet);
-
-  delete p_packet;
 }

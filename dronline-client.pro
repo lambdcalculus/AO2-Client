@@ -55,13 +55,13 @@ HEADERS += \
   include/draudiostream.h \
   include/draudiostreamfamily.h \
   include/drpather.h \
+  include/drserversocket.h \
   include/drtextedit.h \
   include/drdiscord.h \
   include/file_functions.h \
   include/hardware_functions.h \
   include/lobby.h \
   include/misc_functions.h \
-  include/networkmanager.h \
   include/theme.h \
   include/version.h
 
@@ -109,6 +109,7 @@ SOURCES += \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \
   src/drpather.cpp \
+  src/drserversocket.cpp \
   src/drtextedit.cpp \
   src/drdiscord.cpp \
   src/emotes.cpp \
@@ -117,10 +118,10 @@ SOURCES += \
   src/hardware_functions.cpp \
   src/lobby.cpp \
   src/main.cpp \
+  src/master_socket.cpp \
   src/misc_functions.cpp \
-  src/networkmanager.cpp \
-  src/packet_distribution.cpp \
   src/path_functions.cpp \
+  src/server_socket.cpp \
   src/text_file_functions.cpp \
   src/theme.cpp \
   src/version.cpp

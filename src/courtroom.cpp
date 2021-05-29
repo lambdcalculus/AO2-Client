@@ -2136,7 +2136,7 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 
   QString p_song = ui_music_list->item(p_model.row())->text();
 
-  ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"), false);
+  ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"));
 
   ui_ic_chat_message->setFocus();
 }
@@ -2145,7 +2145,7 @@ void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
 {
   QString p_area = ui_area_list->item(p_model.row())->text();
 
-  ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"), false);
+  ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"));
 
   ui_ic_chat_message->setFocus();
 }

@@ -8,7 +8,7 @@ class AOPacket
 {
 public:
   AOPacket(QString p_packet_string);
-  AOPacket(QString header, QStringList &p_contents);
+  AOPacket(QString header, const QStringList &p_contents);
 
   QString get_header();
   QStringList &get_contents();
