@@ -35,6 +35,7 @@
 #include <QPropertyAnimation>
 #include <QScrollArea>
 #include <QScrollBar>
+#include <QTimer>
 #include <QVBoxLayout>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()

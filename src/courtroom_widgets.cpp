@@ -28,6 +28,7 @@
 #include <QPropertyAnimation>
 #include <QScrollArea>
 #include <QSignalMapper>
+#include <QTimer>
 #include <QVBoxLayout>
 
 void Courtroom::create_widgets()

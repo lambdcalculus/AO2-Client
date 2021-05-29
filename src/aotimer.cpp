@@ -1,6 +1,7 @@
 #include "aotimer.h"
 
 #include <QDebug>
+#include <QTimer>
 
 AOTimer::AOTimer(QWidget *p_parent) : DRTextEdit(p_parent)
 {
@@ -12,9 +13,10 @@ AOTimer::AOTimer(QWidget *p_parent) : DRTextEdit(p_parent)
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setReadOnly(true);
 
-  firing_timer.setTimerType(Qt::PreciseTimer);
-  firing_timer.setInterval(firing_timer_length);
-  connect(&firing_timer, SIGNAL(timeout()), this, SLOT(update_time()));
+  firing_timer = new QTimer(this);
+  firing_timer->setTimerType(Qt::PreciseTimer);
+  firing_timer->setInterval(firing_timer_length);
+  connect(firing_timer, SIGNAL(timeout()), this, SLOT(update_time()));
 
   set_time(start_time);
   old_manual_timer.set_time(start_time);
@@ -37,7 +39,7 @@ void AOTimer::update_time()
     if (manual_timer.get_time().operator<(old_manual_timer.get_time()))
     {
       set_time(QTime(0, 0));
-      firing_timer.stop();
+      firing_timer->stop();
       redraw();
       return;
     }
@@ -50,7 +52,7 @@ void AOTimer::update_time()
     if (manual_timer.get_time().operator>(old_manual_timer.get_time()))
     {
       set_time(QTime(0, 0));
-      firing_timer.stop();
+      firing_timer->stop();
       redraw();
       return;
     }
@@ -69,8 +71,8 @@ void AOTimer::update_time()
   // operation, while QT's built-in automatic restart is very efficient.
   // Therefore, we only restart firing_timer if its length was not
   // firing_timer_length already (see example above).
-  if (firing_timer.interval() != firing_timer_length)
-    firing_timer.start(firing_timer_length);
+  if (firing_timer->interval() != firing_timer_length)
+    firing_timer->start(firing_timer_length);
 }
 
 void AOTimer::set()
@@ -81,15 +83,15 @@ void AOTimer::set()
 void AOTimer::resume()
 {
   paused = false;
-  firing_timer.start();
+  firing_timer->start();
 }
 
 void AOTimer::pause()
 {
   paused = true;
-  int remaining = firing_timer.remainingTime();
-  firing_timer.stop();
-  firing_timer.setInterval(remaining);
+  int remaining = firing_timer->remainingTime();
+  firing_timer->stop();
+  firing_timer->setInterval(remaining);
 }
 
 void AOTimer::redraw()
@@ -123,7 +125,7 @@ void AOTimer::set_firing_interval(int new_firing_interval)
    */
 
   // Update time spent so far and new future firing interval
-  time_spent_in_timestep += (firing_timer_length - firing_timer.remainingTime());
+  time_spent_in_timestep += (firing_timer_length - firing_timer->remainingTime());
   firing_timer_length = new_firing_interval;
   // For this timestep however, the firing interval will be shorter than
   // firing_timer_length to account for the fact the timer may have already been
@@ -134,10 +136,10 @@ void AOTimer::set_firing_interval(int new_firing_interval)
   else
     this_step_firing_interval = new_firing_interval - time_spent_in_timestep;
 
-  firing_timer.setInterval(this_step_firing_interval);
+  firing_timer->setInterval(this_step_firing_interval);
 
   if (!paused)
-    firing_timer.start();
+    firing_timer->start();
 }
 
 void AOTimer::set_concentrate_mode()

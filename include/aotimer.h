@@ -4,7 +4,8 @@
 #include "drtextedit.h"
 
 #include <QTime>
-#include <QTimer>
+
+class QTimer;
 
 class ManualTimer
 {
@@ -59,7 +60,7 @@ public slots:
 private:
   ManualTimer old_manual_timer; // Pre-update manual timer
   ManualTimer manual_timer;
-  QTimer firing_timer;
+  QTimer *firing_timer = nullptr;
   QTime start_time = QTime(0, 0);
   // All of this is in miliseconds
   int manual_timer_timestep_length = -12;
