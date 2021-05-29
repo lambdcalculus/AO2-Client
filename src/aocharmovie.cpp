@@ -1,12 +1,10 @@
 #include "aocharmovie.h"
 
 #include "aoapplication.h"
-#include "courtroom.h"
 #include "file_functions.h"
-#include "misc_functions.h"
 
-#include <QDebug>
-#include <QImageReader>
+#include <QMovie>
+#include <QTimer>
 
 AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {

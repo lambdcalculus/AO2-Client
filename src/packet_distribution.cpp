@@ -1,5 +1,7 @@
 #include "aoapplication.h"
 
+#include "aoconfig.h"
+#include "aopacket.h"
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
@@ -9,7 +11,6 @@
 #include "networkmanager.h"
 #include "version.h"
 
-#include <QCryptographicHash>
 #include <QDebug>
 
 void AOApplication::ms_packet_received(AOPacket *p_packet)

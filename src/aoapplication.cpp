@@ -1,18 +1,13 @@
 #include "aoapplication.h"
 
+#include "aoconfig.h"
+#include "aoconfigpanel.h"
+#include "aopacket.h"
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
 #include "lobby.h"
 #include "networkmanager.h"
-
-#include "aoconfig.h"
-#include "aoconfigpanel.h"
-
-#include <QDebug>
-#include <QFileInfo>
-#include <QRect>
-#include <QRegularExpression>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 #include <QDesktopWidget>

@@ -1,23 +1,34 @@
 #include "courtroom.h"
 
-#include "aoapplication.h"
-#include "datatypes.h"
-#include "debug_functions.h"
+#include "aoblipplayer.h"
+#include "aobutton.h"
+#include "aocharmovie.h"
+#include "aoconfig.h"
+#include "aoevidencedescription.h"
+#include "aoevidencedisplay.h"
+#include "aoimagedisplay.h"
+#include "aolabel.h"
+#include "aolineedit.h"
+#include "aomovie.h"
+#include "aomusicplayer.h"
+#include "aonotearea.h"
+#include "aoscene.h"
+#include "aosfxplayer.h"
+#include "aoshoutplayer.h"
+#include "aosystemplayer.h"
+#include "aotextarea.h"
+#include "aotimer.h"
+#include "drtextedit.h"
 #include "file_functions.h"
-#include "hardware_functions.h"
-#include "lobby.h"
 
-#include <QBrush>
-#include <QDebug>
-#include <QFileDialog>
-#include <QFont>
-#include <QGraphicsOpacityEffect>
-#include <QMessageBox>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QFile>
+#include <QListWidget>
 #include <QPropertyAnimation>
-#include <QRegExp>
-#include <QScrollBar>
-#include <QTextCharFormat>
-#include <QTime>
+#include <QScrollArea>
+#include <QSignalMapper>
+#include <QVBoxLayout>
 
 void Courtroom::create_widgets()
 {

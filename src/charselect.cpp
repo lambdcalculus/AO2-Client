@@ -1,10 +1,15 @@
 #include "courtroom.h"
 
+#include "aobutton.h"
+#include "aocharbutton.h"
+#include "aoimagedisplay.h"
+#include "aopacket.h"
 #include "debug_functions.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 
 #include <QDebug>
+#include <QSignalMapper>
 
 void Courtroom::construct_char_select()
 {

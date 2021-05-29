@@ -1,16 +1,12 @@
 #ifndef AONOTEAREA_HPP
 #define AONOTEAREA_HPP
 
-#include <QLabel>
-#include <QListWidget>
-#include <QScrollArea>
-#include <QVBoxLayout>
-#include <QVector>
-#include <aobutton.h>
-#include <aoimagedisplay.h>
-#include <aonotepicker.h>
+#include "aoimagedisplay.h"
 
-#include "aoapplication.h"
+class AOApplication;
+class AOButton;
+
+class QVBoxLayout;
 
 class AONoteArea : public AOImageDisplay
 {

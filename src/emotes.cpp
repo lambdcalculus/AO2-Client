@@ -1,8 +1,14 @@
 #include "courtroom.h"
 
+#include "aoapplication.h"
+#include "aobutton.h"
+#include "aoconfig.h"
 #include "aoemotebutton.h"
 
+#include <QCheckBox>
+#include <QComboBox>
 #include <QDebug>
+#include <QLineEdit>
 
 void Courtroom::construct_emotes()
 {

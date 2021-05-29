@@ -1,12 +1,13 @@
 #include "aoapplication.h"
 
+#include "aoconfig.h"
 #include "courtroom.h"
 #include "drpather.h"
 #include "file_functions.h"
 
-#include <QDebug>
 #include <QDir>
-#include <QStandardPaths>
+#include <QFile>
+#include <QFileInfo>
 
 // Copied over from Vanilla.
 // As said in the comments there, this is a *super broad* definition.

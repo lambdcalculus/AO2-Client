@@ -1,52 +1,49 @@
 #ifndef COURTROOM_H
 #define COURTROOM_H
 
-#include "aoblipplayer.h"
-#include "aobutton.h"
-#include "aocharbutton.h"
-#include "aocharmovie.h"
-#include "aoconfig.h"
-#include "aoconfigpanel.h"
-#include "aoemotebutton.h"
-#include "aoevidencebutton.h"
-#include "aoevidencedescription.h"
-#include "aoevidencedisplay.h"
-#include "aoimagedisplay.h"
-#include "aolabel.h"
-#include "aolineedit.h"
-#include "aomovie.h"
-#include "aomusicplayer.h"
-#include "aonotearea.h"
-#include "aonotepad.h"
-#include "aopacket.h"
-#include "aoscene.h"
-#include "aosfxplayer.h"
-#include "aoshoutplayer.h"
-#include "aosystemplayer.h"
-#include "aotextarea.h"
-#include "aotimer.h"
 #include "datatypes.h"
-#include "draudioengine.h"
-
-#include <QCheckBox>
-#include <QCloseEvent>
-#include <QComboBox>
-#include <QDateTime>
-#include <QLineEdit>
-#include <QListWidget>
-#include <QMainWindow>
-#include <QMap>
-#include <QPlainTextEdit>
-#include <QPropertyAnimation>
-#include <QQueue>
-#include <QRect>
-#include <QSignalMapper>
-#include <QSlider>
-#include <QStack>
-#include <QTextBrowser>
-#include <QVector>
 
 class AOApplication;
+class AOBlipPlayer;
+class AOButton;
+class AOCharButton;
+class AOCharMovie;
+class AOConfig;
+class AOEmoteButton;
+class AOEvidenceButton;
+class AOEvidenceDescription;
+class AOEvidenceDisplay;
+class AOImageDisplay;
+class AOLabel;
+class AOLineEdit;
+class AOMovie;
+class AOMusicPlayer;
+class AONoteArea;
+class AONotepad;
+class AOScene;
+class AOSfxPlayer;
+class AOShoutPlayer;
+class AOSystemPlayer;
+class AOTextArea;
+class AOTimer;
+class DRTextEdit;
+
+#include <QMainWindow>
+#include <QMap>
+#include <QModelIndex>
+#include <QQueue>
+#include <QStack>
+
+class QCheckBox;
+class QComboBox;
+class QLineEdit;
+class QListWidget;
+class QListWidgetItem;
+class QPropertyAnimation;
+class QScrollArea;
+class QSignalMapper;
+
+#include <optional>
 
 class Courtroom : public QMainWindow
 {

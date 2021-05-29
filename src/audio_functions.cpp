@@ -1,5 +1,7 @@
 #include "courtroom.h"
 
+#include "draudioengine.h"
+
 bool Courtroom::is_audio_suppressed() const
 {
   return m_audio_mute;

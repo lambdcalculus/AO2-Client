@@ -1,27 +1,41 @@
 #include "courtroom.h"
 
 #include "aoapplication.h"
-#include "datatypes.h"
+#include "aoblipplayer.h"
+#include "aobutton.h"
+#include "aocharmovie.h"
+#include "aoconfig.h"
+#include "aoevidencedisplay.h"
+#include "aoimagedisplay.h"
+#include "aomovie.h"
+#include "aomusicplayer.h"
+#include "aonotearea.h"
+#include "aonotepicker.h"
+#include "aopacket.h"
+#include "aoscene.h"
+#include "aosfxplayer.h"
+#include "aoshoutplayer.h"
+#include "aosystemplayer.h"
+#include "aotextarea.h"
+#include "aotimer.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
-#include "networkmanager.h"
 
-#include <QBrush>
+#include <QCheckBox>
+#include <QComboBox>
 #include <QDebug>
-#include <QFileDialog>
-#include <QFont>
-#include <QGraphicsOpacityEffect>
+#include <QDir>
 #include <QInputDialog>
+#include <QLineEdit>
+#include <QListWidget>
 #include <QMessageBox>
 #include <QPropertyAnimation>
-#include <QRegExp>
-#include <QRegularExpression>
+#include <QScrollArea>
 #include <QScrollBar>
-#include <QTextCharFormat>
-#include <QTime>
+#include <QVBoxLayout>
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {

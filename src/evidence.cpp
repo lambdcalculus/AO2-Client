@@ -1,6 +1,12 @@
 #include "courtroom.h"
 
-#include <QDebug>
+#include "aobutton.h"
+#include "aoevidencebutton.h"
+#include "aoevidencedescription.h"
+#include "aoimagedisplay.h"
+#include "aolineedit.h"
+#include "aopacket.h"
+
 #include <QFileDialog>
 
 void Courtroom::construct_evidence()
