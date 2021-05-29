@@ -17,6 +17,7 @@
 #include <QScreen>
 #endif
 
+const QString AOApplication::MASTER_NAME = "Master";
 const QString AOApplication::MASTER_HOST = "master.aceattorneyonline.com";
 const int AOApplication::MASTER_PORT = 27016;
 const int AOApplication::MASTER_RECONNECT_DELAY = 5000;
@@ -51,11 +52,9 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   connect(m_server_socket, SIGNAL(connected_to_server()), this, SLOT(_p_send_master_handshake()));
   connect(m_server_socket, SIGNAL(packet_received(AOPacket)), this, SLOT(_p_handle_server_packet(AOPacket)));
 
-  server_type l_server;
-  l_server.name = "Master Server";
-  l_server.ip = MASTER_HOST;
-  l_server.port = MASTER_PORT;
-  m_master_socket->connect_to_server(l_server, true);
+#ifndef QT_DEBUG
+  connect_to_master();
+#endif
 }
 
 AOApplication::~AOApplication()

@@ -303,12 +303,7 @@ void Lobby::on_connect_pressed()
 void Lobby::on_connect_released()
 {
   ui_connect->set_image("connect.png");
-
-  AOPacket *f_packet = nullptr;
-
-  f_packet = new AOPacket("askchaa#%");
-
-  ao_app->send_server_packet(f_packet);
+  ao_app->send_server_packet(AOPacket("askchaa#%"));
 }
 
 void Lobby::on_about_clicked()
@@ -378,9 +373,7 @@ void Lobby::on_chatfield_return_pressed()
   QString f_header = "CT";
   QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
 
-  AOPacket *f_packet = new AOPacket(f_header, f_contents);
-
-  ao_app->send_master_packet(f_packet);
+  ao_app->send_master_packet(AOPacket(f_header, f_contents));
 
   ui_chatmessage->clear();
 }

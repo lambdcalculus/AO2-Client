@@ -18,10 +18,10 @@ void AOApplication::connect_to_server(server_type p_server)
   m_server_socket->connect_to_server(p_server, false);
 }
 
-void AOApplication::send_server_packet(AOPacket *p_packet)
+void AOApplication::send_server_packet(AOPacket p_packet)
 {
-  qDebug().noquote() << "S/S:" << p_packet->to_string();
-  m_server_socket->send_packet(*p_packet);
+  qDebug().noquote() << "S/S:" << p_packet.to_string();
+  m_server_socket->send_packet(p_packet);
 }
 
 void AOApplication::_p_handle_server_packet(AOPacket p_packet)
@@ -52,8 +52,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     feature_chrini = false;
     feature_chat_speed = false;
 
-    AOPacket *hi_packet = new AOPacket("HI#" + f_hdid + "#%");
-    send_server_packet(hi_packet);
+    send_server_packet(AOPacket("HI#" + f_hdid + "#%"));
   }
   else if (l_header == "ID")
   {
@@ -63,7 +62,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     m_client_id = l_content.at(0).toInt();
     m_server_software = l_content.at(1);
 
-    send_server_packet(new AOPacket("ID#DRO#" + get_version_string() + "#%"));
+    send_server_packet(AOPacket("ID#DRO#" + get_version_string() + "#%"));
   }
   else if (l_header == "CT")
   {
@@ -142,10 +141,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     m_lobby->set_loading_text("Loading");
     m_lobby->set_loading_value(0);
 
-    AOPacket *f_packet = nullptr;
-
-    f_packet = new AOPacket("RC#%");
-    send_server_packet(f_packet);
+    send_server_packet(AOPacket("RC#%"));
 
     // look for the server inside the known public list and report it
     if (is_favorite)
@@ -201,7 +197,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;
     m_lobby->set_loading_value(loading_value);
 
-    send_server_packet(new AOPacket("RE#%"));
+    send_server_packet(AOPacket("RE#%"));
   }
   else if (l_header == "EI")
   {
@@ -236,7 +232,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     m_lobby->set_loading_value(loading_value);
 
     QString next_packet_number = QString::number(m_loaded_evidence);
-    send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
+    send_server_packet(AOPacket("AE#" + next_packet_number + "#%"));
   }
   else if (l_header == "CharsCheck")
   {
@@ -281,7 +277,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;
     m_lobby->set_loading_value(loading_value);
 
-    send_server_packet(new AOPacket("RM#%"));
+    send_server_packet(AOPacket("RM#%"));
   }
   else if (l_header == "SM" || l_header == "FM")
   {
@@ -324,7 +320,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
       int loading_value =
           ((m_loaded_characters + m_loaded_evidence + m_loaded_music) / static_cast<double>(total_loading_size)) * 100;
       m_lobby->set_loading_value(loading_value);
-      send_server_packet(new AOPacket("RD#%"));
+      send_server_packet(AOPacket("RD#%"));
     }
   }
   else if (l_header == "DONE")

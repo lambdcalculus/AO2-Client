@@ -203,8 +203,7 @@ void Courtroom::enter_courtroom(int p_cid)
     if (ao_app->has_character_declaration_feature())
     {
       QStringList l_content{l_chr_name, l_final_showname};
-      AOPacket *l_packet = new AOPacket("chrini", l_content);
-      ao_app->send_server_packet(l_packet);
+      ao_app->send_server_packet(AOPacket("chrini", l_content));
     }
   }
   const bool l_changed_chr = l_chr_name != get_current_character();
@@ -685,7 +684,7 @@ void Courtroom::send_showname_packet(QString p_showname)
   if (ao_app->has_showname_declaration_feature())
   {
     QStringList l_content = {p_showname};
-    ao_app->send_server_packet(new AOPacket("SN", l_content));
+    ao_app->send_server_packet(AOPacket("SN", l_content));
   }
   else
   {
@@ -834,7 +833,7 @@ void Courtroom::on_ic_message_return_pressed()
     f_text_color = QString::number(m_text_color);
 
   packet_contents.append(f_text_color);
-  ao_app->send_server_packet(new AOPacket("MS", packet_contents));
+  ao_app->send_server_packet(AOPacket("MS", packet_contents));
 }
 
 void Courtroom::handle_acknowledged_ms()
@@ -1933,7 +1932,7 @@ void Courtroom::send_ooc_packet(QString ooc_name, QString ooc_message)
   }
 
   QStringList l_content{ooc_name, ooc_message};
-  ao_app->send_server_packet(new AOPacket("CT", l_content));
+  ao_app->send_server_packet(AOPacket("CT", l_content));
 }
 
 void Courtroom::mod_called(QString p_ip)
@@ -2087,10 +2086,10 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
   set_judge_enabled(f_pos == "jud");
 
-  ao_app->send_server_packet(new AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
+  ao_app->send_server_packet(AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
   // Uncomment later and remove above
   // Will only work in TSDR 4.3+ servers
-  // ao_app->send_server_packet(new AOPacket("SP#" + f_pos + "#%"));
+  // ao_app->send_server_packet(AOPacket("SP#" + f_pos + "#%"));
 }
 
 void Courtroom::on_mute_list_item_changed(QListWidgetItem *p_item)
@@ -2136,7 +2135,7 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 
   QString p_song = ui_music_list->item(p_model.row())->text();
 
-  ao_app->send_server_packet(new AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"));
+  ao_app->send_server_packet(AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"));
 
   ui_ic_chat_message->setFocus();
 }
@@ -2145,7 +2144,7 @@ void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
 {
   QString p_area = ui_area_list->item(p_model.row())->text();
 
-  ao_app->send_server_packet(new AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"));
+  ao_app->send_server_packet(AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"));
 
   ui_ic_chat_message->setFocus();
 }
@@ -2347,7 +2346,7 @@ void Courtroom::on_defense_minus_clicked()
   int f_state = defense_bar_state - 1;
 
   if (f_state >= 0)
-    ao_app->send_server_packet(new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+    ao_app->send_server_packet(AOPacket("HP#1#" + QString::number(f_state) + "#%"));
 }
 
 void Courtroom::on_defense_plus_clicked()
@@ -2355,7 +2354,7 @@ void Courtroom::on_defense_plus_clicked()
   int f_state = defense_bar_state + 1;
 
   if (f_state <= 10)
-    ao_app->send_server_packet(new AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+    ao_app->send_server_packet(AOPacket("HP#1#" + QString::number(f_state) + "#%"));
 }
 
 void Courtroom::on_prosecution_minus_clicked()
@@ -2363,7 +2362,7 @@ void Courtroom::on_prosecution_minus_clicked()
   int f_state = prosecution_bar_state - 1;
 
   if (f_state >= 0)
-    ao_app->send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+    ao_app->send_server_packet(AOPacket("HP#2#" + QString::number(f_state) + "#%"));
 }
 
 void Courtroom::on_prosecution_plus_clicked()
@@ -2371,7 +2370,7 @@ void Courtroom::on_prosecution_plus_clicked()
   int f_state = prosecution_bar_state + 1;
 
   if (f_state <= 10)
-    ao_app->send_server_packet(new AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+    ao_app->send_server_packet(AOPacket("HP#2#" + QString::number(f_state) + "#%"));
 }
 
 void Courtroom::on_text_color_changed(int p_color)
@@ -2385,7 +2384,7 @@ void Courtroom::on_witness_testimony_clicked()
   if (is_client_muted)
     return;
 
-  ao_app->send_server_packet(new AOPacket("RT#testimony1#%"));
+  ao_app->send_server_packet(AOPacket("RT#testimony1#%"));
 
   ui_ic_chat_message->setFocus();
 }
@@ -2395,7 +2394,7 @@ void Courtroom::on_cross_examination_clicked()
   if (is_client_muted)
     return;
 
-  ao_app->send_server_packet(new AOPacket("RT#testimony2#%"));
+  ao_app->send_server_packet(AOPacket("RT#testimony2#%"));
 
   ui_ic_chat_message->setFocus();
 }
@@ -2436,7 +2435,7 @@ void Courtroom::on_wtce_clicked()
 
   QString packet = QString("RT#testimony%1#%").arg(id);
 
-  ao_app->send_server_packet(new AOPacket(packet));
+  ao_app->send_server_packet(AOPacket(packet));
 
   ui_ic_chat_message->setFocus();
 }
@@ -2498,7 +2497,7 @@ void Courtroom::on_char_select_right_clicked()
 void Courtroom::on_spectator_clicked()
 {
   QString content = "CC#" + QString::number(ao_app->get_client_id()) + "#-1#" + get_hdid() + "#%";
-  ao_app->send_server_packet(new AOPacket(content));
+  ao_app->send_server_packet(AOPacket(content));
   enter_courtroom(-1);
 
   ui_emotes->hide();
@@ -2516,7 +2515,7 @@ void Courtroom::on_call_mod_clicked()
 
   if (reply == QMessageBox::Yes)
   {
-    ao_app->send_server_packet(new AOPacket("ZZ#%"));
+    ao_app->send_server_packet(AOPacket("ZZ#%"));
     qDebug() << "Called mod";
   }
   else
@@ -2600,7 +2599,7 @@ void Courtroom::on_note_text_changed()
 
 void Courtroom::ping_server()
 {
-  ao_app->send_server_packet(new AOPacket("CH#" + QString::number(m_cid) + "#%"));
+  ao_app->send_server_packet(AOPacket("CH#" + QString::number(m_cid) + "#%"));
 }
 
 void Courtroom::closeEvent(QCloseEvent *event)

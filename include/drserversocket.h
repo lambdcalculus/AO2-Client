@@ -22,10 +22,6 @@ public:
 
 public slots:
   void send_packet(AOPacket packet);
-  inline void send_packet(AOPacket *packet)
-  {
-    send_packet(*packet);
-  }
 
 signals:
   void connected_to_server();

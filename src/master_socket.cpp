@@ -9,22 +9,34 @@
 
 #include <QDebug>
 
-void AOApplication::send_master_packet(AOPacket *p_packet)
+void AOApplication::connect_to_master()
 {
-  qDebug().noquote() << "M/S:" << p_packet->to_string();
-  m_master_socket->send_packet(*p_packet);
+  server_type l_server;
+  l_server.name = MASTER_NAME;
+  l_server.ip = MASTER_HOST;
+  l_server.port = MASTER_PORT;
+  m_master_socket->connect_to_server(l_server, true);
+}
+
+void AOApplication::send_master_packet(AOPacket p_packet)
+{
+  qDebug().noquote() << "M/S:" << p_packet.to_string();
+  m_master_socket->send_packet(p_packet);
 }
 
 void AOApplication::request_server_list()
 {
+  if (!m_master_socket->is_connected())
+  {
+    connect_to_master();
+    return;
+  }
   m_master_socket->send_packet(AOPacket("ALL", {}));
 }
 
 void AOApplication::_p_send_master_handshake()
 {
-#ifndef QT_DEBUG
-  send_master_packet(new AOPacket("ALL#%"));
-#endif
+  send_master_packet(AOPacket("ALL#%"));
 }
 
 void AOApplication::_p_handle_master_error(QString p_error)
@@ -96,8 +108,8 @@ void AOApplication::_p_handle_master_packet(AOPacket p_packet)
   }
   else if (l_header == "AO2CHECK")
   {
-    send_master_packet(new AOPacket("ID#DRO#" + get_version_string() + "#%"));
-    send_master_packet(new AOPacket("HI#" + get_hdid() + "#%"));
+    send_master_packet(AOPacket("ID#DRO#" + get_version_string() + "#%"));
+    send_master_packet(AOPacket("HI#" + get_hdid() + "#%"));
 
     if (l_content.size() < 1)
       return;

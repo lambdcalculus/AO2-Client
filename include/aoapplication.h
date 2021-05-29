@@ -19,6 +19,7 @@ class AOApplication : public QApplication
   Q_OBJECT
 
 public:
+  static const QString MASTER_NAME;
   static const QString MASTER_HOST;
   static const int MASTER_PORT;
   static const int MASTER_RECONNECT_DELAY;
@@ -29,10 +30,11 @@ public:
   int get_client_id() const;
   void set_client_id(int id);
 
-  void send_master_packet(AOPacket *packet);
+  void connect_to_master();
+  void send_master_packet(AOPacket packet);
   void request_server_list();
   void connect_to_server(server_type server);
-  void send_server_packet(AOPacket *packet);
+  void send_server_packet(AOPacket packet);
 
   Lobby *get_lobby() const;
   void construct_lobby();

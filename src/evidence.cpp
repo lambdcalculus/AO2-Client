@@ -176,7 +176,7 @@ void Courtroom::on_evidence_name_edited()
   f_contents.append(f_evi.description);
   f_contents.append(f_evi.image);
 
-  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+  ao_app->send_server_packet(AOPacket("EE", f_contents));
 }
 
 void Courtroom::on_evidence_image_name_edited()
@@ -193,7 +193,7 @@ void Courtroom::on_evidence_image_name_edited()
   f_contents.append(f_evi.description);
   f_contents.append(ui_evidence_image_name->text());
 
-  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+  ao_app->send_server_packet(AOPacket("EE", f_contents));
 }
 
 void Courtroom::on_evidence_image_button_clicked()
@@ -231,7 +231,7 @@ void Courtroom::on_evidence_clicked(int p_id)
 
   if (f_real_id == local_evidence_list.size())
   {
-    ao_app->send_server_packet(new AOPacket("PE#<name>#<description>#empty.png#%"));
+    ao_app->send_server_packet(AOPacket("PE#<name>#<description>#empty.png#%"));
     return;
   }
   else if (f_real_id > local_evidence_list.size())
@@ -323,7 +323,7 @@ void Courtroom::on_evidence_delete_clicked()
   ui_evidence_description->setReadOnly(true);
   ui_evidence_overlay->hide();
 
-  ao_app->send_server_packet(new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
+  ao_app->send_server_packet(AOPacket("DE#" + QString::number(current_evidence) + "#%"));
 
   current_evidence = 0;
 
@@ -347,7 +347,7 @@ void Courtroom::on_evidence_x_clicked()
   f_contents.append(ui_evidence_description->toPlainText());
   f_contents.append(f_evi.image);
 
-  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+  ao_app->send_server_packet(AOPacket("EE", f_contents));
 
   ui_ic_chat_message->setFocus();
 }
