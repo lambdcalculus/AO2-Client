@@ -192,7 +192,6 @@ public:
   QStringList get_overlay(QString p_char, int p_effect);
 
 public slots:
-  void server_disconnected();
   void loading_cancelled();
 
 signals:
@@ -241,6 +240,7 @@ private slots:
   void _p_send_master_handshake();
   void _p_handle_master_error(QString);
   void _p_handle_master_packet(AOPacket);
+  void _p_handle_server_disconnection();
   void _p_handle_server_packet(AOPacket);
   void on_courtroom_closing();
   void on_courtroom_destroyed();

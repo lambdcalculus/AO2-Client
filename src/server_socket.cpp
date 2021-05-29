@@ -24,6 +24,16 @@ void AOApplication::send_server_packet(AOPacket p_packet)
   m_server_socket->send_packet(p_packet);
 }
 
+void AOApplication::_p_handle_server_disconnection()
+{
+  if (!is_courtroom_constructed)
+    return;
+  m_courtroom->stop_all_audio();
+  call_notice("Disconnected from server.");
+  construct_lobby();
+  destruct_courtroom();
+}
+
 void AOApplication::_p_handle_server_packet(AOPacket p_packet)
 {
   p_packet.net_decode();

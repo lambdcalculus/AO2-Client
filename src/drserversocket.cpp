@@ -56,7 +56,8 @@ void DRServerSocket::send_packet(AOPacket p_packet)
   if (!is_connected())
   {
     const QString l_server_info = m_server.to_info();
-    qWarning() << QString("Failed to send packet; not connected to server%1").arg(drFormatServerInfo(m_server));
+    qWarning().noquote()
+        << QString("Failed to send packet; not connected to server%1").arg(drFormatServerInfo(m_server));
     return;
   }
   m_socket->write(p_packet.to_string().toUtf8());
@@ -95,9 +96,8 @@ void DRServerSocket::_p_reconnect_to_server()
 
 void DRServerSocket::_p_check_socket_error()
 {
-  const QString l_error =
-      QString("Connection error for server%1: %2").arg(drFormatServerInfo(m_server), m_socket->errorString());
-  qWarning() << l_error;
+  const QString l_error = QString("Server%1 error: %2").arg(drFormatServerInfo(m_server), m_socket->errorString());
+  qWarning().noquote() << l_error;
   Q_EMIT socket_error(l_error);
 }
 

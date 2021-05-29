@@ -247,6 +247,9 @@ void Courtroom::enter_courtroom(int p_cid)
   // restore line field focus
   l_current_field->setFocus();
   l_current_field->setCursorPosition(l_current_cursor_pos);
+
+  if (!is_showname_sent)
+    send_showname_packet(ao_config->showname());
 }
 
 void Courtroom::done_received()
@@ -681,6 +684,7 @@ void Courtroom::on_showname_changed(QString p_showname)
  */
 void Courtroom::send_showname_packet(QString p_showname)
 {
+  is_showname_sent = true;
   if (ao_app->has_showname_declaration_feature())
   {
     QStringList l_content = {p_showname};
@@ -717,12 +721,6 @@ void Courtroom::on_ic_message_return_pressed()
 
   if ((anim_state < 3 || text_state < 2) && m_shout_state == 0)
     return;
-
-  if (!is_showname_sent)
-  {
-    is_showname_sent = true;
-    send_showname_packet(ao_config->showname());
-  }
 
   //  qDebug() << "prev_emote = " << prev_emote << "current_emote = " <<
   //  current_emote;

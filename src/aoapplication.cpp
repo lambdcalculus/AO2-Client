@@ -49,6 +49,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   connect(m_master_socket, SIGNAL(socket_error(QString)), this, SLOT(_p_handle_master_error(QString)));
   connect(m_master_socket, SIGNAL(packet_received(AOPacket)), this, SLOT(_p_handle_master_packet(AOPacket)));
 
+  connect(m_server_socket, SIGNAL(disconnected_from_server()), this, SLOT(_p_handle_server_disconnection()));
   connect(m_server_socket, SIGNAL(packet_received(AOPacket)), this, SLOT(_p_handle_server_packet(AOPacket)));
 
 #ifndef QT_DEBUG
@@ -293,16 +294,6 @@ void AOApplication::add_favorite_server(int p_server)
 QVector<server_type> &AOApplication::get_server_list()
 {
   return m_server_list;
-}
-
-void AOApplication::server_disconnected()
-{
-  if (!is_courtroom_constructed)
-    return;
-  m_courtroom->stop_all_audio();
-  call_notice("Disconnected from server.");
-  construct_lobby();
-  destruct_courtroom();
 }
 
 void AOApplication::loading_cancelled()

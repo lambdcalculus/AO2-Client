@@ -27,23 +27,27 @@ void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_ini_fil
   }
 }
 
-void set_text_alignment_property(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app,
-                                 std::string p_property)
+void set_text_alignment_or_default(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app,
+                                   std::string p_property, Qt::Alignment p_default_horizontal,
+                                   Qt::Alignment p_default_vertical)
 {
   const QStringList l_values =
       ao_app->read_theme_ini(p_identifier + "_align", p_ini_file).split(",", DR::SkipEmptyParts);
+  if (!p_widget->property(p_property.c_str()).isValid())
+    return;
   p_widget->setProperty(p_property.c_str(),
-                        QVariant(QHash<QString, Qt::AlignmentFlag>{
+                        QVariant(QHash<QString, Qt::Alignment>{
                                      {"left", Qt::AlignLeft}, {"center", Qt::AlignHCenter}, {"right", Qt::AlignRight}}
-                                     .value(l_values.value(0).trimmed().toLower(), Qt::AlignLeft) |
-                                 QHash<QString, Qt::AlignmentFlag>{
+                                     .value(l_values.value(0).trimmed().toLower(), p_default_horizontal) |
+                                 QHash<QString, Qt::Alignment>{
                                      {"top", Qt::AlignTop}, {"center", Qt::AlignVCenter}, {"bottom", Qt::AlignBottom}}
-                                     .value(l_values.value(1).trimmed().toLower(), Qt::AlignVCenter)));
+                                     .value(l_values.value(1).trimmed().toLower(), p_default_vertical)));
 }
 
 void set_text_alignment(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
 {
-  set_text_alignment_property(p_widget, p_identifier, p_ini_file, ao_app, "alignment");
+  set_text_alignment_or_default(p_widget, p_identifier, p_ini_file, ao_app, "alignment", Qt::AlignLeft,
+                                Qt::AlignVCenter);
 }
 
 void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOApplication *ao_app)
@@ -86,5 +90,6 @@ void set_drtextedit_font(DRTextEdit *p_widget, QString p_identifier, QString ini
   p_widget->set_outline(outline);
 
   // alignment
-  set_text_alignment_property(p_widget, p_identifier, ini_file, ao_app, "text_alignment");
+  set_text_alignment_or_default(p_widget, p_identifier, ini_file, ao_app, "text_alignment", Qt::AlignLeft,
+                                Qt::AlignTop);
 }
