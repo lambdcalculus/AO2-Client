@@ -72,8 +72,6 @@ private:
   QProgressBar *ui_progress_bar = nullptr;
   AOButton *ui_cancel = nullptr;
 
-  server_type f_last_server;
-
 private slots:
   void on_public_servers_clicked();
   void on_favorites_clicked();

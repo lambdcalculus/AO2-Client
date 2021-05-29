@@ -7,6 +7,7 @@
 #include "aoimagedisplay.h"
 #include "aolineedit.h"
 #include "aopacket.h"
+#include "theme.h"
 
 #include <QFileDialog>
 

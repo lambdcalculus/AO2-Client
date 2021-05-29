@@ -21,6 +21,7 @@
 #include "aotimer.h"
 #include "drtextedit.h"
 #include "file_functions.h"
+#include "theme.h"
 
 #include <QCheckBox>
 #include <QComboBox>
