@@ -8,6 +8,7 @@
 #include "debug_functions.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
+#include "theme.h"
 
 #include <QDebug>
 #include <QSignalMapper>
@@ -56,7 +57,7 @@ void Courtroom::reconstruct_char_select()
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
 
-  set_size_and_pos(ui_char_buttons, "char_buttons");
+  set_size_and_pos(ui_char_buttons, "char_buttons", INI_DESIGN, ao_app);
 
   char_columns = ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
   char_rows = ((ui_char_buttons->height() - button_height) / (y_spacing + button_height)) + 1;

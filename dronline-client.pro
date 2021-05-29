@@ -62,6 +62,7 @@ HEADERS += \
   include/lobby.h \
   include/misc_functions.h \
   include/networkmanager.h \
+  include/theme.h \
   include/version.h
 
 SOURCES += \
@@ -121,6 +122,7 @@ SOURCES += \
   src/packet_distribution.cpp \
   src/path_functions.cpp \
   src/text_file_functions.cpp \
+  src/theme.cpp \
   src/version.cpp
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder

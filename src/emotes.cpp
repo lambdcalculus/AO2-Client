@@ -4,6 +4,7 @@
 #include "aobutton.h"
 #include "aoconfig.h"
 #include "aoemotebutton.h"
+#include "theme.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -36,7 +37,7 @@ void Courtroom::reconstruct_emotes()
     delete ui_emote_list.takeLast();
 
   // resize and move
-  set_size_and_pos(ui_emotes, "emotes");
+  set_size_and_pos(ui_emotes, "emotes", INI_DESIGN, ao_app);
 
   QPoint f_spacing = ao_app->get_button_spacing("emote_button_spacing", "courtroom_design.ini");
 
