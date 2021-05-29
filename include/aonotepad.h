@@ -1,8 +1,9 @@
 #ifndef AONOTEPAD_H
 #define AONOTEPAD_H
 
-#include "aoapplication.h"
 #include "drtextedit.h"
+
+class AOApplication;
 
 class AONotepad : public DRTextEdit
 {

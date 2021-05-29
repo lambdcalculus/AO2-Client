@@ -3,14 +3,8 @@
 #include "aoobject.h"
 #include "draudioengine.h"
 
-class AOApplication;
-
 // 3rd
 #include <bass.h>
-
-// qt
-#include <QDebug>
-#include <QWidget>
 
 // std
 #include <optional>

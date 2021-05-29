@@ -6,7 +6,8 @@
 #include <QMap>
 #include <QObject>
 #include <QPointer>
-#include <QTimer>
+
+class QTimer;
 
 #include <optional>
 

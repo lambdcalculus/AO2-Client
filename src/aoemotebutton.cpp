@@ -1,7 +1,9 @@
 #include "aoemotebutton.h"
 
+#include "aoapplication.h"
 #include "file_functions.h"
-#include <QDebug>
+
+#include <QLabel>
 
 AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
 {

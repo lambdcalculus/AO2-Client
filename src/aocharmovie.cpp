@@ -1,6 +1,7 @@
 #include "aocharmovie.h"
 
 #include "aoapplication.h"
+#include "aopixmap.h"
 #include "file_functions.h"
 
 #include <QMovie>

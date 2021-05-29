@@ -1,5 +1,6 @@
 #include "courtroom.h"
 
+#include "aoapplication.h"
 #include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aocharmovie.h"
@@ -23,6 +24,7 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDebug>
 #include <QFile>
 #include <QListWidget>
 #include <QPropertyAnimation>

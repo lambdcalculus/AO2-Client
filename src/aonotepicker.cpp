@@ -1,11 +1,14 @@
 #include "aonotepicker.h"
 
+#include "aobutton.h"
 #include "aonotearea.h"
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "drpather.h"
 
 #include <QFileDialog>
+#include <QLineEdit>
+#include <QVBoxLayout>
 
 AONotePicker::AONotePicker(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {

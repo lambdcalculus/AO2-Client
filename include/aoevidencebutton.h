@@ -1,11 +1,10 @@
 #ifndef AOEVIDENCEBUTTON_H
 #define AOEVIDENCEBUTTON_H
 
-#include "aoapplication.h"
-#include "aoimagedisplay.h"
+class AOApplication;
+class AOImageDisplay;
 
 #include <QPushButton>
-#include <QString>
 
 class AOEvidenceButton : public QPushButton
 {

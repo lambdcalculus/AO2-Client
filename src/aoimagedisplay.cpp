@@ -1,8 +1,8 @@
-#include "file_functions.h"
-
 #include "aoimagedisplay.h"
 
-#include <QDebug>
+#include "aoapplication.h"
+#include "aopixmap.h"
+#include "file_functions.h"
 
 /*!
  * @class AOImageDisplay

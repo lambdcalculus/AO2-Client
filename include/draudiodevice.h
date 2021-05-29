@@ -3,6 +3,7 @@
 #include <bass.h>
 
 #include <QMetaType>
+#include <QString>
 
 #include <optional>
 

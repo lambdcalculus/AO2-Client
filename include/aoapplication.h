@@ -12,6 +12,7 @@ class Lobby;
 class NetworkManager;
 
 #include <QApplication>
+#include <QVector>
 
 class AOApplication : public QApplication
 {

@@ -1,11 +1,10 @@
 #ifndef AOMOVIE_H
 #define AOMOVIE_H
 
+class AOApplication;
+
 #include <QLabel>
 #include <QMovie>
-
-class Courtroom;
-class AOApplication;
 
 class AOMovie : public QLabel
 {

@@ -2,7 +2,6 @@
 #define AOLINEEDIT_H
 
 #include <QLineEdit>
-#include <QMouseEvent>
 
 class AOLineEdit : public QLineEdit
 {

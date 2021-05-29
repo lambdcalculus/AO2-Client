@@ -1,7 +1,7 @@
 #ifndef AOLABEL_HPP
 #define AOLABEL_HPP
 
-#include "aoapplication.h"
+class AOApplication;
 
 #include <QLabel>
 

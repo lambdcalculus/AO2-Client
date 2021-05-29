@@ -6,7 +6,6 @@
 #include <QSharedPointer>
 #include <QVector>
 
-#include <algorithm>
 #include <optional>
 
 class DRAudioEngine;

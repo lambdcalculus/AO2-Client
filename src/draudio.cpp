@@ -2,6 +2,8 @@
 
 #include <bass.h>
 
+#include <QString>
+
 QString DRAudio::get_bass_error(const int32_t p_error_code)
 {
   switch (p_error_code)

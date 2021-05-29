@@ -1,23 +1,22 @@
 #ifndef AOCONFIGPANEL_H
 #define AOCONFIGPANEL_H
 
-#include "aoconfig.h"
-#include "aoguiloader.h"
 #include "draudioengine.h"
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QSlider>
-#include <QSpinBox>
-#include <QTabWidget>
+class AOApplication;
+class AOConfig;
+
 #include <QWidget>
 
-class AOApplication;
+class QCheckBox;
+class QComboBox;
+class QGroupBox;
+class QLabel;
+class QLineEdit;
+class QPushButton;
+class QRadioButton;
+class QSlider;
+class QSpinBox;
 
 class AOConfigPanel : public QWidget
 {

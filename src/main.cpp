@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
   app.construct_lobby();
 #ifdef QT_NO_DEBUG
-  app.net_manager->connect_to_master();
+  app.get_network_manager()->connect_to_master();
 #endif
   app.get_lobby()->show();
 

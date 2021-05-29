@@ -1,10 +1,13 @@
-#include <QDebug>
-
 #include "aoevidencedisplay.h"
 
+#include "aoapplication.h"
+#include "aopixmap.h"
+#include "aosfxplayer.h"
 #include "datatypes.h"
 #include "file_functions.h"
 #include "misc_functions.h"
+
+#include <QMovie>
 
 AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {

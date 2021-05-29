@@ -9,7 +9,6 @@
 #include <QObject>
 #include <QStack>
 
-#include <memory>
 #include <optional>
 
 class DRAudioEngine;

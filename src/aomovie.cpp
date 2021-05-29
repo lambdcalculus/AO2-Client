@@ -4,6 +4,8 @@
 #include "file_functions.h"
 #include "misc_functions.h"
 
+#include <QDebug>
+
 AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
   ao_app = p_ao_app;

@@ -1,13 +1,23 @@
 #include "aoconfigpanel.h"
+
+#include "aoapplication.h"
+#include "aoconfig.h"
+#include "aoguiloader.h"
 #include "datatypes.h"
 #include "drpather.h"
 
-// qt
+#include <QCheckBox>
+#include <QComboBox>
 #include <QDebug>
 #include <QDir>
-
-// src
-#include "aoapplication.h" // ruined
+#include <QGroupBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSlider>
+#include <QSpinBox>
+#include <QTabWidget>
 
 AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
     : QWidget(p_parent), m_config(new AOConfig(this)), m_engine(new DRAudioEngine(this))

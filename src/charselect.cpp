@@ -1,5 +1,6 @@
 #include "courtroom.h"
 
+#include "aoapplication.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
 #include "aoimagedisplay.h"

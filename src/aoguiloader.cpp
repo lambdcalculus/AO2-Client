@@ -1,8 +1,8 @@
 #include "aoguiloader.h"
 
-// qt
 #include <QFile>
 #include <QVBoxLayout>
+#include <QWidget>
 
 AOGuiLoader::AOGuiLoader(QObject *p_parent) : QUiLoader(p_parent)
 {

@@ -1,8 +1,6 @@
 #ifndef AOCHARMOVIE_H
 #define AOCHARMOVIE_H
 
-#include "aopixmap.h"
-
 class AOApplication;
 
 #include <QLabel>

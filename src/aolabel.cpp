@@ -1,6 +1,6 @@
 #include "aolabel.h"
 
-#include "file_functions.h"
+#include "aoapplication.h"
 
 AOLabel::AOLabel(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {

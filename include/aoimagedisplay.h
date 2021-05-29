@@ -1,8 +1,7 @@
 #ifndef AOIMAGEDISPLAY_H
 #define AOIMAGEDISPLAY_H
 
-#include "aoapplication.h"
-#include "aopixmap.h"
+class AOApplication;
 
 #include <QLabel>
 

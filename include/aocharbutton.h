@@ -1,9 +1,8 @@
 #ifndef AOCHARBUTTON_H
 #define AOCHARBUTTON_H
 
-#include "aoimagedisplay.h"
-
 class AOApplication;
+class AOImageDisplay;
 
 #include <QPushButton>
 

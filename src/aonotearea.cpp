@@ -1,5 +1,6 @@
 #include "aonotearea.h"
 
+#include "aoapplication.h"
 #include "aobutton.h"
 #include "aonotepicker.h"
 #include "courtroom.h"
@@ -7,6 +8,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QHBoxLayout>
+#include <QLineEdit>
 #include <QTextStream>
 #include <QVBoxLayout>
 

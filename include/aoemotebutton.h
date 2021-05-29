@@ -2,12 +2,14 @@
 #define AOEMOTEBUTTON_H
 
 // src
-#include "aoapplication.h"
 #include "datatypes.h"
 
+class AOApplication;
+
 // qt
-#include <QLabel>
 #include <QPushButton>
+
+class QLabel;
 
 class AOEmoteButton : public QPushButton
 {
