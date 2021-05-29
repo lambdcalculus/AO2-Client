@@ -1154,7 +1154,7 @@ void Courtroom::delete_widget(QWidget *p_widget)
     grand_parent = this;
 
   // set new parent
-  for (QWidget *child : p_widget->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly))
+  for (QWidget *child : p_widget->findChildren<QWidget *>(nullptr, Qt::FindDirectChildrenOnly))
     child->setParent(grand_parent);
 
   // delete widget

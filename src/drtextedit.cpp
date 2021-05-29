@@ -7,6 +7,7 @@
 DRTextEdit::DRTextEdit(QWidget *parent) : QTextEdit(parent)
 {
   connect(this, SIGNAL(textChanged()), this, SLOT(on_text_changed()));
+  connect(this, SIGNAL(text_alignment_changed(Qt::Alignment)), this, SLOT(on_text_changed()));
 }
 
 void DRTextEdit::set_outline(bool p_enabled)
@@ -30,46 +31,17 @@ void DRTextEdit::set_auto_align(bool p_enabled)
   on_text_changed();
 }
 
-void DRTextEdit::set_vertical_alignment(Qt::Alignment p_align)
+void DRTextEdit::set_text_alignment(Qt::Alignment p_align)
 {
-  switch (p_align)
-  {
-  case Qt::AlignTop:
-  case Qt::AlignVCenter:
-  case Qt::AlignBottom:
-    break;
-  default:
-    set_vertical_alignment(Qt::AlignTop);
+  if (m_text_align == p_align)
     return;
-  }
-  m_valign = p_align;
-  on_text_changed();
+  m_text_align = p_align;
+  Q_EMIT text_alignment_changed(m_text_align);
 }
 
-Qt::Alignment DRTextEdit::get_vertical_alignment()
+Qt::Alignment DRTextEdit::get_text_alignment() const
 {
-  return this->m_valign;
-}
-
-void DRTextEdit::set_horizontal_alignment(Qt::Alignment p_align)
-{
-  switch (p_align)
-  {
-  case Qt::AlignLeft:
-  case Qt::AlignHCenter:
-  case Qt::AlignRight:
-    break;
-  default:
-    set_horizontal_alignment(Qt::AlignLeft);
-    return;
-  }
-  m_halign = p_align;
-  on_text_changed();
-}
-
-Qt::Alignment DRTextEdit::get_horizontal_alignment()
-{
-  return this->m_halign;
+  return m_text_align;
 }
 
 void DRTextEdit::on_text_changed()
@@ -111,7 +83,7 @@ void DRTextEdit::refresh_horizontal_alignment()
   // Otherwise, we have changed the number of blocks. By induction only the current block needs to be
   // updated, which is why we can get away with doing this setAlignment once, and right here.
   // qDebug() << this << document()->toPlainText() << new_document_blocks;
-  setAlignment(m_halign);
+  setAlignment(m_text_align);
 }
 
 void DRTextEdit::refresh_vertical_alignment()
@@ -135,7 +107,7 @@ void DRTextEdit::refresh_vertical_alignment()
   // The way we will simulate vertical alignment is by adjusting the top margin to simulate
   // center alignment, or bottom alignment.
   int top_margin = 0;
-  switch (m_valign)
+  switch (m_text_align & (Qt::AlignVCenter | Qt::AlignBottom))
   {
   case Qt::AlignVCenter:
     top_margin = (height() - new_document_height) / 2;

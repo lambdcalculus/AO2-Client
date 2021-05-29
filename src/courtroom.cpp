@@ -857,7 +857,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   if (p_contents.size() < 15)
     return;
   else if (p_contents.size() == 15)
-    p_contents.append(QString());
+    p_contents.append(nullptr);
 
   for (int i = 0; i < MESSAGE_SIZE; ++i)
     m_chatmessage[i] = p_contents[i];

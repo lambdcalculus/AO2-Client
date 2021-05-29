@@ -6,21 +6,24 @@
 class DRTextEdit : public QTextEdit
 {
   Q_OBJECT
+  Q_PROPERTY(
+      Qt::Alignment text_alignment READ get_text_alignment WRITE set_text_alignment NOTIFY text_alignment_changed)
 
 public:
   DRTextEdit(QWidget *p_parent);
 
-  Qt::Alignment get_vertical_alignment();
-  Qt::Alignment get_horizontal_alignment();
+  Qt::Alignment get_text_alignment() const;
 
+public slots:
   void set_outline(bool enabled);
   void set_auto_align(bool enabled);
-  void set_vertical_alignment(Qt::Alignment p_align);
-  void set_horizontal_alignment(Qt::Alignment p_align);
+  void set_text_alignment(Qt::Alignment alignment);
+
+signals:
+  void text_alignment_changed(Qt::Alignment);
 
 private:
-  Qt::Alignment m_valign = Qt::AlignTop;
-  Qt::Alignment m_halign = Qt::AlignLeft;
+  Qt::Alignment m_text_align = Qt::AlignTop | Qt::AlignLeft;
   bool has_outline = false;
   bool is_auto_align = true;
   enum class Status

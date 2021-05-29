@@ -59,7 +59,7 @@ void AOEmoteButton::set_image(DREmote p_emote, bool p_enabled)
       else
       {
         ui_selected->setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, "
-                                  "y2:1, stop:0 rgba(0, 0, 0, 0), stop:1 rgba(0, 0, 0, 127)); }");
+                                   "y2:1, stop:0 rgba(0, 0, 0, 0), stop:1 rgba(0, 0, 0, 127)); }");
       }
 
       ui_selected->show();
@@ -70,7 +70,7 @@ void AOEmoteButton::set_image(DREmote p_emote, bool p_enabled)
   setText(l_texture_exist ? nullptr : p_emote.comment);
   setStyleSheet(l_texture_exist
                     ? QString("%1 { border-image: url(\"%2\"); }").arg(metaObject()->className()).arg(l_texture)
-                    : QString());
+                    : nullptr);
 }
 
 void AOEmoteButton::on_clicked()
