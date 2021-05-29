@@ -1,13 +1,12 @@
 #pragma once
 
-#include <QString>
-
 // src
 class AOApplication;
 class DRTextEdit;
 
 // qt
 class QLineEdit;
+class QString;
 class QWidget;
 
 void set_size_and_pos(QWidget *widget, QString identifier, QString ini_file, AOApplication *ao_app);

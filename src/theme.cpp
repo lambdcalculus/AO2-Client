@@ -8,10 +8,6 @@
 // qt
 #include <QDebug>
 #include <QFontDatabase>
-#include <QLabel>
-#include <QLineEdit>
-#include <QVariant>
-#include <QWidget>
 
 void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
 {
