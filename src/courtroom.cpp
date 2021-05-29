@@ -683,18 +683,17 @@ void Courtroom::ignore_next_showname()
  */
 void Courtroom::send_showname_packet(QString p_showname)
 {
-  is_first_showname_sent = true;
-
   if (is_next_showname_ignored)
   {
     is_next_showname_ignored = false;
     return;
   }
 
+  is_first_showname_sent = true;
+
   if (ao_app->has_showname_declaration_feature())
   {
-    QStringList l_content = {p_showname};
-    ao_app->send_server_packet(AOPacket("SN", l_content));
+    ao_app->send_server_packet(AOPacket("SN", {p_showname}));
   }
   else
   {
