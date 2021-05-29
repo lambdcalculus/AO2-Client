@@ -3,9 +3,11 @@
 #include "aoapplication.h"
 #include "datatypes.h"
 #include "debug_functions.h"
+#include "drdiscord.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
+#include "networkmanager.h"
 
 #include <QBrush>
 #include <QDebug>
@@ -20,8 +22,6 @@
 #include <QScrollBar>
 #include <QTextCharFormat>
 #include <QTime>
-
-#include "networkmanager.h"
 
 Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {

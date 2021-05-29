@@ -3,11 +3,12 @@
 
 #include "aopixmap.h"
 
-#include <QLabel>
-#include <QMovie>
-#include <QTimer>
-
 class AOApplication;
+
+#include <QLabel>
+
+class QMovie;
+class QTimer;
 
 class AOCharMovie : public QLabel
 {

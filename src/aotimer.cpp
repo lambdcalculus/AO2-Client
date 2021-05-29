@@ -1,4 +1,5 @@
 #include "aotimer.h"
+
 #include <QDebug>
 
 AOTimer::AOTimer(QWidget *p_parent) : DRTextEdit(p_parent)

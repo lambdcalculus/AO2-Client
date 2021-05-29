@@ -1,7 +1,11 @@
 #include "lobby.h"
 
 #include "aoapplication.h"
-#include "aosfxplayer.h"
+#include "aobutton.h"
+#include "aoconfig.h"
+#include "aoimagedisplay.h"
+#include "aopacket.h"
+#include "aotextarea.h"
 #include "debug_functions.h"
 #include "drpather.h"
 #include "drtextedit.h"
@@ -9,9 +13,12 @@
 #include "version.h"
 
 #include <QDebug>
+#include <QFontDatabase>
 #include <QImageReader>
+#include <QLineEdit>
+#include <QListWidget>
 #include <QMessageBox>
-#include <QScrollBar>
+#include <QProgressBar>
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -66,6 +73,11 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
   set_widgets();
+}
+
+bool Lobby::is_public_server() const
+{
+  return public_servers_selected;
 }
 
 // sets images, position and size

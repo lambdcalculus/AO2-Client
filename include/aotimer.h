@@ -1,14 +1,10 @@
 #ifndef AOTIMER_H
 #define AOTIMER_H
 
-#include <QElapsedTimer>
+#include "drtextedit.h"
+
 #include <QTime>
 #include <QTimer>
-#include <QWidget>
-
-#include "aobutton.h"
-#include "aolabel.h"
-#include "drtextedit.h"
 
 class ManualTimer
 {

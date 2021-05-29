@@ -1,22 +1,21 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
-#include "aobutton.h"
-#include "aoconfig.h"
-#include "aoimagedisplay.h"
-#include "aopacket.h"
-#include "aotextarea.h"
-#include "drtextedit.h"
-
-#include <QLabel>
-#include <QLineEdit>
-#include <QListWidget>
-#include <QMainWindow>
-#include <QPlainTextEdit>
-#include <QProgressBar>
-#include <QTextBrowser>
+#include "datatypes.h"
 
 class AOApplication;
+class AOButton;
+class AOConfig;
+class AOImageDisplay;
+class AOTextArea;
+class DRTextEdit;
+
+#include <QMainWindow>
+#include <QModelIndex>
+
+class QListWidget;
+class QLineEdit;
+class QProgressBar;
 
 class Lobby : public QMainWindow
 {
@@ -24,6 +23,8 @@ class Lobby : public QMainWindow
 
 public:
   Lobby(AOApplication *p_ao_app);
+
+  bool is_public_server() const;
 
   void set_widgets();
   void list_servers();

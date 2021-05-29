@@ -2,6 +2,7 @@
 
 #include "courtroom.h"
 #include "debug_functions.h"
+#include "drdiscord.h"
 #include "lobby.h"
 #include "networkmanager.h"
 
@@ -49,6 +50,21 @@ AOApplication::~AOApplication()
   destruct_courtroom();
 }
 
+int AOApplication::get_client_id() const
+{
+  return s_pv;
+}
+
+void AOApplication::set_client_id(int id)
+{
+  s_pv = id;
+}
+
+Lobby *AOApplication::get_lobby() const
+{
+  return m_lobby;
+}
+
 void AOApplication::construct_lobby()
 {
   if (lobby_constructed)
@@ -88,6 +104,11 @@ void AOApplication::destruct_lobby()
 
   delete m_lobby;
   lobby_constructed = false;
+}
+
+Courtroom *AOApplication::get_courtroom() const
+{
+  return m_courtroom;
 }
 
 void AOApplication::construct_courtroom()
@@ -131,6 +152,36 @@ void AOApplication::destruct_courtroom()
 
   // gracefully close our connection to the current server
   net_manager->disconnect_from_server();
+}
+
+DRDiscord *AOApplication::get_discord() const
+{
+  return dr_discord;
+}
+
+NetworkManager *AOApplication::get_network_manager()
+{
+  return net_manager;
+}
+
+bool AOApplication::has_message_acknowledgement_feature() const
+{
+  return feature_ackMS;
+}
+
+bool AOApplication::has_character_declaration_feature() const
+{
+  return feature_chrini;
+}
+
+bool AOApplication::has_showname_declaration_feature() const
+{
+  return feature_showname;
+}
+
+bool AOApplication::has_chat_speed_feature() const
+{
+  return feature_chat_speed;
 }
 
 void AOApplication::on_config_theme_changed()

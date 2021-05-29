@@ -1,13 +1,15 @@
 #ifndef NETWORKMANAGER_H
 #define NETWORKMANAGER_H
 
-#include "aoapplication.h"
-#include "aopacket.h"
+#include "datatypes.h"
 
-#include <QDnsLookup>
-#include <QTcpSocket>
-#include <QTime>
-#include <QTimer>
+class AOApplication;
+
+#include <QAbstractSocket>
+#include <QObject>
+
+class QTcpSocket;
+class QTimer;
 
 class NetworkManager : public QObject
 {

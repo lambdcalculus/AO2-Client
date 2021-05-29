@@ -2,11 +2,6 @@
 #define DATATYPES_H
 
 #include <QDateTime>
-#include <QMap>
-#include <QSharedPointer>
-#include <QString>
-
-#include <memory>
 
 class DREmote
 {

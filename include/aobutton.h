@@ -1,7 +1,7 @@
 #ifndef AOBUTTON_H
 #define AOBUTTON_H
 
-#include "aoapplication.h"
+class AOApplication;
 
 #include <QPushButton>
 

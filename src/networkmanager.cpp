@@ -1,10 +1,10 @@
 #include "networkmanager.h"
 
-#include "datatypes.h"
-#include "debug_functions.h"
-#include "lobby.h"
+#include "aoapplication.h"
+#include "aopacket.h"
 
-#include <cstring>
+#include <QTcpSocket>
+#include <QTimer>
 
 const QString NetworkManager::ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
 const QString NetworkManager::ms_nosrv_hostname = "master.aceattorneyonline.com";

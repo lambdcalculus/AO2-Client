@@ -1,6 +1,6 @@
 #ifndef AOPIXMAP_H
 #define AOPIXMAP_H
-// qt
+
 #include <QPixmap>
 
 class AOPixmap

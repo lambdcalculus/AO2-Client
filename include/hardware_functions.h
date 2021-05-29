@@ -1,7 +1,7 @@
 #ifndef HARDWARE_FUNCTIONS_H
 #define HARDWARE_FUNCTIONS_H
 
-#include <QString>
+class QString;
 
 QString get_hdid();
 

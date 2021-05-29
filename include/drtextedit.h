@@ -2,7 +2,6 @@
 #define DRTEXTEDIT_H
 
 #include <QTextEdit>
-#include <QWidget>
 
 class DRTextEdit : public QTextEdit
 {

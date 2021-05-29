@@ -2,12 +2,10 @@
 
 #include <discord_rpc.h>
 
-#include <QDateTime>
-#include <QFlags>
 #include <QObject>
 #include <QPointer>
-#include <QString>
-#include <QTimer>
+
+class QTimer;
 
 #include <optional>
 
@@ -83,9 +81,4 @@ private:
 
 private slots:
   void on_update_queued();
-
-  /*
-signals:
-  void presence_changed(QPrivateSignal);
-  */
 };

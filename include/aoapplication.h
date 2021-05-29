@@ -1,19 +1,17 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#include "aopacket.h"
 #include "datatypes.h"
-#include "drdiscord.h"
 
-#include <QApplication>
-#include <QFile>
-#include <QVector>
-
-class NetworkManager;
-class Lobby;
-class Courtroom;
 class AOConfig;
 class AOConfigPanel;
+class AOPacket;
+class Courtroom;
+class DRDiscord;
+class Lobby;
+class NetworkManager;
+
+#include <QApplication>
 
 class AOApplication : public QApplication
 {
@@ -23,55 +21,25 @@ public:
   AOApplication(int &argc, char **argv);
   ~AOApplication();
 
-  int get_client_id() const
-  {
-    return s_pv;
-  }
-  void set_client_id(int id)
-  {
-    s_pv = id;
-  }
+  int get_client_id() const;
+  void set_client_id(int id);
 
-  Lobby *get_lobby() const
-  {
-    return m_lobby;
-  }
+  Lobby *get_lobby() const;
   void construct_lobby();
   void destruct_lobby();
 
-  Courtroom *get_courtroom() const
-  {
-    return m_courtroom;
-  }
+  Courtroom *get_courtroom() const;
   void construct_courtroom();
   void destruct_courtroom();
 
-  DRDiscord *get_discord() const
-  {
-    return dr_discord;
-  }
+  DRDiscord *get_discord() const;
 
-  NetworkManager *get_network_manager()
-  {
-    return net_manager;
-  }
+  NetworkManager *get_network_manager();
 
-  bool has_message_acknowledgement_feature() const
-  {
-    return feature_ackMS;
-  }
-  bool has_character_declaration_feature() const
-  {
-    return feature_chrini;
-  }
-  bool has_showname_declaration_feature() const
-  {
-    return feature_showname;
-  }
-  bool has_chat_speed_feature() const
-  {
-    return feature_chat_speed;
-  }
+  bool has_message_acknowledgement_feature() const;
+  bool has_character_declaration_feature() const;
+  bool has_showname_declaration_feature() const;
+  bool has_chat_speed_feature() const;
 
   void ms_packet_received(AOPacket *p_packet);
   void server_packet_received(AOPacket *p_packet);

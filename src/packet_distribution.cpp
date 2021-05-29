@@ -2,6 +2,7 @@
 
 #include "courtroom.h"
 #include "debug_functions.h"
+#include "drdiscord.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
@@ -202,7 +203,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QString server_name, server_address;
     bool is_favorite = false;
-    if (m_lobby->public_servers_selected)
+    if (m_lobby->is_public_server())
     {
       if (selected_server >= 0 && selected_server < server_list.size())
       {

@@ -3,7 +3,6 @@
 #include "draudio.h"
 #include "draudiostreamfamily.h"
 
-#include <QFlags>
 #include <QMap>
 #include <QObject>
 #include <QPointer>

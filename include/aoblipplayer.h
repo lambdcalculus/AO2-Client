@@ -1,9 +1,9 @@
 #pragma once
 
-// pdir
-#include "aoapplication.h"
 #include "aoobject.h"
 #include "draudioengine.h"
+
+class AOApplication;
 
 // 3rd
 #include <bass.h>
@@ -15,13 +15,13 @@
 // std
 #include <optional>
 
-const int BLIP_COUNT = 5;
-
 class AOBlipPlayer : public AOObject
 {
   Q_OBJECT
 
 public:
+  static const int BLIP_COUNT;
+
   AOBlipPlayer(AOApplication *p_ao_app, QObject *p_parent = nullptr);
 
 public slots:
