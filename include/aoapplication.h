@@ -200,13 +200,14 @@ private:
   AOConfigPanel *ao_config_panel = nullptr;
   DRDiscord *dr_discord = nullptr;
 
-  NetworkManager *net_manager = nullptr;
+  NetworkManager *m_network_manager = nullptr;
 
   Lobby *m_lobby = nullptr;
-  bool lobby_constructed = false;
+  bool is_lobby_constructed = false;
 
   Courtroom *m_courtroom = nullptr;
-  bool courtroom_constructed = false;
+  bool is_courtroom_constructed = false;
+  bool is_courtroom_loaded = false;
 
   ///////////////server metadata////////////////
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
@@ -218,21 +219,19 @@ private:
 
   ///////////////loading info///////////////////
   // player number, it's hardly used but might be needed for some old servers
-  int s_pv = 0;
+  int m_client_id = 0;
 
-  QString server_software;
+  QString m_server_software;
 
-  int char_list_size = 0;
-  int loaded_chars = 0;
-  int evidence_list_size = 0;
-  int loaded_evidence = 0;
-  int music_list_size = 0;
-  int loaded_music = 0;
+  int m_character_count = 0;
+  int m_loaded_characters = 0;
+  int m_evidence_count = 0;
+  int m_loaded_evidence = 0;
+  int m_music_count = 0;
+  int m_loaded_music = 0;
 
-  bool courtroom_loaded = false;
-
-  QVector<server_type> server_list;
-  QVector<server_type> favorite_list;
+  QVector<server_type> m_server_list;
+  QVector<server_type> m_favorite_server_list;
 
 private slots:
   void ms_connect_finished(bool connected, bool will_retry);

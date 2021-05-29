@@ -19,8 +19,8 @@
 
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
-  net_manager = new NetworkManager(this);
-  connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)), this, SLOT(ms_connect_finished(bool, bool)));
+  m_network_manager = new NetworkManager(this);
+  connect(m_network_manager, SIGNAL(ms_connect_finished(bool, bool)), this, SLOT(ms_connect_finished(bool, bool)));
 
   ao_config = new AOConfig(this);
   connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(on_config_theme_changed()));
@@ -49,12 +49,12 @@ AOApplication::~AOApplication()
 
 int AOApplication::get_client_id() const
 {
-  return s_pv;
+  return m_client_id;
 }
 
 void AOApplication::set_client_id(int id)
 {
-  s_pv = id;
+  m_client_id = id;
 }
 
 Lobby *AOApplication::get_lobby() const
@@ -64,14 +64,14 @@ Lobby *AOApplication::get_lobby() const
 
 void AOApplication::construct_lobby()
 {
-  if (lobby_constructed)
+  if (is_lobby_constructed)
   {
     qDebug() << "W: lobby was attempted constructed when it already exists";
     return;
   }
 
   m_lobby = new Lobby(this);
-  lobby_constructed = true;
+  is_lobby_constructed = true;
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
   QRect screen_geometry = QApplication::desktop()->screenGeometry();
@@ -93,14 +93,14 @@ void AOApplication::construct_lobby()
 
 void AOApplication::destruct_lobby()
 {
-  if (!lobby_constructed)
+  if (!is_lobby_constructed)
   {
     qDebug() << "W: lobby was attempted destructed when it did not exist";
     return;
   }
 
   delete m_lobby;
-  lobby_constructed = false;
+  is_lobby_constructed = false;
 }
 
 Courtroom *AOApplication::get_courtroom() const
@@ -110,7 +110,7 @@ Courtroom *AOApplication::get_courtroom() const
 
 void AOApplication::construct_courtroom()
 {
-  if (courtroom_constructed)
+  if (is_courtroom_constructed)
   {
     qDebug() << "W: courtroom was attempted constructed when it already exists";
     return;
@@ -119,7 +119,7 @@ void AOApplication::construct_courtroom()
   m_courtroom = new Courtroom(this);
   connect(m_courtroom, SIGNAL(closing()), this, SLOT(on_courtroom_closing()));
   connect(m_courtroom, SIGNAL(destroyed()), this, SLOT(on_courtroom_destroyed()));
-  courtroom_constructed = true;
+  is_courtroom_constructed = true;
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
   QRect screen_geometry = QApplication::desktop()->screenGeometry();
@@ -137,10 +137,10 @@ void AOApplication::construct_courtroom()
 void AOApplication::destruct_courtroom()
 {
   // destruct courtroom
-  if (courtroom_constructed)
+  if (is_courtroom_constructed)
   {
     delete m_courtroom;
-    courtroom_constructed = false;
+    is_courtroom_constructed = false;
   }
   else
   {
@@ -148,7 +148,7 @@ void AOApplication::destruct_courtroom()
   }
 
   // gracefully close our connection to the current server
-  net_manager->disconnect_from_server();
+  m_network_manager->disconnect_from_server();
 }
 
 DRDiscord *AOApplication::get_discord() const
@@ -158,7 +158,7 @@ DRDiscord *AOApplication::get_discord() const
 
 NetworkManager *AOApplication::get_network_manager()
 {
-  return net_manager;
+  return m_network_manager;
 }
 
 bool AOApplication::has_message_acknowledgement_feature() const
@@ -203,17 +203,17 @@ void AOApplication::on_config_timeofday_changed()
 
 void AOApplication::set_favorite_list()
 {
-  favorite_list = read_serverlist_txt();
+  m_favorite_server_list = read_serverlist_txt();
 }
 
 QVector<server_type> &AOApplication::get_favorite_list()
 {
-  return favorite_list;
+  return m_favorite_server_list;
 }
 
 QString AOApplication::get_current_char()
 {
-  if (courtroom_constructed)
+  if (is_courtroom_constructed)
     return m_courtroom->get_current_character();
   else
     return "";
@@ -269,10 +269,10 @@ bool AOApplication::get_first_person_enabled()
 
 void AOApplication::add_favorite_server(int p_server)
 {
-  if (p_server < 0 || p_server >= server_list.size())
+  if (p_server < 0 || p_server >= m_server_list.size())
     return;
 
-  server_type fav_server = server_list.at(p_server);
+  server_type fav_server = m_server_list.at(p_server);
 
   QString str_port = QString::number(fav_server.port);
 
@@ -283,12 +283,12 @@ void AOApplication::add_favorite_server(int p_server)
 
 QVector<server_type> &AOApplication::get_server_list()
 {
-  return server_list;
+  return m_server_list;
 }
 
 void AOApplication::server_disconnected()
 {
-  if (!courtroom_constructed)
+  if (!is_courtroom_constructed)
     return;
   m_courtroom->stop_all_audio();
   call_notice("Disconnected from server.");
@@ -312,14 +312,14 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
   }
   else
   {
-    if (!lobby_constructed)
+    if (!is_lobby_constructed)
     {
       return;
     }
     else if (will_retry)
     {
       m_lobby->append_error("Error connecting to master server. Will try again in " +
-                            QString::number(net_manager->MASTER_RECONNECT_DELAY / 1000.f) + " seconds.");
+                            QString::number(m_network_manager->MASTER_RECONNECT_DELAY / 1000.f) + " seconds.");
     }
     else
     {

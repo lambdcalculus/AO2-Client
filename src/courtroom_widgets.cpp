@@ -36,24 +36,24 @@
 
 void Courtroom::create_widgets()
 {
-  keepalive_timer = new QTimer(this);
-  keepalive_timer->start(60000);
+  m_keepalive_timer = new QTimer(this);
+  m_keepalive_timer->start(60000);
 
-  chat_tick_timer = new QTimer(this);
-  chat_tick_timer->setSingleShot(true);
-  chat_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
+  m_tick_timer = new QTimer(this);
+  m_tick_timer->setSingleShot(true);
+  m_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
 
-  sfx_delay_timer = new QTimer(this);
-  sfx_delay_timer->setSingleShot(true);
+  m_sound_timer = new QTimer(this);
+  m_sound_timer->setSingleShot(true);
 
-  realization_timer = new QTimer(this);
-  realization_timer->setSingleShot(true);
+  m_flash_timer = new QTimer(this);
+  m_flash_timer->setSingleShot(true);
 
-  testimony_show_timer = new QTimer(this);
-  testimony_show_timer->setSingleShot(true);
+  m_testimony_show_timer = new QTimer(this);
+  m_testimony_show_timer->setSingleShot(true);
 
-  testimony_hide_timer = new QTimer(this);
-  testimony_hide_timer->setSingleShot(true);
+  m_testimony_hide_timer = new QTimer(this);
+  m_testimony_hide_timer->setSingleShot(true);
 
   char_button_mapper = new QSignalMapper(this);
 
@@ -149,11 +149,11 @@ void Courtroom::create_widgets()
   ui_note_area = new AONoteArea(this, ao_app);
   ui_note_area->add_button = new AOButton(ui_note_area, ao_app);
   ui_note_area->m_layout = new QVBoxLayout(ui_note_area);
-  note_scroll_area = new QScrollArea(this);
+  ui_note_scroll_area = new QScrollArea(this);
 
-  note_scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-  note_scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  note_scroll_area->setWidgetResizable(false);
+  ui_note_scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  ui_note_scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_note_scroll_area->setWidgetResizable(false);
 
   ui_set_notes = new AOButton(this, ao_app);
 
@@ -246,21 +246,21 @@ void Courtroom::create_widgets()
 
 void Courtroom::connect_widgets()
 {
-  connect(keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
+  connect(m_keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
 
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(on_app_reload_theme_requested()));
 
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
 
-  connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
+  connect(m_sound_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
 
-  connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(next_chat_letter()));
+  connect(m_tick_timer, SIGNAL(timeout()), this, SLOT(next_chat_letter()));
 
-  connect(realization_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
+  connect(m_flash_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
-  connect(testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
-  connect(testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
+  connect(m_testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
+  connect(m_testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
 
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
@@ -379,7 +379,7 @@ void Courtroom::reset_widget_names()
       {"ooc_chat_name", ui_ooc_chat_name},
       {"music_search", ui_music_search},
       {"sfx_search", ui_sfx_search},
-      {"note_scroll_area", note_scroll_area},
+      {"note_scroll_area", ui_note_scroll_area},
       {"note_area", ui_note_area},
       // add_button
       // m_layout
@@ -566,18 +566,15 @@ void Courtroom::set_widgets()
   {
     qDebug() << "W: did not find courtroom width or height in " << filename;
 
-    this->resize(714, 668);
+    resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
   }
   else
   {
-    m_courtroom_width = f_courtroom.width;
-    m_courtroom_height = f_courtroom.height;
-
-    this->resize(f_courtroom.width, f_courtroom.height);
+    resize(f_courtroom.width, f_courtroom.height);
   }
 
   ui_background->move(0, 0);
-  ui_background->resize(m_courtroom_width, m_courtroom_height);
+  ui_background->resize(size());
   ui_background->set_image("courtroombackground.png");
 
   set_size_and_pos(ui_viewport, "viewport", INI_DESIGN, ao_app);
@@ -978,14 +975,14 @@ void Courtroom::set_widgets()
   ui_set_notes->set_image("set_notes.png");
   ui_note_area->m_layout->setSpacing(10);
   set_size_and_pos(ui_note_area, "note_area", INI_DESIGN, ao_app);
-  set_size_and_pos(note_scroll_area, "note_area", INI_DESIGN, ao_app);
-  note_scroll_area->setWidget(ui_note_area);
+  set_size_and_pos(ui_note_scroll_area, "note_area", INI_DESIGN, ao_app);
+  ui_note_scroll_area->setWidget(ui_note_area);
   ui_note_area->set_image("note_area.png");
   ui_note_area->add_button->set_image("add_button.png");
   ui_note_area->add_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   ui_note_area->setLayout(ui_note_area->m_layout);
   ui_note_area->show();
-  note_scroll_area->hide();
+  ui_note_scroll_area->hide();
 
   list_note_files();
 

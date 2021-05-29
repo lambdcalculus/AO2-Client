@@ -25,7 +25,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
 
   if (header == "ALL")
   {
-    server_list.clear();
+    m_server_list.clear();
 
     for (const QString &i_string : p_packet->get_contents())
     {
@@ -43,10 +43,10 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
       f_server.ip = sub_contents.at(2);
       f_server.port = sub_contents.at(3).toInt();
 
-      server_list.append(f_server);
+      m_server_list.append(f_server);
     }
 
-    if (lobby_constructed)
+    if (is_lobby_constructed)
     {
       m_lobby->list_servers();
     }
@@ -68,7 +68,7 @@ void AOApplication::ms_packet_received(AOPacket *p_packet)
     else
       goto end;
 
-    if (lobby_constructed)
+    if (is_lobby_constructed)
     {
       m_lobby->append_chatmessage(f_name, f_message);
     }
@@ -150,8 +150,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 2)
       goto end;
 
-    s_pv = f_contents.at(0).toInt();
-    server_software = f_contents.at(1);
+    m_client_id = f_contents.at(0).toInt();
+    m_server_software = f_contents.at(1);
 
     send_server_packet(new AOPacket("ID#DRO#" + get_version_string() + "#%"));
   }
@@ -160,7 +160,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 2)
       goto end;
 
-    if (courtroom_constructed)
+    if (is_courtroom_constructed)
       m_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1));
   }
   else if (header == "FL")
@@ -184,20 +184,20 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() != 3)
       goto end;
 
-    char_list_size = f_contents.at(0).toInt();
-    evidence_list_size = f_contents.at(1).toInt();
-    music_list_size = f_contents.at(2).toInt();
+    m_character_count = f_contents.at(0).toInt();
+    m_evidence_count = f_contents.at(1).toInt();
+    m_music_count = f_contents.at(2).toInt();
 
-    if (char_list_size < 1 || evidence_list_size < 0 || music_list_size < 0)
+    if (m_character_count < 1 || m_evidence_count < 0 || m_music_count < 0)
       goto end;
 
-    loaded_chars = 0;
-    loaded_evidence = 0;
-    loaded_music = 0;
+    m_loaded_characters = 0;
+    m_loaded_evidence = 0;
+    m_loaded_music = 0;
 
     construct_courtroom();
 
-    courtroom_loaded = false;
+    is_courtroom_loaded = false;
 
     QString window_title = "Danganronpa Online";
     int selected_server = m_lobby->get_selected_server();
@@ -206,9 +206,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     bool is_favorite = false;
     if (m_lobby->is_public_server())
     {
-      if (selected_server >= 0 && selected_server < server_list.size())
+      if (selected_server >= 0 && selected_server < m_server_list.size())
       {
-        auto info = server_list.at(selected_server);
+        auto info = m_server_list.at(selected_server);
         server_name = info.name;
         server_address = info.ip + info.port;
         window_title += ": " + server_name;
@@ -216,9 +216,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
     else
     {
-      if (selected_server >= 0 && selected_server < favorite_list.size())
+      if (selected_server >= 0 && selected_server < m_favorite_server_list.size())
       {
-        auto info = favorite_list.at(selected_server);
+        auto info = m_favorite_server_list.at(selected_server);
         server_name = info.name;
         server_address = info.ip + info.port;
         is_favorite = true;
@@ -240,7 +240,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // look for the server inside the known public list and report it
     if (is_favorite)
     {
-      for (server_type &server : server_list)
+      for (server_type &server : m_server_list)
       {
         const QString l_address = server.ip + server.port;
         if (server_address == l_address)
@@ -255,12 +255,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "CI")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
 
     for (int n_element = 0; n_element < f_contents.size(); n_element += 2)
     {
-      if (f_contents.at(n_element).toInt() != loaded_chars)
+      if (f_contents.at(n_element).toInt() != m_loaded_characters)
         break;
 
       // this means we are on the last element and checking n + 1 element will
@@ -279,28 +279,28 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       // temporary. the CharsCheck packet sets this properly
       f_char.taken = false;
 
-      ++loaded_chars;
+      ++m_loaded_characters;
 
-      m_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" +
-                                QString::number(char_list_size));
+      m_lobby->set_loading_text("Loading chars:\n" + QString::number(m_loaded_characters) + "/" +
+                                QString::number(m_character_count));
 
       m_courtroom->append_char(f_char);
     }
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
+    int total_loading_size = m_character_count + m_evidence_count + m_music_count;
+    int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;
     m_lobby->set_loading_value(loading_value);
 
     send_server_packet(new AOPacket("RE#%"));
   }
   else if (header == "EI")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
 
     // +1 because evidence starts at 1 rather than 0 for whatever reason
     // enjoy fanta
-    if (f_contents.at(0).toInt() != loaded_evidence + 1)
+    if (f_contents.at(0).toInt() != m_loaded_evidence + 1)
       goto end;
 
     if (f_contents.size() < 2)
@@ -316,23 +316,21 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // no idea what the number at position 2 is. probably an identifier?
     f_evi.image = sub_elements.at(3);
 
-    ++loaded_evidence;
+    ++m_loaded_evidence;
 
-    m_lobby->set_loading_text("Loading evidence:\n" + QString::number(loaded_evidence) + "/" +
-                              QString::number(evidence_list_size));
+    m_lobby->set_loading_text("Loading evidence:\n" + QString::number(m_loaded_evidence) + "/" +
+                              QString::number(m_evidence_count));
 
-    m_courtroom->append_evidence(f_evi);
-
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = ((loaded_chars + loaded_evidence) / static_cast<double>(total_loading_size)) * 100;
+    int total_loading_size = m_character_count + m_evidence_count + m_music_count;
+    int loading_value = ((m_loaded_characters + m_loaded_evidence) / static_cast<double>(total_loading_size)) * 100;
     m_lobby->set_loading_value(loading_value);
 
-    QString next_packet_number = QString::number(loaded_evidence);
+    QString next_packet_number = QString::number(m_loaded_evidence);
     send_server_packet(new AOPacket("AE#" + next_packet_number + "#%"));
   }
   else if (header == "CharsCheck")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
 
     for (int n_char = 0; n_char < f_contents.size(); ++n_char)
@@ -346,7 +344,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
   else if (header == "SC")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element)
@@ -361,23 +359,23 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       // temporary. the CharsCheck packet sets this properly
       f_char.taken = false;
 
-      ++loaded_chars;
+      ++m_loaded_characters;
 
-      m_lobby->set_loading_text("Loading chars:\n" + QString::number(loaded_chars) + "/" +
-                                QString::number(char_list_size));
+      m_lobby->set_loading_text("Loading chars:\n" + QString::number(m_loaded_characters) + "/" +
+                                QString::number(m_character_count));
 
       m_courtroom->append_char(f_char);
     }
 
-    int total_loading_size = char_list_size + evidence_list_size + music_list_size;
-    int loading_value = (loaded_chars / static_cast<double>(total_loading_size)) * 100;
+    int total_loading_size = m_character_count + m_evidence_count + m_music_count;
+    int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;
     m_lobby->set_loading_value(loading_value);
 
     send_server_packet(new AOPacket("RM#%"));
   }
   else if (header == "SM" || header == "FM")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
 
     QStringList l_area_list;
@@ -409,24 +407,24 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     if (header == "SM")
     {
-      loaded_music = music_list_size;
-      m_lobby->set_loading_text("Loading music:\n" + QString::number(loaded_music) + "/" +
-                                QString::number(music_list_size));
-      int total_loading_size = char_list_size + evidence_list_size + music_list_size;
+      m_loaded_music = m_music_count;
+      m_lobby->set_loading_text("Loading music:\n" + QString::number(m_loaded_music) + "/" +
+                                QString::number(m_music_count));
+      int total_loading_size = m_character_count + m_evidence_count + m_music_count;
       int loading_value =
-          ((loaded_chars + loaded_evidence + loaded_music) / static_cast<double>(total_loading_size)) * 100;
+          ((m_loaded_characters + m_loaded_evidence + m_loaded_music) / static_cast<double>(total_loading_size)) * 100;
       m_lobby->set_loading_value(loading_value);
       send_server_packet(new AOPacket("RD#%"));
     }
   }
   else if (header == "DONE")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
 
     m_courtroom->done_received();
 
-    courtroom_loaded = true;
+    is_courtroom_loaded = true;
 
     destruct_lobby();
   }
@@ -435,7 +433,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 1)
       goto end;
 
-    if (courtroom_constructed)
+    if (is_courtroom_constructed)
     {
       m_courtroom->set_background(f_contents.at(0));
       m_courtroom->set_scene();
@@ -443,7 +441,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "chat_tick_rate")
   {
-    if (courtroom_constructed)
+    if (is_courtroom_constructed)
       m_courtroom->set_tick_rate(f_contents.isEmpty() ? std::nullopt : std::optional<int>(f_contents.at(0).toInt()));
   }
   // server accepting char request(CC) packet
@@ -452,39 +450,39 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() < 3)
       goto end;
 
-    if (courtroom_constructed)
+    if (is_courtroom_constructed)
       m_courtroom->enter_courtroom(f_contents.at(2).toInt());
   }
   else if (header == "MS")
   {
-    if (courtroom_constructed && courtroom_loaded)
+    if (is_courtroom_constructed && is_courtroom_loaded)
       m_courtroom->handle_chatmessage(p_packet->get_contents());
   }
   else if (header == "ackMS")
   {
-    if (courtroom_constructed && courtroom_loaded)
+    if (is_courtroom_constructed && is_courtroom_loaded)
       m_courtroom->handle_acknowledged_ms();
   }
   else if (header == "MC")
   {
-    if (courtroom_constructed && courtroom_loaded)
+    if (is_courtroom_constructed && is_courtroom_loaded)
       m_courtroom->handle_song(p_packet->get_contents());
   }
   else if (header == "RT")
   {
     if (f_contents.size() < 1)
       goto end;
-    if (courtroom_constructed)
+    if (is_courtroom_constructed)
       m_courtroom->handle_wtce(f_contents.at(0));
   }
   else if (header == "HP")
   {
-    if (courtroom_constructed && f_contents.size() > 1)
+    if (is_courtroom_constructed && f_contents.size() > 1)
       m_courtroom->set_hp_bar(f_contents.at(0).toInt(), f_contents.at(1).toInt());
   }
   else if (header == "LE")
   {
-    if (courtroom_constructed)
+    if (is_courtroom_constructed)
     {
       QVector<evi_type> f_evi_list;
 
@@ -508,22 +506,22 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "IL")
   {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (is_courtroom_constructed && f_contents.size() > 0)
       m_courtroom->set_ip_list(f_contents.at(0));
   }
   else if (header == "MU")
   {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (is_courtroom_constructed && f_contents.size() > 0)
       m_courtroom->set_mute(true, f_contents.at(0).toInt());
   }
   else if (header == "UM")
   {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (is_courtroom_constructed && f_contents.size() > 0)
       m_courtroom->set_mute(false, f_contents.at(0).toInt());
   }
   else if (header == "KK")
   {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (is_courtroom_constructed && f_contents.size() > 0)
     {
       int f_cid = m_courtroom->get_character_id();
       int remote_cid = f_contents.at(0).toInt();
@@ -538,7 +536,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "KB")
   {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (is_courtroom_constructed && f_contents.size() > 0)
       m_courtroom->set_ban(f_contents.at(0).toInt());
   }
   else if (header == "BD")
@@ -547,7 +545,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "ZZ")
   {
-    if (courtroom_constructed && f_contents.size() > 0)
+    if (is_courtroom_constructed && f_contents.size() > 0)
       m_courtroom->mod_called(f_contents.at(0));
   }
   else if (header == "CL")
@@ -576,7 +574,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Timer resume
     if (f_contents.size() != 1)
       goto end;
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
     int timer_id = f_contents.at(0).toInt();
     m_courtroom->resume_timer(timer_id);
@@ -586,7 +584,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Timer set time
     if (f_contents.size() != 2)
       goto end;
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
     int timer_id = f_contents.at(0).toInt();
     int new_time = f_contents.at(1).toInt();
@@ -597,7 +595,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Timer set timeStep length
     if (f_contents.size() != 2)
       goto end;
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
     int timer_id = f_contents.at(0).toInt();
     int timestep_length = f_contents.at(1).toInt();
@@ -608,7 +606,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Timer set Firing interval
     if (f_contents.size() != 2)
       goto end;
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
     int timer_id = f_contents.at(0).toInt();
     int firing_interval = f_contents.at(1).toInt();
@@ -619,7 +617,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Timer pause
     if (f_contents.size() != 1)
       goto end;
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
     int timer_id = f_contents.at(0).toInt();
     m_courtroom->pause_timer(timer_id);
@@ -629,7 +627,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // Set position
     if (f_contents.size() != 1)
       goto end;
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
     m_courtroom->set_character_position(f_contents.at(0));
   }
@@ -639,7 +637,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     // This has priority over user-set showname.
     if (f_contents.size() != 1)
       goto end;
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed)
       goto end;
     const QString l_showname = f_contents.at(0);
     // By updating now, we prevent the client from sending an SN back when we later on go ahead and modify the
@@ -658,7 +656,7 @@ void AOApplication::send_ms_packet(AOPacket *p_packet)
 
   QString f_packet = p_packet->to_string();
 
-  net_manager->ship_ms_packet(f_packet);
+  m_network_manager->ship_ms_packet(f_packet);
 
   qDebug() << "S(ms):" << f_packet;
 
@@ -673,7 +671,7 @@ void AOApplication::send_server_packet(AOPacket *p_packet, bool encoded)
   QString f_packet = p_packet->to_string();
 
   qDebug() << "S:" << f_packet;
-  net_manager->ship_server_packet(f_packet);
+  m_network_manager->ship_server_packet(f_packet);
 
   delete p_packet;
 }

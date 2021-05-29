@@ -50,7 +50,7 @@ QString AOApplication::get_music_path(QString p_song)
 
 QString AOApplication::get_background_path(QString p_file)
 {
-  if (courtroom_constructed)
+  if (is_courtroom_constructed)
   {
     return get_case_sensitive_path(m_courtroom->get_background_path(p_file));
   }
