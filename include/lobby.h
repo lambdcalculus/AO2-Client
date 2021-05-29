@@ -36,8 +36,6 @@ public:
   void set_stylesheet(QWidget *widget, QString target_tag);
   void set_stylesheets();
   void set_fonts();
-  void set_font(QWidget *widget, QString p_identifier);
-  void set_drtextedit_font(DRTextEdit *widget, QString p_identifier);
   void show_loading_overlay();
   void hide_loading_overlay();
   int get_selected_server();
@@ -47,6 +45,9 @@ public:
   bool public_servers_selected = true;
 
 private:
+  static const QString INI_DESIGN;
+  static const QString INI_FONTS;
+
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
@@ -78,8 +79,6 @@ private:
   AOButton *ui_cancel = nullptr;
 
   server_type f_last_server;
-
-  void set_size_and_pos(QWidget *p_widget, QString p_identifier);
 
 private slots:
   void on_public_servers_clicked();
