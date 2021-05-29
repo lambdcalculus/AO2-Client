@@ -6,12 +6,9 @@
 #include <QTcpSocket>
 #include <QTimer>
 
-const QString NetworkManager::ms_srv_hostname = "_aoms._tcp.aceattorneyonline.com";
-const QString NetworkManager::ms_nosrv_hostname = "master.aceattorneyonline.com";
-
-const int NetworkManager::ms_port = 27016;
-const int NetworkManager::timeout_milliseconds = 2000;
-const int NetworkManager::ms_reconnect_delay_ms = 7000;
+const QString NetworkManager::MASTER_HOST = "master.aceattorneyonline.com";
+const int NetworkManager::MASTER_PORT = 27016;
+const int NetworkManager::MASTER_RECONNECT_DELAY = 7000;
 
 NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 {
@@ -45,7 +42,7 @@ void NetworkManager::connect_to_master_nosrv()
                    SLOT(on_ms_socket_error(QAbstractSocket::SocketError)));
 
   QObject::connect(ms_socket, SIGNAL(connected()), this, SLOT(on_ms_nosrv_connect_success()));
-  ms_socket->connectToHost(ms_nosrv_hostname, ms_port);
+  ms_socket->connectToHost(MASTER_HOST, MASTER_PORT);
 }
 
 void NetworkManager::connect_to_server(server_type p_server)
@@ -101,7 +98,7 @@ void NetworkManager::handle_ms_packet()
 
   QStringList packet_list = in_data.split("%", DR::SkipEmptyParts);
 
-  for (QString packet : packet_list)
+  for (const QString &packet : packet_list)
   {
     AOPacket *f_packet = new AOPacket(packet);
 
@@ -130,7 +127,7 @@ void NetworkManager::on_ms_socket_error(QAbstractSocket::SocketError error)
 
   Q_EMIT ms_connect_finished(false, true);
 
-  ms_reconnect_timer->start(ms_reconnect_delay_ms);
+  ms_reconnect_timer->start(MASTER_RECONNECT_DELAY);
 }
 
 void NetworkManager::retry_ms_connect()
@@ -163,7 +160,7 @@ void NetworkManager::handle_server_packet()
 
   QStringList packet_list = in_data.split("%", DR::SkipEmptyParts);
 
-  for (QString packet : packet_list)
+  for (const QString &packet : packet_list)
   {
     AOPacket *f_packet = new AOPacket(packet);
 

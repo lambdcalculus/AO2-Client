@@ -16,7 +16,8 @@ public:
 
 private:
   AOApplication *ao_app = nullptr;
-  QString image_path;
+
+  QString m_image;
 };
 
 #endif // AOIMAGEDISPLAY_H

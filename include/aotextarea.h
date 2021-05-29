@@ -12,7 +12,7 @@ public:
   void append_error(QString p_message);
 
 private:
-  static const QRegExp omnis_dank_url_regex;
+  static const QRegExp URL_REGEXP;
 
   void auto_scroll(QTextCursor old_cursor, int scrollbar_value, bool is_scrolled_down);
 };

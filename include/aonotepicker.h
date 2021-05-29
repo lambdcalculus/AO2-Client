@@ -16,12 +16,13 @@ class AONotePicker : public QLabel
 public:
   AONotePicker(QWidget *p_parent, AOApplication *p_ao_app);
 
-  QLineEdit *m_line = nullptr;
-  AOButton *m_button = nullptr;
-  AOButton *m_delete_button = nullptr;
-  AOButton *m_hover = nullptr;
-  QHBoxLayout *m_layout = nullptr;
-  QString real_file;
+  QString m_file;
+
+  QLineEdit *ui_line = nullptr;
+  AOButton *ui_button = nullptr;
+  AOButton *ui_delete_button = nullptr;
+  AOButton *ui_hover = nullptr;
+  QHBoxLayout *ui_layout = nullptr;
 
 private:
   AOApplication *ao_app = nullptr;

@@ -14,7 +14,7 @@ AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
   ao_app = p_ao_app;
 
   m_movie = new QMovie(this);
-  w_icon = new QLabel(this);
+  ui_icon = new QLabel(this);
   dr_sfx = new AOSfxPlayer(ao_app, this);
 
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
@@ -24,32 +24,31 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
 {
   this->reset();
 
-  QString f_evidence_path = ao_app->get_evidence_path(p_evidence_image);
+  QString l_evidence = ao_app->get_evidence_path(p_evidence_image);
 
-  AOPixmap f_pixmap(f_evidence_path);
+  AOPixmap l_pixmap(l_evidence);
 
-  QString final_gif_path;
-  QString gif_name;
-  QString icon_identifier;
+  QString l_icon_animation;
+  QString l_icon_identifier;
 
   if (is_left_side)
   {
-    icon_identifier = "left_evidence_icon";
-    gif_name = "evidence_appear_left.gif";
+    l_icon_identifier = "left_evidence_icon";
+    l_icon_animation = "evidence_appear_left.gif";
   }
   else
   {
-    icon_identifier = "right_evidence_icon";
-    gif_name = "evidence_appear_right.gif";
+    l_icon_identifier = "right_evidence_icon";
+    l_icon_animation = "evidence_appear_right.gif";
   }
 
-  pos_size_type icon_dimensions = ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
+  pos_size_type l_icon_dimensions = ao_app->get_element_dimensions(l_icon_identifier, "courtroom_design.ini");
 
-  w_icon->move(icon_dimensions.x, icon_dimensions.y);
-  w_icon->resize(icon_dimensions.width, icon_dimensions.height);
-  w_icon->setPixmap(f_pixmap.scale(w_icon->size()));
+  ui_icon->move(l_icon_dimensions.x, l_icon_dimensions.y);
+  ui_icon->resize(l_icon_dimensions.width, l_icon_dimensions.height);
+  ui_icon->setPixmap(l_pixmap.scale(ui_icon->size()));
 
-  QString f_path = ao_app->find_theme_asset_path(gif_name);
+  QString f_path = ao_app->find_theme_asset_path(l_icon_animation);
   m_movie->setFileName(f_path);
   if (m_movie->frameCount() < 1)
     return;
@@ -70,13 +69,13 @@ void AOEvidenceDisplay::frame_change(int p_frame)
     m_movie->stop();
     this->clear();
 
-    w_icon->show();
+    ui_icon->show();
   }
 }
 
 void AOEvidenceDisplay::reset()
 {
   m_movie->stop();
-  w_icon->hide();
+  ui_icon->hide();
   this->clear();
 }

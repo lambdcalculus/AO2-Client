@@ -62,7 +62,7 @@ void AOEvidenceButton::set_theme_image(QString p_image)
 
 void AOEvidenceButton::set_id(int p_id)
 {
-  m_id = p_id;
+  m_index = p_id;
 }
 
 void AOEvidenceButton::set_selected(bool p_selected)
@@ -75,20 +75,20 @@ void AOEvidenceButton::set_selected(bool p_selected)
 
 void AOEvidenceButton::on_clicked()
 {
-  evidence_clicked(m_id);
+  Q_EMIT evidence_clicked(m_index);
 }
 
 void AOEvidenceButton::mouseDoubleClickEvent(QMouseEvent *e)
 {
   QPushButton::mouseDoubleClickEvent(e);
-  evidence_double_clicked(m_id);
+  Q_EMIT evidence_double_clicked(m_index);
 }
 
 void AOEvidenceButton::enterEvent(QEvent *e)
 {
   ui_selector->show();
 
-  on_hover(m_id, true);
+  Q_EMIT on_hover(m_index, true);
 
   setFlat(false);
   QPushButton::enterEvent(e);
@@ -98,6 +98,6 @@ void AOEvidenceButton::leaveEvent(QEvent *e)
 {
   ui_selector->hide();
 
-  on_hover(m_id, false);
+  Q_EMIT on_hover(m_index, false);
   QPushButton::leaveEvent(e);
 }

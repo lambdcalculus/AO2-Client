@@ -146,7 +146,7 @@ void Courtroom::enter_courtroom(int p_cid)
   set_widget_names();
   set_widget_layers();
 
-  for (AOTimer *i_timer : ui_timers)
+  for (AOTimer *i_timer : qAsConst(ui_timers))
     i_timer->redraw();
 
   ui_char_select_background->hide();
@@ -330,7 +330,7 @@ void Courtroom::set_scene()
 
     bool has_all_desks = true;
     QStringList alldesks{"defensedesk", "prosecutiondesk", "stand"};
-    for (QString desk : alldesks)
+    for (const QString &desk : alldesks)
     {
       QString full_path = ao_app->find_asset_path({get_background_path(desk)}, animated_or_static_extensions());
       if (full_path.isEmpty())
@@ -634,8 +634,8 @@ void Courtroom::list_note_files()
       on_add_button_clicked();
 
     AONotePicker *f_notepicker = static_cast<AONotePicker *>(f_layout->itemAt(f_index)->widget());
-    f_notepicker->m_line->setText(f_filename);
-    f_notepicker->real_file = f_filestring;
+    f_notepicker->ui_line->setText(f_filename);
+    f_notepicker->m_file = f_filestring;
   }
 }
 
@@ -1039,9 +1039,9 @@ void Courtroom::handle_chatmessage_2() // handles IC
   int emote_mod = m_chatmessage[CMEmoteModifier].toInt();
 
   if (m_chatmessage[CMFlipState].toInt() == 1)
-    ui_vp_player_char->set_mirror_enabled(true);
+    ui_vp_player_char->set_mirrored(true);
   else
-    ui_vp_player_char->set_mirror_enabled(false);
+    ui_vp_player_char->set_mirrored(false);
 
   switch (emote_mod)
   {
@@ -1189,7 +1189,7 @@ void Courtroom::handle_chatmessage_3()
   QString f_message = m_chatmessage[CMMessage];
   QStringList callwords = ao_app->get_callwords();
 
-  for (QString word : callwords)
+  for (const QString &word : callwords)
   {
     if (f_message.contains(word, Qt::CaseInsensitive))
     {

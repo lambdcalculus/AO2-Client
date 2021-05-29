@@ -9,36 +9,25 @@ DRTextEdit::DRTextEdit(QWidget *parent) : QTextEdit(parent)
   connect(this, SIGNAL(textChanged()), this, SLOT(on_text_changed()));
 }
 
-void DRTextEdit::set_outline(bool p_outline)
+void DRTextEdit::set_outline(bool p_enabled)
 {
+  if (has_outline == p_enabled)
+    return;
+  has_outline = p_enabled;
   QTextCharFormat widget_format = currentCharFormat();
-  if (p_outline)
+  if (p_enabled)
     widget_format.setTextOutline(QPen(Qt::black, 1));
   else
     widget_format.setTextOutline(Qt::NoPen);
   setCurrentCharFormat(widget_format);
-  this->m_outline = p_outline;
 }
 
-bool DRTextEdit::get_outline()
+void DRTextEdit::set_auto_align(bool p_enabled)
 {
-  return this->m_outline;
-}
-
-bool DRTextEdit::get_auto_align()
-{
-  return this->m_auto_align;
-}
-
-void DRTextEdit::set_auto_align(bool new_auto_align)
-{
-  if (new_auto_align == m_auto_align)
+  if (is_auto_align == p_enabled)
     return;
-  m_auto_align = new_auto_align;
-
-  if (m_auto_align)
-    on_text_changed();
-  return;
+  is_auto_align = p_enabled;
+  on_text_changed();
 }
 
 void DRTextEdit::set_vertical_alignment(Qt::Alignment p_align)
@@ -85,7 +74,7 @@ Qt::Alignment DRTextEdit::get_horizontal_alignment()
 
 void DRTextEdit::on_text_changed()
 {
-  if (!m_auto_align)
+  if (!is_auto_align)
     return;
 
   // We need to "lock" access to on_text_changed. That is because the refresh methods trigger

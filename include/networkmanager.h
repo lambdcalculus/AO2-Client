@@ -16,11 +16,9 @@ class NetworkManager : public QObject
   Q_OBJECT
 
 public:
-  static const QString ms_srv_hostname;
-  static const QString ms_nosrv_hostname;
-  static const int ms_port;
-  static const int timeout_milliseconds;
-  static const int ms_reconnect_delay_ms;
+  static const QString MASTER_HOST;
+  static const int MASTER_PORT;
+  static const int MASTER_RECONNECT_DELAY;
 
   NetworkManager(AOApplication *parent);
   ~NetworkManager();

@@ -24,13 +24,12 @@ AOMovie::~AOMovie()
 
 void AOMovie::set_play_once(bool p_play_once)
 {
-  play_once = p_play_once;
+  is_play_once = p_play_once;
 }
 
 void AOMovie::play(QString p_file, QString p_char)
 {
   m_movie->stop();
-  QVector<QString> f_vec;
   QString file_path = "";
 
   // Remove ! at the beginning of p_file if needed
@@ -132,7 +131,7 @@ void AOMovie::stop()
 
 void AOMovie::frame_change(int n_frame)
 {
-  if (n_frame == (m_movie->frameCount() - 1) && play_once)
+  if (n_frame == (m_movie->frameCount() - 1) && is_play_once)
   {
     // we need this or else the last frame wont show
     delay(m_movie->nextFrameDelay());

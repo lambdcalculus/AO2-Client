@@ -12,68 +12,68 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x
   this->move(p_x, p_y);
   this->resize(40, 40);
 
-  w_selected = new QLabel(this);
-  w_selected->resize(size());
-  w_selected->setAttribute(Qt::WA_TransparentForMouseEvents);
-  w_selected->hide();
+  ui_selected = new QLabel(this);
+  ui_selected->resize(size());
+  ui_selected->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_selected->hide();
 
   connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
 }
 
 void AOEmoteButton::set_emote_number(int p_emote_number)
 {
-  m_emote_number = p_emote_number;
+  m_index = p_emote_number;
 }
 
 int AOEmoteButton::get_emote_number()
 {
-  return m_emote_number;
+  return m_index;
 }
 
 void AOEmoteButton::set_image(DREmote p_emote, bool p_enabled)
 {
-  QString texture_path =
+  QString l_texture =
       ao_app->get_character_path(p_emote.character, QString("emotions/button%1_off.png").arg(p_emote.key));
 
   // reset states
-  w_selected->hide();
+  ui_selected->hide();
 
   // nested ifs are okay
   if (p_enabled)
   {
-    const QString enabled_texture_path =
+    const QString l_enabled_texture =
         ao_app->get_character_path(p_emote.character, QString("emotions/button%1_on.png").arg(p_emote.key));
 
-    if (file_exists(enabled_texture_path))
+    if (file_exists(l_enabled_texture))
     {
-      texture_path = enabled_texture_path;
+      l_texture = l_enabled_texture;
     }
     else
     {
-      const QString selected_texture_path = ao_app->get_character_path(p_emote.character, "emotions/selected.png");
+      const QString l_selected_texture = ao_app->get_character_path(p_emote.character, "emotions/selected.png");
 
-      if (file_exists(selected_texture_path))
+      if (file_exists(l_selected_texture))
       {
-        w_selected->setStyleSheet(QString("border-image: url(\"%1\")").arg(selected_texture_path));
+        ui_selected->setStyleSheet(QString("border-image: url(\"%1\")").arg(l_selected_texture));
       }
       else
       {
-        w_selected->setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, "
+        ui_selected->setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, "
                                   "y2:1, stop:0 rgba(0, 0, 0, 0), stop:1 rgba(0, 0, 0, 127)); }");
       }
 
-      w_selected->show();
+      ui_selected->show();
     }
   }
 
-  const bool texture_exist = file_exists(texture_path);
-  setText(texture_exist ? nullptr : p_emote.comment);
-  setStyleSheet(texture_exist
-                    ? QString("%1 { border-image: url(\"%2\"); }").arg(metaObject()->className()).arg(texture_path)
+  const bool l_texture_exist = file_exists(l_texture);
+  setText(l_texture_exist ? nullptr : p_emote.comment);
+  setStyleSheet(l_texture_exist
+                    ? QString("%1 { border-image: url(\"%2\"); }").arg(metaObject()->className()).arg(l_texture)
                     : QString());
 }
 
 void AOEmoteButton::on_clicked()
 {
-  emote_clicked(m_emote_number);
+  Q_EMIT emote_clicked(m_index);
 }

@@ -20,7 +20,7 @@
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   net_manager = new NetworkManager(this);
-  connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)), SLOT(ms_connect_finished(bool, bool)));
+  connect(net_manager, SIGNAL(ms_connect_finished(bool, bool)), this, SLOT(ms_connect_finished(bool, bool)));
 
   ao_config = new AOConfig(this);
   connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(on_config_theme_changed()));
@@ -319,7 +319,7 @@ void AOApplication::ms_connect_finished(bool connected, bool will_retry)
     else if (will_retry)
     {
       m_lobby->append_error("Error connecting to master server. Will try again in " +
-                            QString::number(net_manager->ms_reconnect_delay_ms / 1000.f) + " seconds.");
+                            QString::number(net_manager->MASTER_RECONNECT_DELAY / 1000.f) + " seconds.");
     }
     else
     {

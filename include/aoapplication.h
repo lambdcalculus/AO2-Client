@@ -72,8 +72,10 @@ public:
 
   QString sanitize_path(QString p_file);
 
-  QString find_asset_path(QStringList possible_roots, QStringList possible_exts = {""});
-  QString find_theme_asset_path(QString p_root, QStringList p_exts = {""});
+  QString find_asset_path(QStringList file_list, QStringList extension_list);
+  QString find_asset_path(QStringList file_list);
+  QString find_theme_asset_path(QString file, QStringList extension_list);
+  QString find_theme_asset_path(QString file);
 
   QString get_case_sensitive_path(QString p_file);
 

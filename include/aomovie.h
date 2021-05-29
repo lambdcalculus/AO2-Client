@@ -25,9 +25,11 @@ signals:
   void done();
 
 private:
-  QMovie *m_movie = nullptr;
   AOApplication *ao_app = nullptr;
-  bool play_once = true;
+
+  QMovie *m_movie = nullptr;
+
+  bool is_play_once = true;
 
 private slots:
   void frame_change(int n_frame);

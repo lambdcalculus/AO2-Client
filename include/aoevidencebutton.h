@@ -33,10 +33,10 @@ protected:
 private:
   AOApplication *ao_app = nullptr;
 
+  int m_index = 0;
+
   AOImageDisplay *ui_selected = nullptr;
   AOImageDisplay *ui_selector = nullptr;
-
-  int m_id = 0;
 
 private slots:
   void on_clicked();

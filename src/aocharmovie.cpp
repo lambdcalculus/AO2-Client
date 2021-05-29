@@ -52,7 +52,7 @@ bool AOCharMovie::play(QString p_chr, QString p_emote, QString p_prefix, bool p_
 
   stop();
   m_movie->setFileName(l_file);
-  m_play_once = p_play_once;
+  is_play_once = p_play_once;
   m_movie->start();
 
   return r_exist;
@@ -78,9 +78,9 @@ bool AOCharMovie::play_idle(QString p_chr, QString p_emote)
   return play(p_chr, p_emote, "(a)", false);
 }
 
-void AOCharMovie::set_mirror_enabled(bool p_enabled)
+void AOCharMovie::set_mirrored(bool p_enabled)
 {
-  m_mirror = p_enabled;
+  is_mirrored = p_enabled;
 }
 
 void AOCharMovie::stop()
@@ -101,8 +101,8 @@ void AOCharMovie::combo_resize(QSize p_size)
 
 void AOCharMovie::paint_frame()
 {
-  AOPixmap f_pixmap(QPixmap::fromImage(m_movie->currentImage().mirrored(m_mirror, false)));
-  this->setPixmap(f_pixmap.scale_to_height(this->size()));
+  AOPixmap l_pixmap(QPixmap::fromImage(m_movie->currentImage().mirrored(is_mirrored, false)));
+  this->setPixmap(l_pixmap.scale_to_height(this->size()));
 }
 
 void AOCharMovie::on_frame_changed(int p_frame_num)
@@ -111,7 +111,7 @@ void AOCharMovie::on_frame_changed(int p_frame_num)
 
   paint_frame();
 
-  if (m_play_once)
+  if (is_play_once)
   {
     const int f_frame_count = m_movie->frameCount();
     if (f_frame_count == 0 || p_frame_num == (f_frame_count - 1))

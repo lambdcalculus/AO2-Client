@@ -49,8 +49,8 @@ private:
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
-  server_type f_last_server;
-  bool public_servers_selected = true;
+  server_type m_last_server;
+  bool is_public_server_selected = true;
 
   // ui
   AOImageDisplay *ui_background = nullptr;

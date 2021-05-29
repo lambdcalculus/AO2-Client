@@ -20,7 +20,7 @@ public:
   bool play_pre(QString character, QString emote);
   bool play_talk(QString character, QString emote);
   bool play_idle(QString character, QString emote);
-  void set_mirror_enabled(bool enabled);
+  void set_mirrored(bool enabled);
   void combo_resize(QSize size);
   void stop();
 
@@ -29,11 +29,13 @@ signals:
 
 private:
   AOApplication *ao_app = nullptr;
+
   QMovie *m_movie = nullptr;
   QTimer *m_frame_timer = nullptr;
   QImage m_current_frame;
-  bool m_mirror = false;
-  bool m_play_once = false;
+
+  bool is_mirrored = false;
+  bool is_play_once = false;
 
   void paint_frame();
 

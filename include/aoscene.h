@@ -18,6 +18,7 @@ public:
 
 private:
   AOApplication *ao_app = nullptr;
+
   QMovie *m_reader = nullptr;
 };
 

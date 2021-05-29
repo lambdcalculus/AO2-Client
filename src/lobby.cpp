@@ -81,19 +81,17 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 
 bool Lobby::is_public_server() const
 {
-  return public_servers_selected;
+  return is_public_server_selected;
 }
 
 // sets images, position and size
 void Lobby::set_widgets()
 {
-  QString filename = "lobby_design.ini";
-
-  pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", filename);
+  pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", INI_DESIGN);
 
   if (f_lobby.width < 0 || f_lobby.height < 0)
   {
-    qDebug() << "W: did not find lobby width or height in " << filename;
+    qDebug() << "W: did not find lobby width or height in " << INI_DESIGN;
 
     // Most common symptom of bad config files, missing assets, or misnamed
     // theme folder
@@ -255,7 +253,7 @@ void Lobby::on_public_servers_clicked()
 
   list_servers();
 
-  public_servers_selected = true;
+  is_public_server_selected = true;
 }
 
 void Lobby::on_favorites_clicked()
@@ -268,7 +266,7 @@ void Lobby::on_favorites_clicked()
 
   list_favorites();
 
-  public_servers_selected = false;
+  is_public_server_selected = false;
 }
 
 void Lobby::on_refresh_pressed()
@@ -295,7 +293,7 @@ void Lobby::on_add_to_fav_released()
   ui_add_to_fav->set_image("addtofav.png");
 
   // you cant add favorites from favorites m8
-  if (!public_servers_selected)
+  if (!is_public_server_selected)
     return;
 
   ao_app->add_favorite_server(ui_server_list->currentRow());
@@ -349,30 +347,30 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   if (n_server < 0)
     return;
 
-  if (public_servers_selected)
+  if (is_public_server_selected)
   {
     QVector<server_type> f_server_list = ao_app->get_server_list();
 
     if (n_server >= f_server_list.size())
       return;
 
-    f_last_server = f_server_list.at(p_model.row());
+    m_last_server = f_server_list.at(p_model.row());
   }
   else
   {
     if (n_server >= ao_app->get_favorite_list().size())
       return;
 
-    f_last_server = ao_app->get_favorite_list().at(p_model.row());
+    m_last_server = ao_app->get_favorite_list().at(p_model.row());
   }
 
   ui_player_count->setText(nullptr);
   ui_description->moveCursor(QTextCursor::Start);
-  ui_description->setText("Connecting to " + f_last_server.name + "...\n\n");
-  ui_description->append(f_last_server.desc);
+  ui_description->setText("Connecting to " + m_last_server.name + "...\n\n");
+  ui_description->append(m_last_server.desc);
   ui_description->ensureCursorVisible();
 
-  ao_app->get_network_manager()->connect_to_server(f_last_server);
+  ao_app->get_network_manager()->connect_to_server(m_last_server);
 }
 
 void Lobby::on_chatfield_return_pressed()
@@ -393,13 +391,13 @@ void Lobby::on_chatfield_return_pressed()
 
 void Lobby::list_servers()
 {
-  public_servers_selected = true;
+  is_public_server_selected = true;
   ui_favorites->set_image("favorites.png");
   ui_public_servers->set_image("publicservers_selected.png");
 
   ui_server_list->clear();
 
-  for (server_type i_server : ao_app->get_server_list())
+  for (const server_type &i_server : ao_app->get_server_list())
   {
     ui_server_list->addItem(i_server.name);
   }
@@ -409,7 +407,7 @@ void Lobby::list_favorites()
 {
   ui_server_list->clear();
 
-  for (server_type i_server : ao_app->get_favorite_list())
+  for (const server_type &i_server : ao_app->get_favorite_list())
   {
     ui_server_list->addItem(i_server.name);
   }
@@ -437,7 +435,7 @@ void Lobby::set_player_count(int players_online, int max_players)
   ui_player_count->setText(f_string);
   ui_player_count->setAlignment(Qt::AlignHCenter);
 
-  ui_description->setText("Connected to " + f_last_server.name + "\n\n");
-  ui_description->append(f_last_server.desc);
+  ui_description->setText("Connected to " + m_last_server.name + "\n\n");
+  ui_description->append(m_last_server.desc);
   ui_description->ensureCursorVisible();
 }

@@ -27,6 +27,7 @@ protected:
 
 private:
   AOApplication *ao_app = nullptr;
+
   AOImageDisplay *ui_taken = nullptr;
 };
 

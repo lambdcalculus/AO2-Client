@@ -17,7 +17,7 @@ public:
 
 private:
   AOApplication *ao_app = nullptr;
-  QString image_path;
+  QString m_image;
 };
 
 #endif // AOBUTTON_H
