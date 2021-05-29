@@ -32,10 +32,10 @@ void set_text_alignment(QWidget *p_widget, QString p_identifier, QString p_ini_f
   p_widget->setProperty("alignment",
                         QVariant(QHash<QString, Qt::AlignmentFlag>{
                                      {"left", Qt::AlignLeft}, {"center", Qt::AlignHCenter}, {"right", Qt::AlignRight}}
-                                     .value(l_values.value(0).toLower(), Qt::AlignLeft) |
+                                     .value(l_values.value(0).trimmed().toLower(), Qt::AlignLeft) |
                                  QHash<QString, Qt::AlignmentFlag>{
                                      {"top", Qt::AlignTop}, {"center", Qt::AlignVCenter}, {"bottom", Qt::AlignBottom}}
-                                     .value(l_values.value(1).toLower(), Qt::AlignVCenter)));
+                                     .value(l_values.value(1).trimmed().toLower(), Qt::AlignVCenter)));
 }
 
 void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOApplication *ao_app)
