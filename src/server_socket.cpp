@@ -550,7 +550,9 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
       return;
     if (!is_courtroom_constructed)
       return;
-    m_courtroom->ignore_next_showname();
-    ao_config->set_showname(l_content.at(0));
+    const QString &l_showname = l_content.at(0);
+    if (ao_config->showname() != l_showname)
+      m_courtroom->ignore_next_showname();
+    ao_config->set_showname(l_showname);
   }
 }
