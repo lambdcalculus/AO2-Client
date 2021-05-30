@@ -539,19 +539,19 @@ void AOConfig::set_autosave(bool p_enabled)
 
 void AOConfig::set_username(QString p_value)
 {
-  const QString l_trimmed_value = p_value.trimmed();
-  if (d->username == l_trimmed_value)
+  const QString l_simplified_value = p_value.simplified();
+  if (d->username == l_simplified_value)
     return;
-  d->username = l_trimmed_value;
+  d->username = l_simplified_value;
   d->invoke_signal("username_changed", Q_ARG(QString, d->username));
 }
 
 void AOConfig::set_showname(QString p_value)
 {
-  const QString l_trimmed_value = p_value.trimmed();
-  if (d->showname == l_trimmed_value)
+  const QString l_simplified_value = p_value.simplified();
+  if (d->showname == l_simplified_value)
     return;
-  d->showname = l_trimmed_value;
+  d->showname = l_simplified_value;
   d->invoke_signal("showname_changed", Q_ARG(QString, d->showname));
 }
 
