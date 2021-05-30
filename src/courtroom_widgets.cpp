@@ -107,7 +107,7 @@ void Courtroom::create_widgets()
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
 
-  ui_ini_dropdown = new QComboBox(this);
+  ui_iniswap_dropdown = new QComboBox(this);
 
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
@@ -266,7 +266,7 @@ void Courtroom::connect_widgets()
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 
   connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
-  connect(ui_ini_dropdown, SIGNAL(activated(int)), this, SLOT(on_ini_dropdown_changed(int)));
+  connect(ui_iniswap_dropdown, SIGNAL(activated(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
   connect(ui_pos_dropdown, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed(int)));
 
   connect(ui_mute_list, SIGNAL(itemChanged(QListWidgetItem *)), this,
@@ -388,7 +388,7 @@ void Courtroom::reset_widget_names()
       {"emote_left", ui_emote_left},
       {"emote_right", ui_emote_right},
       {"emote_dropdown", ui_emote_dropdown},
-      {"ini_dropdown", ui_ini_dropdown},
+      {"iniswap_dropdown", ui_iniswap_dropdown},
       {"pos_dropdown", ui_pos_dropdown},
       {"defense_bar", ui_defense_bar},
       {"prosecution_bar", ui_prosecution_bar},
@@ -701,7 +701,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown", INI_DESIGN, ao_app);
 
-  set_size_and_pos(ui_ini_dropdown, "ini_dropdown", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown", INI_DESIGN, ao_app);
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown", INI_DESIGN, ao_app);
 
@@ -1405,7 +1405,7 @@ void Courtroom::set_dropdowns()
 {
   set_dropdown(ui_text_color, "[TEXT COLOR]");
   set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]");
-  set_dropdown(ui_ini_dropdown, "[INI DROPDOWN]");
+  set_dropdown(ui_iniswap_dropdown, "[INISWAP DROPDOWN]");
   set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
   set_dropdown(ui_mute_list, "[MUTE LIST]");
   set_dropdown(ui_ic_chat_message, "[IC LINE]");

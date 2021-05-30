@@ -160,8 +160,8 @@ void Courtroom::enter_courtroom(int p_cid)
 
   const QString l_chr_name = get_current_character();
   { // repopulate ini-swapper
-    QSignalBlocker b_ini_list(ui_ini_dropdown);
-    ui_ini_dropdown->clear();
+    QSignalBlocker b_ini_list(ui_iniswap_dropdown);
+    ui_iniswap_dropdown->clear();
 
     QStringList l_name_list{"Default"};
     const QString l_path = ao_app->get_base_path() + "/characters";
@@ -183,9 +183,9 @@ void Courtroom::enter_courtroom(int p_cid)
       const QString &i_name = l_name_list.at(i);
       const QString l_real_name = i == 0 ? get_base_character() : i_name;
       const QString l_icon_file = ao_app->get_character_path(l_real_name, "char_icon.png");
-      ui_ini_dropdown->addItem(file_exists(l_icon_file) ? QIcon(l_icon_file) : QIcon(l_blank_image), i_name);
+      ui_iniswap_dropdown->addItem(file_exists(l_icon_file) ? QIcon(l_icon_file) : QIcon(l_blank_image), i_name);
     }
-    ui_ini_dropdown->setCurrentText(get_current_character());
+    ui_iniswap_dropdown->setCurrentText(get_current_character());
   }
 
   if (is_spectating())
@@ -241,7 +241,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   ui_emotes->setHidden(is_spectating());
   ui_emote_dropdown->setHidden(is_spectating());
-  ui_ini_dropdown->setHidden(is_spectating());
+  ui_iniswap_dropdown->setHidden(is_spectating());
   ui_ic_chat_message->setEnabled(!is_spectating());
 
   // restore line field focus

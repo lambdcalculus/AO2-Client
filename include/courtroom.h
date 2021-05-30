@@ -433,7 +433,7 @@ private:
   AOButton *ui_emote_right = nullptr;
 
   QComboBox *ui_emote_dropdown = nullptr;
-  QComboBox *ui_ini_dropdown = nullptr;
+  QComboBox *ui_iniswap_dropdown = nullptr;
   QComboBox *ui_pos_dropdown = nullptr;
 
   AOImageDisplay *ui_defense_bar = nullptr;
@@ -626,7 +626,7 @@ private slots:
   void on_emote_right_clicked();
 
   void on_emote_dropdown_changed(int p_index);
-  void on_ini_dropdown_changed(int p_index);
+  void on_iniswap_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
 
   void on_evidence_name_edited();

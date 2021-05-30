@@ -207,8 +207,8 @@ void Courtroom::on_emote_dropdown_changed(int p_index)
   select_emote(p_index);
 }
 
-void Courtroom::on_ini_dropdown_changed(int p_index)
+void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
   ao_config->set_character_ini(get_base_character(),
-                               p_index == 0 ? get_base_character() : ui_ini_dropdown->itemText(p_index));
+                               p_index == 0 ? get_base_character() : ui_iniswap_dropdown->itemText(p_index));
 }
