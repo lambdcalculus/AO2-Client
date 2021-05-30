@@ -543,7 +543,7 @@ void AOConfig::set_username(QString p_value)
   if (d->username == l_trimmed_value)
     return;
   d->username = l_trimmed_value;
-  d->invoke_signal("username_changed", Q_ARG(QString, p_value));
+  d->invoke_signal("username_changed", Q_ARG(QString, d->username));
 }
 
 void AOConfig::set_showname(QString p_value)
