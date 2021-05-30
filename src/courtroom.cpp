@@ -1913,6 +1913,25 @@ void Courtroom::set_character_position(QString p_pos)
   set_judge_enabled(p_pos == "jud");
 }
 
+bool Courtroom::request_username()
+{
+  QString l_username = ao_config->username();
+  if (l_username.trimmed().isEmpty())
+  {
+    bool ok;
+    do
+    {
+      l_username = QInputDialog::getText(this, "Enter a name",
+                                         "You must have a name to talk in OOC chat. Enter a name: ", QLineEdit::Normal,
+                                         "user", &ok);
+    } while (ok && l_username.isEmpty());
+    if (!ok)
+      return false;
+    ao_config->set_username(l_username);
+  }
+  return true;
+}
+
 /**
  * @brief Send a OOC packet (CT) out to the server.
  * @param ooc_name The username.
@@ -1920,27 +1939,16 @@ void Courtroom::set_character_position(QString p_pos)
  */
 void Courtroom::send_ooc_packet(QString ooc_name, QString ooc_message)
 {
-  if (ooc_name.trimmed().isEmpty())
+  if (!request_username())
   {
-    bool ok;
-    do
-    {
-      ooc_name = QInputDialog::getText(this, "Enter a name",
-                                       "You must have a name to talk in OOC chat. Enter a name: ", QLineEdit::Normal,
-                                       "user", &ok);
-    } while (ok && ooc_name.isEmpty());
-    if (!ok)
-      return;
-
-    ao_config->set_username(ooc_name);
-  }
-
-  if (ooc_message.trimmed().isEmpty())
-  {
-    append_server_chatmessage("CLIENT", "You cannot send an empty message.");
+    append_server_chatmessage("CLIENT", "You cannot send a message without a username.");
     return;
   }
-
+  if (ooc_message.trimmed().isEmpty())
+  {
+    append_server_chatmessage("CLIENT", "You cannot send empty messages.");
+    return;
+  }
   QStringList l_content{ooc_name, ooc_message};
   ao_app->send_server_packet(AOPacket("CT", l_content));
 }
@@ -2050,9 +2058,12 @@ void Courtroom::on_ooc_return_pressed()
     pause_timer(timer_id);
   }
 
-  send_ooc_packet(ooc_name, ooc_message);
+  if (request_username())
+  {
+    send_ooc_packet(ooc_name, ooc_message);
+    ui_ooc_chat_message->clear();
+  }
 
-  ui_ooc_chat_message->clear();
   ui_ooc_chat_message->setFocus();
 }
 

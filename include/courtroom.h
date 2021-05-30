@@ -86,6 +86,7 @@ public:
   // sets the character position
   void set_character_position(QString p_pos);
 
+  bool request_username();
   void send_ooc_packet(QString ooc_name, QString ooc_message);
 
   void ignore_next_showname();
