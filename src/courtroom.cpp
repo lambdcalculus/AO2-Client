@@ -1974,7 +1974,7 @@ void Courtroom::on_ooc_name_editing_finished()
 
 void Courtroom::on_ooc_return_pressed()
 {
-  const QString ooc_name = ui_ooc_chat_name->text();
+  const QString ooc_name = ao_config->username();
   const QString ooc_message = ui_ooc_chat_message->text();
 
   if (ooc_message.startsWith("/rainbow") && !is_rainbow_enabled)
@@ -2091,12 +2091,12 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
     f_pos = "";
   }
 
-  if (f_pos == "" || ui_ooc_chat_name->text() == "")
+  if (f_pos == "" || ao_config->username() == "")
     return;
 
   set_judge_enabled(f_pos == "jud");
 
-  ao_app->send_server_packet(AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
+  ao_app->send_server_packet(AOPacket("CT#" + ao_config->username() + "#/pos " + f_pos + "#%"));
   // Uncomment later and remove above
   // Will only work in TSDR 4.3+ servers
   // ao_app->send_server_packet(AOPacket("SP#" + f_pos + "#%"));
