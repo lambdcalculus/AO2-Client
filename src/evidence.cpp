@@ -1,6 +1,14 @@
 #include "courtroom.h"
 
-#include <QDebug>
+#include "aoapplication.h"
+#include "aobutton.h"
+#include "aoevidencebutton.h"
+#include "aoevidencedescription.h"
+#include "aoimagedisplay.h"
+#include "aolineedit.h"
+#include "aopacket.h"
+#include "theme.h"
+
 #include <QFileDialog>
 
 void Courtroom::construct_evidence()
@@ -32,8 +40,8 @@ void Courtroom::construct_evidence()
   ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                          "color: white;");
 
-  set_size_and_pos(ui_evidence, "evidence_background");
-  set_size_and_pos(ui_evidence_buttons, "evidence_buttons");
+  set_size_and_pos(ui_evidence, "evidence_background", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_buttons, "evidence_buttons", INI_DESIGN, ao_app);
 
   QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
 
@@ -101,7 +109,7 @@ void Courtroom::set_evidence_page()
   ui_evidence_left->hide();
   ui_evidence_right->hide();
 
-  for (AOEvidenceButton *i_button : ui_evidence_list)
+  for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
   {
     i_button->reset();
   }
@@ -168,7 +176,7 @@ void Courtroom::on_evidence_name_edited()
   f_contents.append(f_evi.description);
   f_contents.append(f_evi.image);
 
-  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+  ao_app->send_server_packet(AOPacket("EE", f_contents));
 }
 
 void Courtroom::on_evidence_image_name_edited()
@@ -185,7 +193,7 @@ void Courtroom::on_evidence_image_name_edited()
   f_contents.append(f_evi.description);
   f_contents.append(ui_evidence_image_name->text());
 
-  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+  ao_app->send_server_packet(AOPacket("EE", f_contents));
 }
 
 void Courtroom::on_evidence_image_button_clicked()
@@ -223,7 +231,7 @@ void Courtroom::on_evidence_clicked(int p_id)
 
   if (f_real_id == local_evidence_list.size())
   {
-    ao_app->send_server_packet(new AOPacket("PE#<name>#<description>#empty.png#%"));
+    ao_app->send_server_packet(AOPacket("PE#<name>#<description>#empty.png#%"));
     return;
   }
   else if (f_real_id > local_evidence_list.size())
@@ -231,7 +239,7 @@ void Courtroom::on_evidence_clicked(int p_id)
 
   ui_evidence_name->setText(local_evidence_list.at(f_real_id).name);
 
-  for (AOEvidenceButton *i_button : ui_evidence_list)
+  for (AOEvidenceButton *i_button : qAsConst(ui_evidence_list))
     i_button->set_selected(false);
 
   ui_evidence_list.at(p_id)->set_selected(true);
@@ -315,7 +323,7 @@ void Courtroom::on_evidence_delete_clicked()
   ui_evidence_description->setReadOnly(true);
   ui_evidence_overlay->hide();
 
-  ao_app->send_server_packet(new AOPacket("DE#" + QString::number(current_evidence) + "#%"));
+  ao_app->send_server_packet(AOPacket("DE#" + QString::number(current_evidence) + "#%"));
 
   current_evidence = 0;
 
@@ -339,7 +347,7 @@ void Courtroom::on_evidence_x_clicked()
   f_contents.append(ui_evidence_description->toPlainText());
   f_contents.append(f_evi.image);
 
-  ao_app->send_server_packet(new AOPacket("EE", f_contents));
+  ao_app->send_server_packet(AOPacket("EE", f_contents));
 
   ui_ic_chat_message->setFocus();
 }

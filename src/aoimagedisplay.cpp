@@ -1,8 +1,8 @@
-#include "file_functions.h"
-
 #include "aoimagedisplay.h"
 
-#include <QDebug>
+#include "aoapplication.h"
+#include "aopixmap.h"
+#include "file_functions.h"
 
 /*!
  * @class AOImageDisplay
@@ -13,17 +13,22 @@ AOImageDisplay::AOImageDisplay(QWidget *parent, AOApplication *p_ao_app) : QLabe
   ao_app = p_ao_app;
 }
 
+QString AOImageDisplay::get_image()
+{
+  return m_image;
+}
+
 void AOImageDisplay::set_image(QString p_image)
 {
-  QString f_path = ao_app->find_theme_asset_path(p_image);
-  AOPixmap f_pixmap(f_path);
+  const QString l_path = ao_app->find_theme_asset_path(p_image);
+  AOPixmap f_pixmap(l_path);
   this->setPixmap(f_pixmap.scale(size()));
 
   // Store final path if the path exists
-  if (file_exists(f_path))
-    image_path = f_path;
+  if (file_exists(l_path))
+    m_image = l_path;
   else
-    image_path = "";
+    m_image = "";
 }
 
 void AOImageDisplay::set_image_from_path(QString p_path)
@@ -42,7 +47,7 @@ void AOImageDisplay::set_image_from_path(QString p_path)
 
   // Store final path if the path exists
   if (file_exists(final_path))
-    image_path = final_path;
+    m_image = final_path;
   else
-    image_path = "";
+    m_image = "";
 }

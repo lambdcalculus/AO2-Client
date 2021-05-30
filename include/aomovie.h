@@ -1,11 +1,10 @@
 #ifndef AOMOVIE_H
 #define AOMOVIE_H
 
+class AOApplication;
+
 #include <QLabel>
 #include <QMovie>
-
-class Courtroom;
-class AOApplication;
 
 class AOMovie : public QLabel
 {
@@ -17,19 +16,8 @@ public:
 
   void set_play_once(bool p_play_once);
   void play(QString p_file, QString p_char = "");
-
-  ///
-  /// \brief Searches and play the first interjection file it can find based on
-  /// the provided character name and interjection name.
-  ///
   void play_interjection(QString p_char_name, QString p_interjection_name);
   void combo_resize(int w, int h);
-
-  /*
-   * @brief Returns the state of the current movie. Refer to QMovie::state()
-   * for more details.
-   * @returns Current movie status
-   */
   QMovie::MovieState state();
   void stop();
 
@@ -37,9 +25,11 @@ signals:
   void done();
 
 private:
-  QMovie *m_movie = nullptr;
   AOApplication *ao_app = nullptr;
-  bool play_once = true;
+
+  QMovie *m_movie = nullptr;
+
+  bool is_play_once = true;
 
 private slots:
   void frame_change(int n_frame);

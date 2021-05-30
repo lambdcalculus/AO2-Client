@@ -1,9 +1,8 @@
 #include "aoshoutplayer.h"
 
+#include "aoapplication.h"
 #include "draudioengine.h"
 #include "file_functions.h"
-
-#include <QDebug>
 
 AOShoutPlayer::AOShoutPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObject(p_ao_app, p_parent)
 {}

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "aoapplication.h"
+class AOApplication;
+
+#include <QObject>
 
 class AOObject : public QObject
 {

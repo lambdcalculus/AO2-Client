@@ -1,15 +1,13 @@
 #include "aoapplication.h"
 
-#include "file_functions.h"
-
 #include "aoconfig.h"
+#include "file_functions.h"
 
 #include <QColor>
 #include <QDebug>
+#include <QFile>
 #include <QSettings>
-#include <QStringList>
 #include <QTextStream>
-#include <QVector>
 
 QStringList AOApplication::get_callwords()
 {

@@ -1,9 +1,16 @@
 #include "aonotearea.h"
-#include "aonotepicker.h"
 
+#include "aoapplication.h"
+#include "aobutton.h"
+#include "aonotepicker.h"
 #include "courtroom.h"
 
 #include <QDebug>
+#include <QFile>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QTextStream>
+#include <QVBoxLayout>
 
 AONoteArea::AONoteArea(QWidget *p_parent, AOApplication *p_ao_app) : AOImageDisplay(p_parent, p_ao_app)
 {
@@ -22,11 +29,11 @@ void Courtroom::on_add_button_clicked()
   AOButton *f_hover = new AOButton(f_notepicker, ao_app);
   QHBoxLayout *f_layout = new QHBoxLayout(f_notepicker);
 
-  f_notepicker->m_line = f_line;
-  f_notepicker->m_button = f_button;
-  f_notepicker->m_layout = f_layout;
-  f_notepicker->m_delete_button = f_delete;
-  f_notepicker->m_hover = f_hover;
+  f_notepicker->ui_line = f_line;
+  f_notepicker->ui_button = f_button;
+  f_notepicker->ui_layout = f_layout;
+  f_notepicker->ui_delete_button = f_delete;
+  f_notepicker->ui_hover = f_hover;
   f_notepicker->setProperty("index", ui_note_area->m_layout->count() - 1);
 
   f_button->set_image("note_edit.png");
@@ -71,13 +78,13 @@ void Courtroom::set_note_files()
 
   QTextStream in(&config_file);
 
-  QByteArray t = "";
+  QByteArray t;
 
   for (int i = 0; i < ui_note_area->m_layout->count() - 1; ++i)
   {
     AONotePicker *f_notepicker = static_cast<AONotePicker *>(ui_note_area->m_layout->itemAt(i)->widget());
-    QString f_filestring = f_notepicker->real_file;
-    QString f_filename = f_notepicker->m_line->text();
+    QString f_filestring = f_notepicker->m_file;
+    QString f_filename = f_notepicker->ui_line->text();
 
     t += QString("%1 = %2 = %3\n\n").arg(i).arg(f_filestring).arg(f_filename).toUtf8();
   }

@@ -2,7 +2,6 @@
 
 #include <bass.h>
 
-#include <QFlags>
 #include <QMetaType>
 #include <QString>
 

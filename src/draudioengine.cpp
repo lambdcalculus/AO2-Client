@@ -2,9 +2,7 @@
 
 #include "draudioengine_p.h"
 
-#include <QCoreApplication>
-#include <QDebug>
-#include <QScopedPointer>
+#include <QTimer>
 
 static const int EVENT_TIMER_INTERVAL_DEFAULT = 100;
 

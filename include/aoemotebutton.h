@@ -2,12 +2,14 @@
 #define AOEMOTEBUTTON_H
 
 // src
-#include "aoapplication.h"
 #include "datatypes.h"
 
+class AOApplication;
+
 // qt
-#include <QLabel>
 #include <QPushButton>
+
+class QLabel;
 
 class AOEmoteButton : public QPushButton
 {
@@ -25,8 +27,10 @@ signals:
 
 private:
   AOApplication *ao_app = nullptr;
-  QLabel *w_selected = nullptr;
-  int m_emote_number = 0;
+
+  int m_index = 0;
+
+  QLabel *ui_selected = nullptr;
 
 private slots:
   void on_clicked();

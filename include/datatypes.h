@@ -2,11 +2,6 @@
 #define DATATYPES_H
 
 #include <QDateTime>
-#include <QMap>
-#include <QSharedPointer>
-#include <QString>
-
-#include <memory>
 
 class DREmote
 {
@@ -103,6 +98,22 @@ struct server_type
   QString desc;
   QString ip;
   int port;
+
+  QString to_info() const
+  {
+    QString r_info;
+
+    if (!name.isEmpty())
+    {
+      r_info = name;
+    }
+    else if (!ip.isEmpty())
+    {
+      r_info = ip + ":" + QString::number(port);
+    }
+
+    return r_info;
+  }
 };
 
 struct char_type

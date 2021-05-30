@@ -125,7 +125,7 @@ void AOConfigPrivate::read_file()
 
   gamemode = cfg.value("gamemode").toString();
   manual_gamemode = cfg.value("manual_gamemode", false).toBool();
-  timeofday = cfg.value("timeofday", "").toString();
+  timeofday = cfg.value("timeofday").toString();
   manual_timeofday = cfg.value("manual_timeofday", false).toBool();
   always_pre = cfg.value("always_pre", true).toBool();
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();

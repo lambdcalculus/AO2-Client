@@ -1,8 +1,15 @@
 #include "courtroom.h"
 
+#include "aoapplication.h"
+#include "aobutton.h"
+#include "aoconfig.h"
 #include "aoemotebutton.h"
+#include "theme.h"
 
+#include <QCheckBox>
+#include <QComboBox>
 #include <QDebug>
+#include <QLineEdit>
 
 void Courtroom::construct_emotes()
 {
@@ -30,7 +37,7 @@ void Courtroom::reconstruct_emotes()
     delete ui_emote_list.takeLast();
 
   // resize and move
-  set_size_and_pos(ui_emotes, "emotes");
+  set_size_and_pos(ui_emotes, "emotes", INI_DESIGN, ao_app);
 
   QPoint f_spacing = ao_app->get_button_spacing("emote_button_spacing", "courtroom_design.ini");
 
@@ -95,7 +102,7 @@ void Courtroom::set_emote_page()
     return;
 
   const int total_emotes = m_emote_list.length();
-  for (AOEmoteButton *i_button : ui_emote_list)
+  for (AOEmoteButton *i_button : qAsConst(ui_emote_list))
     i_button->hide();
 
   int total_pages = total_emotes / max_emotes_on_page;
@@ -134,7 +141,7 @@ void Courtroom::set_emote_dropdown()
   ui_emote_dropdown->clear();
 
   QStringList l_emote_list;
-  for (const DREmote &i_emote : m_emote_list)
+  for (const DREmote &i_emote : qAsConst(m_emote_list))
     l_emote_list.append(i_emote.comment);
   ui_emote_dropdown->addItems(l_emote_list);
 }

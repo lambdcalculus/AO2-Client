@@ -6,6 +6,8 @@
 #include <QScrollBar>
 #include <QTextCursor>
 
+const QRegExp AOTextArea::URL_REGEXP = QRegExp("\\b(https?://\\S+\\.\\S+)\\b");
+
 AOTextArea::AOTextArea(QWidget *p_parent) : QTextBrowser(p_parent)
 {}
 
@@ -24,7 +26,7 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message)
   // cheap workarounds ahoy
   p_message += " ";
   QString result = p_message.toHtmlEscaped().replace("\n", "<br>");
-  result = result.replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>");
+  result = result.replace(URL_REGEXP, "<a href='\\1'>\\1</a>");
 
   this->insertHtml(result);
 
@@ -44,7 +46,7 @@ void AOTextArea::append_error(QString p_message)
 
   p_message += " ";
   QString result = p_message.replace("\n", "<br>");
-  result = result.replace(omnis_dank_url_regex, "<a href='\\1'>\\1</a>");
+  result = result.replace(URL_REGEXP, "<a href='\\1'>\\1</a>");
 
   this->insertHtml("<font color='red'>" + result + "</font>");
 

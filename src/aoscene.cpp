@@ -1,9 +1,8 @@
 #include "aoscene.h"
-// src
-#include "courtroom.h"
+
+#include "aoapplication.h"
 #include "file_functions.h"
-// qt
-#include <QDebug>
+
 #include <QMovie>
 
 AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent), ao_app(p_ao_app)

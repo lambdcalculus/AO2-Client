@@ -1,8 +1,10 @@
 #include "aomovie.h"
 
-#include "courtroom.h"
+#include "aoapplication.h"
 #include "file_functions.h"
 #include "misc_functions.h"
+
+#include <QDebug>
 
 AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 {
@@ -22,13 +24,12 @@ AOMovie::~AOMovie()
 
 void AOMovie::set_play_once(bool p_play_once)
 {
-  play_once = p_play_once;
+  is_play_once = p_play_once;
 }
 
 void AOMovie::play(QString p_file, QString p_char)
 {
   m_movie->stop();
-  QVector<QString> f_vec;
   QString file_path = "";
 
   // Remove ! at the beginning of p_file if needed
@@ -76,6 +77,10 @@ void AOMovie::play(QString p_file, QString p_char)
   m_movie->start();
 }
 
+///
+/// \brief Searches and play the first interjection file it can find based on
+/// the provided character name and interjection name.
+///
 void AOMovie::play_interjection(QString p_char_name, QString p_interjection_name)
 {
   m_movie->stop();
@@ -126,7 +131,7 @@ void AOMovie::stop()
 
 void AOMovie::frame_change(int n_frame)
 {
-  if (n_frame == (m_movie->frameCount() - 1) && play_once)
+  if (n_frame == (m_movie->frameCount() - 1) && is_play_once)
   {
     // we need this or else the last frame wont show
     delay(m_movie->nextFrameDelay());
@@ -144,6 +149,11 @@ void AOMovie::combo_resize(int w, int h)
   m_movie->setScaledSize(f_size);
 }
 
+/*
+ * @brief Returns the state of the current movie. Refer to QMovie::state()
+ * for more details.
+ * @returns Current movie status
+ */
 QMovie::MovieState AOMovie::state()
 {
   return m_movie->state();
