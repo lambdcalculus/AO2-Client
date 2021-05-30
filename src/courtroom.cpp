@@ -1923,7 +1923,7 @@ bool Courtroom::request_username()
     {
       l_username = QInputDialog::getText(this, "Enter a name",
                                          "You must have a name to talk in OOC chat. Enter a name: ", QLineEdit::Normal,
-                                         "user", &ok);
+                                         nullptr, &ok);
     } while (ok && l_username.isEmpty());
     if (!ok)
       return false;
