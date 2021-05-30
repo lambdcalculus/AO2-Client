@@ -248,8 +248,9 @@ void Courtroom::enter_courtroom(int p_cid)
   l_current_field->setFocus();
   l_current_field->setCursorPosition(l_current_cursor_pos);
 
-  if (!is_first_showname_sent)
-    send_showname_packet(ao_config->showname());
+  const QString l_showname = ao_config->showname();
+  if (!l_showname.isEmpty() && !is_first_showname_sent)
+    send_showname_packet(l_showname);
 }
 
 void Courtroom::done_received()
