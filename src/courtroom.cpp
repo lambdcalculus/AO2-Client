@@ -95,7 +95,7 @@ void Courtroom::enter_courtroom(int p_cid)
   suppress_audio(false);
 
   const int l_prev_emote_id = m_emote_id;
-  const int l_prev_emote_page = m_emote_page;
+  const int l_prev_emote_page = m_current_emote_page;
 
   // widgets ===================================================================
   current_evidence_page = 0;
@@ -222,7 +222,7 @@ void Courtroom::enter_courtroom(int p_cid)
   else
   {
     m_emote_id = l_prev_emote_id;
-    m_emote_page = l_prev_emote_page;
+    m_current_emote_page = l_prev_emote_page;
     ui_emote_dropdown->setCurrentText(l_prev_emote);
   }
   set_emote_page();
@@ -248,8 +248,9 @@ void Courtroom::enter_courtroom(int p_cid)
   l_current_field->setFocus();
   l_current_field->setCursorPosition(l_current_cursor_pos);
 
-  if (!is_first_showname_sent)
-    send_showname_packet(ao_config->showname());
+  const QString l_showname = ao_config->showname();
+  if (!l_showname.isEmpty() && !is_first_showname_sent)
+    send_showname_packet(l_showname);
 }
 
 void Courtroom::done_received()
@@ -697,7 +698,7 @@ void Courtroom::send_showname_packet(QString p_showname)
   }
   else
   {
-    send_ooc_packet(ao_config->username(), QString("/showname %1").arg(p_showname));
+    send_ooc_packet(QString("/showname %1").arg(p_showname));
   }
 }
 
@@ -1537,7 +1538,7 @@ void Courtroom::start_chat_timer()
   double l_tick_rate = ao_config->chat_tick_interval();
   if (m_server_tick_rate.has_value())
     l_tick_rate = qMax(m_server_tick_rate.value(), 0);
-  l_tick_rate = qBound(l_tick_rate * (1.0 - qBound(0.4 * m_tick_speed, -1.0, 1.0)), 0.0, l_tick_rate * 2.0);
+  l_tick_rate = qBound(0.0, l_tick_rate * (1.0 - qBound(-1.0, 0.4 * m_tick_speed, 1.0)), l_tick_rate * 2.0);
   m_tick_timer->start(l_tick_rate);
 }
 
@@ -1570,7 +1571,7 @@ void Courtroom::next_chat_letter()
   {
     ++m_tick_step;
     const bool is_positive = f_character == Qt::Key_BraceRight;
-    m_tick_speed = qBound(m_tick_speed + (is_positive ? 1 : -1), -3, 3);
+    m_tick_speed = qBound(-3, m_tick_speed + (is_positive ? 1 : -1), 3);
     next_chat_letter();
     return;
   }
@@ -1917,30 +1918,19 @@ void Courtroom::set_character_position(QString p_pos)
  * @param ooc_name The username.
  * @param ooc_message The message.
  */
-void Courtroom::send_ooc_packet(QString ooc_name, QString ooc_message)
+void Courtroom::send_ooc_packet(QString ooc_message)
 {
-  if (ooc_name.trimmed().isEmpty())
+  while (ao_config->username().isEmpty())
   {
-    bool ok;
-    do
-    {
-      ooc_name = QInputDialog::getText(this, "Enter a name",
-                                       "You must have a name to talk in OOC chat. Enter a name: ", QLineEdit::Normal,
-                                       "user", &ok);
-    } while (ok && ooc_name.isEmpty());
-    if (!ok)
-      return;
-
-    ao_config->set_username(ooc_name);
+    ao_config->set_username(QInputDialog::getText(this, "Enter a name", "You must have a username to talk in OOC chat.",
+                                                  QLineEdit::Normal, nullptr));
   }
-
   if (ooc_message.trimmed().isEmpty())
   {
-    append_server_chatmessage("CLIENT", "You cannot send an empty message.");
+    append_server_chatmessage("CLIENT", "You cannot send empty messages.");
     return;
   }
-
-  QStringList l_content{ooc_name, ooc_message};
+  QStringList l_content{ao_config->username(), ooc_message};
   ao_app->send_server_packet(AOPacket("CT", l_content));
 }
 
@@ -1958,7 +1948,9 @@ void Courtroom::mod_called(QString p_ip)
 
 void Courtroom::on_ic_showname_editing_finished()
 {
-  set_showname(ui_ic_chat_showname->text());
+  const QString l_text = ui_ic_chat_showname->text().simplified();
+  ui_ic_chat_showname->setText(l_text);
+  set_showname(l_text);
 }
 
 void Courtroom::set_showname(QString p_showname)
@@ -1968,55 +1960,56 @@ void Courtroom::set_showname(QString p_showname)
 
 void Courtroom::on_ooc_name_editing_finished()
 {
-  ao_config->set_username(ui_ooc_chat_name->text());
+  const QString l_text = ui_ooc_chat_name->text().simplified();
+  ui_ooc_chat_name->setText(l_text);
+  ao_config->set_username(l_text);
 }
 
 void Courtroom::on_ooc_return_pressed()
 {
-  const QString ooc_name = ui_ooc_chat_name->text();
-  const QString ooc_message = ui_ooc_chat_message->text();
+  const QString l_message = ui_ooc_chat_message->text();
 
-  if (ooc_message.startsWith("/rainbow") && !is_rainbow_enabled)
+  if (l_message.startsWith("/rainbow") && !is_rainbow_enabled)
   {
     ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
     is_rainbow_enabled = true;
     return;
   }
-  else if (ooc_message.startsWith("/switch_am"))
+  else if (l_message.startsWith("/switch_am"))
   {
     on_switch_area_music_clicked();
     ui_ooc_chat_message->clear();
     return;
   }
-  else if (ooc_message.startsWith("/rollp"))
+  else if (l_message.startsWith("/rollp"))
   {
     m_effects_player->play_effect(ao_app->get_sfx("dice"));
   }
-  else if (ooc_message.startsWith("/roll"))
+  else if (l_message.startsWith("/roll"))
   {
     m_effects_player->play_effect(ao_app->get_sfx("dice"));
   }
-  else if (ooc_message.startsWith("/coinflip"))
+  else if (l_message.startsWith("/coinflip"))
   {
     m_effects_player->play_effect(ao_app->get_sfx("coinflip"));
   }
-  else if (ooc_message.startsWith("/tr "))
+  else if (l_message.startsWith("/tr "))
   {
     // Timer resume
-    int space_location = ooc_message.indexOf(" ");
+    int space_location = l_message.indexOf(" ");
 
     int timer_id;
     if (space_location == -1)
       timer_id = 0;
     else
-      timer_id = ooc_message.mid(space_location + 1).toInt();
+      timer_id = l_message.mid(space_location + 1).toInt();
     resume_timer(timer_id);
   }
-  else if (ooc_message.startsWith("/ts "))
+  else if (l_message.startsWith("/ts "))
   {
     // Timer set
-    QStringList arguments = ooc_message.split(" ");
+    QStringList arguments = l_message.split(" ");
     int size = arguments.size();
 
     // Note arguments[0] == "/ts", so every index (and thus length) is off by
@@ -2032,22 +2025,22 @@ void Courtroom::on_ooc_return_pressed()
     set_timer_timestep(timer_id, timestep_length);
     set_timer_firing(timer_id, firing_interval);
   }
-  else if (ooc_message.startsWith("/tp "))
+  else if (l_message.startsWith("/tp "))
   {
     // Timer pause
-    int space_location = ooc_message.indexOf(" ");
+    int space_location = l_message.indexOf(" ");
 
     int timer_id;
     if (space_location == -1)
       timer_id = 0;
     else
-      timer_id = ooc_message.mid(space_location + 1).toInt();
+      timer_id = l_message.mid(space_location + 1).toInt();
     pause_timer(timer_id);
   }
 
-  send_ooc_packet(ooc_name, ooc_message);
-
+  send_ooc_packet(l_message);
   ui_ooc_chat_message->clear();
+
   ui_ooc_chat_message->setFocus();
 }
 
@@ -2090,12 +2083,12 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
     f_pos = "";
   }
 
-  if (f_pos == "" || ui_ooc_chat_name->text() == "")
+  if (f_pos == "" || ao_config->username() == "")
     return;
 
   set_judge_enabled(f_pos == "jud");
 
-  ao_app->send_server_packet(AOPacket("CT#" + ui_ooc_chat_name->text() + "#/pos " + f_pos + "#%"));
+  ao_app->send_server_packet(AOPacket("CT#" + ao_config->username() + "#/pos " + f_pos + "#%"));
   // Uncomment later and remove above
   // Will only work in TSDR 4.3+ servers
   // ao_app->send_server_packet(AOPacket("SP#" + f_pos + "#%"));
@@ -2493,13 +2486,13 @@ void Courtroom::on_back_to_lobby_clicked()
 
 void Courtroom::on_char_select_left_clicked()
 {
-  --current_char_page;
+  --m_current_chr_page;
   set_char_select_page();
 }
 
 void Courtroom::on_char_select_right_clicked()
 {
-  ++current_char_page;
+  ++m_current_chr_page;
   set_char_select_page();
 }
 

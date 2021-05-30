@@ -425,8 +425,8 @@ void Courtroom::reset_widget_names()
       {"char_select", ui_char_select_background},
       {"back_to_lobby", ui_back_to_lobby},
       {"char_buttons", ui_char_buttons},
-      {"char_select_left", ui_char_select_left},
-      {"char_select_right", ui_char_select_right},
+      {"char_select_left", ui_chr_select_left},
+      {"char_select_right", ui_chr_select_right},
       {"spectator", ui_spectator},
   };
 }
@@ -961,11 +961,11 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_char_buttons, "char_buttons", INI_DESIGN, ao_app);
 
-  set_size_and_pos(ui_char_select_left, "char_select_left", INI_DESIGN, ao_app);
-  ui_char_select_left->set_image("arrow_left.png");
+  set_size_and_pos(ui_chr_select_left, "char_select_left", INI_DESIGN, ao_app);
+  ui_chr_select_left->set_image("arrow_left.png");
 
-  set_size_and_pos(ui_char_select_right, "char_select_right", INI_DESIGN, ao_app);
-  ui_char_select_right->set_image("arrow_right.png");
+  set_size_and_pos(ui_chr_select_right, "char_select_right", INI_DESIGN, ao_app);
+  ui_chr_select_right->set_image("arrow_right.png");
 
   set_size_and_pos(ui_spectator, "spectator", INI_DESIGN, ao_app);
 

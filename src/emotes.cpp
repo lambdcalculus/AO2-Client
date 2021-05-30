@@ -10,6 +10,7 @@
 #include <QComboBox>
 #include <QDebug>
 #include <QLineEdit>
+#include <QtMath>
 
 void Courtroom::construct_emotes()
 {
@@ -52,9 +53,9 @@ void Courtroom::reconstruct_emotes()
   emote_columns = ((ui_emotes->width() - button_width) / (x_spacing + button_width)) + 1;
   emote_rows = ((ui_emotes->height() - button_height) / (y_spacing + button_height)) + 1;
 
-  max_emotes_on_page = emote_columns * emote_rows;
+  m_page_max_emote_count = emote_columns * emote_rows;
 
-  for (int n = 0; n < max_emotes_on_page; ++n)
+  for (int n = 0; n < m_page_max_emote_count; ++n)
   {
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
@@ -81,7 +82,7 @@ void Courtroom::reconstruct_emotes()
 
 void Courtroom::reset_emote_page()
 {
-  m_emote_page = 0;
+  m_current_emote_page = 0;
   m_emote_id = 0;
 
   if (is_spectating())
@@ -101,36 +102,27 @@ void Courtroom::set_emote_page()
   if (is_spectating())
     return;
 
-  const int total_emotes = m_emote_list.length();
+  const int l_emote_count = m_emote_list.length();
   for (AOEmoteButton *i_button : qAsConst(ui_emote_list))
     i_button->hide();
 
-  int total_pages = total_emotes / max_emotes_on_page;
-  int emotes_on_page = 0;
+  const int l_page_count =
+      qFloor(l_emote_count / m_page_max_emote_count) + bool(l_emote_count % m_page_max_emote_count);
+  m_current_emote_page = qBound(0, m_current_emote_page, l_page_count - 1);
+  const int l_current_page_emote_count =
+      qBound(0, l_emote_count - m_current_emote_page * m_page_max_emote_count, m_page_max_emote_count);
 
-  if (total_emotes % max_emotes_on_page != 0)
-  {
-    ++total_pages;
-    // i. e. not on the last page
-    if (total_pages > m_emote_page + 1)
-      emotes_on_page = max_emotes_on_page;
-    else
-      emotes_on_page = total_emotes % max_emotes_on_page;
-  }
-  else
-    emotes_on_page = max_emotes_on_page;
-
-  if (total_pages > m_emote_page + 1)
+  if (m_current_emote_page + 1 < l_page_count)
     ui_emote_right->show();
 
-  if (m_emote_page > 0)
+  if (m_current_emote_page > 0)
     ui_emote_left->show();
 
-  for (int n_emote = 0; n_emote < emotes_on_page; ++n_emote)
+  for (int i = 0; i < l_current_page_emote_count; ++i)
   {
-    const int l_real_id = n_emote + m_emote_page * max_emotes_on_page;
-    AOEmoteButton *l_button = ui_emote_list.at(n_emote);
-    l_button->set_image(get_emote(l_real_id), l_real_id == m_emote_id);
+    const int l_real_i = i + m_current_emote_page * m_page_max_emote_count;
+    AOEmoteButton *l_button = ui_emote_list.at(i);
+    l_button->set_image(get_emote(l_real_i), l_real_i == m_emote_id);
     l_button->show();
   }
 }
@@ -160,19 +152,19 @@ DREmote Courtroom::get_current_emote()
 
 void Courtroom::select_emote(int p_id)
 {
-  const int l_min = m_emote_page * max_emotes_on_page;
-  const int l_max = (max_emotes_on_page - 1) + m_emote_page * max_emotes_on_page;
+  const int l_min = m_current_emote_page * m_page_max_emote_count;
+  const int l_max = (m_page_max_emote_count - 1) + m_current_emote_page * m_page_max_emote_count;
 
   const DREmote &l_prev_emote = get_emote(m_emote_id);
   if (m_emote_id >= l_min && m_emote_id <= l_max)
-    ui_emote_list.at(m_emote_id % max_emotes_on_page)->set_image(l_prev_emote, false);
+    ui_emote_list.at(m_emote_id % m_page_max_emote_count)->set_image(l_prev_emote, false);
 
   const int l_prev_emote_id = m_emote_id;
   m_emote_id = p_id;
   const DREmote &l_emote = get_emote(m_emote_id);
 
   if (m_emote_id >= l_min && m_emote_id <= l_max)
-    ui_emote_list.at(m_emote_id % max_emotes_on_page)->set_image(l_emote, true);
+    ui_emote_list.at(m_emote_id % m_page_max_emote_count)->set_image(l_emote, true);
 
   const int emote_mod = l_emote.modifier;
   if (l_prev_emote_id == m_emote_id) // toggle
@@ -189,12 +181,12 @@ void Courtroom::select_emote(int p_id)
 
 void Courtroom::on_emote_clicked(int p_id)
 {
-  select_emote(p_id + max_emotes_on_page * m_emote_page);
+  select_emote(p_id + m_page_max_emote_count * m_current_emote_page);
 }
 
 void Courtroom::on_emote_left_clicked()
 {
-  --m_emote_page;
+  --m_current_emote_page;
 
   set_emote_page();
 
@@ -203,8 +195,7 @@ void Courtroom::on_emote_left_clicked()
 
 void Courtroom::on_emote_right_clicked()
 {
-  qDebug() << "emote right clicked";
-  ++m_emote_page;
+  ++m_current_emote_page;
 
   set_emote_page();
 

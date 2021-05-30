@@ -86,7 +86,7 @@ public:
   // sets the character position
   void set_character_position(QString p_pos);
 
-  void send_ooc_packet(QString ooc_name, QString ooc_message);
+  void send_ooc_packet(QString ooc_message);
 
   void ignore_next_showname();
   void send_showname_packet(QString p_showname);
@@ -340,17 +340,17 @@ private:
   int defense_bar_state = 0;
   int prosecution_bar_state = 0;
 
-  int current_char_page = 0;
+  int m_current_chr_page = 0;
   int char_columns = 10;
   int char_rows = 9;
-  int max_chars_on_page = 90;
+  int m_page_max_chr_count = 90;
 
   QVector<DREmote> m_emote_list;
   int m_emote_id = 0;
-  int m_emote_page = 0;
+  int m_current_emote_page = 0;
   int emote_columns = 5;
   int emote_rows = 2;
-  int max_emotes_on_page = 10;
+  int m_page_max_emote_count = 10;
 
   //  inmchatlog_changed;
 
@@ -539,8 +539,8 @@ private:
 
   AOButton *ui_back_to_lobby = nullptr;
 
-  AOButton *ui_char_select_left = nullptr;
-  AOButton *ui_char_select_right = nullptr;
+  AOButton *ui_chr_select_left = nullptr;
+  AOButton *ui_chr_select_right = nullptr;
 
   AOButton *ui_spectator = nullptr;
 
