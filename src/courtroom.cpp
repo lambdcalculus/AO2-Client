@@ -698,7 +698,7 @@ void Courtroom::send_showname_packet(QString p_showname)
   }
   else
   {
-    send_ooc_packet(ao_config->username(), QString("/showname %1").arg(p_showname));
+    send_ooc_packet(QString("/showname %1").arg(p_showname));
   }
 }
 
@@ -1913,43 +1913,24 @@ void Courtroom::set_character_position(QString p_pos)
   set_judge_enabled(p_pos == "jud");
 }
 
-bool Courtroom::request_username()
-{
-  QString l_username = ao_config->username();
-  if (l_username.trimmed().isEmpty())
-  {
-    bool ok;
-    do
-    {
-      l_username = QInputDialog::getText(this, "Enter a name",
-                                         "You must have a name to talk in OOC chat. Enter a name: ", QLineEdit::Normal,
-                                         nullptr, &ok);
-    } while (ok && l_username.isEmpty());
-    if (!ok)
-      return false;
-    ao_config->set_username(l_username);
-  }
-  return true;
-}
-
 /**
  * @brief Send a OOC packet (CT) out to the server.
  * @param ooc_name The username.
  * @param ooc_message The message.
  */
-void Courtroom::send_ooc_packet(QString ooc_name, QString ooc_message)
+void Courtroom::send_ooc_packet(QString ooc_message)
 {
-  if (!request_username())
+  while (ao_config->username().isEmpty())
   {
-    append_server_chatmessage("CLIENT", "You cannot send a message without a username.");
-    return;
+    ao_config->set_username(QInputDialog::getText(this, "Enter a name", "You must have a username to talk in OOC chat.",
+                                                  QLineEdit::Normal, nullptr));
   }
   if (ooc_message.trimmed().isEmpty())
   {
     append_server_chatmessage("CLIENT", "You cannot send empty messages.");
     return;
   }
-  QStringList l_content{ooc_name, ooc_message};
+  QStringList l_content{ao_config->username(), ooc_message};
   ao_app->send_server_packet(AOPacket("CT", l_content));
 }
 
@@ -1986,50 +1967,49 @@ void Courtroom::on_ooc_name_editing_finished()
 
 void Courtroom::on_ooc_return_pressed()
 {
-  const QString ooc_name = ao_config->username();
-  const QString ooc_message = ui_ooc_chat_message->text();
+  const QString l_message = ui_ooc_chat_message->text();
 
-  if (ooc_message.startsWith("/rainbow") && !is_rainbow_enabled)
+  if (l_message.startsWith("/rainbow") && !is_rainbow_enabled)
   {
     ui_text_color->addItem("Rainbow");
     ui_ooc_chat_message->clear();
     is_rainbow_enabled = true;
     return;
   }
-  else if (ooc_message.startsWith("/switch_am"))
+  else if (l_message.startsWith("/switch_am"))
   {
     on_switch_area_music_clicked();
     ui_ooc_chat_message->clear();
     return;
   }
-  else if (ooc_message.startsWith("/rollp"))
+  else if (l_message.startsWith("/rollp"))
   {
     m_effects_player->play_effect(ao_app->get_sfx("dice"));
   }
-  else if (ooc_message.startsWith("/roll"))
+  else if (l_message.startsWith("/roll"))
   {
     m_effects_player->play_effect(ao_app->get_sfx("dice"));
   }
-  else if (ooc_message.startsWith("/coinflip"))
+  else if (l_message.startsWith("/coinflip"))
   {
     m_effects_player->play_effect(ao_app->get_sfx("coinflip"));
   }
-  else if (ooc_message.startsWith("/tr "))
+  else if (l_message.startsWith("/tr "))
   {
     // Timer resume
-    int space_location = ooc_message.indexOf(" ");
+    int space_location = l_message.indexOf(" ");
 
     int timer_id;
     if (space_location == -1)
       timer_id = 0;
     else
-      timer_id = ooc_message.mid(space_location + 1).toInt();
+      timer_id = l_message.mid(space_location + 1).toInt();
     resume_timer(timer_id);
   }
-  else if (ooc_message.startsWith("/ts "))
+  else if (l_message.startsWith("/ts "))
   {
     // Timer set
-    QStringList arguments = ooc_message.split(" ");
+    QStringList arguments = l_message.split(" ");
     int size = arguments.size();
 
     // Note arguments[0] == "/ts", so every index (and thus length) is off by
@@ -2045,24 +2025,21 @@ void Courtroom::on_ooc_return_pressed()
     set_timer_timestep(timer_id, timestep_length);
     set_timer_firing(timer_id, firing_interval);
   }
-  else if (ooc_message.startsWith("/tp "))
+  else if (l_message.startsWith("/tp "))
   {
     // Timer pause
-    int space_location = ooc_message.indexOf(" ");
+    int space_location = l_message.indexOf(" ");
 
     int timer_id;
     if (space_location == -1)
       timer_id = 0;
     else
-      timer_id = ooc_message.mid(space_location + 1).toInt();
+      timer_id = l_message.mid(space_location + 1).toInt();
     pause_timer(timer_id);
   }
 
-  if (request_username())
-  {
-    send_ooc_packet(ooc_name, ooc_message);
-    ui_ooc_chat_message->clear();
-  }
+  send_ooc_packet(l_message);
+  ui_ooc_chat_message->clear();
 
   ui_ooc_chat_message->setFocus();
 }
