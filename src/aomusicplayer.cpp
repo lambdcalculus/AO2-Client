@@ -1,6 +1,6 @@
 #include "aomusicplayer.h"
 
-#include <QDebug>
+#include "aoapplication.h"
 
 AOMusicPlayer::AOMusicPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObject(p_ao_app, p_parent)
 {

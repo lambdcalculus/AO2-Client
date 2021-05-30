@@ -1,5 +1,7 @@
 #include "version.h"
 
+#include <QString>
+
 int get_release_version()
 {
   return 1;

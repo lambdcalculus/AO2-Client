@@ -3,73 +3,53 @@
 
 #include "aopacket.h"
 #include "datatypes.h"
-#include "drdiscord.h"
 
-#include <QApplication>
-#include <QFile>
-#include <QVector>
-
-class NetworkManager;
-class Lobby;
-class Courtroom;
 class AOConfig;
 class AOConfigPanel;
+class Courtroom;
+class DRDiscord;
+class DRServerSocket;
+class Lobby;
+
+#include <QApplication>
+#include <QVector>
 
 class AOApplication : public QApplication
 {
   Q_OBJECT
 
 public:
+  static const QString MASTER_NAME;
+  static const QString MASTER_HOST;
+  static const int MASTER_PORT;
+  static const int MASTER_RECONNECT_DELAY;
+
   AOApplication(int &argc, char **argv);
   ~AOApplication();
 
-  AOConfig *ao_config = nullptr;
-  AOConfigPanel *ao_config_panel = nullptr;
-  DRDiscord *dr_discord = nullptr;
+  int get_client_id() const;
+  void set_client_id(int id);
 
-  NetworkManager *net_manager = nullptr;
+  void connect_to_master();
+  void send_master_packet(AOPacket packet);
+  void request_server_list();
+  void connect_to_server(server_type server);
+  void send_server_packet(AOPacket packet);
 
-  Lobby *m_lobby = nullptr;
-  bool lobby_constructed = false;
-
-  Courtroom *m_courtroom = nullptr;
-  bool courtroom_constructed = false;
-
+  Lobby *get_lobby() const;
   void construct_lobby();
   void destruct_lobby();
 
+  Courtroom *get_courtroom() const;
   void construct_courtroom();
   void destruct_courtroom();
 
-  void ms_packet_received(AOPacket *p_packet);
-  void server_packet_received(AOPacket *p_packet);
+  DRDiscord *get_discord() const;
 
-  void send_ms_packet(AOPacket *p_packet);
-  void send_server_packet(AOPacket *p_packet, bool encoded = true);
-
-  ///////////////server metadata////////////////
-#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-  bool m_FL_ackMS_enabled = false;
-#endif
-  bool m_FL_showname_enabled = false;
-  bool m_FL_chrini_enabled = false;
-  bool m_FL_chat_speed = false;
-
-  ///////////////loading info///////////////////
-
-  // player number, it's hardly used but might be needed for some old servers
-  int s_pv = 0;
-
-  QString server_software;
-
-  int char_list_size = 0;
-  int loaded_chars = 0;
-  int evidence_list_size = 0;
-  int loaded_evidence = 0;
-  int music_list_size = 0;
-  int loaded_music = 0;
-
-  bool courtroom_loaded = false;
+  bool has_message_acknowledgement_feature() const;
+  bool has_character_declaration_feature() const;
+  bool has_showname_declaration_feature() const;
+  bool has_chat_speed_feature() const;
 
   ///////////////////////////////////////////
 
@@ -95,8 +75,10 @@ public:
 
   QString sanitize_path(QString p_file);
 
-  QString find_asset_path(QStringList possible_roots, QStringList possible_exts = {""});
-  QString find_theme_asset_path(QString p_root, QStringList p_exts = {""});
+  QString find_asset_path(QStringList file_list, QStringList extension_list);
+  QString find_asset_path(QStringList file_list);
+  QString find_theme_asset_path(QString file, QStringList extension_list);
+  QString find_theme_asset_path(QString file);
 
   QString get_case_sensitive_path(QString p_file);
 
@@ -209,25 +191,63 @@ public:
   // Returns overlay at p_effect in char_path/overlay
   QStringList get_overlay(QString p_char, int p_effect);
 
+public slots:
+  void loading_cancelled();
+
 signals:
   void reload_theme();
 
 private:
-  QVector<server_type> server_list;
-  QVector<server_type> favorite_list;
+  AOConfig *ao_config = nullptr;
+  AOConfigPanel *ao_config_panel = nullptr;
+  DRDiscord *dr_discord = nullptr;
+
+  DRServerSocket *m_master_socket = nullptr;
+  DRServerSocket *m_server_socket = nullptr;
+
+  Lobby *m_lobby = nullptr;
+  bool is_lobby_constructed = false;
+
+  Courtroom *m_courtroom = nullptr;
+  bool is_courtroom_constructed = false;
+  bool is_courtroom_loaded = false;
+
+  ///////////////server metadata////////////////
+#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
+  bool feature_ackMS = false;
+#endif
+  bool feature_showname = false;
+  bool feature_chrini = false;
+  bool feature_chat_speed = false;
+
+  ///////////////loading info///////////////////
+  // player number, it's hardly used but might be needed for some old servers
+  int m_client_id = 0;
+
+  QString m_server_software;
+
+  int m_character_count = 0;
+  int m_loaded_characters = 0;
+  int m_evidence_count = 0;
+  int m_loaded_evidence = 0;
+  int m_music_count = 0;
+  int m_loaded_music = 0;
+
+  QVector<server_type> m_server_list;
+  QVector<server_type> m_favorite_server_list;
 
 private slots:
-  void ms_connect_finished(bool connected, bool will_retry);
+  void _p_send_master_handshake();
+  void _p_handle_master_error(QString);
+  void _p_handle_master_packet(AOPacket);
+  void _p_handle_server_disconnection();
+  void _p_handle_server_packet(AOPacket);
   void on_courtroom_closing();
   void on_courtroom_destroyed();
   void on_config_theme_changed();
   void on_config_reload_theme_requested();
   void on_config_gamemode_changed();
   void on_config_timeofday_changed();
-
-public slots:
-  void server_disconnected();
-  void loading_cancelled();
 };
 
 #endif // AOAPPLICATION_H

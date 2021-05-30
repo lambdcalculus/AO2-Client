@@ -1,45 +1,59 @@
 #include "courtroom.h"
 
 #include "aoapplication.h"
-#include "datatypes.h"
-#include "debug_functions.h"
+#include "aoblipplayer.h"
+#include "aobutton.h"
+#include "aocharmovie.h"
+#include "aoconfig.h"
+#include "aoevidencedescription.h"
+#include "aoevidencedisplay.h"
+#include "aoimagedisplay.h"
+#include "aolabel.h"
+#include "aolineedit.h"
+#include "aomovie.h"
+#include "aomusicplayer.h"
+#include "aonotearea.h"
+#include "aoscene.h"
+#include "aosfxplayer.h"
+#include "aoshoutplayer.h"
+#include "aosystemplayer.h"
+#include "aotextarea.h"
+#include "aotimer.h"
+#include "drtextedit.h"
 #include "file_functions.h"
-#include "hardware_functions.h"
-#include "lobby.h"
 #include "theme.h"
 
-#include <QBrush>
+#include <QCheckBox>
+#include <QComboBox>
 #include <QDebug>
-#include <QFileDialog>
-#include <QFont>
-#include <QGraphicsOpacityEffect>
-#include <QMessageBox>
+#include <QFile>
+#include <QListWidget>
 #include <QPropertyAnimation>
-#include <QRegExp>
-#include <QScrollBar>
-#include <QTextCharFormat>
-#include <QTime>
+#include <QScrollArea>
+#include <QSignalMapper>
+#include <QTimer>
+#include <QVBoxLayout>
 
 void Courtroom::create_widgets()
 {
-  keepalive_timer = new QTimer(this);
-  keepalive_timer->start(60000);
+  m_keepalive_timer = new QTimer(this);
+  m_keepalive_timer->start(60000);
 
-  chat_tick_timer = new QTimer(this);
-  chat_tick_timer->setSingleShot(true);
-  chat_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
+  m_tick_timer = new QTimer(this);
+  m_tick_timer->setSingleShot(true);
+  m_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
 
-  sfx_delay_timer = new QTimer(this);
-  sfx_delay_timer->setSingleShot(true);
+  m_sound_timer = new QTimer(this);
+  m_sound_timer->setSingleShot(true);
 
-  realization_timer = new QTimer(this);
-  realization_timer->setSingleShot(true);
+  m_flash_timer = new QTimer(this);
+  m_flash_timer->setSingleShot(true);
 
-  testimony_show_timer = new QTimer(this);
-  testimony_show_timer->setSingleShot(true);
+  m_testimony_show_timer = new QTimer(this);
+  m_testimony_show_timer->setSingleShot(true);
 
-  testimony_hide_timer = new QTimer(this);
-  testimony_hide_timer->setSingleShot(true);
+  m_testimony_hide_timer = new QTimer(this);
+  m_testimony_hide_timer->setSingleShot(true);
 
   char_button_mapper = new QSignalMapper(this);
 
@@ -135,11 +149,11 @@ void Courtroom::create_widgets()
   ui_note_area = new AONoteArea(this, ao_app);
   ui_note_area->add_button = new AOButton(ui_note_area, ao_app);
   ui_note_area->m_layout = new QVBoxLayout(ui_note_area);
-  note_scroll_area = new QScrollArea(this);
+  ui_note_scroll_area = new QScrollArea(this);
 
-  note_scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-  note_scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  note_scroll_area->setWidgetResizable(false);
+  ui_note_scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  ui_note_scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_note_scroll_area->setWidgetResizable(false);
 
   ui_set_notes = new AOButton(this, ao_app);
 
@@ -232,21 +246,21 @@ void Courtroom::create_widgets()
 
 void Courtroom::connect_widgets()
 {
-  connect(keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
+  connect(m_keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
 
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(on_app_reload_theme_requested()));
 
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
 
-  connect(sfx_delay_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
+  connect(m_sound_timer, SIGNAL(timeout()), this, SLOT(play_sfx()));
 
-  connect(chat_tick_timer, SIGNAL(timeout()), this, SLOT(next_chat_letter()));
+  connect(m_tick_timer, SIGNAL(timeout()), this, SLOT(next_chat_letter()));
 
-  connect(realization_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
+  connect(m_flash_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
-  connect(testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
-  connect(testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
+  connect(m_testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
+  connect(m_testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
 
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
@@ -365,7 +379,7 @@ void Courtroom::reset_widget_names()
       {"ooc_chat_name", ui_ooc_chat_name},
       {"music_search", ui_music_search},
       {"sfx_search", ui_sfx_search},
-      {"note_scroll_area", note_scroll_area},
+      {"note_scroll_area", ui_note_scroll_area},
       {"note_area", ui_note_area},
       // add_button
       // m_layout
@@ -439,7 +453,7 @@ void Courtroom::set_widget_names()
   reset_widget_names();
 
   // set existing widget names
-  for (QString widget_name : widget_names.keys())
+  for (const QString &widget_name : widget_names.keys())
     widget_names[widget_name]->setObjectName(widget_name);
 
   // setup table of widgets and names
@@ -552,18 +566,15 @@ void Courtroom::set_widgets()
   {
     qDebug() << "W: did not find courtroom width or height in " << filename;
 
-    this->resize(714, 668);
+    resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
   }
   else
   {
-    m_courtroom_width = f_courtroom.width;
-    m_courtroom_height = f_courtroom.height;
-
-    this->resize(f_courtroom.width, f_courtroom.height);
+    resize(f_courtroom.width, f_courtroom.height);
   }
 
   ui_background->move(0, 0);
-  ui_background->resize(m_courtroom_width, m_courtroom_height);
+  ui_background->resize(size());
   ui_background->set_image("courtroombackground.png");
 
   set_size_and_pos(ui_viewport, "viewport", INI_DESIGN, ao_app);
@@ -803,23 +814,23 @@ void Courtroom::set_widgets()
     // set_image first tries the gamemode-timeofday folder, then the theme
     // folder, then falls back to the default theme
     ui_change_character->set_image("changecharacter.png");
-    if (ui_change_character->image_path.isEmpty())
+    if (ui_change_character->get_image().isEmpty())
       ui_change_character->setText("Change Character");
 
     ui_call_mod->set_image("callmod.png");
-    if (ui_call_mod->image_path.isEmpty())
+    if (ui_call_mod->get_image().isEmpty())
       ui_call_mod->setText("Call Mod");
 
     ui_switch_area_music->set_image("switch_area_music.png");
-    if (ui_switch_area_music->image_path.isEmpty())
+    if (ui_switch_area_music->get_image().isEmpty())
       ui_switch_area_music->setText("A/M");
 
     ui_config_panel->set_image("config_panel.png");
-    if (ui_config_panel->image_path.isEmpty())
+    if (ui_config_panel->get_image().isEmpty())
       ui_config_panel->setText("Config");
 
     ui_note_button->set_image("notebutton.png");
-    if (ui_note_button->image_path.isEmpty())
+    if (ui_note_button->get_image().isEmpty())
       ui_note_button->setText("Notes");
   }
 
@@ -857,7 +868,7 @@ void Courtroom::set_widgets()
       QString image = label_images[i].toLower() + ".png";
       ui_label_images[i]->set_image(image);
 
-      if (!ui_label_images[i]->image_path.isEmpty())
+      if (!ui_label_images[i]->get_image().isEmpty())
         ui_checks[i]->setText("");
       else
         ui_checks[i]->setText(label_images[i]);
@@ -869,7 +880,7 @@ void Courtroom::set_widgets()
       QString image = label_images[j].toLower() + ".png";
       ui_label_images[j]->set_image(image);
 
-      if (!ui_label_images[j]->image_path.isEmpty())
+      if (!ui_label_images[j]->get_image().isEmpty())
         ui_labels[i]->setText("");
       else
         ui_labels[i]->setText(label_images[j]);
@@ -964,14 +975,14 @@ void Courtroom::set_widgets()
   ui_set_notes->set_image("set_notes.png");
   ui_note_area->m_layout->setSpacing(10);
   set_size_and_pos(ui_note_area, "note_area", INI_DESIGN, ao_app);
-  set_size_and_pos(note_scroll_area, "note_area", INI_DESIGN, ao_app);
-  note_scroll_area->setWidget(ui_note_area);
+  set_size_and_pos(ui_note_scroll_area, "note_area", INI_DESIGN, ao_app);
+  ui_note_scroll_area->setWidget(ui_note_area);
   ui_note_area->set_image("note_area.png");
   ui_note_area->add_button->set_image("add_button.png");
   ui_note_area->add_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   ui_note_area->setLayout(ui_note_area->m_layout);
   ui_note_area->show();
-  note_scroll_area->hide();
+  ui_note_scroll_area->hide();
 
   list_note_files();
 
@@ -1143,7 +1154,7 @@ void Courtroom::delete_widget(QWidget *p_widget)
     grand_parent = this;
 
   // set new parent
-  for (QWidget *child : p_widget->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly))
+  for (QWidget *child : p_widget->findChildren<QWidget *>(nullptr, Qt::FindDirectChildrenOnly))
     child->setParent(grand_parent);
 
   // delete widget
@@ -1153,7 +1164,7 @@ void Courtroom::delete_widget(QWidget *p_widget)
 void Courtroom::load_effects()
 {
   // Close any existing effects to prevent memory leaks
-  for (QWidget *widget : ui_effects)
+  for (QWidget *widget : qAsConst(ui_effects))
     delete_widget(widget);
 
   // And create new effects
@@ -1192,7 +1203,7 @@ void Courtroom::load_effects()
 
 void Courtroom::load_free_blocks()
 {
-  for (QWidget *widget : ui_free_blocks)
+  for (QWidget *widget : qAsConst(ui_free_blocks))
     delete_widget(widget);
 
   // And create new free block buttons
@@ -1224,7 +1235,7 @@ void Courtroom::load_free_blocks()
 
 void Courtroom::load_shouts()
 {
-  for (QWidget *widget : ui_shouts)
+  for (QWidget *widget : qAsConst(ui_shouts))
     delete_widget(widget);
 
   // And create new shouts
@@ -1266,7 +1277,7 @@ void Courtroom::load_shouts()
 
 void Courtroom::load_wtce()
 {
-  for (QWidget *widget : ui_wtce)
+  for (QWidget *widget : qAsConst(ui_wtce))
     delete_widget(widget);
 
   // And create new wtce buttons
@@ -1365,7 +1376,7 @@ void Courtroom::set_judge_wtce()
   }
   else
   {
-    for (AOButton *i_wtce : ui_wtce)
+    for (AOButton *i_wtce : qAsConst(ui_wtce))
       i_wtce->show();
   }
 }
@@ -1433,12 +1444,12 @@ void Courtroom::set_mute_list()
 
   QStringList sorted_mute_list;
 
-  for (char_type i_char : m_chr_list)
+  for (const char_type &i_char : qAsConst(m_chr_list))
     sorted_mute_list.append(i_char.name);
 
   sorted_mute_list.sort();
 
-  for (QString i_chr_name : sorted_mute_list)
+  for (const QString &i_chr_name : sorted_mute_list)
   {
     QListWidgetItem *i_item = new QListWidgetItem(i_chr_name, ui_mute_list);
     i_item->setFlags(i_item->flags() | Qt::ItemFlag::ItemIsUserCheckable);

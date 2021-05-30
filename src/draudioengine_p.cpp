@@ -11,6 +11,7 @@
 
 #include <QDebug>
 #include <QGuiApplication>
+#include <QTimer>
 
 static const int EVENT_TIMER_INTERVAL_DEFAULT = 100;
 

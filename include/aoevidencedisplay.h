@@ -1,12 +1,10 @@
 #ifndef AOEVIDENCEDISPLAY_H
 #define AOEVIDENCEDISPLAY_H
 
-#include <QLabel>
-#include <QMovie>
+class AOApplication;
+class AOSfxPlayer;
 
-#include "aoapplication.h"
-#include "aopixmap.h"
-#include "aosfxplayer.h"
+#include <QLabel>
 
 class AOEvidenceDisplay : public QLabel
 {
@@ -21,8 +19,10 @@ public:
 private:
   AOApplication *ao_app = nullptr;
   AOSfxPlayer *dr_sfx = nullptr;
+
   QMovie *m_movie = nullptr;
-  QLabel *w_icon = nullptr;
+
+  QLabel *ui_icon = nullptr;
 
 private slots:
   void frame_change(int p_frame);

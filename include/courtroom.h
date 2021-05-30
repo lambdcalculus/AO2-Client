@@ -1,52 +1,49 @@
 #ifndef COURTROOM_H
 #define COURTROOM_H
 
-#include "aoblipplayer.h"
-#include "aobutton.h"
-#include "aocharbutton.h"
-#include "aocharmovie.h"
-#include "aoconfig.h"
-#include "aoconfigpanel.h"
-#include "aoemotebutton.h"
-#include "aoevidencebutton.h"
-#include "aoevidencedescription.h"
-#include "aoevidencedisplay.h"
-#include "aoimagedisplay.h"
-#include "aolabel.h"
-#include "aolineedit.h"
-#include "aomovie.h"
-#include "aomusicplayer.h"
-#include "aonotearea.h"
-#include "aonotepad.h"
-#include "aopacket.h"
-#include "aoscene.h"
-#include "aosfxplayer.h"
-#include "aoshoutplayer.h"
-#include "aosystemplayer.h"
-#include "aotextarea.h"
-#include "aotimer.h"
 #include "datatypes.h"
-#include "draudioengine.h"
-
-#include <QCheckBox>
-#include <QCloseEvent>
-#include <QComboBox>
-#include <QDateTime>
-#include <QLineEdit>
-#include <QListWidget>
-#include <QMainWindow>
-#include <QMap>
-#include <QPlainTextEdit>
-#include <QPropertyAnimation>
-#include <QQueue>
-#include <QRect>
-#include <QSignalMapper>
-#include <QSlider>
-#include <QStack>
-#include <QTextBrowser>
-#include <QVector>
 
 class AOApplication;
+class AOBlipPlayer;
+class AOButton;
+class AOCharButton;
+class AOCharMovie;
+class AOConfig;
+class AOEmoteButton;
+class AOEvidenceButton;
+class AOEvidenceDescription;
+class AOEvidenceDisplay;
+class AOImageDisplay;
+class AOLabel;
+class AOLineEdit;
+class AOMovie;
+class AOMusicPlayer;
+class AONoteArea;
+class AONotepad;
+class AOScene;
+class AOSfxPlayer;
+class AOShoutPlayer;
+class AOSystemPlayer;
+class AOTextArea;
+class AOTimer;
+class DRTextEdit;
+
+#include <QMainWindow>
+#include <QMap>
+#include <QModelIndex>
+#include <QQueue>
+#include <QStack>
+
+class QCheckBox;
+class QComboBox;
+class QLineEdit;
+class QListWidget;
+class QListWidgetItem;
+class QPropertyAnimation;
+class QScrollArea;
+class QSignalMapper;
+
+#include <optional>
 
 class Courtroom : public QMainWindow
 {
@@ -57,7 +54,6 @@ public:
   ~Courtroom();
 
   void append_char(char_type p_char);
-  void append_evidence(evi_type p_evi);
   void set_area_list(QStringList area_list);
   void set_music_list(QStringList music_list);
 
@@ -92,6 +88,7 @@ public:
 
   void send_ooc_packet(QString ooc_name, QString ooc_message);
 
+  void ignore_next_showname();
   void send_showname_packet(QString p_showname);
 
   // called when a DONE#% from the server was received
@@ -222,60 +219,58 @@ signals:
   void closing();
 
 private:
+  static const int DEFAULT_WIDTH;
+  static const int DEFAULT_HEIGHT;
+
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
-  QTimer *m_reload_delay = nullptr;
 
-  int m_courtroom_width = 714;
-  int m_courtroom_height = 668;
-
-  int m_viewport_x = 0;
-  int m_viewport_y = 0;
-
-  int m_viewport_width = 256;
-  int m_viewport_height = 192;
+  QTimer *m_reload_timer = nullptr;
 
   QVector<char_type> m_chr_list;
   QVector<evi_type> m_evidence_list;
   QStringList m_area_list;
   QStringList m_music_list;
-  QVector<QString> note_list;
 
   QSignalMapper *char_button_mapper = nullptr;
 
   // triggers ping_server() every 60 seconds
-  QTimer *keepalive_timer = nullptr;
+  QTimer *m_keepalive_timer = nullptr;
 
   // maintains a timer for how fast messages tick onto screen
-  QTimer *chat_tick_timer = nullptr;
-  std::optional<int> m_server_chat_tick_rate;
-  int m_chat_tick_speed = 0;
+  QTimer *m_tick_timer = nullptr;
+  std::optional<int> m_server_tick_rate;
+  int m_tick_speed = 0;
   // which tick position(character in chat message) we are at
-  int tick_pos = 0;
-  bool ignore_next_character = false;
+  int m_tick_step = 0;
+  bool is_ignore_next_letter = false;
   // used to determine how often blips sound
-  int blip_pos = 0;
-  int rainbow_counter = 0;
-  bool m_showname_sent = false;
-  bool rainbow_appended = false;
-  bool note_shown = false;
+  int m_blip_step = 0;
+  int m_rainbow_step = 0;
+  bool is_first_showname_sent = false;
+  bool is_next_showname_ignored = false;
+  bool is_rainbow_enabled = false;
+  bool is_note_shown = false;
   bool contains_add_button = false;
 
   //////////////
-  QScrollArea *note_scroll_area = nullptr;
+  QScrollArea *ui_note_scroll_area = nullptr;
 
   // delay before sfx plays
-  QTimer *sfx_delay_timer = nullptr;
+  QTimer *m_sound_timer = nullptr;
 
   // keeps track of how long realization is visible(it's just a white square and
   // should be visible less than a second)
-  QTimer *realization_timer = nullptr;
+  QTimer *m_flash_timer = nullptr;
 
   // times how long the blinking testimony should be shown(green one in the
   // corner)
-  QTimer *testimony_show_timer = nullptr;
+  static const int TESTIMONY_SHOW_INTERVAL = 1500;
+  QTimer *m_testimony_show_timer = nullptr;
   // times how long the blinking testimony should be hidden
-  QTimer *testimony_hide_timer = nullptr;
+  static const int TESTIMONY_HIDE_INTERVAL = 500;
+  QTimer *m_testimony_hide_timer = nullptr;
+  bool is_testimony_in_progress = false;
 
   // Generate a File Name based on the time you launched the client
   QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
@@ -291,27 +286,15 @@ private:
   static const QString INI_CONFIG;
   static const QString INI_SOUNDS;
 
-  // every time point in char.inis times this equals the final time
-  const int time_mod = 40;
-
-  static const int chatmessage_size = 16;
-  QString m_chatmessage[chatmessage_size];
+  static const int MESSAGE_SIZE = 16;
+  QString m_chatmessage[MESSAGE_SIZE];
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message;
 
-  QColor m_base_string_color;
-  QString m_string_color;
-
-  QStack<QString> m_color_stack;
-
-  bool testimony_in_progress = false;
-
-  // in milliseconds
-  const int testimony_show_time = 1500;
-
-  // in milliseconds
-  const int testimony_hide_time = 500;
+  QColor m_message_color;
+  QString m_message_color_name;
+  QStack<QString> m_message_color_stack;
 
   // char id, muted or not
   QMap<int, bool> mute_map;
@@ -745,12 +728,12 @@ public slots:
   void stop_all_audio();
 
 private:
-  bool m_audio_mute = false;
   AOSfxPlayer *m_effects_player = nullptr;
   AOShoutPlayer *m_shouts_player = nullptr;
   AOSystemPlayer *m_system_player = nullptr;
   AOMusicPlayer *m_music_player = nullptr;
   AOBlipPlayer *m_blips_player = nullptr;
+  bool is_audio_muted = false;
 
   // QWidget interface
 protected:

@@ -1,8 +1,8 @@
 #ifndef FILE_FUNCTIONS_H
 #define FILE_FUNCTIONS_H
 
-#include <QString>
-#include <QStringList>
+class QString;
+class QStringList;
 
 QStringList animated_or_static_extensions();
 QStringList animated_extensions();

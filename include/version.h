@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QString>
+class QString;
 
 int get_release_version();
 int get_major_version();

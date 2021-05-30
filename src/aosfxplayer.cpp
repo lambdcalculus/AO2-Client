@@ -1,9 +1,8 @@
 #include "aosfxplayer.h"
 
+#include "aoapplication.h"
 #include "draudioengine.h"
 #include "file_functions.h"
-
-#include <string.h>
 
 #include <QDebug>
 

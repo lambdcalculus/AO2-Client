@@ -1,23 +1,22 @@
 #ifndef AOCONFIGPANEL_H
 #define AOCONFIGPANEL_H
 
-#include "aoconfig.h"
-#include "aoguiloader.h"
 #include "draudioengine.h"
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QSlider>
-#include <QSpinBox>
-#include <QTabWidget>
+class AOApplication;
+class AOConfig;
+
 #include <QWidget>
 
-class AOApplication;
+class QCheckBox;
+class QComboBox;
+class QGroupBox;
+class QLabel;
+class QLineEdit;
+class QPushButton;
+class QRadioButton;
+class QSlider;
+class QSpinBox;
 
 class AOConfigPanel : public QWidget
 {
@@ -29,11 +28,11 @@ public:
 public slots:
   void on_config_reload_theme_requested();
 
-protected:
-  void showEvent(QShowEvent *event);
-
 signals:
   void reload_theme();
+
+protected:
+  void showEvent(QShowEvent *event) override;
 
 private:
   void refresh_theme_list();
@@ -60,66 +59,59 @@ private slots:
 private:
   // FIXME This dependency shouldn't have come to exist.
   AOApplication *ao_app = nullptr;
-
   // driver
   AOConfig *m_config = nullptr;
   DRAudioEngine *m_engine = nullptr;
-
   // behaviour
-  QPushButton *w_save = nullptr;
-  QPushButton *w_close = nullptr;
-  QCheckBox *w_autosave = nullptr;
-
+  QPushButton *ui_save = nullptr;
+  QPushButton *ui_close = nullptr;
+  QCheckBox *ui_autosave = nullptr;
   // general
-  QLineEdit *w_username = nullptr;
-  QLineEdit *w_callwords = nullptr;
-  QCheckBox *w_server_alerts = nullptr;
-
-  QGroupBox *w_discord_presence = nullptr;
-  QCheckBox *w_discord_hide_server = nullptr;
-  QCheckBox *w_discord_hide_character = nullptr;
-
+  QLineEdit *ui_username = nullptr;
+  QLineEdit *ui_callwords = nullptr;
+  QCheckBox *ui_server_alerts = nullptr;
+  QGroupBox *ui_discord_presence = nullptr;
+  QCheckBox *ui_discord_hide_server = nullptr;
+  QCheckBox *ui_discord_hide_character = nullptr;
   // game
-  QComboBox *w_theme = nullptr;
-  QPushButton *w_reload_theme = nullptr;
-  QComboBox *w_gamemode = nullptr;
-  QCheckBox *w_manual_gamemode = nullptr;
-  QComboBox *w_timeofday = nullptr;
-  QCheckBox *w_manual_timeofday = nullptr;
-  QLineEdit *w_showname = nullptr;
-  QCheckBox *w_always_pre = nullptr;
-  QSpinBox *w_chat_tick_interval = nullptr;
-
+  QComboBox *ui_theme = nullptr;
+  QPushButton *ui_reload_theme = nullptr;
+  QComboBox *ui_gamemode = nullptr;
+  QCheckBox *ui_manual_gamemode = nullptr;
+  QComboBox *ui_timeofday = nullptr;
+  QCheckBox *ui_manual_timeofday = nullptr;
+  QLineEdit *ui_showname = nullptr;
+  QCheckBox *ui_always_pre = nullptr;
+  QSpinBox *ui_chat_tick_interval = nullptr;
   // IC Chatlog
-  QSpinBox *w_log_max_lines = nullptr;
-  QCheckBox *w_log_display_timestamp = nullptr;
-  QCheckBox *w_log_display_self_highlight = nullptr;
-  QCheckBox *w_log_format_use_newline = nullptr;
-  QCheckBox *w_log_display_empty_messages = nullptr;
-  QCheckBox *w_log_display_music_switch = nullptr;
-  QRadioButton *w_log_orientation_top_down = nullptr;
-  QRadioButton *w_log_orientation_bottom_up = nullptr;
-  QCheckBox *w_log_is_recording = nullptr;
-
+  QSpinBox *ui_log_max_lines = nullptr;
+  QCheckBox *ui_log_display_timestamp = nullptr;
+  QCheckBox *ui_log_display_self_highlight = nullptr;
+  QCheckBox *ui_log_format_use_newline = nullptr;
+  QCheckBox *ui_log_display_empty_messages = nullptr;
+  QCheckBox *ui_log_display_music_switch = nullptr;
+  QRadioButton *ui_log_orientation_top_down = nullptr;
+  QRadioButton *ui_log_orientation_bottom_up = nullptr;
+  QCheckBox *ui_log_is_recording = nullptr;
   // audio
-  QComboBox *w_device = nullptr;
-  QCheckBox *w_favorite_device = nullptr;
-  QSlider *w_master = nullptr;
-  QLabel *w_master_value = nullptr;
-  QGroupBox *w_suppress_background_audio = nullptr;
-  QSlider *w_system = nullptr;
-  QLabel *w_system_value = nullptr;
-  QSlider *w_effect = nullptr;
-  QCheckBox *w_effect_ignore_suppression = nullptr;
-  QLabel *w_effect_value = nullptr;
-  QSlider *w_music = nullptr;
-  QCheckBox *w_music_ignore_suppression = nullptr;
-  QLabel *w_music_value = nullptr;
-  QSlider *w_blip = nullptr;
-  QCheckBox *w_blip_ignore_suppression = nullptr;
-  QLabel *w_blip_value = nullptr;
-  QSpinBox *w_blip_rate = nullptr;
-  QCheckBox *w_blank_blips = nullptr;
+  QComboBox *ui_device = nullptr;
+  QCheckBox *ui_favorite_device = nullptr;
+  QSlider *ui_master = nullptr;
+  QLabel *ui_master_value = nullptr;
+  QGroupBox *ui_suppress_background_audio = nullptr;
+  QSlider *ui_system = nullptr;
+  QLabel *ui_system_value = nullptr;
+  QSlider *ui_effect = nullptr;
+  QCheckBox *ui_effect_ignore_suppression = nullptr;
+  QLabel *ui_effect_value = nullptr;
+  QSlider *ui_music = nullptr;
+  QCheckBox *ui_music_ignore_suppression = nullptr;
+  QLabel *ui_music_value = nullptr;
+  QSlider *ui_blip = nullptr;
+  QCheckBox *ui_blip_ignore_suppression = nullptr;
+  QLabel *ui_blip_value = nullptr;
+  QSpinBox *ui_blip_rate = nullptr;
+  QCheckBox *ui_blank_blips = nullptr;
 
 private slots:
   void username_editing_finished();

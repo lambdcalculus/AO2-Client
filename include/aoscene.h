@@ -1,10 +1,10 @@
 #ifndef AOSCENE_H
 #define AOSCENE_H
 
-#include <QLabel>
-
-class Courtroom;
 class AOApplication;
+class Courtroom;
+
+#include <QLabel>
 
 class AOScene : public QLabel
 {
@@ -18,6 +18,7 @@ public:
 
 private:
   AOApplication *ao_app = nullptr;
+
   QMovie *m_reader = nullptr;
 };
 

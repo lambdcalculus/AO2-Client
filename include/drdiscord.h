@@ -2,12 +2,10 @@
 
 #include <discord_rpc.h>
 
-#include <QDateTime>
-#include <QFlags>
 #include <QObject>
 #include <QPointer>
-#include <QString>
-#include <QTimer>
+
+class QTimer;
 
 #include <optional>
 
@@ -45,12 +43,12 @@ public:
   bool is_connected() const;
 
 public slots:
-  void set_options(const Options &f_options);
-  void set_option(const Option &f_option, const bool p_enabled);
+  void set_options(const DRDiscord::Options &f_options);
+  void set_option(const DRDiscord::Option &f_option, const bool p_enabled);
   void set_presence(const bool p_enabled);
   void set_hide_server(const bool p_enabled);
   void set_hide_character(const bool p_enabled);
-  void set_state(const State f_state);
+  void set_state(const DRDiscord::State f_state);
   void set_server_name(const QString &f_server_name);
   void clear_server_name();
   void set_character_name(const QString &f_character_name);
@@ -60,8 +58,8 @@ public slots:
   void stop();
 
 signals:
-  void options_changed(Options);
-  void state_changed(State);
+  void options_changed(DRDiscord::Options);
+  void state_changed(DRDiscord::State);
   void server_name_changed(QString);
   void server_name_cleared();
   void character_name_changed(QString);
@@ -83,9 +81,4 @@ private:
 
 private slots:
   void on_update_queued();
-
-  /*
-signals:
-  void presence_changed(QPrivateSignal);
-  */
 };

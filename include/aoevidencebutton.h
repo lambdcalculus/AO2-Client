@@ -1,11 +1,10 @@
 #ifndef AOEVIDENCEBUTTON_H
 #define AOEVIDENCEBUTTON_H
 
-#include "aoapplication.h"
-#include "aoimagedisplay.h"
+class AOApplication;
+class AOImageDisplay;
 
 #include <QPushButton>
-#include <QString>
 
 class AOEvidenceButton : public QPushButton
 {
@@ -17,30 +16,27 @@ public:
   void reset();
   void set_image(QString p_image);
   void set_theme_image(QString p_image);
-  void set_id(int p_id)
-  {
-    m_id = p_id;
-  }
+  void set_id(int p_id);
 
   void set_selected(bool p_selected);
 
-private:
-  AOApplication *ao_app = nullptr;
-
-  AOImageDisplay *ui_selected = nullptr;
-  AOImageDisplay *ui_selector = nullptr;
-
-  int m_id = 0;
+signals:
+  void evidence_clicked(int p_id);
+  void evidence_double_clicked(int p_id);
+  void on_hover(int p_id, bool p_state);
 
 protected:
   void enterEvent(QEvent *e);
   void leaveEvent(QEvent *e);
   void mouseDoubleClickEvent(QMouseEvent *e);
 
-signals:
-  void evidence_clicked(int p_id);
-  void evidence_double_clicked(int p_id);
-  void on_hover(int p_id, bool p_state);
+private:
+  AOApplication *ao_app = nullptr;
+
+  int m_index = 0;
+
+  AOImageDisplay *ui_selected = nullptr;
+  AOImageDisplay *ui_selector = nullptr;
 
 private slots:
   void on_clicked();

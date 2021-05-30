@@ -7,9 +7,6 @@ class DRAudioEngine : public QObject
   Q_OBJECT
 
 public:
-  DRAudioEngine(QObject *p_parent = nullptr);
-  ~DRAudioEngine();
-
   static std::optional<DRAudioDevice> get_device();
   static std::optional<DRAudioDevice> get_favorite_device();
   static QList<DRAudioDevice> get_device_list();
@@ -21,6 +18,9 @@ public:
   static bool is_option(DRAudio::Option p_option);
   static bool is_suppressed();
   static bool is_suppress_background_audio();
+
+  DRAudioEngine(QObject *p_parent = nullptr);
+  ~DRAudioEngine();
 
 public slots:
   void set_device(DRAudioDevice p_device);

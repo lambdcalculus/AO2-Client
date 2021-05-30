@@ -10,11 +10,11 @@ class AOEvidenceDescription : public QPlainTextEdit
 public:
   AOEvidenceDescription(QWidget *parent);
 
-protected:
-  void mouseDoubleClickEvent(QMouseEvent *e);
-
 signals:
   void double_clicked();
+
+protected:
+  void mouseDoubleClickEvent(QMouseEvent *e);
 
 private slots:
   void on_enter_pressed();

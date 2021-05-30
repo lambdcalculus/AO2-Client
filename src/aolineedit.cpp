@@ -2,8 +2,8 @@
 
 AOLineEdit::AOLineEdit(QWidget *parent) : QLineEdit(parent)
 {
-  this->setReadOnly(true);
-  this->setFrame(false);
+  setReadOnly(true);
+  setFrame(false);
 
   connect(this, SIGNAL(returnPressed()), this, SLOT(on_enter_pressed()));
 }
@@ -11,7 +11,6 @@ AOLineEdit::AOLineEdit(QWidget *parent) : QLineEdit(parent)
 void AOLineEdit::mouseDoubleClickEvent(QMouseEvent *e)
 {
   QLineEdit::mouseDoubleClickEvent(e);
-
   this->setReadOnly(false);
 }
 

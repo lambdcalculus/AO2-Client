@@ -1,12 +1,13 @@
 #include "aoapplication.h"
 
+#include "aoconfig.h"
 #include "courtroom.h"
 #include "drpather.h"
 #include "file_functions.h"
 
-#include <QDebug>
 #include <QDir>
-#include <QStandardPaths>
+#include <QFile>
+#include <QFileInfo>
 
 // Copied over from Vanilla.
 // As said in the comments there, this is a *super broad* definition.
@@ -49,7 +50,7 @@ QString AOApplication::get_music_path(QString p_song)
 
 QString AOApplication::get_background_path(QString p_file)
 {
-  if (courtroom_constructed)
+  if (is_courtroom_constructed)
   {
     return get_case_sensitive_path(m_courtroom->get_background_path(p_file));
   }
@@ -150,9 +151,9 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
  * @return The first case-sensitive root+extension path for which a file
  * exists, or an empty string, if not one does.
  */
-QString AOApplication::find_asset_path(QStringList p_root_list, QStringList p_ext_list)
+QString AOApplication::find_asset_path(QStringList p_file_list, QStringList p_extension_list)
 {
-  for (QString &i_root : p_root_list)
+  for (QString &i_root : p_file_list)
   {
     // We can assume that possible_exts will only be populated with hardcoded strings.
     // Therefore, the only place where sanitize_path could catch something bad is in the root.
@@ -164,7 +165,7 @@ QString AOApplication::find_asset_path(QStringList p_root_list, QStringList p_ex
     if (!dir_exists(QFileInfo(i_root).absolutePath()))
       continue;
 
-    for (QString &i_ext : p_ext_list)
+    for (QString &i_ext : p_extension_list)
     {
       QString full_path = get_case_sensitive_path(i_root + i_ext);
       if (file_exists(full_path))
@@ -173,6 +174,11 @@ QString AOApplication::find_asset_path(QStringList p_root_list, QStringList p_ex
   }
 
   return nullptr;
+}
+
+QString AOApplication::find_asset_path(QStringList p_file_list)
+{
+  return find_asset_path(p_file_list, QStringList{""});
 }
 
 /**
@@ -196,7 +202,7 @@ QString AOApplication::find_asset_path(QStringList p_root_list, QStringList p_ex
  * @return The first case-sensitive root+extension path that corresponds to an
  * actual file, or an empty string, if not one does.
  */
-QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_ext_list)
+QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_extension_list)
 {
   QStringList l_path_list;
 
@@ -223,5 +229,10 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_ext_l
   if (dir_exists(l_default_theme_path))
     l_path_list.append(l_default_theme_path + p_file);
 
-  return find_asset_path(l_path_list, p_ext_list);
+  return find_asset_path(l_path_list, p_extension_list);
+}
+
+QString AOApplication::find_theme_asset_path(QString p_file)
+{
+  return find_theme_asset_path(p_file, QStringList{""});
 }

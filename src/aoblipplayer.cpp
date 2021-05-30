@@ -1,5 +1,9 @@
 #include "aoblipplayer.h"
 
+#include "aoapplication.h"
+
+const int AOBlipPlayer::BLIP_COUNT = 5;
+
 AOBlipPlayer::AOBlipPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObject(p_ao_app, p_parent)
 {
   m_family = DRAudioEngine::get_family(DRAudio::Family::FBlip);

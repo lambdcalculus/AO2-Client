@@ -9,7 +9,6 @@
 #include <QObject>
 #include <QStack>
 
-#include <memory>
 #include <optional>
 
 class DRAudioEngine;
@@ -59,9 +58,6 @@ private:
   friend class DRAudioEnginePrivate;
   friend class DRAudioStreamFamily;
 
-  void cache_position();
-  void update_device();
-
   // static method
   DRAudio::Family m_family;
   std::optional<QString> m_file;
@@ -71,6 +67,9 @@ private:
   std::optional<HSTREAM> m_hstream;
   QStack<DRAudioStreamSync> m_hsync_stack;
   std::optional<DWORD> m_position;
+
+  void cache_position();
+  void update_device();
 
 private slots:
   void on_device_error();

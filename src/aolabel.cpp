@@ -1,6 +1,6 @@
 #include "aolabel.h"
 
-#include "file_functions.h"
+#include "aoapplication.h"
 
 AOLabel::AOLabel(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 {
@@ -9,6 +9,6 @@ AOLabel::AOLabel(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
 
 void AOLabel::set_image(QString p_image)
 {
-  QString f_path = ao_app->find_theme_asset_path(p_image);
-  setStyleSheet("border-image:url(\"" + f_path + "\")");
+  const QString l_image_path = ao_app->find_theme_asset_path(p_image);
+  setStyleSheet("border-image:url(\"" + l_image_path + "\")");
 }

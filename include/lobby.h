@@ -1,22 +1,21 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
-#include "aobutton.h"
-#include "aoconfig.h"
-#include "aoimagedisplay.h"
-#include "aopacket.h"
-#include "aotextarea.h"
-#include "drtextedit.h"
-
-#include <QLabel>
-#include <QLineEdit>
-#include <QListWidget>
-#include <QMainWindow>
-#include <QPlainTextEdit>
-#include <QProgressBar>
-#include <QTextBrowser>
+#include "datatypes.h"
 
 class AOApplication;
+class AOButton;
+class AOConfig;
+class AOImageDisplay;
+class AOTextArea;
+class DRTextEdit;
+
+#include <QMainWindow>
+#include <QModelIndex>
+
+class QListWidget;
+class QLineEdit;
+class QProgressBar;
 
 class Lobby : public QMainWindow
 {
@@ -24,6 +23,8 @@ class Lobby : public QMainWindow
 
 public:
   Lobby(AOApplication *p_ao_app);
+
+  bool is_public_server() const;
 
   void set_widgets();
   void list_servers();
@@ -39,10 +40,7 @@ public:
   void show_loading_overlay();
   void hide_loading_overlay();
   int get_selected_server();
-
   void set_loading_value(int p_value);
-
-  bool public_servers_selected = true;
 
 private:
   static const QString INI_DESIGN;
@@ -51,34 +49,28 @@ private:
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
-  AOImageDisplay *ui_background = nullptr;
+  server_type m_last_server;
+  bool is_public_server_selected = true;
 
+  // ui
+  AOImageDisplay *ui_background = nullptr;
   AOButton *ui_public_servers = nullptr;
   AOButton *ui_favorites = nullptr;
-
   AOButton *ui_refresh = nullptr;
   AOButton *ui_add_to_fav = nullptr;
   AOButton *ui_connect = nullptr;
-
   DRTextEdit *ui_version = nullptr;
   AOButton *ui_about = nullptr;
-
   QListWidget *ui_server_list = nullptr;
-
   DRTextEdit *ui_player_count = nullptr;
   AOTextArea *ui_description = nullptr;
-
   AOTextArea *ui_chatbox = nullptr;
-
   QLineEdit *ui_chatname = nullptr;
   QLineEdit *ui_chatmessage = nullptr;
-
   AOImageDisplay *ui_loading_background = nullptr;
   DRTextEdit *ui_loading_text = nullptr;
   QProgressBar *ui_progress_bar = nullptr;
   AOButton *ui_cancel = nullptr;
-
-  server_type f_last_server;
 
 private slots:
   void on_public_servers_clicked();

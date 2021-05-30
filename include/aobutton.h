@@ -1,7 +1,7 @@
 #ifndef AOBUTTON_H
 #define AOBUTTON_H
 
-#include "aoapplication.h"
+class AOApplication;
 
 #include <QPushButton>
 
@@ -11,10 +11,13 @@ class AOButton : public QPushButton
 
 public:
   AOButton(QWidget *parent, AOApplication *p_ao_app);
+
+  QString get_image();
   void set_image(QString p_image);
 
+private:
   AOApplication *ao_app = nullptr;
-  QString image_path;
+  QString m_image;
 };
 
 #endif // AOBUTTON_H
