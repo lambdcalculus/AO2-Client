@@ -36,7 +36,6 @@ HEADERS += \
   include/aonotepad.h \
   include/aonotepicker.h \
   include/aoobject.h \
-  include/aopacket.h \
   include/aopixmap.h \
   include/aoscene.h \
   include/aosfxplayer.h \
@@ -54,6 +53,7 @@ HEADERS += \
   include/draudioerror.h \
   include/draudiostream.h \
   include/draudiostreamfamily.h \
+  include/drpacket.h \
   include/drpather.h \
   include/drserversocket.h \
   include/drtextedit.h \
@@ -87,7 +87,6 @@ SOURCES += \
   src/aonotepad.cpp \
   src/aonotepicker.cpp \
   src/aoobject.cpp \
-  src/aopacket.cpp \
   src/aopixmap.cpp \
   src/aoscene.cpp \
   src/aosfxplayer.cpp \
@@ -108,6 +107,7 @@ SOURCES += \
   src/draudioerror.cpp \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \
+  src/drpacket.cpp \
   src/drpather.cpp \
   src/drserversocket.cpp \
   src/drtextedit.cpp \

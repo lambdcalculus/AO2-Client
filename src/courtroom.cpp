@@ -11,7 +11,6 @@
 #include "aomusicplayer.h"
 #include "aonotearea.h"
 #include "aonotepicker.h"
-#include "aopacket.h"
 #include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aoshoutplayer.h"
@@ -20,6 +19,7 @@
 #include "aotimer.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
+#include "drpacket.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
@@ -150,8 +150,8 @@ void Courtroom::enter_courtroom(int p_cid)
   ui_char_select_background->hide();
 
   // character =================================================================
-  const bool l_changed_chr_id = (m_cid != p_cid);
-  m_cid = p_cid;
+  const bool l_changed_chr_id = (m_chr_id != p_cid);
+  m_chr_id = p_cid;
 
   QLineEdit *l_current_field = ui_ic_chat_message;
   if (ui_ooc_chat_message->hasFocus())
@@ -203,7 +203,7 @@ void Courtroom::enter_courtroom(int p_cid)
     if (ao_app->has_character_declaration_feature())
     {
       QStringList l_content{l_chr_name, l_final_showname};
-      ao_app->send_server_packet(AOPacket("chrini", l_content));
+      ao_app->send_server_packet(DRPacket("chrini", l_content));
     }
   }
   const bool l_changed_chr = l_chr_name != get_current_character();
@@ -255,7 +255,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
 void Courtroom::done_received()
 {
-  m_cid = -1;
+  m_chr_id = -1;
 
   suppress_audio(true);
 
@@ -694,7 +694,7 @@ void Courtroom::send_showname_packet(QString p_showname)
 
   if (ao_app->has_showname_declaration_feature())
   {
-    ao_app->send_server_packet(AOPacket("SN", {p_showname}));
+    ao_app->send_server_packet(DRPacket("SN", {p_showname}));
   }
   else
   {
@@ -710,7 +710,7 @@ void Courtroom::on_showname_changed(QString p_showname)
 
 bool Courtroom::is_spectating()
 {
-  return m_cid == -1;
+  return m_chr_id == -1;
 }
 
 void Courtroom::on_showname_placeholder_changed(QString p_showname_placeholder)
@@ -723,7 +723,7 @@ void Courtroom::on_showname_placeholder_changed(QString p_showname_placeholder)
 void Courtroom::on_character_ini_changed(QString p_base_chr)
 {
   Q_UNUSED(p_base_chr)
-  enter_courtroom(m_cid);
+  enter_courtroom(m_chr_id);
 }
 
 void Courtroom::on_ic_message_return_pressed()
@@ -805,7 +805,7 @@ void Courtroom::on_ic_message_return_pressed()
   }
 
   packet_contents.append(QString::number(l_emote_modifier));
-  packet_contents.append(QString::number(m_cid));
+  packet_contents.append(QString::number(m_chr_id));
 
   if (l_emote.sound_file == current_sfx_file())
     packet_contents.append(QString::number(l_emote.sound_delay));
@@ -843,7 +843,7 @@ void Courtroom::on_ic_message_return_pressed()
     f_text_color = QString::number(m_text_color);
 
   packet_contents.append(f_text_color);
-  ao_app->send_server_packet(AOPacket("MS", packet_contents));
+  ao_app->send_server_packet(DRPacket("MS", packet_contents));
 }
 
 void Courtroom::handle_acknowledged_ms()
@@ -896,7 +896,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   m_msg_is_first_person = false;
 
   // reset our ui state if client just spoke
-  if (m_cid == f_char_id && is_system_speaking == false)
+  if (m_chr_id == f_char_id && is_system_speaking == false)
   {
 #ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
     // If the server does not have the feature of acknowledging our MS
@@ -948,7 +948,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   if (is_system_speaking)
     append_system_text(f_showname, l_message);
   else
-    append_ic_text(f_showname, l_message, false, false, f_char_id == m_cid);
+    append_ic_text(f_showname, l_message, false, false, f_char_id == m_chr_id);
 
   if (ao_config->log_is_recording_enabled() && (!chatmessage_is_empty || !is_system_speaking))
   {
@@ -1021,7 +1021,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   {
     l_chatbox_name = "chatmed.png";
 
-    if (ao_config->log_display_self_highlight_enabled() && m_chatmessage[CMChrId].toInt() == m_cid)
+    if (ao_config->log_display_self_highlight_enabled() && m_chatmessage[CMChrId].toInt() == m_chr_id)
     {
       const QString l_chatbox_self_name = "chatbox_self.png";
       if (file_exists(ao_app->find_theme_asset_path(l_chatbox_self_name)))
@@ -1752,7 +1752,7 @@ void Courtroom::set_ip_list(QString p_list)
 
 void Courtroom::set_mute(bool p_muted, int p_cid)
 {
-  if (p_cid != m_cid && p_cid != -1)
+  if (p_cid != m_chr_id && p_cid != -1)
     return;
 
   if (p_muted)
@@ -1772,7 +1772,7 @@ void Courtroom::set_mute(bool p_muted, int p_cid)
 
 void Courtroom::set_ban(int p_cid)
 {
-  if (p_cid != m_cid && p_cid != -1)
+  if (p_cid != m_chr_id && p_cid != -1)
     return;
 
   call_notice("You have been banned.");
@@ -1783,12 +1783,12 @@ void Courtroom::set_ban(int p_cid)
 
 int Courtroom::get_character_id()
 {
-  return m_cid;
+  return m_chr_id;
 }
 
 QString Courtroom::get_base_character()
 {
-  return is_spectating() ? nullptr : m_chr_list.at(m_cid).name;
+  return is_spectating() ? nullptr : m_chr_list.at(m_chr_id).name;
 }
 
 QString Courtroom::get_current_character()
@@ -1849,7 +1849,7 @@ void Courtroom::handle_song(QStringList p_contents)
 
     if (!mute_map.value(l_chr_id))
     {
-      append_ic_text(str_char, "has played a song: " + f_song, false, true, l_chr_id == m_cid);
+      append_ic_text(str_char, "has played a song: " + f_song, false, true, l_chr_id == m_chr_id);
       if (ao_config->log_is_recording_enabled())
         save_textlog(str_char + " has played a song: " + f_song);
       m_music_player->play(f_song);
@@ -1931,7 +1931,7 @@ void Courtroom::send_ooc_packet(QString ooc_message)
     return;
   }
   QStringList l_content{ao_config->username(), ooc_message};
-  ao_app->send_server_packet(AOPacket("CT", l_content));
+  ao_app->send_server_packet(DRPacket("CT", l_content));
 }
 
 void Courtroom::mod_called(QString p_ip)
@@ -2088,10 +2088,10 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
   set_judge_enabled(f_pos == "jud");
 
-  ao_app->send_server_packet(AOPacket("CT#" + ao_config->username() + "#/pos " + f_pos + "#%"));
+  send_ooc_packet("/pos " + f_pos);
   // Uncomment later and remove above
   // Will only work in TSDR 4.3+ servers
-  // ao_app->send_server_packet(AOPacket("SP#" + f_pos + "#%"));
+  // ao_app->send_server_packet(DRPacket("SP", {f_pos}));
 }
 
 void Courtroom::on_mute_list_item_changed(QListWidgetItem *p_item)
@@ -2134,20 +2134,15 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 {
   if (is_client_muted)
     return;
-
   QString p_song = ui_music_list->item(p_model.row())->text();
-
-  ao_app->send_server_packet(AOPacket("MC#" + p_song + "#" + QString::number(m_cid) + "#%"));
-
+  ao_app->send_server_packet(DRPacket("MC", {p_song, QString::number(m_chr_id)}));
   ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
 {
   QString p_area = ui_area_list->item(p_model.row())->text();
-
-  ao_app->send_server_packet(AOPacket("MC#" + p_area + "#" + QString::number(m_cid) + "#%"));
-
+  ao_app->send_server_packet(DRPacket("MC", {p_area, QString::number(m_chr_id)}));
   ui_ic_chat_message->setFocus();
 }
 
@@ -2348,7 +2343,7 @@ void Courtroom::on_defense_minus_clicked()
   int f_state = defense_bar_state - 1;
 
   if (f_state >= 0)
-    ao_app->send_server_packet(AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+    ao_app->send_server_packet(DRPacket("HP", {QString::number(1), QString::number(f_state)}));
 }
 
 void Courtroom::on_defense_plus_clicked()
@@ -2356,7 +2351,7 @@ void Courtroom::on_defense_plus_clicked()
   int f_state = defense_bar_state + 1;
 
   if (f_state <= 10)
-    ao_app->send_server_packet(AOPacket("HP#1#" + QString::number(f_state) + "#%"));
+    ao_app->send_server_packet(DRPacket("HP", {QString::number(1), QString::number(f_state)}));
 }
 
 void Courtroom::on_prosecution_minus_clicked()
@@ -2364,7 +2359,7 @@ void Courtroom::on_prosecution_minus_clicked()
   int f_state = prosecution_bar_state - 1;
 
   if (f_state >= 0)
-    ao_app->send_server_packet(AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+    ao_app->send_server_packet(DRPacket("HP", {QString::number(2), QString::number(f_state)}));
 }
 
 void Courtroom::on_prosecution_plus_clicked()
@@ -2372,7 +2367,7 @@ void Courtroom::on_prosecution_plus_clicked()
   int f_state = prosecution_bar_state + 1;
 
   if (f_state <= 10)
-    ao_app->send_server_packet(AOPacket("HP#2#" + QString::number(f_state) + "#%"));
+    ao_app->send_server_packet(DRPacket("HP", {QString::number(2), QString::number(f_state)}));
 }
 
 void Courtroom::on_text_color_changed(int p_color)
@@ -2386,7 +2381,7 @@ void Courtroom::on_witness_testimony_clicked()
   if (is_client_muted)
     return;
 
-  ao_app->send_server_packet(AOPacket("RT#testimony1#%"));
+  ao_app->send_server_packet(DRPacket("RT", {"testimony1"}));
 
   ui_ic_chat_message->setFocus();
 }
@@ -2396,7 +2391,7 @@ void Courtroom::on_cross_examination_clicked()
   if (is_client_muted)
     return;
 
-  ao_app->send_server_packet(AOPacket("RT#testimony2#%"));
+  ao_app->send_server_packet(DRPacket("RT", {"testimony2"}));
 
   ui_ic_chat_message->setFocus();
 }
@@ -2435,9 +2430,7 @@ void Courtroom::on_wtce_clicked()
   AOButton *f_sig = static_cast<AOButton *>(sender());
   QString id = f_sig->property("wtce_id").toString();
 
-  QString packet = QString("RT#testimony%1#%").arg(id);
-
-  ao_app->send_server_packet(AOPacket(packet));
+  ao_app->send_server_packet(DRPacket("RT", {QString("testimony%1").arg(id)}));
 
   ui_ic_chat_message->setFocus();
 }
@@ -2470,7 +2463,7 @@ void Courtroom::on_app_reload_theme_requested()
 
   // to update status on the background
   set_background(current_background);
-  enter_courtroom(m_cid);
+  enter_courtroom(m_chr_id);
 }
 
 void Courtroom::on_back_to_lobby_clicked()
@@ -2498,8 +2491,7 @@ void Courtroom::on_char_select_right_clicked()
 
 void Courtroom::on_spectator_clicked()
 {
-  QString content = "CC#" + QString::number(ao_app->get_client_id()) + "#-1#" + get_hdid() + "#%";
-  ao_app->send_server_packet(AOPacket(content));
+  ao_app->send_server_packet(DRPacket("CC", {QString::number(ao_app->get_client_id()), "-1", get_hdid()}));
   enter_courtroom(-1);
 
   ui_emotes->hide();
@@ -2517,7 +2509,7 @@ void Courtroom::on_call_mod_clicked()
 
   if (reply == QMessageBox::Yes)
   {
-    ao_app->send_server_packet(AOPacket("ZZ#%"));
+    ao_app->send_server_packet(DRPacket("ZZ"));
     qDebug() << "Called mod";
   }
   else
@@ -2601,7 +2593,7 @@ void Courtroom::on_note_text_changed()
 
 void Courtroom::ping_server()
 {
-  ao_app->send_server_packet(AOPacket("CH#" + QString::number(m_cid) + "#%"));
+  ao_app->send_server_packet(DRPacket("CH", {QString::number(m_chr_id)}));
 }
 
 void Courtroom::closeEvent(QCloseEvent *event)

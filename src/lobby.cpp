@@ -4,9 +4,9 @@
 #include "aobutton.h"
 #include "aoconfig.h"
 #include "aoimagedisplay.h"
-#include "aopacket.h"
 #include "aotextarea.h"
 #include "debug_functions.h"
+#include "drpacket.h"
 #include "drpather.h"
 #include "drtextedit.h"
 #include "theme.h"
@@ -303,7 +303,7 @@ void Lobby::on_connect_pressed()
 void Lobby::on_connect_released()
 {
   ui_connect->set_image("connect.png");
-  ao_app->send_server_packet(AOPacket("askchaa#%"));
+  ao_app->send_server_packet(DRPacket("askchaa"));
 }
 
 void Lobby::on_about_clicked()
@@ -373,7 +373,7 @@ void Lobby::on_chatfield_return_pressed()
   QString f_header = "CT";
   QStringList f_contents{ui_chatname->text(), ui_chatmessage->text()};
 
-  ao_app->send_master_packet(AOPacket(f_header, f_contents));
+  ao_app->send_master_packet(DRPacket(f_header, f_contents));
 
   ui_chatmessage->clear();
 }

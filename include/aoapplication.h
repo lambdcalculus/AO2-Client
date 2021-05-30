@@ -1,7 +1,7 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#include "aopacket.h"
+#include "drpacket.h"
 #include "datatypes.h"
 
 class AOConfig;
@@ -31,10 +31,10 @@ public:
   void set_client_id(int id);
 
   void connect_to_master();
-  void send_master_packet(AOPacket packet);
+  void send_master_packet(DRPacket packet);
   void request_server_list();
   void connect_to_server(server_type server);
-  void send_server_packet(AOPacket packet);
+  void send_server_packet(DRPacket packet);
 
   Lobby *get_lobby() const;
   void construct_lobby();
@@ -239,9 +239,9 @@ private:
 private slots:
   void _p_send_master_handshake();
   void _p_handle_master_error(QString);
-  void _p_handle_master_packet(AOPacket);
+  void _p_handle_master_packet(DRPacket);
   void _p_handle_server_disconnection();
-  void _p_handle_server_packet(AOPacket);
+  void _p_handle_server_packet(DRPacket);
   void on_courtroom_closing();
   void on_courtroom_destroyed();
   void on_config_theme_changed();

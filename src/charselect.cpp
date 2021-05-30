@@ -4,8 +4,8 @@
 #include "aobutton.h"
 #include "aocharbutton.h"
 #include "aoimagedisplay.h"
-#include "aopacket.h"
 #include "debug_functions.h"
+#include "drpacket.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "theme.h"
@@ -169,15 +169,14 @@ void Courtroom::char_clicked(int n_char)
     return;
   }
 
-  if (n_real_char == m_cid)
+  if (n_real_char == m_chr_id)
   {
-    enter_courtroom(m_cid);
+    enter_courtroom(m_chr_id);
   }
   else
   {
-    QString content =
-        "CC#" + QString::number(ao_app->get_client_id()) + "#" + QString::number(n_real_char) + "#" + get_hdid() + "#%";
-    ao_app->send_server_packet(AOPacket(content));
+    ao_app->send_server_packet(
+        DRPacket("CC", {QString::number(ao_app->get_client_id()), QString::number(n_real_char), get_hdid()}));
   }
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "aopacket.h"
+#include "drpacket.h"
 #include "datatypes.h"
 
 #include <QAbstractSocket>
@@ -21,13 +21,13 @@ public:
   void disconnect_from_server();
 
 public slots:
-  void send_packet(AOPacket packet);
+  void send_packet(DRPacket packet);
 
 signals:
   void connected_to_server();
   void disconnected_from_server();
   void reconnecting_to_server();
-  void packet_received(AOPacket);
+  void packet_received(DRPacket);
   void socket_error(QString);
 
 private:

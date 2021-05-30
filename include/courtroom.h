@@ -311,7 +311,7 @@ private:
   int text_state = 2;
 
   // character id, which index of the char_list the player is
-  int m_cid = -1;
+  int m_chr_id = -1;
   // if enabled, disable showing our own sprites when we talk in ic
   bool m_msg_is_first_person = false;
 

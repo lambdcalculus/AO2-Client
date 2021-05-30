@@ -1,7 +1,7 @@
 #include "aoapplication.h"
 
-#include "aopacket.h"
 #include "debug_functions.h"
+#include "drpacket.h"
 #include "drserversocket.h"
 #include "hardware_functions.h"
 #include "lobby.h"
@@ -18,8 +18,13 @@ void AOApplication::connect_to_master()
   m_master_socket->connect_to_server(l_server, true);
 }
 
-void AOApplication::send_master_packet(AOPacket p_packet)
+void AOApplication::send_master_packet(DRPacket p_packet)
 {
+  if (!m_master_socket->is_connected())
+  {
+    qDebug() << "Failed to send packet: not connected to master";
+    return;
+  }
   qDebug().noquote() << "M/S:" << p_packet.to_string();
   m_master_socket->send_packet(p_packet);
 }
@@ -31,12 +36,12 @@ void AOApplication::request_server_list()
     connect_to_master();
     return;
   }
-  m_master_socket->send_packet(AOPacket("ALL", {}));
+  m_master_socket->send_packet(DRPacket("ALL"));
 }
 
 void AOApplication::_p_send_master_handshake()
 {
-  send_master_packet(AOPacket("ALL#%"));
+  send_master_packet(DRPacket("ALL"));
 }
 
 void AOApplication::_p_handle_master_error(QString p_error)
@@ -46,12 +51,10 @@ void AOApplication::_p_handle_master_error(QString p_error)
   m_lobby->append_error(p_error);
 }
 
-void AOApplication::_p_handle_master_packet(AOPacket p_packet)
+void AOApplication::_p_handle_master_packet(DRPacket p_packet)
 {
-  p_packet.net_decode();
-
   const QString l_header = p_packet.get_header();
-  const QStringList l_content = p_packet.get_contents();
+  const QStringList l_content = p_packet.get_content();
 
   if (l_header != "CHECK")
     qDebug().noquote() << "M/R:" << p_packet.to_string();
@@ -60,7 +63,7 @@ void AOApplication::_p_handle_master_packet(AOPacket p_packet)
   {
     m_server_list.clear();
 
-    for (const QString &i_string : p_packet.get_contents())
+    for (const QString &i_string : qAsConst(l_content))
     {
       server_type f_server;
       QStringList sub_contents = i_string.split("&");
@@ -108,8 +111,8 @@ void AOApplication::_p_handle_master_packet(AOPacket p_packet)
   }
   else if (l_header == "AO2CHECK")
   {
-    send_master_packet(AOPacket("ID#DRO#" + get_version_string() + "#%"));
-    send_master_packet(AOPacket("HI#" + get_hdid() + "#%"));
+    send_master_packet(DRPacket("ID", {"DRO", get_version_string()}));
+    send_master_packet(DRPacket("HI", {get_hdid()}));
 
     if (l_content.size() < 1)
       return;

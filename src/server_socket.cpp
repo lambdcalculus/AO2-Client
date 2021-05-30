@@ -1,10 +1,10 @@
 #include "aoapplication.h"
 
 #include "aoconfig.h"
-#include "aopacket.h"
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
+#include "drpacket.h"
 #include "drserversocket.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
@@ -18,8 +18,13 @@ void AOApplication::connect_to_server(server_type p_server)
   m_server_socket->connect_to_server(p_server, false);
 }
 
-void AOApplication::send_server_packet(AOPacket p_packet)
+void AOApplication::send_server_packet(DRPacket p_packet)
 {
+  if (!m_server_socket->is_connected())
+  {
+    qDebug() << "Failed to send packet: not connected to server";
+    return;
+  }
   qDebug().noquote() << "S/S:" << p_packet.to_string();
   m_server_socket->send_packet(p_packet);
 }
@@ -34,12 +39,10 @@ void AOApplication::_p_handle_server_disconnection()
   destruct_courtroom();
 }
 
-void AOApplication::_p_handle_server_packet(AOPacket p_packet)
+void AOApplication::_p_handle_server_packet(DRPacket p_packet)
 {
-  p_packet.net_decode();
-
   const QString l_header = p_packet.get_header();
-  const QStringList l_content = p_packet.get_contents();
+  const QStringList l_content = p_packet.get_content();
 
   if (l_header != "checkconnection")
     qDebug().noquote() << "S/R:" << p_packet.to_string();
@@ -59,7 +62,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     feature_chrini = false;
     feature_chat_speed = false;
 
-    send_server_packet(AOPacket("HI#" + get_hdid() + "#%"));
+    send_server_packet(DRPacket("HI", {get_hdid()}));
   }
   else if (l_header == "ID")
   {
@@ -69,7 +72,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     m_client_id = l_content.at(0).toInt();
     m_server_software = l_content.at(1);
 
-    send_server_packet(AOPacket("ID#DRO#" + get_version_string() + "#%"));
+    send_server_packet(DRPacket("ID", {"DRO", get_version_string()}));
   }
   else if (l_header == "CT")
   {
@@ -148,7 +151,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     m_lobby->set_loading_text("Loading");
     m_lobby->set_loading_value(0);
 
-    send_server_packet(AOPacket("RC#%"));
+    send_server_packet(DRPacket("RC"));
 
     // look for the server inside the known public list and report it
     if (is_favorite)
@@ -204,7 +207,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;
     m_lobby->set_loading_value(loading_value);
 
-    send_server_packet(AOPacket("RE#%"));
+    send_server_packet(DRPacket("RE"));
   }
   else if (l_header == "EI")
   {
@@ -239,7 +242,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     m_lobby->set_loading_value(loading_value);
 
     QString next_packet_number = QString::number(m_loaded_evidence);
-    send_server_packet(AOPacket("AE#" + next_packet_number + "#%"));
+    send_server_packet(DRPacket("AE", {next_packet_number}));
   }
   else if (l_header == "CharsCheck")
   {
@@ -284,7 +287,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
     int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;
     m_lobby->set_loading_value(loading_value);
 
-    send_server_packet(AOPacket("RM#%"));
+    send_server_packet(DRPacket("RM"));
   }
   else if (l_header == "SM" || l_header == "FM")
   {
@@ -327,7 +330,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
       int loading_value =
           ((m_loaded_characters + m_loaded_evidence + m_loaded_music) / static_cast<double>(total_loading_size)) * 100;
       m_lobby->set_loading_value(loading_value);
-      send_server_packet(AOPacket("RD#%"));
+      send_server_packet(DRPacket("RD"));
     }
   }
   else if (l_header == "DONE")
@@ -369,7 +372,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
   else if (l_header == "MS")
   {
     if (is_courtroom_constructed && is_courtroom_loaded)
-      m_courtroom->handle_chatmessage(p_packet.get_contents());
+      m_courtroom->handle_chatmessage(l_content);
   }
   else if (l_header == "ackMS")
   {
@@ -379,7 +382,7 @@ void AOApplication::_p_handle_server_packet(AOPacket p_packet)
   else if (l_header == "MC")
   {
     if (is_courtroom_constructed && is_courtroom_loaded)
-      m_courtroom->handle_song(p_packet.get_contents());
+      m_courtroom->handle_song(l_content);
   }
   else if (l_header == "RT")
   {

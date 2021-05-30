@@ -2,10 +2,10 @@
 
 #include "aoconfig.h"
 #include "aoconfigpanel.h"
-#include "aopacket.h"
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
+#include "drpacket.h"
 #include "drserversocket.h"
 #include "lobby.h"
 
@@ -47,10 +47,10 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   connect(m_master_socket, SIGNAL(connected_to_server()), this, SLOT(_p_send_master_handshake()));
   connect(m_master_socket, SIGNAL(socket_error(QString)), this, SLOT(_p_handle_master_error(QString)));
-  connect(m_master_socket, SIGNAL(packet_received(AOPacket)), this, SLOT(_p_handle_master_packet(AOPacket)));
+  connect(m_master_socket, SIGNAL(packet_received(DRPacket)), this, SLOT(_p_handle_master_packet(DRPacket)));
 
   connect(m_server_socket, SIGNAL(disconnected_from_server()), this, SLOT(_p_handle_server_disconnection()));
-  connect(m_server_socket, SIGNAL(packet_received(AOPacket)), this, SLOT(_p_handle_server_packet(AOPacket)));
+  connect(m_server_socket, SIGNAL(packet_received(DRPacket)), this, SLOT(_p_handle_server_packet(DRPacket)));
 
 #ifndef QT_DEBUG
   connect_to_master();
