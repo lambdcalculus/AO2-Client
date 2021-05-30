@@ -104,14 +104,10 @@ void DRServerSocket::_p_check_socket_error()
 void DRServerSocket::_p_read_socket()
 {
   m_data += QString::fromUtf8(m_socket->readAll());
-  qDebug() << "_p_read_socket" << m_data;
-
   QStringList l_raw_packet_list = m_data.split("#%", DR::KeepEmptyParts);
   m_data = l_raw_packet_list.takeLast();
-
   for (const QString &i_raw_packet : l_raw_packet_list)
   {
-    qDebug() << l_raw_packet_list;
     QStringList l_raw_data_list = i_raw_packet.split("#");
     const QString l_header = l_raw_data_list.takeFirst();
     for (QString &i_raw_data : l_raw_data_list)
