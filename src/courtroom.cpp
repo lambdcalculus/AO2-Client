@@ -95,7 +95,7 @@ void Courtroom::enter_courtroom(int p_cid)
   suppress_audio(false);
 
   const int l_prev_emote_id = m_emote_id;
-  const int l_prev_emote_page = m_emote_page;
+  const int l_prev_emote_page = m_current_emote_page;
 
   // widgets ===================================================================
   current_evidence_page = 0;
@@ -222,7 +222,7 @@ void Courtroom::enter_courtroom(int p_cid)
   else
   {
     m_emote_id = l_prev_emote_id;
-    m_emote_page = l_prev_emote_page;
+    m_current_emote_page = l_prev_emote_page;
     ui_emote_dropdown->setCurrentText(l_prev_emote);
   }
   set_emote_page();
@@ -1537,7 +1537,7 @@ void Courtroom::start_chat_timer()
   double l_tick_rate = ao_config->chat_tick_interval();
   if (m_server_tick_rate.has_value())
     l_tick_rate = qMax(m_server_tick_rate.value(), 0);
-  l_tick_rate = qBound(l_tick_rate * (1.0 - qBound(0.4 * m_tick_speed, -1.0, 1.0)), 0.0, l_tick_rate * 2.0);
+  l_tick_rate = qBound(0.0, l_tick_rate * (1.0 - qBound(-1.0, 0.4 * m_tick_speed, 1.0)), l_tick_rate * 2.0);
   m_tick_timer->start(l_tick_rate);
 }
 
@@ -1570,7 +1570,7 @@ void Courtroom::next_chat_letter()
   {
     ++m_tick_step;
     const bool is_positive = f_character == Qt::Key_BraceRight;
-    m_tick_speed = qBound(m_tick_speed + (is_positive ? 1 : -1), -3, 3);
+    m_tick_speed = qBound(-3, m_tick_speed + (is_positive ? 1 : -1), 3);
     next_chat_letter();
     return;
   }
@@ -2493,13 +2493,13 @@ void Courtroom::on_back_to_lobby_clicked()
 
 void Courtroom::on_char_select_left_clicked()
 {
-  --current_char_page;
+  --m_current_chr_page;
   set_char_select_page();
 }
 
 void Courtroom::on_char_select_right_clicked()
 {
-  ++current_char_page;
+  ++m_current_chr_page;
   set_char_select_page();
 }
 

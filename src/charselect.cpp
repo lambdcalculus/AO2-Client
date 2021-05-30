@@ -12,6 +12,7 @@
 
 #include <QDebug>
 #include <QSignalMapper>
+#include <QtMath>
 
 void Courtroom::construct_char_select()
 {
@@ -25,8 +26,8 @@ void Courtroom::construct_char_select()
 
   ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
 
-  ui_char_select_left = new AOButton(ui_char_select_background, ao_app);
-  ui_char_select_right = new AOButton(ui_char_select_background, ao_app);
+  ui_chr_select_left = new AOButton(ui_char_select_background, ao_app);
+  ui_chr_select_right = new AOButton(ui_char_select_background, ao_app);
 
   ui_spectator = new AOButton(ui_char_select_background, ao_app);
   ui_spectator->setText("Spectator");
@@ -34,8 +35,8 @@ void Courtroom::construct_char_select()
   connect(char_button_mapper, SIGNAL(mapped(int)), this, SLOT(char_clicked(int)));
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
 
-  connect(ui_char_select_left, SIGNAL(clicked()), this, SLOT(on_char_select_left_clicked()));
-  connect(ui_char_select_right, SIGNAL(clicked()), this, SLOT(on_char_select_right_clicked()));
+  connect(ui_chr_select_left, SIGNAL(clicked()), this, SLOT(on_char_select_left_clicked()));
+  connect(ui_chr_select_right, SIGNAL(clicked()), this, SLOT(on_char_select_right_clicked()));
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
 
@@ -62,9 +63,9 @@ void Courtroom::reconstruct_char_select()
   char_columns = ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
   char_rows = ((ui_char_buttons->height() - button_height) / (y_spacing + button_height)) + 1;
 
-  max_chars_on_page = char_columns * char_rows;
+  m_page_max_chr_count = char_columns * char_rows;
 
-  for (int n = 0; n < max_chars_on_page; ++n)
+  for (int n = 0; n < m_page_max_chr_count; ++n)
   {
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
@@ -93,7 +94,7 @@ void Courtroom::reconstruct_char_select()
 
 void Courtroom::reset_char_select()
 {
-  current_char_page = 0;
+  m_current_chr_page = 0;
 
   set_char_select();
   set_char_select_page();
@@ -121,8 +122,8 @@ void Courtroom::set_char_select_page()
 {
   ui_char_select_background->show();
 
-  ui_char_select_left->hide();
-  ui_char_select_right->hide();
+  ui_chr_select_left->hide();
+  ui_chr_select_right->hide();
 
   for (AOCharButton *button : qAsConst(ui_char_button_list))
   {
@@ -130,47 +131,33 @@ void Courtroom::set_char_select_page()
     button->hide();
   }
 
-  int total_pages = m_chr_list.size() / max_chars_on_page;
-  int chars_on_page = 0;
+  const int l_item_count = m_chr_list.length();
+  const int l_page_count = qFloor(l_item_count / m_page_max_chr_count) + bool(l_item_count % m_page_max_chr_count);
+  m_current_chr_page = qBound(0, m_current_chr_page, l_page_count - 1);
+  const int l_current_page_emote_count =
+      qBound(0, l_item_count - m_current_chr_page * m_page_max_chr_count, m_page_max_chr_count);
 
-  if (m_chr_list.size() % max_chars_on_page != 0)
-  {
-    ++total_pages;
-    // i. e. not on the last page
-    if (total_pages > current_char_page + 1)
-      chars_on_page = max_chars_on_page;
-    else
-      chars_on_page = m_chr_list.size() % max_chars_on_page;
-  }
-  else
-    chars_on_page = max_chars_on_page;
+  if (m_current_chr_page + 1 < l_page_count)
+    ui_chr_select_right->show();
 
-  if (total_pages > current_char_page + 1)
-    ui_char_select_right->show();
-
-  if (current_char_page > 0)
-    ui_char_select_left->show();
+  if (m_current_chr_page > 0)
+    ui_chr_select_left->show();
 
   // show all buttons for this page
-  for (int n_button = 0; n_button < chars_on_page; ++n_button)
+  for (int i = 0; i < l_current_page_emote_count; ++i)
   {
-    if (m_chr_list.length() <= n_button)
-      continue;
-
-    int n_real_char = n_button + current_char_page * max_chars_on_page;
-    AOCharButton *f_button = ui_char_button_list.at(n_button);
-
-    f_button->set_image(m_chr_list.at(n_real_char).name);
-    f_button->show();
-
-    if (m_chr_list.at(n_real_char).taken)
-      f_button->set_taken();
+    int l_real_i = i + m_current_chr_page * m_page_max_chr_count;
+    AOCharButton *l_button = ui_char_button_list.at(i);
+    l_button->set_image(m_chr_list.at(l_real_i).name);
+    l_button->show();
+    if (m_chr_list.at(l_real_i).taken)
+      l_button->set_taken();
   }
 }
 
 void Courtroom::char_clicked(int n_char)
 {
-  int n_real_char = n_char + current_char_page * max_chars_on_page;
+  int n_real_char = n_char + m_current_chr_page * m_page_max_chr_count;
 
   QString char_ini_path = ao_app->get_character_path(m_chr_list.at(n_real_char).name, "char.ini");
   qDebug() << "char_ini_path" << char_ini_path;
