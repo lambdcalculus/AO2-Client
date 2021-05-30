@@ -1959,7 +1959,9 @@ void Courtroom::mod_called(QString p_ip)
 
 void Courtroom::on_ic_showname_editing_finished()
 {
-  set_showname(ui_ic_chat_showname->text());
+  const QString l_text = ui_ic_chat_showname->text().simplified();
+  ui_ic_chat_showname->setText(l_text);
+  set_showname(l_text);
 }
 
 void Courtroom::set_showname(QString p_showname)
@@ -1969,7 +1971,9 @@ void Courtroom::set_showname(QString p_showname)
 
 void Courtroom::on_ooc_name_editing_finished()
 {
-  ao_config->set_username(ui_ooc_chat_name->text());
+  const QString l_text = ui_ooc_chat_name->text().simplified();
+  ui_ooc_chat_name->setText(l_text);
+  ao_config->set_username(l_text);
 }
 
 void Courtroom::on_ooc_return_pressed()
