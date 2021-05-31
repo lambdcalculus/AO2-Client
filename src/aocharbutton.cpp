@@ -35,7 +35,7 @@ void AOCharButton::set_image(QString p_character)
   const QString l_image = ao_app->get_character_path(p_character, "char_icon.png");
   const bool l_file_exist = file_exists(l_image);
   setStyleSheet(l_file_exist ? QString("border-image: url(\"%1\");").arg(l_image) : nullptr);
-  setText(l_file_exist ? nullptr : p_character);
+  setText(l_file_exist ? nullptr : p_character.replace("&", "&&"));
 }
 
 void AOCharButton::enterEvent(QEvent *e)
