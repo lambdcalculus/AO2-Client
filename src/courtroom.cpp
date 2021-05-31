@@ -363,9 +363,7 @@ void Courtroom::set_taken(int n_char, bool p_taken)
 
   char_type f_char;
   f_char.name = m_chr_list.at(n_char).name;
-  f_char.description = m_chr_list.at(n_char).description;
   f_char.taken = p_taken;
-  f_char.evidence_string = m_chr_list.at(n_char).evidence_string;
 
   m_chr_list.replace(n_char, f_char);
 }
