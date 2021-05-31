@@ -76,13 +76,13 @@ void Courtroom::set_character_list(QVector<char_type> p_chr_list)
 void Courtroom::set_area_list(QStringList p_area_list)
 {
   m_area_list = p_area_list;
-  list_music();
+  list_areas();
 }
 
 void Courtroom::set_music_list(QStringList p_music_list)
 {
   m_music_list = p_music_list;
-  list_areas();
+  list_music();
 }
 
 void Courtroom::enter_courtroom(int p_cid)
