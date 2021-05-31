@@ -53,7 +53,7 @@ public:
   explicit Courtroom(AOApplication *p_ao_app);
   ~Courtroom();
 
-  void append_char(char_type p_char);
+  void set_character_list(QVector<char_type> character_list);
   void set_area_list(QStringList area_list);
   void set_music_list(QStringList music_list);
 

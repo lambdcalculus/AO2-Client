@@ -119,9 +119,7 @@ struct server_type
 struct char_type
 {
   QString name;
-  QString description;
-  QString evidence_string;
-  bool taken;
+  bool taken = false;
 };
 
 struct evi_type

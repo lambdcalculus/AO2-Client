@@ -169,81 +169,6 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     dr_discord->set_state(DRDiscord::State::Connected);
     dr_discord->set_server_name(server_name);
   }
-  else if (l_header == "CI")
-  {
-    if (!is_courtroom_constructed)
-      return;
-
-    for (int n_element = 0; n_element < l_content.size(); n_element += 2)
-    {
-      if (l_content.at(n_element).toInt() != m_loaded_characters)
-        break;
-
-      // this means we are on the last element and checking n + 1 element will
-      // be game over so
-      if (n_element == l_content.size() - 1)
-        break;
-
-      QStringList sub_elements = l_content.at(n_element + 1).split("&");
-      if (sub_elements.size() < 2)
-        break;
-
-      char_type f_char;
-      f_char.name = sub_elements.at(0);
-      f_char.description = sub_elements.at(1);
-      f_char.evidence_string = sub_elements.at(3);
-      // temporary. the CharsCheck packet sets this properly
-      f_char.taken = false;
-
-      ++m_loaded_characters;
-
-      m_lobby->set_loading_text("Loading chars:\n" + QString::number(m_loaded_characters) + "/" +
-                                QString::number(m_character_count));
-
-      m_courtroom->append_char(f_char);
-    }
-
-    int total_loading_size = m_character_count + m_evidence_count + m_music_count;
-    int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;
-    m_lobby->set_loading_value(loading_value);
-
-    send_server_packet(DRPacket("RE"));
-  }
-  else if (l_header == "EI")
-  {
-    if (!is_courtroom_constructed)
-      return;
-
-    // +1 because evidence starts at 1 rather than 0 for whatever reason
-    // enjoy fanta
-    if (l_content.at(0).toInt() != m_loaded_evidence + 1)
-      return;
-
-    if (l_content.size() < 2)
-      return;
-
-    QStringList sub_elements = l_content.at(1).split("&");
-    if (sub_elements.size() < 4)
-      return;
-
-    evi_type f_evi;
-    f_evi.name = sub_elements.at(0);
-    f_evi.description = sub_elements.at(1);
-    // no idea what the number at position 2 is. probably an identifier?
-    f_evi.image = sub_elements.at(3);
-
-    ++m_loaded_evidence;
-
-    m_lobby->set_loading_text("Loading evidence:\n" + QString::number(m_loaded_evidence) + "/" +
-                              QString::number(m_evidence_count));
-
-    int total_loading_size = m_character_count + m_evidence_count + m_music_count;
-    int loading_value = ((m_loaded_characters + m_loaded_evidence) / static_cast<double>(total_loading_size)) * 100;
-    m_lobby->set_loading_value(loading_value);
-
-    QString next_packet_number = QString::number(m_loaded_evidence);
-    send_server_packet(DRPacket("AE", {next_packet_number}));
-  }
   else if (l_header == "CharsCheck")
   {
     if (!is_courtroom_constructed)
@@ -257,31 +182,21 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
         m_courtroom->set_taken(n_char, false);
     }
   }
-
   else if (l_header == "SC")
   {
     if (!is_courtroom_constructed)
       return;
 
-    for (int n_element = 0; n_element < l_content.size(); ++n_element)
+    QVector<char_type> l_chr_list;
+    for (const QString &i_chr_name : qAsConst(l_content))
     {
-      QStringList sub_elements = l_content.at(n_element).split("&");
-
-      char_type f_char;
-      f_char.name = sub_elements.at(0);
-      if (sub_elements.size() >= 2)
-        f_char.description = sub_elements.at(1);
-
-      // temporary. the CharsCheck packet sets this properly
-      f_char.taken = false;
-
-      ++m_loaded_characters;
-
-      m_lobby->set_loading_text("Loading chars:\n" + QString::number(m_loaded_characters) + "/" +
+      char_type l_chr;
+      l_chr.name = i_chr_name;
+      l_chr_list.append(std::move(l_chr));
+      m_lobby->set_loading_text("Loading chars:\n" + QString::number(++m_loaded_characters) + "/" +
                                 QString::number(m_character_count));
-
-      m_courtroom->append_char(f_char);
     }
+    m_courtroom->set_character_list(l_chr_list);
 
     int total_loading_size = m_character_count + m_evidence_count + m_music_count;
     int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;

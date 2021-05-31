@@ -72,19 +72,19 @@ Courtroom::~Courtroom()
   stop_all_audio();
 }
 
-void Courtroom::append_char(char_type p_char)
+void Courtroom::set_character_list(QVector<char_type> p_chr_list)
 {
-  m_chr_list.append(p_char);
+  m_chr_list = p_chr_list;
 }
 
-void Courtroom::set_area_list(QStringList area_list)
+void Courtroom::set_area_list(QStringList p_area_list)
 {
-  m_area_list = area_list;
+  m_area_list = p_area_list;
 }
 
-void Courtroom::set_music_list(QStringList music_list)
+void Courtroom::set_music_list(QStringList p_music_list)
 {
-  m_music_list = music_list;
+  m_music_list = p_music_list;
 }
 
 void Courtroom::enter_courtroom(int p_cid)
