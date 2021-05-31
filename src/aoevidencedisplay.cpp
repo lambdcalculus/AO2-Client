@@ -3,6 +3,8 @@
 #include "aoapplication.h"
 #include "aopixmap.h"
 #include "aosfxplayer.h"
+#include "commondefs.h"
+#include "courtroom.h"
 #include "datatypes.h"
 #include "file_functions.h"
 #include "misc_functions.h"
@@ -42,7 +44,7 @@ void AOEvidenceDisplay::show_evidence(QString p_evidence_image, bool is_left_sid
     l_icon_animation = "evidence_appear_right.gif";
   }
 
-  pos_size_type l_icon_dimensions = ao_app->get_element_dimensions(l_icon_identifier, "courtroom_design.ini");
+  pos_size_type l_icon_dimensions = ao_app->get_element_dimensions(l_icon_identifier, COURTROOM_DESIGN_INI);
 
   ui_icon->move(l_icon_dimensions.x, l_icon_dimensions.y);
   ui_icon->resize(l_icon_dimensions.width, l_icon_dimensions.height);

@@ -1,4 +1,5 @@
 #include "aoconfig.h"
+#include "commondefs.h"
 #include "datatypes.h"
 #include "draudioengine.h"
 #include "drpather.h"
@@ -89,7 +90,7 @@ private:
 };
 
 AOConfigPrivate::AOConfigPrivate()
-    : QObject(nullptr), cfg(DRPather::get_application_path() + "/base/config.ini", QSettings::IniFormat),
+    : QObject(nullptr), cfg(DRPather::get_application_path() + BASE_CONFIG_INI, QSettings::IniFormat),
       audio_engine(new DRAudioEngine(this))
 {
   Q_ASSERT_X(qApp, "initialization", "QGuiApplication is required");

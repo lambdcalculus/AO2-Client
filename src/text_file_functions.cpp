@@ -1,6 +1,7 @@
 #include "aoapplication.h"
 
 #include "aoconfig.h"
+#include "commondefs.h"
 #include "file_functions.h"
 
 #include <QColor>
@@ -237,7 +238,7 @@ QString AOApplication::get_font_name(QString p_identifier, QString p_file)
 
 QString AOApplication::get_sfx(QString p_identifier)
 {
-  return read_theme_ini(p_identifier, "courtroom_sounds.ini");
+  return read_theme_ini(p_identifier, COURTROOM_SOUNDS_INI);
 }
 
 QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
@@ -284,16 +285,14 @@ QMap<DR::Color, DR::ColorInfo> AOApplication::get_chatmessage_colors()
   QMap<DR::Color, DR::ColorInfo> color_map = DR::get_default_color_map();
 
   // File lookup order
-  // 1. In the theme folder (gamemode-timeofday/main/default), look for
-  // "courtroom_text_colors.ini".
+  // 1. In the theme folder (gamemode-timeofday/main/default)
 
-  const QString file_name = "courtroom_text_colors.ini";
-  QString path = find_theme_asset_path(file_name);
+  QString path = find_theme_asset_path(COURTROOM_TEXT_COLOR_INI);
   if (path.isEmpty())
   {
     qInfo().noquote() << QString("[color] theme %1 is missing file: %2, using default colors instead")
                              .arg(ao_config->theme())
-                             .arg(file_name);
+                             .arg(COURTROOM_TEXT_COLOR_INI);
     return color_map;
   }
   qInfo().noquote() << QString("[color] loading colors for theme %1").arg(ao_config->theme());
@@ -339,9 +338,9 @@ QVector<QStringList> AOApplication::get_highlight_colors()
 {
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
-  // "courtroom_config.ini".
+  // COURTROOM_INI_CONFIG.
 
-  QString path = find_theme_asset_path("courtroom_config.ini");
+  QString path = find_theme_asset_path(COURTROOM_CONFIG_INI);
   if (path.isEmpty())
     return QVector<QStringList>();
 
@@ -390,9 +389,9 @@ QString AOApplication::get_spbutton(QString p_tag, int index)
 {
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
-  // "courtroom_config.ini".
+  // COURTROOM_INI_CONFIG.
 
-  QString path = find_theme_asset_path("courtroom_config.ini");
+  QString path = find_theme_asset_path(COURTROOM_CONFIG_INI);
   if (path.isEmpty())
     return "";
 
@@ -433,9 +432,9 @@ QStringList AOApplication::get_effect(int index)
 {
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
-  // "courtroom_config.ini".
+  // COURTROOM_INI_CONFIG.
 
-  QString path = find_theme_asset_path("courtroom_config.ini");
+  QString path = find_theme_asset_path(COURTROOM_CONFIG_INI);
   if (path.isEmpty())
     return QStringList();
 
@@ -480,9 +479,9 @@ QStringList AOApplication::get_sfx_list()
   QStringList r_sfx_list;
 
   QStringList l_file_list;
-  l_file_list.append(get_base_path() + "configs/sounds.ini");
+  l_file_list.append(get_base_path() + CONFIG_SOUNDS_INI);
   for (const QString &i_chr : get_char_include_tree(get_current_char()))
-    l_file_list.append(get_character_path(i_chr, "sounds.ini"));
+    l_file_list.append(get_character_path(i_chr, CHARACTER_SOUNDS_INI));
 
   for (const QString &i_file_path : qAsConst(l_file_list))
   {
@@ -512,7 +511,7 @@ QString drLookupKey(const QStringList &keyList, const QString &targetKey)
 // be found
 QVariant AOApplication::read_char_ini(QString p_chr, QString p_group, QString p_key, QVariant p_def)
 {
-  QSettings s(get_character_path(p_chr, "char.ini"), QSettings::IniFormat);
+  QSettings s(get_character_path(p_chr, CHARACTER_CHAR_INI), QSettings::IniFormat);
   s.setIniCodec("UTF-8");
   s.beginGroup(drLookupKey(s.childGroups(), p_group));
   return s.value(drLookupKey(s.childKeys(), p_key), p_def);
@@ -597,7 +596,7 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
     qDebug().noquote() << QString("Adding <%1>").arg(i_chr);
 #endif
 
-    QSettings l_chrini(get_character_path(i_chr, "char.ini"), QSettings::IniFormat);
+    QSettings l_chrini(get_character_path(i_chr, CHARACTER_CHAR_INI), QSettings::IniFormat);
     l_chrini.setIniCodec("UTF-8");
 
     QStringList l_keys;

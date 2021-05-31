@@ -6,6 +6,7 @@
 #include "aoevidencedescription.h"
 #include "aoimagedisplay.h"
 #include "aolineedit.h"
+#include "commondefs.h"
 #include "drpacket.h"
 #include "theme.h"
 
@@ -40,10 +41,10 @@ void Courtroom::construct_evidence()
   ui_evidence_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                          "color: white;");
 
-  set_size_and_pos(ui_evidence, "evidence_background", INI_DESIGN, ao_app);
-  set_size_and_pos(ui_evidence_buttons, "evidence_buttons", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence, "evidence_background", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_evidence_buttons, "evidence_buttons", COURTROOM_DESIGN_INI, ao_app);
 
-  QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", "courtroom_design.ini");
+  QPoint f_spacing = ao_app->get_button_spacing("evidence_button_spacing", COURTROOM_DESIGN_INI);
 
   const int button_width = 70;
   int x_spacing = f_spacing.x();

@@ -4,6 +4,7 @@
 #include "aobutton.h"
 #include "aocharbutton.h"
 #include "aoimagedisplay.h"
+#include "commondefs.h"
 #include "debug_functions.h"
 #include "drpacket.h"
 #include "file_functions.h"
@@ -48,7 +49,7 @@ void Courtroom::reconstruct_char_select()
   while (!ui_char_button_list.isEmpty())
     delete ui_char_button_list.takeLast();
 
-  QPoint f_spacing = ao_app->get_button_spacing("char_button_spacing", "courtroom_design.ini");
+  QPoint f_spacing = ao_app->get_button_spacing("char_button_spacing", COURTROOM_DESIGN_INI);
 
   const int button_width = 60;
   int x_spacing = f_spacing.x();
@@ -58,7 +59,7 @@ void Courtroom::reconstruct_char_select()
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
 
-  set_size_and_pos(ui_char_buttons, "char_buttons", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_char_buttons, "char_buttons", COURTROOM_DESIGN_INI, ao_app);
 
   char_columns = ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
   char_rows = ((ui_char_buttons->height() - button_height) / (y_spacing + button_height)) + 1;
@@ -102,9 +103,7 @@ void Courtroom::reset_char_select()
 
 void Courtroom::set_char_select()
 {
-  QString filename = "courtroom_design.ini";
-
-  pos_size_type f_charselect = ao_app->get_element_dimensions("char_select", filename);
+  pos_size_type f_charselect = ao_app->get_element_dimensions("char_select", COURTROOM_DESIGN_INI);
 
   if (f_charselect.width < 0 || f_charselect.height < 0)
   {
@@ -159,7 +158,7 @@ void Courtroom::char_clicked(int n_char)
 {
   int n_real_char = n_char + m_current_chr_page * m_page_max_chr_count;
 
-  QString char_ini_path = ao_app->get_character_path(m_chr_list.at(n_real_char).name, "char.ini");
+  QString char_ini_path = ao_app->get_character_path(m_chr_list.at(n_real_char).name, CHARACTER_CHAR_INI);
   qDebug() << "char_ini_path" << char_ini_path;
 
   if (!file_exists(char_ini_path))

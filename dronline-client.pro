@@ -43,6 +43,7 @@ HEADERS += \
   include/aosystemplayer.h \
   include/aotextarea.h \
   include/aotimer.h \
+  include/commondefs.h \
   include/courtroom.h \
   include/datatypes.h \
   include/debug_functions.h \
@@ -96,6 +97,7 @@ SOURCES += \
   src/aotimer.cpp \
   src/audio_functions.cpp \
   src/charselect.cpp \
+  src/commondefs.cpp \
   src/courtroom.cpp \
   src/courtroom_widgets.cpp \
   src/datatypes.cpp \

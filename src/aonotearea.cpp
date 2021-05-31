@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "aobutton.h"
 #include "aonotepicker.h"
+#include "commondefs.h"
 #include "courtroom.h"
 
 #include <QDebug>
@@ -67,7 +68,7 @@ void Courtroom::on_add_button_clicked()
 
 void Courtroom::set_note_files()
 {
-  QString filename = ao_app->get_base_path() + "configs/filesabstract.ini";
+  QString filename = ao_app->get_base_path() + CONFIG_FILESABSTRACT_INI;
   QFile config_file(filename);
 
   if (!config_file.open(QIODevice::ReadOnly | QIODevice::Text))

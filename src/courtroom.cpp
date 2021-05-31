@@ -17,6 +17,7 @@
 #include "aosystemplayer.h"
 #include "aotextarea.h"
 #include "aotimer.h"
+#include "commondefs.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
 #include "drpacket.h"
@@ -37,11 +38,6 @@
 #include <QScrollBar>
 #include <QTimer>
 #include <QVBoxLayout>
-
-const QString Courtroom::INI_DESIGN = "courtroom_design.ini";
-const QString Courtroom::INI_FONTS = "courtroom_fonts.ini";
-const QString Courtroom::INI_CONFIG = "courtroom_config.ini";
-const QString Courtroom::INI_SOUNDS = "courtroom_sounds.ini";
 
 const int Courtroom::DEFAULT_WIDTH = 714;
 const int Courtroom::DEFAULT_HEIGHT = 668;
@@ -80,11 +76,13 @@ void Courtroom::set_character_list(QVector<char_type> p_chr_list)
 void Courtroom::set_area_list(QStringList p_area_list)
 {
   m_area_list = p_area_list;
+  list_music();
 }
 
 void Courtroom::set_music_list(QStringList p_music_list)
 {
   m_music_list = p_music_list;
+  list_areas();
 }
 
 void Courtroom::enter_courtroom(int p_cid)
@@ -171,7 +169,7 @@ void Courtroom::enter_courtroom(int p_cid)
       const QString l_name = i_info.fileName();
       if (get_base_character() == l_name)
         continue;
-      if (!file_exists(ao_app->get_character_path(l_name, "char.ini")))
+      if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)))
         continue;
       l_name_list.append(l_name);
     }
@@ -285,7 +283,7 @@ void Courtroom::set_scene()
   QString f_desk_image = "stand";
   QString f_desk_mod = m_chatmessage[CMDeskModifier];
   QString f_side = m_chatmessage[CMPosition];
-  QString ini_path = ao_app->get_background_path("backgrounds.ini");
+  QString ini_path = ao_app->get_background_path(BACKGROUND_BACKGROUNDS_INI);
 
   if (file_exists(ini_path))
   {
@@ -381,16 +379,14 @@ void Courtroom::set_tick_rate(const std::optional<int> &tick_rate)
 
 void Courtroom::handle_music_anim()
 {
-  QString file_a = INI_DESIGN;
-  QString file_b = INI_FONTS;
-  pos_size_type res_a = ao_app->get_element_dimensions("music_name", file_a);
-  pos_size_type res_b = ao_app->get_element_dimensions("music_area", file_a);
-  float speed = static_cast<float>(ao_app->get_font_property("music_name_speed", file_b));
+  pos_size_type res_a = ao_app->get_element_dimensions("music_name", COURTROOM_DESIGN_INI);
+  pos_size_type res_b = ao_app->get_element_dimensions("music_area", COURTROOM_DESIGN_INI);
+  float speed = static_cast<float>(ao_app->get_font_property("music_name_speed", COURTROOM_FONTS_INI));
 
   QFont f_font = ui_vp_music_name->font();
   QFontMetrics fm(f_font);
   int dist;
-  if (ao_app->read_theme_ini_bool("enable_const_music_speed", INI_CONFIG))
+  if (ao_app->read_theme_ini_bool("enable_const_music_speed", COURTROOM_CONFIG_INI))
     dist = res_b.width;
   else
     dist = fm.horizontalAdvance(ui_vp_music_name->toPlainText());
@@ -433,66 +429,31 @@ void Courtroom::list_music()
 {
   ui_music_list->clear();
 
-  QString f_file = INI_DESIGN;
-
-  QBrush found_brush(ao_app->get_color("found_song_color", f_file));
-  QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
-
-  int n_listed_songs = 0;
-
-  for (int n_song = 0; n_song < m_music_list.size(); ++n_song)
+  const QString l_item_filter = ui_music_search->text();
+  const QBrush l_song_brush(ao_app->get_color("found_song_color", COURTROOM_DESIGN_INI));
+  const QBrush l_missing_song_brush(ao_app->get_color("missing_song_color", COURTROOM_DESIGN_INI));
+  for (const QString &i_item_name : qAsConst(m_music_list))
   {
-    QString i_song = m_music_list.at(n_song);
-
-    if (i_song.toLower().contains(ui_music_search->text().toLower()))
-    {
-      ui_music_list->addItem(i_song);
-
-      QString song_root = ao_app->get_music_path(i_song);
-      QString song_path = ao_app->find_asset_path({song_root}, audio_extensions());
-
-      if (!song_path.isEmpty())
-        ui_music_list->item(n_listed_songs)->setBackground(found_brush);
-      else
-        ui_music_list->item(n_listed_songs)->setBackground(missing_brush);
-
-      ++n_listed_songs;
-    }
+    if (!i_item_name.contains(l_item_filter, Qt::CaseInsensitive))
+      continue;
+    QListWidgetItem *l_item = new QListWidgetItem(i_item_name, ui_music_list);
+    const QString l_song_path = ao_app->find_asset_path({ao_app->get_music_path(i_item_name)}, audio_extensions());
+    l_item->setBackground(l_song_path.isEmpty() ? l_missing_song_brush : l_song_brush);
   }
 }
 
 void Courtroom::list_areas()
 {
   ui_area_list->clear();
-  //  area_names.clear();
 
-  QString f_file = "courtroom_design.ini";
-
-  QBrush free_brush(ao_app->get_color("area_free_color", f_file));
-  QBrush lfp_brush(ao_app->get_color("area_lfp_color", f_file));
-  QBrush casing_brush(ao_app->get_color("area_casing_color", f_file));
-  QBrush recess_brush(ao_app->get_color("area_recess_color", f_file));
-  QBrush rp_brush(ao_app->get_color("area_rp_color", f_file));
-  QBrush gaming_brush(ao_app->get_color("area_gaming_color", f_file));
-  QBrush locked_brush(ao_app->get_color("area_locked_color", f_file));
-
-  int n_listed_areas = 0;
-
-  for (int n_area = 0; n_area < m_area_list.size(); ++n_area)
+  const QString l_item_filter = ui_music_search->text();
+  const QBrush l_area_brush(ao_app->get_color("area_free_color", COURTROOM_DESIGN_INI));
+  for (const QString &i_item_name : qAsConst(m_area_list))
   {
-    QString i_area = "";
-
-    i_area.append(m_area_list.at(n_area));
-
-    if (i_area.toLower().contains(ui_music_search->text().toLower()))
-    {
-      ui_area_list->addItem(i_area);
-      //      area_names.append(i_);
-
-      ui_area_list->item(n_listed_areas)->setBackground(free_brush);
-
-      ++n_listed_areas;
-    }
+    if (!i_item_name.contains(l_item_filter, Qt::CaseInsensitive))
+      continue;
+    QListWidgetItem *l_item = new QListWidgetItem(i_item_name, ui_area_list);
+    l_item->setBackground(l_area_brush);
   }
 }
 
@@ -508,8 +469,8 @@ QString Courtroom::current_sfx_file()
 void Courtroom::update_sfx_list()
 {
   // colors
-  m_sfx_color_found = ao_app->get_color("found_song_color", INI_DESIGN);
-  m_sfx_color_missing = ao_app->get_color("missing_song_color", INI_DESIGN);
+  m_sfx_color_found = ao_app->get_color("found_song_color", COURTROOM_DESIGN_INI);
+  m_sfx_color_missing = ao_app->get_color("missing_song_color", COURTROOM_DESIGN_INI);
 
   // items
   m_sfx_list.clear();
@@ -598,7 +559,7 @@ void Courtroom::on_sfx_widget_list_row_changed()
 
 void Courtroom::list_note_files()
 {
-  QString f_config = ao_app->get_base_path() + file_select_ini;
+  QString f_config = ao_app->get_base_path() + CONFIG_FILESABSTRACT_INI;
   QFile f_file(f_config);
   if (!f_file.open(QIODevice::ReadOnly))
   {
@@ -1112,7 +1073,7 @@ void Courtroom::handle_chatmessage_3()
   const bool l_hide_emote = (f_emote == "../../misc/blank");
 
   QString path;
-  if (!chatmessage_is_empty && ao_app->read_theme_ini_bool("enable_showname_image", INI_CONFIG))
+  if (!chatmessage_is_empty && ao_app->read_theme_ini_bool("enable_showname_image", COURTROOM_CONFIG_INI))
   {
     // Asset lookup order
     // 1. In the theme folder (gamemode-timeofday/main/default), in the character
@@ -1242,16 +1203,16 @@ void Courtroom::update_ic_log(bool p_reset_log)
 
   // prepare the formats we need
   // default color
-  QColor default_color = ao_app->get_color("ic_chatlog_color", INI_FONTS);
+  QColor default_color = ao_app->get_color("ic_chatlog_color", COURTROOM_FONTS_INI);
   QColor not_found_color = QColor(255, 255, 255);
 
   QTextCharFormat name_format = ui_ic_chatlog->currentCharFormat();
-  if (ao_app->get_font_property("ic_chatlog_bold", INI_FONTS))
+  if (ao_app->get_font_property("ic_chatlog_bold", COURTROOM_FONTS_INI))
     name_format.setFontWeight(QFont::Bold);
   else
     name_format.setFontWeight(QFont::Normal);
 
-  QColor showname_color = ao_app->get_color("ic_chatlog_showname_color", INI_FONTS);
+  QColor showname_color = ao_app->get_color("ic_chatlog_showname_color", COURTROOM_FONTS_INI);
   if (showname_color == not_found_color)
     showname_color = default_color;
   name_format.setForeground(showname_color);
@@ -1260,7 +1221,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
 
   if (ao_config->log_display_self_highlight_enabled())
   {
-    QColor selfname_color = ao_app->get_color("ic_chatlog_selfname_color", INI_FONTS);
+    QColor selfname_color = ao_app->get_color("ic_chatlog_selfname_color", COURTROOM_FONTS_INI);
     if (selfname_color == not_found_color)
       selfname_color = showname_color;
     selfname_format.setForeground(selfname_color);
@@ -1268,14 +1229,14 @@ void Courtroom::update_ic_log(bool p_reset_log)
 
   QTextCharFormat line_format = ui_ic_chatlog->currentCharFormat();
   line_format.setFontWeight(QFont::Normal);
-  QColor message_color = ao_app->get_color("ic_chatlog_message_color", INI_FONTS);
+  QColor message_color = ao_app->get_color("ic_chatlog_message_color", COURTROOM_FONTS_INI);
   if (message_color == not_found_color)
     message_color = default_color;
   line_format.setForeground(message_color);
 
   QTextCharFormat system_format = ui_ic_chatlog->currentCharFormat();
   system_format.setFontWeight(QFont::Normal);
-  QColor system_color = ao_app->get_color("ic_chatlog_system_color", INI_FONTS);
+  QColor system_color = ao_app->get_color("ic_chatlog_system_color", COURTROOM_FONTS_INI);
   if (system_color == not_found_color)
     system_color = not_found_color;
   system_format.setForeground(system_color);
@@ -1519,8 +1480,8 @@ void Courtroom::setup_chat()
   m_blip_step = 0;
 
   // Cache these so chat_tick performs better
-  m_chatbox_message_outline = (ao_app->get_font_property("message_outline", INI_FONTS) == 1);
-  m_chatbox_message_enable_highlighting = (ao_app->read_theme_ini_bool("enable_highlighting", INI_CONFIG));
+  m_chatbox_message_outline = (ao_app->get_font_property("message_outline", COURTROOM_FONTS_INI) == 1);
+  m_chatbox_message_enable_highlighting = (ao_app->read_theme_ini_bool("enable_highlighting", COURTROOM_CONFIG_INI));
   m_chatbox_message_highlight_colors = ao_app->get_highlight_colors();
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CMChrName]);
@@ -1865,8 +1826,6 @@ void Courtroom::handle_song(QStringList p_contents)
 
 void Courtroom::handle_wtce(QString p_wtce)
 {
-  QString sfx_file = INI_SOUNDS;
-
   int index = p_wtce.at(p_wtce.size() - 1).digitValue();
   if (index > 0 && index < wtce_names.size() + 1 && wtce_names.size() > 0) // check to prevent crash
   {
@@ -2227,7 +2186,7 @@ void Courtroom::on_cycle_clicked()
     break;
   }
 
-  if (ao_app->read_theme_ini_bool("enable_cycle_ding", INI_CONFIG))
+  if (ao_app->read_theme_ini_bool("enable_cycle_ding", COURTROOM_CONFIG_INI))
     m_system_player->play(ao_app->get_sfx("cycle"));
 
   set_shouts();

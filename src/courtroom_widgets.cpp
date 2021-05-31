@@ -19,6 +19,7 @@
 #include "aosystemplayer.h"
 #include "aotextarea.h"
 #include "aotimer.h"
+#include "commondefs.h"
 #include "drtextedit.h"
 #include "file_functions.h"
 #include "theme.h"
@@ -473,9 +474,8 @@ void Courtroom::set_widget_layers()
 {
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
-  // "courtroom_layers.ini".
 
-  QString path = ao_app->find_theme_asset_path("courtroom_layers.ini");
+  QString path = ao_app->find_theme_asset_path(COURTROOM_LAYERS_INI);
   QFile layer_ini(path);
   // needed to avoid cyclic parenting
   QStringList recorded_widgets;
@@ -559,12 +559,11 @@ void Courtroom::set_widget_layers()
 
 void Courtroom::set_widgets()
 {
-  QString filename = INI_DESIGN;
-  pos_size_type f_courtroom = ao_app->get_element_dimensions("courtroom", filename);
+  pos_size_type f_courtroom = ao_app->get_element_dimensions("courtroom", COURTROOM_DESIGN_INI);
 
   if (f_courtroom.width < 0 || f_courtroom.height < 0)
   {
-    qDebug() << "W: did not find courtroom width or height in " << filename;
+    qDebug() << "W: did not find courtroom width or height in " << COURTROOM_DESIGN_INI;
 
     resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
   }
@@ -577,7 +576,7 @@ void Courtroom::set_widgets()
   ui_background->resize(size());
   ui_background->set_image("courtroombackground.png");
 
-  set_size_and_pos(ui_viewport, "viewport", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_viewport, "viewport", COURTROOM_DESIGN_INI, ao_app);
 
   ui_vp_background->move(0, 0);
   ui_vp_background->combo_resize(ui_viewport->size());
@@ -595,19 +594,19 @@ void Courtroom::set_widgets()
   ui_vp_evidence_display->move(0, 0);
   ui_vp_evidence_display->resize(ui_viewport->width(), ui_viewport->height());
 
-  set_size_and_pos(ui_vp_notepad_image, "notepad_image", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_notepad_image, "notepad_image", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_notepad_image->set_image("notepad_image.png");
   ui_vp_notepad_image->hide();
 
-  set_size_and_pos(ui_vp_notepad, "notepad", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_notepad, "notepad", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_notepad->hide();
 
-  set_size_and_pos(ui_vp_showname, "showname", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_showname, "showname", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_vp_showname_image, "showname_image", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_showname_image, "showname_image", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_showname_image->hide();
 
-  set_size_and_pos(ui_vp_message, "message", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_message, "message", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
@@ -627,43 +626,43 @@ void Courtroom::set_widgets()
   ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  set_size_and_pos(ui_ic_chatlog, "ic_chatlog", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_ic_chatlog, "ic_chatlog", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_ooc_chatlog, "server_chatlog", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_ooc_chatlog, "server_chatlog", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_mute_list, "mute_list", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_mute_list, "mute_list", COURTROOM_DESIGN_INI, ao_app);
   ui_mute_list->hide();
 
-  set_size_and_pos(ui_music_list, "music_list", INI_DESIGN, ao_app);
-  set_size_and_pos(ui_area_list, "area_list", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_music_list, "music_list", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_area_list, "area_list", COURTROOM_DESIGN_INI, ao_app);
   if (ui_music_list->isVisible())
     ui_area_list->hide();
   //  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
-  set_size_and_pos(ui_sfx_list, "sfx_list", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_sfx_list, "sfx_list", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_ic_chat_showname, "ic_chat_name", INI_DESIGN, ao_app);
-  set_text_alignment(ui_ic_chat_showname, "ic_chat_name", INI_FONTS, ao_app);
+  set_size_and_pos(ui_ic_chat_showname, "ic_chat_name", COURTROOM_DESIGN_INI, ao_app);
+  set_text_alignment(ui_ic_chat_showname, "ic_chat_name", COURTROOM_FONTS_INI, ao_app);
   ui_ic_chat_showname->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
-  set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message", INI_DESIGN, ao_app);
-  set_text_alignment(ui_ic_chat_message, "ao2_ic_chat_message", INI_FONTS, ao_app);
+  set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message", COURTROOM_DESIGN_INI, ao_app);
+  set_text_alignment(ui_ic_chat_message, "ao2_ic_chat_message", COURTROOM_FONTS_INI, ao_app);
   ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
 
-  set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_vp_music_area, "music_area", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_music_area, "music_area", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_music_area->show();
-  set_size_and_pos(ui_vp_music_name, "music_name", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_music_name, "music_name", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_vp_music_display_a, "music_display_a", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_music_display_a, "music_display_a", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_music_display_a->set_image("music_display_a.png");
   ui_vp_music_display_a->show();
 
-  set_size_and_pos(ui_vp_music_display_b, "music_display_b", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_music_display_b, "music_display_b", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_music_display_b->set_image("music_display_b.png");
   ui_vp_music_display_b->show();
 
-  set_size_and_pos(ui_vp_clock, "clock", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_vp_clock, "clock", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_clock->hide();
 
   ui_vp_chatbox->set_image("chatmed.png");
@@ -672,60 +671,60 @@ void Courtroom::set_widgets()
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
   ui_muted->set_image("muted.png");
 
-  set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message", INI_DESIGN, ao_app);
-  set_text_alignment(ui_ooc_chat_message, "ooc_chat_message", INI_FONTS, ao_app);
+  set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_DESIGN_INI, ao_app);
+  set_text_alignment(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_FONTS_INI, ao_app);
   ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
-  set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name", INI_DESIGN, ao_app);
-  set_text_alignment(ui_ooc_chat_name, "ooc_chat_name", INI_FONTS, ao_app);
+  set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_DESIGN_INI, ao_app);
+  set_text_alignment(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_FONTS_INI, ao_app);
   ui_ooc_chat_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
 
-  set_size_and_pos(ui_music_search, "music_search", INI_DESIGN, ao_app);
-  set_text_alignment(ui_music_search, "music_search", INI_FONTS, ao_app);
+  set_size_and_pos(ui_music_search, "music_search", COURTROOM_DESIGN_INI, ao_app);
+  set_text_alignment(ui_music_search, "music_search", COURTROOM_FONTS_INI, ao_app);
 
-  set_size_and_pos(ui_sfx_search, "sfx_search", INI_DESIGN, ao_app);
-  set_text_alignment(ui_sfx_search, "sfx_search", INI_FONTS, ao_app);
+  set_size_and_pos(ui_sfx_search, "sfx_search", COURTROOM_DESIGN_INI, ao_app);
+  set_text_alignment(ui_sfx_search, "sfx_search", COURTROOM_FONTS_INI, ao_app);
 
   // char select
   reconstruct_char_select();
 
   // emotes
-  set_size_and_pos(ui_emotes, "emotes", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_emotes, "emotes", COURTROOM_DESIGN_INI, ao_app);
   reconstruct_emotes();
 
-  set_size_and_pos(ui_emote_left, "emote_left", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_emote_left, "emote_left", COURTROOM_DESIGN_INI, ao_app);
   ui_emote_left->set_image("arrow_left.png");
 
-  set_size_and_pos(ui_emote_right, "emote_right", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_emote_right, "emote_right", COURTROOM_DESIGN_INI, ao_app);
   ui_emote_right->set_image("arrow_right.png");
 
-  set_size_and_pos(ui_emote_dropdown, "emote_dropdown", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_emote_dropdown, "emote_dropdown", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_pos_dropdown, "pos_dropdown", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_pos_dropdown, "pos_dropdown", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_defense_bar, "defense_bar", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_defense_bar, "defense_bar", COURTROOM_DESIGN_INI, ao_app);
   ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state) + ".png");
 
-  set_size_and_pos(ui_prosecution_bar, "prosecution_bar", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_prosecution_bar, "prosecution_bar", COURTROOM_DESIGN_INI, ao_app);
   ui_prosecution_bar->set_image("prosecutionbar" + QString::number(prosecution_bar_state) + ".png");
 
   for (int i = 0; i < shout_names.size(); ++i)
   {
-    set_size_and_pos(ui_shouts[i], shout_names[i], INI_DESIGN, ao_app);
+    set_size_and_pos(ui_shouts[i], shout_names[i], COURTROOM_DESIGN_INI, ao_app);
   }
   reset_shout_buttons();
 
-  set_size_and_pos(ui_shout_up, "shout_up", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_shout_up, "shout_up", COURTROOM_DESIGN_INI, ao_app);
   ui_shout_up->set_image("shoutup.png");
   ui_shout_up->hide();
-  set_size_and_pos(ui_shout_down, "shout_down", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_shout_down, "shout_down", COURTROOM_DESIGN_INI, ao_app);
   ui_shout_down->set_image("shoutdown.png");
   ui_shout_down->hide();
 
   // courtroom_config.ini necessary + check for crash
-  if (ao_app->read_theme_ini_bool("enable_single_shout", INI_CONFIG) && ui_shouts.size() > 0)
+  if (ao_app->read_theme_ini_bool("enable_single_shout", COURTROOM_CONFIG_INI) && ui_shouts.size() > 0)
   {
     for (auto &shout : ui_shouts)
       move_widget(shout, "bullet");
@@ -738,18 +737,18 @@ void Courtroom::set_widgets()
 
   for (int i = 0; i < effect_names.size(); ++i)
   {
-    set_size_and_pos(ui_effects[i], effect_names[i], INI_DESIGN, ao_app);
+    set_size_and_pos(ui_effects[i], effect_names[i], COURTROOM_DESIGN_INI, ao_app);
   }
   reset_effect_buttons();
 
-  set_size_and_pos(ui_effect_up, "effect_up", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_effect_up, "effect_up", COURTROOM_DESIGN_INI, ao_app);
   ui_effect_up->set_image("effectup.png");
   ui_effect_up->hide();
-  set_size_and_pos(ui_effect_down, "effect_down", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_effect_down, "effect_down", COURTROOM_DESIGN_INI, ao_app);
   ui_effect_down->set_image("effectdown.png");
   ui_effect_down->hide();
 
-  if (ao_app->read_theme_ini_bool("enable_single_effect", INI_CONFIG) &&
+  if (ao_app->read_theme_ini_bool("enable_single_effect", COURTROOM_CONFIG_INI) &&
       ui_effects.size() > 0) // check to prevent crashing
   {
     for (auto &effect : ui_effects)
@@ -761,19 +760,19 @@ void Courtroom::set_widgets()
     ui_effect_down->show();
   }
 
-  set_size_and_pos(ui_wtce_up, "wtce_up", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_wtce_up, "wtce_up", COURTROOM_DESIGN_INI, ao_app);
   ui_wtce_up->set_image("wtceup.png");
   ui_wtce_up->hide();
-  set_size_and_pos(ui_wtce_down, "wtce_down", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_wtce_down, "wtce_down", COURTROOM_DESIGN_INI, ao_app);
   ui_wtce_down->set_image("wtcedown.png");
   ui_wtce_down->hide();
 
   for (int i = 0; i < wtce_names.size(); ++i)
   {
-    set_size_and_pos(ui_wtce[i], wtce_names[i], INI_DESIGN, ao_app);
+    set_size_and_pos(ui_wtce[i], wtce_names[i], COURTROOM_DESIGN_INI, ao_app);
   }
 
-  if (ao_app->read_theme_ini_bool("enable_single_wtce", INI_CONFIG)) // courtroom_config.ini necessary
+  if (ao_app->read_theme_ini_bool("enable_single_wtce", COURTROOM_CONFIG_INI)) // courtroom_config.ini necessary
   {
     for (auto &wtce : ui_wtce)
       move_widget(wtce, "wtce");
@@ -784,17 +783,17 @@ void Courtroom::set_widgets()
 
   for (int i = 0; i < free_block_names.size(); ++i)
   {
-    set_size_and_pos(ui_free_blocks[i], free_block_names[i], INI_DESIGN, ao_app);
+    set_size_and_pos(ui_free_blocks[i], free_block_names[i], COURTROOM_DESIGN_INI, ao_app);
   }
   set_free_blocks();
 
   // Set the default values for the buttons, then determine if they should be
   // replaced by images
-  set_size_and_pos(ui_change_character, "change_character", INI_DESIGN, ao_app);
-  set_size_and_pos(ui_call_mod, "call_mod", INI_DESIGN, ao_app);
-  set_size_and_pos(ui_note_button, "note_button", INI_DESIGN, ao_app);
-  set_size_and_pos(ui_switch_area_music, "switch_area_music", INI_DESIGN, ao_app);
-  set_size_and_pos(ui_config_panel, "config_panel", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_change_character, "change_character", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_call_mod, "call_mod", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_note_button, "note_button", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_switch_area_music, "switch_area_music", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_config_panel, "config_panel", COURTROOM_DESIGN_INI, ao_app);
 
   ui_change_character->setText("");
   ui_call_mod->setText("");
@@ -808,7 +807,7 @@ void Courtroom::set_widgets()
   ui_config_panel->setStyleSheet("");
   ui_note_button->setStyleSheet("");
 
-  if (ao_app->read_theme_ini_bool("enable_button_images", INI_CONFIG))
+  if (ao_app->read_theme_ini_bool("enable_button_images", COURTROOM_CONFIG_INI))
   {
     // Set files, ask questions later
     // set_image first tries the gamemode-timeofday folder, then the theme
@@ -849,19 +848,19 @@ void Courtroom::set_widgets()
       ui_config_panel->resize(64, 64);
   }
 
-  set_size_and_pos(ui_pre, "pre", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_pre, "pre", COURTROOM_DESIGN_INI, ao_app);
   ui_pre->setText("Pre");
 
-  set_size_and_pos(ui_flip, "flip", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_flip, "flip", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_hidden, "hidden", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_hidden, "hidden", COURTROOM_DESIGN_INI, ao_app);
 
   for (int i = 0; i < ui_label_images.size(); ++i)
   {
-    set_size_and_pos(ui_label_images[i], label_images[i].toLower() + "_image", INI_DESIGN, ao_app);
+    set_size_and_pos(ui_label_images[i], label_images[i].toLower() + "_image", COURTROOM_DESIGN_INI, ao_app);
   }
 
-  if (ao_app->read_theme_ini_bool("enable_label_images", INI_CONFIG))
+  if (ao_app->read_theme_ini_bool("enable_label_images", COURTROOM_CONFIG_INI))
   {
     for (int i = 0; i < ui_checks.size(); ++i) // loop through checks
     {
@@ -902,80 +901,80 @@ void Courtroom::set_widgets()
     }
   }
 
-  set_size_and_pos(ui_mute, "mute_button", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_mute, "mute_button", COURTROOM_DESIGN_INI, ao_app);
   ui_mute->set_image("mute.png");
 
-  set_size_and_pos(ui_defense_plus, "defense_plus", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_defense_plus, "defense_plus", COURTROOM_DESIGN_INI, ao_app);
   ui_defense_plus->set_image("defplus.png");
 
-  set_size_and_pos(ui_defense_minus, "defense_minus", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_defense_minus, "defense_minus", COURTROOM_DESIGN_INI, ao_app);
   ui_defense_minus->set_image("defminus.png");
 
-  set_size_and_pos(ui_prosecution_plus, "prosecution_plus", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_prosecution_plus, "prosecution_plus", COURTROOM_DESIGN_INI, ao_app);
   ui_prosecution_plus->set_image("proplus.png");
 
-  set_size_and_pos(ui_prosecution_minus, "prosecution_minus", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_prosecution_minus, "prosecution_minus", COURTROOM_DESIGN_INI, ao_app);
   ui_prosecution_minus->set_image("prominus.png");
 
-  set_size_and_pos(ui_text_color, "text_color", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_text_color, "text_color", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_evidence_button, "evidence_button", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_button, "evidence_button", COURTROOM_DESIGN_INI, ao_app);
   ui_evidence_button->set_image("evidencebutton.png");
 
-  set_size_and_pos(ui_evidence, "evidence_background", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence, "evidence_background", COURTROOM_DESIGN_INI, ao_app);
   ui_evidence->set_image("evidencebackground.png");
 
-  set_size_and_pos(ui_evidence_name, "evidence_name", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_name, "evidence_name", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_evidence_buttons, "evidence_buttons", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_buttons, "evidence_buttons", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_evidence_left, "evidence_left", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_left, "evidence_left", COURTROOM_DESIGN_INI, ao_app);
   ui_evidence_left->set_image("arrow_left.png");
 
-  set_size_and_pos(ui_evidence_right, "evidence_right", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_right, "evidence_right", COURTROOM_DESIGN_INI, ao_app);
   ui_evidence_right->set_image("arrow_right.png");
 
-  set_size_and_pos(ui_evidence_present, "evidence_present", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_present, "evidence_present", COURTROOM_DESIGN_INI, ao_app);
   ui_evidence_present->set_image("present_disabled.png");
 
-  set_size_and_pos(ui_evidence_overlay, "evidence_overlay", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_overlay, "evidence_overlay", COURTROOM_DESIGN_INI, ao_app);
   ui_evidence_overlay->set_image("evidenceoverlay.png");
 
-  set_size_and_pos(ui_evidence_delete, "evidence_delete", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_delete, "evidence_delete", COURTROOM_DESIGN_INI, ao_app);
   ui_evidence_delete->set_image("deleteevidence.png");
 
-  set_size_and_pos(ui_evidence_image_name, "evidence_image_name", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_image_name, "evidence_image_name", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_evidence_image_button, "evidence_image_button", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_image_button, "evidence_image_button", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_evidence_x, "evidence_x", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_x, "evidence_x", COURTROOM_DESIGN_INI, ao_app);
   ui_evidence_x->set_image("evidencex.png");
 
-  set_size_and_pos(ui_evidence_description, "evidence_description", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_evidence_description, "evidence_description", COURTROOM_DESIGN_INI, ao_app);
 
   ui_char_button_selector->set_image("char_selector.png");
   ui_char_button_selector->hide();
 
-  set_size_and_pos(ui_back_to_lobby, "back_to_lobby", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_back_to_lobby, "back_to_lobby", COURTROOM_DESIGN_INI, ao_app);
   ui_back_to_lobby->setText("Back to Lobby");
 
-  set_size_and_pos(ui_char_buttons, "char_buttons", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_char_buttons, "char_buttons", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_chr_select_left, "char_select_left", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_chr_select_left, "char_select_left", COURTROOM_DESIGN_INI, ao_app);
   ui_chr_select_left->set_image("arrow_left.png");
 
-  set_size_and_pos(ui_chr_select_right, "char_select_right", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_chr_select_right, "char_select_right", COURTROOM_DESIGN_INI, ao_app);
   ui_chr_select_right->set_image("arrow_right.png");
 
-  set_size_and_pos(ui_spectator, "spectator", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_spectator, "spectator", COURTROOM_DESIGN_INI, ao_app);
 
   handle_music_anim();
 
-  set_size_and_pos(ui_set_notes, "set_notes_button", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_set_notes, "set_notes_button", COURTROOM_DESIGN_INI, ao_app);
   ui_set_notes->set_image("set_notes.png");
   ui_note_area->m_layout->setSpacing(10);
-  set_size_and_pos(ui_note_area, "note_area", INI_DESIGN, ao_app);
-  set_size_and_pos(ui_note_scroll_area, "note_area", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_note_area, "note_area", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_note_scroll_area, "note_area", COURTROOM_DESIGN_INI, ao_app);
   ui_note_scroll_area->setWidget(ui_note_area);
   ui_note_area->set_image("note_area.png");
   ui_note_area->add_button->set_image("add_button.png");
@@ -999,7 +998,7 @@ void Courtroom::set_widgets()
 
 void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
 {
-  QString filename = INI_DESIGN;
+  QString filename = COURTROOM_DESIGN_INI;
 
   pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, filename);
 
@@ -1020,7 +1019,7 @@ int Courtroom::adapt_numbered_items(QVector<T *> &item_vector, QString config_it
   // &item_vector must be a vector of size at least 1!
 
   // Redraw the new correct number of items.
-  int new_item_number = ao_app->read_theme_ini_int(config_item_number, INI_CONFIG);
+  int new_item_number = ao_app->read_theme_ini_int(config_item_number, COURTROOM_CONFIG_INI);
   int current_item_number = item_vector.size();
   // Note we use the fact that, if config_item_number is not there,
   // read_theme_ini returns an empty string, which .toInt() would fail to
@@ -1054,7 +1053,7 @@ int Courtroom::adapt_numbered_items(QVector<T *> &item_vector, QString config_it
   for (int i = 0; i < new_item_number; i++)
   {
     item_vector[i]->show();
-    set_size_and_pos(item_vector[i], item_name + "_" + QString::number(i), INI_DESIGN, ao_app);
+    set_size_and_pos(item_vector[i], item_name + "_" + QString::number(i), COURTROOM_DESIGN_INI, ao_app);
     // Note that show is deliberately placed before set_size_and_pos
     // That is because we want to retain the functionality set_size_and_pos
     // includes where hides a widget if it is unable to find a position for it,
@@ -1168,7 +1167,7 @@ void Courtroom::load_effects()
     delete_widget(widget);
 
   // And create new effects
-  int effect_number = ao_app->read_theme_ini_int("effect_number", INI_CONFIG);
+  int effect_number = ao_app->read_theme_ini_int("effect_number", COURTROOM_CONFIG_INI);
   effects_enabled.resize(effect_number);
   ui_effects.resize(effect_number);
 
@@ -1207,7 +1206,7 @@ void Courtroom::load_free_blocks()
     delete_widget(widget);
 
   // And create new free block buttons
-  int free_block_number = ao_app->read_theme_ini_int("free_block_number", INI_CONFIG);
+  int free_block_number = ao_app->read_theme_ini_int("free_block_number", COURTROOM_CONFIG_INI);
   free_blocks_enabled.resize(free_block_number);
   ui_free_blocks.resize(free_block_number);
 
@@ -1239,7 +1238,7 @@ void Courtroom::load_shouts()
     delete_widget(widget);
 
   // And create new shouts
-  int shout_number = ao_app->read_theme_ini_int("shout_number", INI_CONFIG);
+  int shout_number = ao_app->read_theme_ini_int("shout_number", COURTROOM_CONFIG_INI);
   shouts_enabled.resize(shout_number);
   ui_shouts.resize(shout_number);
 
@@ -1281,7 +1280,7 @@ void Courtroom::load_wtce()
     delete_widget(widget);
 
   // And create new wtce buttons
-  const int l_wtce_count = ao_app->read_theme_ini_int("wtce_number", INI_CONFIG);
+  const int l_wtce_count = ao_app->read_theme_ini_int("wtce_number", COURTROOM_CONFIG_INI);
   wtce_enabled.resize(l_wtce_count);
 
   ui_wtce.clear();
@@ -1359,7 +1358,7 @@ void Courtroom::set_judge_wtce()
     wtce->hide();
 
   // check if we use a single wtce or multiple
-  const bool is_single_wtce = ao_app->read_theme_ini_bool("enable_single_wtce", INI_CONFIG);
+  const bool is_single_wtce = ao_app->read_theme_ini_bool("enable_single_wtce", COURTROOM_CONFIG_INI);
 
   // update visibility for next/previous
   ui_wtce_up->setVisible(is_judge && is_single_wtce);
@@ -1414,21 +1413,21 @@ void Courtroom::set_dropdowns()
 
 void Courtroom::set_fonts()
 {
-  set_drtextedit_font(ui_vp_showname, "showname", INI_FONTS, ao_app);
-  set_drtextedit_font(ui_vp_message, "message", INI_FONTS, ao_app);
-  set_drtextedit_font(ui_ic_chatlog, "ic_chatlog", INI_FONTS, ao_app);
+  set_drtextedit_font(ui_vp_showname, "showname", COURTROOM_FONTS_INI, ao_app);
+  set_drtextedit_font(ui_vp_message, "message", COURTROOM_FONTS_INI, ao_app);
+  set_drtextedit_font(ui_ic_chatlog, "ic_chatlog", COURTROOM_FONTS_INI, ao_app);
   // Chatlog does not support drtextedit because html
-  set_font(ui_ooc_chatlog, "server_chatlog", INI_FONTS, ao_app);
-  set_font(ui_music_list, "music_list", INI_FONTS, ao_app);
-  set_font(ui_area_list, "area_list", INI_FONTS, ao_app);
-  set_font(ui_sfx_list, "sfx_list", INI_FONTS, ao_app);
-  set_drtextedit_font(ui_vp_music_name, "music_name", INI_FONTS, ao_app);
-  set_drtextedit_font(ui_vp_notepad, "notepad", INI_FONTS, ao_app);
+  set_font(ui_ooc_chatlog, "server_chatlog", COURTROOM_FONTS_INI, ao_app);
+  set_font(ui_music_list, "music_list", COURTROOM_FONTS_INI, ao_app);
+  set_font(ui_area_list, "area_list", COURTROOM_FONTS_INI, ao_app);
+  set_font(ui_sfx_list, "sfx_list", COURTROOM_FONTS_INI, ao_app);
+  set_drtextedit_font(ui_vp_music_name, "music_name", COURTROOM_FONTS_INI, ao_app);
+  set_drtextedit_font(ui_vp_notepad, "notepad", COURTROOM_FONTS_INI, ao_app);
 
   for (int i = 0; i < ui_timers.length(); ++i)
   {
     AOTimer *i_timer = ui_timers.at(i);
-    set_drtextedit_font(i_timer, QString("timer_%1").arg(i), INI_FONTS, ao_app);
+    set_drtextedit_font(i_timer, QString("timer_%1").arg(i), COURTROOM_FONTS_INI, ao_app);
   }
 }
 

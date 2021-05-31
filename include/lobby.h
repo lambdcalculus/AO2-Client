@@ -43,9 +43,6 @@ public:
   void set_loading_value(int p_value);
 
 private:
-  static const QString INI_DESIGN;
-  static const QString INI_FONTS;
-
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 

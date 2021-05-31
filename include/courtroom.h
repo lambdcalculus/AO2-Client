@@ -50,6 +50,9 @@ class Courtroom : public QMainWindow
   Q_OBJECT
 
 public:
+  static const int DEFAULT_WIDTH;
+  static const int DEFAULT_HEIGHT;
+
   explicit Courtroom(AOApplication *p_ao_app);
   ~Courtroom();
 
@@ -219,9 +222,6 @@ signals:
   void closing();
 
 private:
-  static const int DEFAULT_WIDTH;
-  static const int DEFAULT_HEIGHT;
-
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
@@ -274,17 +274,6 @@ private:
 
   // Generate a File Name based on the time you launched the client
   QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
-
-  // configuration files locations
-  QString rpc_ini = "configs/rpccharlist.ini";
-  QString file_select_ini = "configs/filesabstract.ini";
-  QString shownames_ini = "configs/shownames.ini";
-
-  // theme files locations
-  static const QString INI_DESIGN;
-  static const QString INI_FONTS;
-  static const QString INI_CONFIG;
-  static const QString INI_SOUNDS;
 
   static const int MESSAGE_SIZE = 16;
   QString m_chatmessage[MESSAGE_SIZE];

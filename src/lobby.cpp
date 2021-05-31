@@ -5,6 +5,7 @@
 #include "aoconfig.h"
 #include "aoimagedisplay.h"
 #include "aotextarea.h"
+#include "commondefs.h"
 #include "debug_functions.h"
 #include "drpacket.h"
 #include "drpather.h"
@@ -19,9 +20,6 @@
 #include <QListWidget>
 #include <QMessageBox>
 #include <QProgressBar>
-
-const QString Lobby::INI_DESIGN = "lobby_design.ini";
-const QString Lobby::INI_FONTS = "lobby_fonts.ini";
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -86,11 +84,11 @@ bool Lobby::is_public_server() const
 // sets images, position and size
 void Lobby::set_widgets()
 {
-  pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", INI_DESIGN);
+  pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", LOBBY_DESIGN_INI);
 
   if (f_lobby.width < 0 || f_lobby.height < 0)
   {
-    qDebug() << "W: did not find lobby width or height in " << INI_DESIGN;
+    qDebug() << "W: did not find lobby width or height in " << LOBBY_DESIGN_INI;
 
     // Most common symptom of bad config files, missing assets, or misnamed
     // theme folder
@@ -113,62 +111,62 @@ void Lobby::set_widgets()
     this->resize(f_lobby.width, f_lobby.height);
   }
 
-  set_size_and_pos(ui_background, "lobby", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_background, "lobby", LOBBY_DESIGN_INI, ao_app);
   ui_background->set_image("lobbybackground.png");
 
-  set_size_and_pos(ui_public_servers, "public_servers", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_public_servers, "public_servers", LOBBY_DESIGN_INI, ao_app);
   ui_public_servers->set_image("publicservers_selected.png");
 
-  set_size_and_pos(ui_favorites, "favorites", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_favorites, "favorites", LOBBY_DESIGN_INI, ao_app);
   ui_favorites->set_image("favorites.png");
 
-  set_size_and_pos(ui_refresh, "refresh", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_refresh, "refresh", LOBBY_DESIGN_INI, ao_app);
   ui_refresh->set_image("refresh.png");
 
-  set_size_and_pos(ui_add_to_fav, "add_to_fav", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_add_to_fav, "add_to_fav", LOBBY_DESIGN_INI, ao_app);
   ui_add_to_fav->set_image("addtofav.png");
 
-  set_size_and_pos(ui_connect, "connect", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_connect, "connect", LOBBY_DESIGN_INI, ao_app);
   ui_connect->set_image("connect.png");
 
-  set_size_and_pos(ui_version, "version", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_version, "version", LOBBY_DESIGN_INI, ao_app);
   ui_version->setText("Version: " + get_version_string());
 
-  set_size_and_pos(ui_about, "about", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_about, "about", LOBBY_DESIGN_INI, ao_app);
   ui_about->set_image("about.png");
 
-  set_size_and_pos(ui_server_list, "server_list", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_server_list, "server_list", LOBBY_DESIGN_INI, ao_app);
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "font: bold;");
 
-  set_size_and_pos(ui_player_count, "player_count", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_player_count, "player_count", LOBBY_DESIGN_INI, ao_app);
   ui_player_count->setStyleSheet("font: bold;"
                                  "color: white;"
                                  "qproperty-alignment: AlignCenter;");
 
-  set_size_and_pos(ui_description, "description", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_description, "description", LOBBY_DESIGN_INI, ao_app);
   ui_description->setReadOnly(true);
   ui_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "color: white;");
 
-  set_size_and_pos(ui_chatbox, "chatbox", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_chatbox, "chatbox", LOBBY_DESIGN_INI, ao_app);
   ui_chatbox->setReadOnly(true);
   ui_chatbox->setStyleSheet("QTextBrowser{background-color: rgba(0, 0, 0, 0);}");
 
-  set_size_and_pos(ui_chatname, "chatname", INI_DESIGN, ao_app);
-  set_text_alignment(ui_chatname, "chatname", INI_FONTS, ao_app);
+  set_size_and_pos(ui_chatname, "chatname", LOBBY_DESIGN_INI, ao_app);
+  set_text_alignment(ui_chatname, "chatname", LOBBY_FONTS_INI, ao_app);
   ui_chatname->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                              "selection-background-color: rgba(0, 0, 0, 0);");
 
-  set_size_and_pos(ui_chatmessage, "chatmessage", INI_DESIGN, ao_app);
-  set_text_alignment(ui_chatmessage, "chatmessage", INI_FONTS, ao_app);
+  set_size_and_pos(ui_chatmessage, "chatmessage", LOBBY_DESIGN_INI, ao_app);
+  set_text_alignment(ui_chatmessage, "chatmessage", LOBBY_FONTS_INI, ao_app);
   ui_chatmessage->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "selection-background-color: rgba(0, 0, 0, 0);");
 
   ui_loading_background->resize(this->width(), this->height());
   ui_loading_background->set_image("loadingbackground.png");
 
-  set_size_and_pos(ui_loading_text, "loading_label", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_loading_text, "loading_label", LOBBY_DESIGN_INI, ao_app);
   ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));
   ui_loading_text->setReadOnly(true);
   ui_loading_text->setAlignment(Qt::AlignCenter);
@@ -177,8 +175,8 @@ void Lobby::set_widgets()
                                  "color: rgba(255, 128, 0, 255);");
   ui_loading_text->append("Loading");
 
-  set_size_and_pos(ui_progress_bar, "progress_bar", INI_DESIGN, ao_app);
-  set_size_and_pos(ui_cancel, "cancel", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_progress_bar, "progress_bar", LOBBY_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_cancel, "cancel", LOBBY_DESIGN_INI, ao_app);
   ui_cancel->setText("Cancel");
 
   ui_loading_background->hide();
@@ -190,13 +188,13 @@ void Lobby::set_widgets()
 
 void Lobby::set_fonts()
 {
-  set_drtextedit_font(ui_player_count, "player_count", INI_FONTS, ao_app);
-  set_font(ui_description, "description", INI_FONTS, ao_app);
-  set_font(ui_chatbox, "chatbox", INI_FONTS, ao_app);
-  set_font(ui_chatname, "chatname", INI_FONTS, ao_app);
-  set_font(ui_chatmessage, "chatmessage", INI_FONTS, ao_app);
-  set_drtextedit_font(ui_loading_text, "loading_text", INI_FONTS, ao_app);
-  set_font(ui_server_list, "server_list", INI_FONTS, ao_app);
+  set_drtextedit_font(ui_player_count, "player_count", LOBBY_FONTS_INI, ao_app);
+  set_font(ui_description, "description", LOBBY_FONTS_INI, ao_app);
+  set_font(ui_chatbox, "chatbox", LOBBY_FONTS_INI, ao_app);
+  set_font(ui_chatname, "chatname", LOBBY_FONTS_INI, ao_app);
+  set_font(ui_chatmessage, "chatmessage", LOBBY_FONTS_INI, ao_app);
+  set_drtextedit_font(ui_loading_text, "loading_text", LOBBY_FONTS_INI, ao_app);
+  set_font(ui_server_list, "server_list", LOBBY_FONTS_INI, ao_app);
 }
 
 void Lobby::set_stylesheet(QWidget *widget, QString target_tag)
