@@ -28,7 +28,6 @@ void DRTextEdit::set_auto_align(bool p_enabled)
   if (is_auto_align == p_enabled)
     return;
   is_auto_align = p_enabled;
-  on_text_changed();
 }
 
 void DRTextEdit::set_text_alignment(Qt::Alignment p_align)
@@ -37,6 +36,17 @@ void DRTextEdit::set_text_alignment(Qt::Alignment p_align)
     return;
   m_text_align = p_align;
   Q_EMIT text_alignment_changed(m_text_align);
+}
+
+void DRTextEdit::realign_text()
+{
+  if (m_status == Status::InProgress)
+    return;
+  m_status = Status::InProgress;
+  setAlignment(m_text_align);
+  //  refresh_horizontal_alignment();
+  refresh_vertical_alignment();
+  m_status = Status::Done;
 }
 
 Qt::Alignment DRTextEdit::get_text_alignment() const
@@ -48,19 +58,7 @@ void DRTextEdit::on_text_changed()
 {
   if (!is_auto_align)
     return;
-
-  // We need to "lock" access to on_text_changed. That is because the refresh methods trigger
-  // QT's textChanged signal as well.
-  if (m_status == Status::InProgress)
-    return;
-
-  m_status = Status::InProgress;
-
-  refresh_horizontal_alignment();
-  refresh_vertical_alignment();
-
-  // we're done
-  m_status = Status::Done;
+  realign_text();
 }
 
 void DRTextEdit::refresh_horizontal_alignment()

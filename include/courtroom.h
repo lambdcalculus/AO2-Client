@@ -405,7 +405,7 @@ private:
   QList<DRChatRecord> m_ic_record_list;
   QQueue<DRChatRecord> m_ic_record_queue;
 
-  AOTextArea *ui_server_chatlog = nullptr;
+  AOTextArea *ui_ooc_chatlog = nullptr;
 
   QListWidget *ui_mute_list = nullptr;
   QListWidget *ui_area_list = nullptr;

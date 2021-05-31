@@ -10,7 +10,7 @@ class DRTextEdit : public QTextEdit
       Qt::Alignment text_alignment READ get_text_alignment WRITE set_text_alignment NOTIFY text_alignment_changed)
 
 public:
-  DRTextEdit(QWidget *p_parent);
+  DRTextEdit(QWidget *p_parent = nullptr);
 
   Qt::Alignment get_text_alignment() const;
 
@@ -18,6 +18,7 @@ public slots:
   void set_outline(bool enabled);
   void set_auto_align(bool enabled);
   void set_text_alignment(Qt::Alignment alignment);
+  void realign_text();
 
 signals:
   void text_alignment_changed(Qt::Alignment);

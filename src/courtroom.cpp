@@ -665,7 +665,7 @@ void Courtroom::save_textlog(QString p_text)
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
 {
-  ui_server_chatlog->append_chatmessage(p_name, p_message);
+  ui_ooc_chatlog->append_chatmessage(p_name, p_message);
   if (ao_config->log_is_recording_enabled())
     save_textlog("(OOC)" + p_name + ": " + p_message);
 }
@@ -1201,7 +1201,7 @@ void Courtroom::handle_chatmessage_3()
       const QString name = "CLIENT";
       const QString message =
           ui_vp_showname->toPlainText() + " has called you via your callword \"" + word + "\": \"" + f_message + "\"";
-      ui_server_chatlog->append_chatmessage(name, message);
+      ui_ooc_chatlog->append_chatmessage(name, message);
       if (ao_config->log_is_recording_enabled())
         save_textlog("(OOC)" + name + ": " + message);
       break;
@@ -1237,6 +1237,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
 
     // clear log
     ui_ic_chatlog->clear();
+    ui_ic_chatlog->realign_text();
   }
 
   // prepare the formats we need
@@ -1745,7 +1746,7 @@ void Courtroom::set_ip_list(QString p_list)
 {
   QString f_list = p_list.replace("|", ":").replace("*", "\n");
 
-  ui_server_chatlog->append(f_list);
+  ui_ooc_chatlog->append(f_list);
 }
 
 void Courtroom::set_mute(bool p_muted, int p_cid)
@@ -1934,7 +1935,7 @@ void Courtroom::send_ooc_packet(QString ooc_message)
 
 void Courtroom::mod_called(QString p_ip)
 {
-  ui_server_chatlog->append(p_ip);
+  ui_ooc_chatlog->append(p_ip);
   if (ao_config->server_alerts_enabled())
   {
     m_system_player->play(ao_app->get_sfx("mod_call"));
