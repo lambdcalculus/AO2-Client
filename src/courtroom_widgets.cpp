@@ -112,9 +112,9 @@ void Courtroom::create_widgets()
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
 
-  ui_server_chatlog = new AOTextArea(this);
-  ui_server_chatlog->setReadOnly(true);
-  ui_server_chatlog->setOpenExternalLinks(true);
+  ui_ooc_chatlog = new AOTextArea(this);
+  ui_ooc_chatlog->setReadOnly(true);
+  ui_ooc_chatlog->setOpenExternalLinks(true);
 
   ui_mute_list = new QListWidget(this);
   ui_area_list = new QListWidget(this);
@@ -367,7 +367,7 @@ void Courtroom::reset_widget_names()
       {"vp_wtce", ui_vp_wtce},
       {"vp_objection", ui_vp_objection},
       {"ic_chatlog", ui_ic_chatlog},
-      {"server_chatlog", ui_server_chatlog},
+      {"server_chatlog", ui_ooc_chatlog},
       {"mute_list", ui_mute_list},
       {"area_list", ui_area_list},
       {"music_list", ui_music_list},
@@ -629,7 +629,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog", INI_DESIGN, ao_app);
 
-  set_size_and_pos(ui_server_chatlog, "server_chatlog", INI_DESIGN, ao_app);
+  set_size_and_pos(ui_ooc_chatlog, "server_chatlog", INI_DESIGN, ao_app);
 
   set_size_and_pos(ui_mute_list, "mute_list", INI_DESIGN, ao_app);
   ui_mute_list->hide();
@@ -1418,7 +1418,7 @@ void Courtroom::set_fonts()
   set_drtextedit_font(ui_vp_message, "message", INI_FONTS, ao_app);
   set_drtextedit_font(ui_ic_chatlog, "ic_chatlog", INI_FONTS, ao_app);
   // Chatlog does not support drtextedit because html
-  set_font(ui_server_chatlog, "server_chatlog", INI_FONTS, ao_app);
+  set_font(ui_ooc_chatlog, "server_chatlog", INI_FONTS, ao_app);
   set_font(ui_music_list, "music_list", INI_FONTS, ao_app);
   set_font(ui_area_list, "area_list", INI_FONTS, ao_app);
   set_font(ui_sfx_list, "sfx_list", INI_FONTS, ao_app);
