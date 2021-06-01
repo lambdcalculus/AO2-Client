@@ -81,7 +81,7 @@ public:
   // it's a legacy bg
   void set_background(QString p_background);
 
-  void set_tick_rate(const std::optional<int> &tick_rate);
+  void set_tick_rate(const int tick_rate);
 
   // sets the evidence list member variable to argument
   void set_evidence_list(QVector<evi_type> &p_evi_list);
