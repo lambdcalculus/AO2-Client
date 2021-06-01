@@ -494,6 +494,15 @@ QStringList AOApplication::get_sfx_list()
     }
   }
 
+  // remove blanks
+  for (int i = 0; i < r_sfx_list.length(); ++i)
+  {
+    const QString &l_line = r_sfx_list.at(i);
+    if (!l_line.trimmed().isEmpty())
+      continue;
+    r_sfx_list.removeAt(i--);
+  }
+
   return r_sfx_list;
 }
 
