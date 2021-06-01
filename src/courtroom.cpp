@@ -372,9 +372,14 @@ void Courtroom::set_background(QString p_background)
   current_background = p_background;
 }
 
-void Courtroom::set_tick_rate(const std::optional<int> &tick_rate)
+void Courtroom::set_tick_rate(const int p_tick_rate)
 {
-  m_server_tick_rate = tick_rate;
+  if (p_tick_rate < 0)
+  {
+    m_server_tick_rate.reset();
+    return;
+  }
+  m_server_tick_rate = p_tick_rate;
 }
 
 void Courtroom::handle_music_anim()

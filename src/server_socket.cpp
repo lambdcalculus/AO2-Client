@@ -272,8 +272,11 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   }
   else if (l_header == "chat_tick_rate")
   {
-    if (is_courtroom_constructed)
-      m_courtroom->set_tick_rate(l_content.isEmpty() ? std::nullopt : std::optional<int>(l_content.at(0).toInt()));
+    if (l_content.size() < 1)
+      return;
+    if (!is_courtroom_constructed)
+      return;
+    m_courtroom->set_tick_rate(l_content.at(0).toInt());
   }
   // server accepting char request(CC) packet
   else if (l_header == "PV")
