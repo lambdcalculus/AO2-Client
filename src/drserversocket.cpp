@@ -49,6 +49,7 @@ void DRServerSocket::disconnect_from_server()
 {
   m_socket->close();
   m_socket->abort();
+  m_buffer.clear();
 }
 
 void DRServerSocket::send_packet(DRPacket p_packet)
@@ -103,9 +104,9 @@ void DRServerSocket::_p_check_socket_error()
 
 void DRServerSocket::_p_read_socket()
 {
-  m_data += QString::fromUtf8(m_socket->readAll());
-  QStringList l_raw_packet_list = m_data.split("#%", DR::KeepEmptyParts);
-  m_data = l_raw_packet_list.takeLast();
+  m_buffer += QString::fromUtf8(m_socket->readAll());
+  QStringList l_raw_packet_list = m_buffer.split("#%", DR::KeepEmptyParts);
+  m_buffer = l_raw_packet_list.takeLast();
   for (const QString &i_raw_packet : l_raw_packet_list)
   {
     QStringList l_raw_data_list = i_raw_packet.split("#");

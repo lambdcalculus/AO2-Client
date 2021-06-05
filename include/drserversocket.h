@@ -1,7 +1,7 @@
 #pragma once
 
-#include "drpacket.h"
 #include "datatypes.h"
+#include "drpacket.h"
 
 #include <QAbstractSocket>
 #include <QObject>
@@ -38,7 +38,7 @@ private:
   bool m_is_connected = false;
   QTimer *m_reconnect_timer = nullptr;
   bool is_reconnectable = false;
-  QString m_data;
+  QString m_buffer;
 
 private slots:
   void _p_update_state(QAbstractSocket::SocketState);
