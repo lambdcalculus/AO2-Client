@@ -673,11 +673,11 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_FONTS_INI, ao_app);
-  ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ooc_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_FONTS_INI, ao_app);
-  ui_ooc_chat_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ooc_chat_name->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
 
   set_size_and_pos(ui_music_search, "music_search", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_music_search, "music_search", COURTROOM_FONTS_INI, ao_app);
