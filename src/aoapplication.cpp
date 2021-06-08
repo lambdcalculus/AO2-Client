@@ -9,6 +9,8 @@
 #include "drserversocket.h"
 #include "lobby.h"
 
+#include <QDir>
+#include <QFontDatabase>
 #include <QRegularExpression>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
@@ -30,12 +32,12 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   m_master_socket = new DRServerSocket(this);
   m_server_socket = new DRServerSocket(this);
 
-  connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(on_config_theme_changed()));
-  connect(ao_config, SIGNAL(gamemode_changed(QString)), this, SLOT(on_config_gamemode_changed()));
-  connect(ao_config, SIGNAL(timeofday_changed(QString)), this, SLOT(on_config_timeofday_changed()));
+  connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(handle_theme_modification()));
+  connect(ao_config, SIGNAL(gamemode_changed(QString)), this, SLOT(handle_theme_modification()));
+  connect(ao_config, SIGNAL(timeofday_changed(QString)), this, SLOT(handle_theme_modification()));
 
-  connect(ao_config_panel, SIGNAL(reload_theme()), this, SLOT(on_config_reload_theme_requested()));
-  connect(this, SIGNAL(reload_theme()), ao_config_panel, SLOT(on_config_reload_theme_requested()));
+  connect(ao_config_panel, SIGNAL(reload_theme()), this, SLOT(handle_theme_modification()));
+  connect(this, SIGNAL(reload_theme()), ao_config_panel, SLOT(handle_theme_modification()));
   ao_config_panel->hide();
 
   dr_discord->set_presence(ao_config->discord_presence());
@@ -192,23 +194,10 @@ bool AOApplication::has_chat_speed_feature() const
   return feature_chat_speed;
 }
 
-void AOApplication::on_config_theme_changed()
+void AOApplication::handle_theme_modification()
 {
-  Q_EMIT reload_theme();
-}
+  load_fonts();
 
-void AOApplication::on_config_reload_theme_requested()
-{
-  Q_EMIT reload_theme();
-}
-
-void AOApplication::on_config_gamemode_changed()
-{
-  Q_EMIT reload_theme();
-}
-
-void AOApplication::on_config_timeofday_changed()
-{
   Q_EMIT reload_theme();
 }
 
@@ -294,6 +283,13 @@ void AOApplication::add_favorite_server(int p_server)
 QVector<server_type> &AOApplication::get_server_list()
 {
   return m_server_list;
+}
+
+void AOApplication::load_fonts()
+{
+  QFontDatabase l_database;
+  for (const QFileInfo &fileInfo : QDir(get_case_sensitive_path(get_base_path() + "fonts")).entryInfoList())
+    l_database.addApplicationFont(fileInfo.absoluteFilePath());
 }
 
 void AOApplication::loading_cancelled()

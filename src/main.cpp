@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
 
   AOApplication app(argc, argv);
 
+  app.load_fonts();
   app.construct_lobby();
   app.get_lobby()->show();
 

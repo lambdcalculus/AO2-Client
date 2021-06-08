@@ -1,8 +1,8 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#include "drpacket.h"
 #include "datatypes.h"
+#include "drpacket.h"
 
 class AOConfig;
 class AOConfigPanel;
@@ -191,6 +191,9 @@ public:
   // Returns overlay at p_effect in char_path/overlay
   QStringList get_overlay(QString p_char, int p_effect);
 
+  ////// Functions for fonts handling //////
+  void load_fonts();
+
 public slots:
   void loading_cancelled();
 
@@ -244,10 +247,7 @@ private slots:
   void _p_handle_server_packet(DRPacket);
   void on_courtroom_closing();
   void on_courtroom_destroyed();
-  void on_config_theme_changed();
-  void on_config_reload_theme_requested();
-  void on_config_gamemode_changed();
-  void on_config_timeofday_changed();
+  void handle_theme_modification();
 };
 
 #endif // AOAPPLICATION_H
