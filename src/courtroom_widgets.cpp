@@ -150,11 +150,11 @@ void Courtroom::create_widgets()
   ui_note_area = new AONoteArea(this, ao_app);
   ui_note_area->add_button = new AOButton(ui_note_area, ao_app);
   ui_note_area->m_layout = new QVBoxLayout(ui_note_area);
-  ui_note_scroll_area = new QScrollArea(this);
 
-  ui_note_scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  ui_note_scroll_area = new QScrollArea(this);
+  ui_note_scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_note_scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  ui_note_scroll_area->setWidgetResizable(false);
+  ui_note_scroll_area->setWidgetResizable(true);
 
   ui_set_notes = new AOButton(this, ao_app);
 
