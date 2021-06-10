@@ -987,7 +987,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
     if (ao_config->log_display_self_highlight_enabled() && m_chatmessage[CMChrId].toInt() == m_chr_id)
     {
-      const QString l_chatbox_self_name = "chatbox_self.png";
+      const QString l_chatbox_self_name = "chatmed_self.png";
       if (file_exists(ao_app->find_theme_asset_path(l_chatbox_self_name)))
         l_chatbox_name = l_chatbox_self_name;
     }
