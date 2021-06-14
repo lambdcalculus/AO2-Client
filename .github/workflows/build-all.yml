@@ -113,23 +113,17 @@ jobs:
         cp ../bass.dll .
         cp ../mingw73_32/plugins/imageformats/qapng.dll ./imageformats/
         
-    - name: Make ZIP File
-      working-directory: ${{env.parentworkspace}}
-      shell: bash
-      run: |
-        powershell Compress-Archive -Path "${{env.parentworkspace}}/Danganronpa_Online" -DestinationPath "${{env.parentworkspace}}/Danganronpa Online.zip"
-        
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-         name: "Danganronpa Online (Windows).zip"
-         path: "${{env.parentworkspace}}/Danganronpa Online.zip"
+         name: "Danganronpa Online (Windows)"
+         path: "${{env.parentworkspace}}/Danganronpa_Online"
 
     - name: Upload Artifact (just .exe)
       uses: actions/upload-artifact@v2
       with:
-         name: dro-client.exe
-         path: ${{env.parentworkspace}}/Danganronpa_Online/dro-client.exe
+         name: "dro-client.exe"
+         path: "${{env.parentworkspace}}/Danganronpa_Online/dro-client.exe"
          
   ###############################################################################
   # MACOS #
@@ -212,24 +206,24 @@ jobs:
         cp ../libbass.dylib "./Danganronpa Online.app/Contents/Frameworks/"
         cp ../libbass.dylib "./Danganronpa Online.app/Contents/MacOS/"
         cp -R ../clang_64/plugins/imageformats "./Danganronpa Online.app/Contents/MacOS/"
-        
-    - name: Make DMG
-      working-directory: ${{env.parentworkspace}}
-      shell: bash
-      run: |
-        hdiutil create -volname "Danganronpa Online" -srcfolder "./Danganronpa Online" -ov -format UDZO "Danganronpa Online.dmg"
-        
-    - name: Make ZIP File
-      working-directory: ${{env.parentworkspace}}
-      shell: bash
-      run: |
-        zip -r "Danganronpa Online.zip" "Danganronpa Online.dmg"
-        
+                
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-         name: "Danganronpa Online (MacOS).zip"
-         path: "${{env.parentworkspace}}/Danganronpa Online.zip"
+         name: "Danganronpa Online (MacOS)"
+         path: "${{env.parentworkspace}}/Danganronpa Online.app"
+         
+    # - name: Make DMG
+    #  working-directory: ${{env.parentworkspace}}
+    #  shell: bash
+    #  run: |
+    #    hdiutil create -volname "Danganronpa Online" -srcfolder "./Danganronpa Online" -ov -format UDZO "Danganronpa Online.dmg"
+    #   
+    # - name: Upload Artifact
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #     name: "Danganronpa Online (MacOS)"
+    #     path: "${{env.parentworkspace}}/Danganronpa Online.dmg"
          
   ###############################################################################
   # UBUNTU #
@@ -297,7 +291,7 @@ jobs:
       working-directory: ${{env.parentworkspace}}
       run: |
         mkdir "Danganronpa Online"
-        cp -R ./DRO-Client/dro-client "./dro-client"
+        cp -R ./DRO-Client/dro-client "./Danganronpa Online/dro-client"
         
     - name: Deploy
       working-directory: "${{env.parentworkspace}}/Danganronpa Online"
@@ -322,15 +316,9 @@ jobs:
 
         4. To launch, run
         ./dro-client.sh" > "Readme (Ubuntu).txt"
-
-    - name: Make ZIP File
-      working-directory: ${{env.parentworkspace}}
-      shell: bash
-      run: |
-        zip -r "Danganronpa Online.zip" "Danganronpa Online"
       
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-         name: "Danganronpa Online (Ubuntu).zip"
-         path: "${{env.parentworkspace}}/Danganronpa Online.zip"
+         name: "Danganronpa Online (Ubuntu)"
+         path: "${{env.parentworkspace}}/Danganronpa Online"
