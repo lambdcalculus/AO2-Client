@@ -55,6 +55,7 @@ jobs:
       run: |
         curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-mingw73_32-5.14.1.zip -o apng.zip
         unzip apng.zip
+        
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
@@ -89,7 +90,7 @@ jobs:
       run: |
         ./Qt/5.14.2/mingw73_32/bin/qmake.exe -makefile -o Makefile ./DRO-Client/dronline-client.pro -spec win32-g++ "CONFIG+=qtquickcompiler"
   
-    - name: Run make
+    - name: Run Make
       shell: bash
       working-directory: ${{env.parentworkspace}}
       run: |
@@ -116,7 +117,7 @@ jobs:
       working-directory: ${{env.parentworkspace}}
       shell: bash
       run: |
-        zip -r "Danganronpa Online.zip" "Danganronpa Online"
+        powershell Compress-Archive -Path "${{env.parentworkspace}}/Danganronpa_Online" -DestinationPath "${{env.parentworkspace}}/Danganronpa Online.zip"
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
