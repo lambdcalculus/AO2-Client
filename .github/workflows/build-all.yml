@@ -117,7 +117,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
          name: "Danganronpa Online (Windows)"
-         path: "${{env.parentworkspace}}/*/Danganronpa_Online"
+         path: "${{env.parentworkspace}}/**/Danganronpa_Online"
 
     - name: Upload Artifact (just .exe)
       uses: actions/upload-artifact@v2
@@ -211,7 +211,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
          name: "Danganronpa Online (MacOS)"
-         path: "${{env.parentworkspace}}/Danganronpa Online/*/Danganronpa Online.app"
+         path: "${{env.parentworkspace}}/Danganronpa Online/**/Danganronpa Online.app"
          
     # - name: Make DMG
     #  working-directory: ${{env.parentworkspace}}
@@ -321,4 +321,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
          name: "Danganronpa Online (Ubuntu)"
-         path: "${{env.parentworkspace}}/*/Danganronpa Online"
+         path: "${{env.parentworkspace}}/**/Danganronpa Online"
