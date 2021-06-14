@@ -211,7 +211,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
          name: "Danganronpa Online (MacOS)"
-         path: "${{env.parentworkspace}}/Danganronpa Online.app"
+         path: "${{env.parentworkspace}}/Danganronpa Online/Danganronpa Online.app"
          
     # - name: Make DMG
     #  working-directory: ${{env.parentworkspace}}
