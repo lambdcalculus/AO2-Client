@@ -272,7 +272,7 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '5.14.2'
+        version: '5.12.8'
         
     - name: Run qmake
       shell: bash
