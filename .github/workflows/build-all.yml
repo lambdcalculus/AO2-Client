@@ -270,9 +270,14 @@ jobs:
         curl -L https://cdn.discordapp.com/attachments/422857337133596692/845396654642954260/libqapng.so -o libqapng.so
         
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2
-      with:
-        version: '5.12.8'
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        sudo apt-get install build-essential
+        sudo apt-get install qt5-default qttools5-dev
+        sudo apt-get install libqt5designer5
+        sudo apt-get install git
+        sudo snap install discord
         
     - name: Run qmake
       shell: bash
