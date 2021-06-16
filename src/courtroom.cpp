@@ -902,8 +902,8 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
 
   text_state = 0;
   anim_state = 0;
+  stop_chat_timer();
   ui_vp_objection->stop();
-  m_tick_timer->stop();
   ui_vp_evidence_display->reset();
 
   // reset effect
@@ -1174,6 +1174,7 @@ void Courtroom::handle_chatmessage_3()
     }
   }
 
+  calculate_chat_tick_interval();
   start_chat_timer();
 }
 
@@ -1500,11 +1501,25 @@ void Courtroom::setup_chat()
 
 void Courtroom::start_chat_timer()
 {
+  if (m_tick_timer->isActive())
+    return;
+  m_tick_timer->start();
+}
+
+void Courtroom::stop_chat_timer()
+{
+  if (!m_tick_timer->isActive())
+    return;
+  m_tick_timer->stop();
+}
+
+void Courtroom::calculate_chat_tick_interval()
+{
   double l_tick_rate = ao_config->chat_tick_interval();
   if (m_server_tick_rate.has_value())
     l_tick_rate = qMax(m_server_tick_rate.value(), 0);
   l_tick_rate = qBound(0.0, l_tick_rate * (1.0 - qBound(-1.0, 0.4 * m_tick_speed, 1.0)), l_tick_rate * 2.0);
-  m_tick_timer->start(l_tick_rate);
+  m_tick_timer->setInterval(l_tick_rate);
 }
 
 void Courtroom::next_chat_letter()
@@ -1537,7 +1552,9 @@ void Courtroom::next_chat_letter()
     ++m_tick_step;
     const bool is_positive = f_character == Qt::Key_BraceRight;
     m_tick_speed = qBound(-3, m_tick_speed + (is_positive ? 1 : -1), 3);
+    calculate_chat_tick_interval();
     next_chat_letter();
+    start_chat_timer();
     return;
   }
   else if (f_character == Qt::Key_Space)
@@ -1652,14 +1669,13 @@ void Courtroom::next_chat_letter()
 
   ++m_tick_step;
   is_ignore_next_letter = false;
-  start_chat_timer();
 }
 
 void Courtroom::post_chat()
 {
   text_state = 2;
-  m_tick_timer->stop();
   anim_state = 3;
+  stop_chat_timer();
 
   if (m_msg_is_first_person == false)
   {

@@ -583,6 +583,8 @@ private slots:
   void play_sfx();
 
   void start_chat_timer();
+  void stop_chat_timer();
+  void calculate_chat_tick_interval();
   void next_chat_letter();
   void post_chat();
 
