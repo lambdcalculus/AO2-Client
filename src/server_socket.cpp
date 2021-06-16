@@ -338,21 +338,6 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       m_courtroom->set_evidence_list(f_evi_list);
     }
   }
-  else if (l_header == "IL")
-  {
-    if (is_courtroom_constructed && l_content.size() > 0)
-      m_courtroom->set_ip_list(l_content.at(0));
-  }
-  else if (l_header == "MU")
-  {
-    if (is_courtroom_constructed && l_content.size() > 0)
-      m_courtroom->set_mute(true, l_content.at(0).toInt());
-  }
-  else if (l_header == "UM")
-  {
-    if (is_courtroom_constructed && l_content.size() > 0)
-      m_courtroom->set_mute(false, l_content.at(0).toInt());
-  }
   else if (l_header == "KK")
   {
     if (is_courtroom_constructed && l_content.size() > 0)

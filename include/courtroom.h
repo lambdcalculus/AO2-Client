@@ -97,22 +97,11 @@ public:
   // called when a DONE#% from the server was received
   void done_received();
 
-  // sets the local mute list based on characters available on the server
-  void set_mute_list();
-
   // sets desk and bg based on pos in chatmessage
   void set_scene();
 
   // sets text color based on text color in chatmessage
   void set_text_color();
-
-  // takes in serverD-formatted IP list as prints a converted version to server
-  // OOC admittedly poorly named
-  void set_ip_list(QString p_list);
-
-  // disables chat if current cid matches second argument
-  // enables if p_muted is false
-  void set_mute(bool p_muted, int p_cid);
 
   // send a message that the player is banned and quits the server
   void set_ban(int p_cid);
@@ -285,11 +274,6 @@ private:
   QString m_message_color_name;
   QStack<QString> m_message_color_stack;
 
-  // char id, muted or not
-  QMap<int, bool> mute_map;
-
-  // QVector<int> muted_cids;
-
   bool is_client_muted = false;
 
   // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle
@@ -396,7 +380,6 @@ private:
 
   AOTextArea *ui_ooc_chatlog = nullptr;
 
-  QListWidget *ui_mute_list = nullptr;
   QListWidget *ui_area_list = nullptr;
   QListWidget *ui_music_list = nullptr;
 
@@ -489,8 +472,6 @@ private:
 
   AOButton *ui_effect_flash = nullptr;
   AOButton *ui_effect_gloom = nullptr;
-
-  AOButton *ui_mute = nullptr;
 
   AOButton *ui_defense_plus = nullptr;
   AOButton *ui_defense_minus = nullptr;
@@ -586,8 +567,6 @@ private slots:
   void next_chat_letter();
   void post_chat();
 
-  void on_mute_list_item_changed(QListWidgetItem *p_item);
-
   void on_showname_changed(QString);
   void on_showname_placeholder_changed(QString);
   void on_character_ini_changed(QString);
@@ -655,8 +634,6 @@ private slots:
   void reset_effect_buttons();
   void on_effect_button_clicked(const bool);
   void on_effect_button_toggled(const bool);
-
-  void on_mute_clicked();
 
   void on_defense_minus_clicked();
   void on_defense_plus_clicked();

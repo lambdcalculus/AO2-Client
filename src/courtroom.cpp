@@ -259,8 +259,6 @@ void Courtroom::done_received()
 
   set_char_select_page();
 
-  set_mute_list();
-
   set_char_select();
 
   show();
@@ -848,9 +846,6 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     is_system_speaking = false;
 
   if (f_char_id < 0 || f_char_id >= m_chr_list.size())
-    return;
-
-  if (mute_map.value(m_chatmessage[CMChrId].toInt()))
     return;
 
   const QString l_message = QString(m_chatmessage[CMMessage])
@@ -1746,21 +1741,6 @@ void Courtroom::set_ban(int p_cid)
   ao_app->destruct_courtroom();
 }
 
-int Courtroom::get_character_id()
-{
-  return m_chr_id;
-}
-
-QString Courtroom::get_base_character()
-{
-  return is_spectating() ? nullptr : m_chr_list.at(m_chr_id).name;
-}
-
-QString Courtroom::get_current_character()
-{
-  return ao_config->character_ini(get_base_character());
-}
-
 void Courtroom::handle_song(QStringList p_contents)
 {
   if (p_contents.size() < 2)
@@ -1812,13 +1792,10 @@ void Courtroom::handle_song(QStringList p_contents)
       str_char = f_showname;
     }
 
-    if (!mute_map.value(l_chr_id))
-    {
-      append_ic_text(str_char, "has played a song: " + f_song, false, true, l_chr_id == m_chr_id);
-      if (ao_config->log_is_recording_enabled())
-        save_textlog(str_char + " has played a song: " + f_song);
-      m_music_player->play(f_song);
-    }
+    append_ic_text(str_char, "has played a song: " + f_song, false, true, l_chr_id == m_chr_id);
+    if (ao_config->log_is_recording_enabled())
+      save_textlog(str_char + " has played a song: " + f_song);
+    m_music_player->play(f_song);
   }
 
   int pos = f_song.lastIndexOf(QChar('.'));
@@ -2057,32 +2034,6 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
   // ao_app->send_server_packet(DRPacket("SP", {f_pos}));
 }
 
-void Courtroom::on_mute_list_item_changed(QListWidgetItem *p_item)
-{
-  int f_cid = -1;
-
-  for (int n_char = 0; n_char < m_chr_list.size(); n_char++)
-  {
-    if (m_chr_list.at(n_char).name == p_item->text())
-      f_cid = n_char;
-  }
-
-  if (f_cid < 0 || f_cid >= m_chr_list.size())
-  {
-    qDebug() << "W: " << p_item->text() << " not present in char_list";
-    return;
-  }
-
-  if (Qt::CheckState::Checked == p_item->checkState())
-  {
-    mute_map.insert(f_cid, true);
-  }
-  else
-  {
-    mute_map.insert(f_cid, false);
-  }
-}
-
 void Courtroom::on_music_list_clicked()
 {
   ui_ic_chat_message->setFocus();
@@ -2287,20 +2238,6 @@ void Courtroom::on_effect_button_toggled(const bool p_checked)
     l_button->setText(l_name);
 }
 
-void Courtroom::on_mute_clicked()
-{
-  if (ui_mute_list->isHidden())
-  {
-    ui_mute_list->show();
-    ui_mute->set_image("mute_pressed.png");
-  }
-  else
-  {
-    ui_mute_list->hide();
-    ui_mute->set_image("mute.png");
-  }
-}
-
 void Courtroom::on_defense_minus_clicked()
 {
   int f_state = defense_bar_state - 1;
@@ -2455,11 +2392,6 @@ void Courtroom::on_char_select_right_clicked()
 void Courtroom::on_spectator_clicked()
 {
   ao_app->send_server_packet(DRPacket("CC", {QString::number(ao_app->get_client_id()), "-1", get_hdid()}));
-  enter_courtroom(-1);
-
-  ui_emotes->hide();
-
-  ui_char_select_background->hide();
 }
 
 void Courtroom::on_call_mod_clicked()
