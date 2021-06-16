@@ -41,7 +41,7 @@ void Courtroom::create_widgets()
   m_keepalive_timer->start(60000);
 
   m_tick_timer = new QTimer(this);
-  m_tick_timer->setSingleShot(true);
+  m_tick_timer->setSingleShot(false);
   m_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
 
   m_sound_timer = new QTimer(this);
