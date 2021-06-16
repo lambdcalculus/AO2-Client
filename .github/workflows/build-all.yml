@@ -112,6 +112,9 @@ jobs:
         cp ../discord-rpc/win32-dynamic/bin/discord-rpc.dll .
         cp ../bass.dll .
         cp ../mingw73_32/plugins/imageformats/qapng.dll ./imageformats/
+        cp  /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/libgcc_s_dw2-1.dll .
+        cp  /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/libwinpthread-1.dll .
+        cp  /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/libstdc++-6.dll .
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
