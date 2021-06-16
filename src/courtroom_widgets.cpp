@@ -270,7 +270,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(showname_changed(QString)), this, SLOT(on_showname_changed(QString)));
   connect(ao_config, SIGNAL(showname_placeholder_changed(QString)), this,
           SLOT(on_showname_placeholder_changed(QString)));
-  connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(on_character_ini_changed(QString)));
+  connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(on_character_ini_changed()));
   connect(ui_ic_chat_showname, SIGNAL(editingFinished()), this, SLOT(on_ic_showname_editing_finished()));
   connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
 

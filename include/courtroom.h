@@ -575,7 +575,7 @@ private slots:
 
   void on_showname_changed(QString);
   void on_showname_placeholder_changed(QString);
-  void on_character_ini_changed(QString);
+  void on_character_ini_changed();
   void on_ic_showname_editing_finished();
   void on_ic_message_return_pressed();
   void on_chat_config_changed();

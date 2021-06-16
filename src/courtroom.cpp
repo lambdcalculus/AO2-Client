@@ -659,9 +659,8 @@ void Courtroom::on_showname_placeholder_changed(QString p_showname_placeholder)
   ui_ic_chat_showname->setToolTip(l_showname);
 }
 
-void Courtroom::on_character_ini_changed(QString p_base_chr)
+void Courtroom::on_character_ini_changed()
 {
-  Q_UNUSED(p_base_chr)
   enter_courtroom(m_chr_id);
 }
 
