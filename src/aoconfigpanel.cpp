@@ -127,7 +127,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(log_format_use_newline_changed(bool)), ui_log_format_use_newline, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_display_empty_messages_changed(bool)), ui_log_display_empty_messages,
           SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(log_display_music_switch_changed(bool)), ui_log_display_music_switch, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_display_music_switch_changed(bool)), ui_log_display_music_switch,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_log_is_topdown_changed(bool)));
   connect(m_config, SIGNAL(log_is_recording_changed(bool)), ui_log_is_recording, SLOT(setChecked(bool)));
 
@@ -140,7 +141,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(effect_ignore_suppression_changed(bool)), ui_effect_ignore_suppression,
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(music_volume_changed(int)), ui_music, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(music_ignore_suppression_changed(bool)), ui_music_ignore_suppression, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(music_ignore_suppression_changed(bool)), ui_music_ignore_suppression,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_volume_changed(int)), ui_blip, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blip_ignore_suppression_changed(bool)), ui_blip_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_rate_changed(int)), ui_blip_rate, SLOT(setValue(int)));
@@ -404,7 +406,6 @@ void AOConfigPanel::update_audio_device_list()
 
 void AOConfigPanel::on_reload_theme_clicked()
 {
-  qDebug() << "reload theme clicked";
   Q_EMIT reload_theme();
 }
 

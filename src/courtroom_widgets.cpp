@@ -825,7 +825,7 @@ void Courtroom::set_widgets()
   // behavior will occur if the button is hidden due to 'config_panel' not being
   // found in courtroom_design.ini This is to assist with people who switch to
   // incompatible and/or smaller themes and have the button disappear
-  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() || !ui_config_panel->isVisible())
+  if (ui_config_panel->x() > width() || ui_config_panel->y() > height())
   {
     ui_config_panel->setVisible(true);
     ui_config_panel->move(0, 0);

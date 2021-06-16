@@ -103,19 +103,27 @@ public:
   // sets text color based on text color in chatmessage
   void set_text_color();
 
+  // disables chat if current cid matches second argument
+  // enables if p_muted is false
+  void set_muted(bool p_muted, int p_cid);
+
   // send a message that the player is banned and quits the server
   void set_ban(int p_cid);
 
   // implementations in path_functions.cpp
   QString get_background_path(QString p_file);
 
-  // cid = character id, returns the cid of the currently selected character
-  int get_character_id();
+public:
   QString get_base_character();
   QString get_current_character();
+  void update_iniswap_list();
+  void update_default_iniswap_item();
 
   // Set the showname of the client
   void set_showname(QString p_showname);
+
+  // sets up widgets
+  void setup_courtroom();
 
   // properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
@@ -127,7 +135,7 @@ public:
   void list_areas();
 
   QString current_sfx_file();
-  void update_sfx_list();
+  void load_character_sfx_list();
   void update_sfx_widget_list();
   void select_default_sfx();
   void clear_sfx_selection();
@@ -283,8 +291,6 @@ private:
   // ticking done
   int text_state = 2;
 
-  // character id, which index of the char_list the player is
-  int m_chr_id = -1;
   // if enabled, disable showing our own sprites when we talk in ic
   bool m_msg_is_first_person = false;
 
@@ -680,6 +686,25 @@ private slots:
   void on_spectator_clicked();
 
   void ping_server();
+
+  // character
+  // ===========================================================================
+public:
+  using CharacterId = int;
+  enum : CharacterId
+  {
+    SpectatorId = -1,
+  };
+
+  int get_character_id();
+public slots:
+  void set_character_id(const int);
+signals:
+  void character_id_changed(int);
+
+private:
+  // character id, which index of the char_list the player is
+  CharacterId m_chr_id = SpectatorId;
 
   /*!
    * =============================================================================

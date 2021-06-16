@@ -61,6 +61,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   set_widgets();
   set_char_select();
   set_widget_names();
+  setup_courtroom();
 }
 
 Courtroom::~Courtroom()
@@ -85,30 +86,18 @@ void Courtroom::set_music_list(QStringList p_music_list)
   list_music();
 }
 
-void Courtroom::enter_courtroom(int p_cid)
+void Courtroom::setup_courtroom()
 {
-  qDebug() << "enter_courtroom";
-
-  // unmute audio
-  suppress_audio(false);
-
-  const int l_prev_emote_id = m_emote_id;
-  const int l_prev_emote_page = m_current_emote_page;
-
-  // widgets ===================================================================
-  current_evidence_page = 0;
-  current_evidence = 0;
-
-  m_shout_state = 0;
-  m_shout_current = 0;
-  m_effect_state = 0;
-  m_effect_current = 0;
-  m_wtce_current = 0;
-  reset_wtce_buttons();
+  load_shouts();
+  load_effects();
+  load_wtce();
+  load_free_blocks();
 
   // setup chat
-  on_chat_config_changed();
+  update_ic_log(true);
 
+  current_evidence_page = 0;
+  current_evidence = 0;
   set_evidence_page();
 
   // Update widgets first, then check if everything is valid
@@ -118,14 +107,22 @@ void Courtroom::enter_courtroom(int p_cid)
 
   set_widgets();
 
+  update_iniswap_list();
+
+  m_shout_state = 0;
+  m_shout_current = 0;
   check_shouts();
   if (m_shout_current < shouts_enabled.length() && !shouts_enabled[m_shout_current])
     cycle_shout(1);
 
+  m_effect_state = 0;
+  m_effect_current = 0;
   check_effects();
   if (m_effect_current < effects_enabled.length() && !effects_enabled[m_effect_current])
     cycle_effect(1);
 
+  m_wtce_current = 0;
+  reset_wtce_buttons();
   check_wtce();
   if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current]))
     cycle_wtce(1);
@@ -144,12 +141,24 @@ void Courtroom::enter_courtroom(int p_cid)
 
   for (AOTimer *i_timer : qAsConst(ui_timers))
     i_timer->redraw();
+}
 
-  ui_char_select_background->hide();
+void Courtroom::enter_courtroom(int p_cid)
+{
+  qDebug() << "enter_courtroom";
+
+  // unmute audio
+  suppress_audio(false);
+
+  const int l_prev_emote_id = m_emote_id;
+  const int l_prev_emote_page = m_current_emote_page;
 
   // character =================================================================
   const bool l_changed_chr_id = (m_chr_id != p_cid);
   m_chr_id = p_cid;
+
+  if (l_changed_chr_id)
+    update_default_iniswap_item();
 
   QLineEdit *l_current_field = ui_ic_chat_message;
   if (ui_ooc_chat_message->hasFocus())
@@ -157,34 +166,6 @@ void Courtroom::enter_courtroom(int p_cid)
   const int l_current_cursor_pos = l_current_field->cursorPosition();
 
   const QString l_chr_name = get_current_character();
-  { // repopulate ini-swapper
-    QSignalBlocker b_ini_list(ui_iniswap_dropdown);
-    ui_iniswap_dropdown->clear();
-
-    QStringList l_name_list{"Default"};
-    const QString l_path = ao_app->get_base_path() + "/characters";
-    const QFileInfoList &l_info_list = QDir(l_path).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
-    for (const QFileInfo &i_info : l_info_list)
-    {
-      const QString l_name = i_info.fileName();
-      if (get_base_character() == l_name)
-        continue;
-      if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)))
-        continue;
-      l_name_list.append(l_name);
-    }
-
-    QPixmap l_blank_image(64, 64);
-    l_blank_image.fill(Qt::transparent);
-    for (int i = 0; i < l_name_list.length(); ++i)
-    {
-      const QString &i_name = l_name_list.at(i);
-      const QString l_real_name = i == 0 ? get_base_character() : i_name;
-      const QString l_icon_file = ao_app->get_character_path(l_real_name, "char_icon.png");
-      ui_iniswap_dropdown->addItem(file_exists(l_icon_file) ? QIcon(l_icon_file) : QIcon(l_blank_image), i_name);
-    }
-    ui_iniswap_dropdown->setCurrentText(get_current_character());
-  }
 
   if (is_spectating())
   {
@@ -207,6 +188,9 @@ void Courtroom::enter_courtroom(int p_cid)
   const bool l_changed_chr = l_chr_name != get_current_character();
   QString l_current_chr = l_chr_name;
 
+  if (l_changed_chr)
+    set_character_position(ao_app->get_char_side(l_chr_name));
+
   const int l_prev_emote_count = m_emote_list.count();
   m_emote_list = ao_app->get_emote_list(l_current_chr);
 
@@ -225,16 +209,7 @@ void Courtroom::enter_courtroom(int p_cid)
   }
   set_emote_page();
 
-  // Refresh character position. If the character was changed, use the new
-  // position, otherwise use the old one. Even if the else is useless now (it
-  // can be omitted), I am keeping it in case we expand set_character_position
-  // to do more.
-  if (l_changed_chr_id)
-    set_character_position(ao_app->get_char_side(l_chr_name));
-  else
-    set_character_position(ui_pos_dropdown->currentText());
-
-  update_sfx_list();
+  load_character_sfx_list();
   select_default_sfx();
 
   ui_emotes->setHidden(is_spectating());
@@ -249,11 +224,13 @@ void Courtroom::enter_courtroom(int p_cid)
   const QString l_showname = ao_config->showname();
   if (!l_showname.isEmpty() && !is_first_showname_sent)
     send_showname_packet(l_showname);
+
+  ui_char_select_background->hide();
 }
 
 void Courtroom::done_received()
 {
-  m_chr_id = -1;
+  m_chr_id = SpectatorId;
 
   suppress_audio(true);
 
@@ -469,7 +446,7 @@ QString Courtroom::current_sfx_file()
   return l_file == m_sfx_default_file ? get_current_emote().sound_file : l_file;
 }
 
-void Courtroom::update_sfx_list()
+void Courtroom::load_character_sfx_list()
 {
   // colors
   m_sfx_color_found = ao_app->get_color("found_song_color", COURTROOM_DESIGN_INI);
@@ -528,7 +505,7 @@ void Courtroom::clear_sfx_selection()
 
 void Courtroom::on_sfx_search_editing_finished()
 {
-  update_sfx_list();
+  load_character_sfx_list();
 }
 
 void Courtroom::on_sfx_widget_list_row_changed()
@@ -672,7 +649,7 @@ void Courtroom::on_showname_changed(QString p_showname)
 
 bool Courtroom::is_spectating()
 {
-  return m_chr_id == -1;
+  return m_chr_id == SpectatorId;
 }
 
 void Courtroom::on_showname_placeholder_changed(QString p_showname_placeholder)
@@ -836,7 +813,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
 
   int f_char_id = m_chatmessage[CMChrId].toInt();
 
-  if (f_char_id == -1)
+  if (f_char_id == SpectatorId)
   {
     is_system_speaking = true;
     m_chatmessage[CMChrId] = "0";
@@ -1703,16 +1680,9 @@ void Courtroom::set_text_color()
   m_message_color.setNamedColor(color_code);
 }
 
-void Courtroom::set_ip_list(QString p_list)
+void Courtroom::set_muted(bool p_muted, int p_cid)
 {
-  QString f_list = p_list.replace("|", ":").replace("*", "\n");
-
-  ui_ooc_chatlog->append(f_list);
-}
-
-void Courtroom::set_mute(bool p_muted, int p_cid)
-{
-  if (p_cid != m_chr_id && p_cid != -1)
+  if (p_cid != m_chr_id && p_cid != SpectatorId)
     return;
 
   if (p_muted)
@@ -1732,7 +1702,7 @@ void Courtroom::set_mute(bool p_muted, int p_cid)
 
 void Courtroom::set_ban(int p_cid)
 {
-  if (p_cid != m_chr_id && p_cid != -1)
+  if (p_cid != m_chr_id && p_cid != SpectatorId)
     return;
 
   call_notice("You have been banned.");
@@ -2355,15 +2325,10 @@ void Courtroom::on_app_reload_theme_requested()
     return;
   }
 
-  // Otherwise carry on
-  load_shouts();
-  load_effects();
-  load_wtce();
-  load_free_blocks();
+  setup_courtroom();
 
   // to update status on the background
   set_background(current_background);
-  enter_courtroom(m_chr_id);
 }
 
 void Courtroom::on_back_to_lobby_clicked()
