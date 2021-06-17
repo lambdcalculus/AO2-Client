@@ -105,7 +105,9 @@ void Courtroom::setup_courtroom()
   // and cycling through them if the buttons that are supposed to be displayed
   // do not exist It will also take care of free blocks
 
+  const bool l_chr_select_visible = ui_char_select_background->isVisible();
   set_widgets();
+  ui_char_select_background->setVisible(l_chr_select_visible);
 
   update_iniswap_list();
 
