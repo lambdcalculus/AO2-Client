@@ -13,6 +13,7 @@ public:
   AOButton(QWidget *parent, AOApplication *p_ao_app);
 
   QString get_image();
+  bool has_image();
   void set_image(QString p_image);
 
 private:

@@ -2158,7 +2158,7 @@ void Courtroom::on_shout_button_toggled(const bool p_checked)
 
   const QString l_image_name(QString("%1%2.png").arg(l_name, QString(p_checked ? "_selected" : nullptr)));
   l_button->set_image(l_image_name);
-  if (ao_app->find_theme_asset_path(l_image_name).isEmpty())
+  if (!l_button->has_image())
     l_button->setText(l_name);
 }
 
@@ -2238,8 +2238,8 @@ void Courtroom::cycle_wtce(int p_delta)
  * @brief Set the sprites of the effect buttons, and mark the currently
  * selected effect as such.
  *
- * @details If a sprite cannot be found for a shout button, a regular
- * push button is displayed for it with its shout name instead.
+ * @details If a sprite cannot be found for an effect button, a regular
+ * push button is displayed for it with its effect name instead.
  */
 void Courtroom::reset_effect_buttons()
 {
@@ -2283,7 +2283,7 @@ void Courtroom::on_effect_button_toggled(const bool p_checked)
 
   const QString l_image_name(QString("%1%2.png").arg(l_name, QString(p_checked ? "_pressed" : nullptr)));
   l_button->set_image(l_image_name);
-  if (ao_app->find_theme_asset_path(l_image_name).isEmpty())
+  if (!l_button->has_image())
     l_button->setText(l_name);
 }
 
@@ -2373,7 +2373,7 @@ void Courtroom::reset_wtce_buttons()
     const QString l_file = l_name + ".png";
     AOButton *l_button = ui_wtce.at(i);
     l_button->set_image(l_file);
-    l_button->setText(ao_app->find_theme_asset_path(l_file).isEmpty() ? l_name : nullptr);
+    l_button->setText(!l_button->has_image() ? l_name : nullptr);
   }
 
   m_wtce_current = 0;

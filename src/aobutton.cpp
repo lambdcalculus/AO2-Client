@@ -16,6 +16,11 @@ QString AOButton::get_image()
   return m_image;
 }
 
+bool AOButton::has_image()
+{
+  return (!m_image.isEmpty());
+}
+
 void AOButton::set_image(QString p_image)
 {
   m_image = ao_app->find_theme_asset_path(p_image);
