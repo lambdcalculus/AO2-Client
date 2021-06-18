@@ -41,7 +41,7 @@ void Courtroom::create_widgets()
   m_keepalive_timer->start(60000);
 
   m_tick_timer = new QTimer(this);
-  m_tick_timer->setSingleShot(true);
+  m_tick_timer->setSingleShot(false);
   m_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
 
   m_sound_timer = new QTimer(this);
@@ -117,7 +117,6 @@ void Courtroom::create_widgets()
   ui_ooc_chatlog->setReadOnly(true);
   ui_ooc_chatlog->setOpenExternalLinks(true);
 
-  ui_mute_list = new QListWidget(this);
   ui_area_list = new QListWidget(this);
   ui_music_list = new QListWidget(this);
   ui_sfx_list = new QListWidget(this);
@@ -211,8 +210,6 @@ void Courtroom::create_widgets()
   ui_checks.push_back(ui_flip);
   ui_checks.push_back(ui_hidden);
 
-  ui_mute = new AOButton(this, ao_app);
-
   ui_defense_plus = new AOButton(this, ao_app);
   ui_defense_minus = new AOButton(this, ao_app);
 
@@ -270,13 +267,10 @@ void Courtroom::connect_widgets()
   connect(ui_iniswap_dropdown, SIGNAL(activated(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
   connect(ui_pos_dropdown, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed(int)));
 
-  connect(ui_mute_list, SIGNAL(itemChanged(QListWidgetItem *)), this,
-          SLOT(on_mute_list_item_changed(QListWidgetItem *)));
-
   connect(ao_config, SIGNAL(showname_changed(QString)), this, SLOT(on_showname_changed(QString)));
   connect(ao_config, SIGNAL(showname_placeholder_changed(QString)), this,
           SLOT(on_showname_placeholder_changed(QString)));
-  connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(on_character_ini_changed(QString)));
+  connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(on_character_ini_changed()));
   connect(ui_ic_chat_showname, SIGNAL(editingFinished()), this, SLOT(on_ic_showname_editing_finished()));
   connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
 
@@ -300,8 +294,6 @@ void Courtroom::connect_widgets()
   connect(ui_wtce_up, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
   connect(ui_wtce_down, SIGNAL(clicked(bool)), this, SLOT(on_cycle_clicked()));
 
-  connect(ui_mute, SIGNAL(clicked()), this, SLOT(on_mute_clicked()));
-
   connect(ui_defense_minus, SIGNAL(clicked()), this, SLOT(on_defense_minus_clicked()));
   connect(ui_defense_plus, SIGNAL(clicked()), this, SLOT(on_defense_plus_clicked()));
   connect(ui_prosecution_minus, SIGNAL(clicked()), this, SLOT(on_prosecution_minus_clicked()));
@@ -318,7 +310,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_chat_config_changed()));
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited()));
-  connect(ui_sfx_search, SIGNAL(editingFinished()), this, SLOT(on_sfx_search_editing_finished()));
+  connect(ui_sfx_search, SIGNAL(editingFinished()), this, SLOT(filter_sfx_list()));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
@@ -334,7 +326,8 @@ void Courtroom::connect_widgets()
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_hidden, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
-  connect(ui_sfx_list, SIGNAL(currentRowChanged(int)), this, SLOT(on_sfx_widget_list_row_changed()));
+  connect(ui_sfx_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this,
+          SLOT(_p_sfxCurrentItemChanged(QListWidgetItem *, QListWidgetItem *)));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
@@ -369,7 +362,6 @@ void Courtroom::reset_widget_names()
       {"vp_objection", ui_vp_objection},
       {"ic_chatlog", ui_ic_chatlog},
       {"server_chatlog", ui_ooc_chatlog},
-      {"mute_list", ui_mute_list},
       {"area_list", ui_area_list},
       {"music_list", ui_music_list},
       {"sfx_list", ui_sfx_list},
@@ -411,7 +403,6 @@ void Courtroom::reset_widget_names()
       {"pre", ui_pre},
       {"flip", ui_flip},
       {"hidden", ui_hidden},
-      {"mute_button", ui_mute},
       {"defense_plus", ui_defense_plus},
       {"defense_minus", ui_defense_minus},
       {"prosecution_plus", ui_prosecution_plus},
@@ -630,9 +621,6 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ooc_chatlog, "server_chatlog", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_mute_list, "mute_list", COURTROOM_DESIGN_INI, ao_app);
-  ui_mute_list->hide();
-
   set_size_and_pos(ui_music_list, "music_list", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_area_list, "area_list", COURTROOM_DESIGN_INI, ao_app);
   if (ui_music_list->isVisible())
@@ -690,7 +678,7 @@ void Courtroom::set_widgets()
 
   // emotes
   set_size_and_pos(ui_emotes, "emotes", COURTROOM_DESIGN_INI, ao_app);
-  reconstruct_emotes();
+  construct_emote_page_layout();
 
   set_size_and_pos(ui_emote_left, "emote_left", COURTROOM_DESIGN_INI, ao_app);
   ui_emote_left->set_image("arrow_left.png");
@@ -900,9 +888,6 @@ void Courtroom::set_widgets()
       ui_label_images[j]->set_image("");
     }
   }
-
-  set_size_and_pos(ui_mute, "mute_button", COURTROOM_DESIGN_INI, ao_app);
-  ui_mute->set_image("mute.png");
 
   set_size_and_pos(ui_defense_plus, "defense_plus", COURTROOM_DESIGN_INI, ao_app);
   ui_defense_plus->set_image("defplus.png");
@@ -1408,7 +1393,6 @@ void Courtroom::set_dropdowns()
   set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]");
   set_dropdown(ui_iniswap_dropdown, "[INISWAP DROPDOWN]");
   set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
-  set_dropdown(ui_mute_list, "[MUTE LIST]");
   set_dropdown(ui_ic_chat_message, "[IC LINE]");
   set_dropdown(ui_ooc_chat_message, "[OOC LINE]");
 }
@@ -1430,30 +1414,5 @@ void Courtroom::set_fonts()
   {
     AOTimer *i_timer = ui_timers.at(i);
     set_drtextedit_font(i_timer, QString("timer_%1").arg(i), COURTROOM_FONTS_INI, ao_app);
-  }
-}
-
-void Courtroom::set_mute_list()
-{
-  mute_map.clear();
-
-  // maps which characters are muted based on cid, none are muted by default
-  for (int n_cid = 0; n_cid < m_chr_list.size(); n_cid++)
-  {
-    mute_map.insert(n_cid, false);
-  }
-
-  QStringList sorted_mute_list;
-
-  for (const char_type &i_char : qAsConst(m_chr_list))
-    sorted_mute_list.append(i_char.name);
-
-  sorted_mute_list.sort();
-
-  for (const QString &i_chr_name : sorted_mute_list)
-  {
-    QListWidgetItem *i_item = new QListWidgetItem(i_chr_name, ui_mute_list);
-    i_item->setFlags(i_item->flags() | Qt::ItemFlag::ItemIsUserCheckable);
-    i_item->setCheckState(Qt::Unchecked);
   }
 }
