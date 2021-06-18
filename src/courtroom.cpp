@@ -92,6 +92,7 @@ void Courtroom::setup_courtroom()
   load_effects();
   load_wtce();
   load_free_blocks();
+  load_sfx_list_theme();
 
   // setup chat
   update_ic_log(true);
@@ -152,8 +153,7 @@ void Courtroom::enter_courtroom(int p_cid)
   // unmute audio
   suppress_audio(false);
 
-  const int l_prev_emote_id = m_emote_id;
-  const int l_prev_emote_page = m_current_emote_page;
+  const QString l_prev_chr_name = get_current_character();
 
   // character =================================================================
   const bool l_changed_chr_id = (m_chr_id != p_cid);
@@ -168,7 +168,6 @@ void Courtroom::enter_courtroom(int p_cid)
   const int l_current_cursor_pos = l_current_field->cursorPosition();
 
   const QString l_chr_name = get_current_character();
-
   if (is_spectating())
   {
     ao_app->get_discord()->clear_character_name();
@@ -187,31 +186,30 @@ void Courtroom::enter_courtroom(int p_cid)
       ao_app->send_server_packet(DRPacket("chrini", l_content));
     }
   }
-  const bool l_changed_chr = l_chr_name != get_current_character();
-  QString l_current_chr = l_chr_name;
-
+  const bool l_changed_chr = l_chr_name != l_prev_chr_name;
   if (l_changed_chr)
     set_character_position(ao_app->get_char_side(l_chr_name));
+  select_base_character_iniswap();
 
   const int l_prev_emote_count = m_emote_list.count();
-  m_emote_list = ao_app->get_emote_list(l_current_chr);
+  m_emote_list = ao_app->get_emote_list(l_chr_name);
 
   const QString l_prev_emote = ui_emote_dropdown->currentText();
-  set_emote_dropdown();
+  fill_emote_dropdown();
 
   if (l_changed_chr || l_prev_emote_count != m_emote_list.count())
   {
+    m_emote_id = 0;
+    m_current_emote_page = 0;
     ui_pre->setChecked(ui_pre->isChecked() || ao_config->always_pre_enabled());
   }
   else
   {
-    m_emote_id = l_prev_emote_id;
-    m_current_emote_page = l_prev_emote_page;
     ui_emote_dropdown->setCurrentText(l_prev_emote);
   }
-  set_emote_page();
+  refresh_emote_page();
 
-  load_character_sfx_list();
+  load_current_character_sfx_list();
   select_default_sfx();
 
   ui_emotes->setHidden(is_spectating());
@@ -437,106 +435,6 @@ void Courtroom::list_areas()
     QListWidgetItem *l_item = new QListWidgetItem(i_item_name, ui_area_list);
     l_item->setBackground(l_area_brush);
   }
-}
-
-QString Courtroom::current_sfx_file()
-{
-  QListWidgetItem *l_item = ui_sfx_list->currentItem();
-  if (l_item == nullptr)
-    return nullptr;
-  const QString l_file = m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).file;
-  return l_file == m_sfx_default_file ? get_current_emote().sound_file : l_file;
-}
-
-void Courtroom::load_character_sfx_list()
-{
-  // colors
-  m_sfx_color_found = ao_app->get_color("found_song_color", COURTROOM_DESIGN_INI);
-  m_sfx_color_missing = ao_app->get_color("missing_song_color", COURTROOM_DESIGN_INI);
-
-  // items
-  m_sfx_list.clear();
-  m_sfx_list.append(DRSfx("Default", m_sfx_default_file));
-  m_sfx_list.append(DRSfx("Silence", nullptr));
-
-  const QStringList l_sfx_list = ao_app->get_sfx_list();
-  for (const QString &i_sfx_line : l_sfx_list)
-  {
-    const QStringList l_sfx_entry = i_sfx_line.split("=", DR::SkipEmptyParts);
-
-    const QString l_name = l_sfx_entry.at(l_sfx_entry.size() - 1).trimmed();
-    const QString l_file = QString(l_sfx_entry.size() >= 2 ? l_sfx_entry.at(0) : nullptr).trimmed();
-    const bool l_is_found = !ao_app->find_asset_path({ao_app->get_sounds_path(l_file)}, audio_extensions()).isEmpty();
-    m_sfx_list.append(DRSfx(l_name, l_file, l_is_found));
-  }
-
-  update_sfx_widget_list();
-}
-
-void Courtroom::update_sfx_widget_list()
-{
-  QSignalBlocker l_blocker(ui_sfx_list);
-  ui_sfx_list->clear();
-
-  const QString l_name_filter = ui_sfx_search->text();
-  for (int i = 0; i < m_sfx_list.length(); ++i)
-  {
-    const DRSfx &i_sfx = m_sfx_list.at(i);
-    if (!i_sfx.name.contains(l_name_filter, Qt::CaseInsensitive))
-      continue;
-    QListWidgetItem *l_item = new QListWidgetItem;
-    l_item->setText(i_sfx.name);
-    l_item->setData(Qt::UserRole, i);
-    ui_sfx_list->addItem(l_item);
-  }
-
-  on_sfx_widget_list_row_changed();
-}
-
-void Courtroom::select_default_sfx()
-{
-  if (ui_sfx_list->count() == 0)
-    return;
-  ui_sfx_list->setCurrentRow(0);
-}
-
-void Courtroom::clear_sfx_selection()
-{
-  ui_sfx_list->setCurrentRow(-1);
-}
-
-void Courtroom::on_sfx_search_editing_finished()
-{
-  load_character_sfx_list();
-}
-
-void Courtroom::on_sfx_widget_list_row_changed()
-{
-  const int p_current_row = ui_sfx_list->currentRow();
-
-  for (int i = 0; i < ui_sfx_list->count(); ++i)
-  {
-    QListWidgetItem *l_item = ui_sfx_list->item(i);
-    const bool l_is_found = m_sfx_list.at(l_item->data(Qt::UserRole).toInt()).is_found;
-
-    QColor i_color = l_is_found ? m_sfx_color_found : m_sfx_color_missing;
-    if (i == p_current_row)
-    {
-      ui_pre->setChecked(ui_pre->isChecked() || l_is_found);
-
-      // Calculate the amount of lightness it would take to light up the row. We
-      // also limit it to 1.0, as giving lightness values above 1.0 to QColor does
-      // nothing. +0.4 is just an arbitrarily chosen number.
-      const double l_final_lightness = qMin(1.0, i_color.lightnessF() + 0.4);
-
-      // This is just the reverse of the above, basically. We set the colour, and we
-      // set the brush to have that colour.
-      i_color.setHslF(i_color.hueF(), i_color.saturationF(), l_final_lightness);
-    }
-
-    l_item->setBackground(i_color);
-  }
-  ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::list_note_files()

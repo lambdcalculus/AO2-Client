@@ -100,6 +100,7 @@ SOURCES += \
   src/commondefs.cpp \
   src/courtroom.cpp \
   src/courtroom_character.cpp \
+  src/courtroom_sfx.cpp \
   src/courtroom_widgets.cpp \
   src/datatypes.cpp \
   src/debug_functions.cpp \

@@ -310,7 +310,7 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_chat_config_changed()));
 
   connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited()));
-  connect(ui_sfx_search, SIGNAL(editingFinished()), this, SLOT(on_sfx_search_editing_finished()));
+  connect(ui_sfx_search, SIGNAL(editingFinished()), this, SLOT(filter_sfx_list()));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
@@ -326,7 +326,8 @@ void Courtroom::connect_widgets()
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_hidden, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
-  connect(ui_sfx_list, SIGNAL(currentRowChanged(int)), this, SLOT(on_sfx_widget_list_row_changed()));
+  connect(ui_sfx_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this,
+          SLOT(_p_sfxCurrentItemChanged(QListWidgetItem *, QListWidgetItem *)));
 
   connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
 
@@ -677,7 +678,7 @@ void Courtroom::set_widgets()
 
   // emotes
   set_size_and_pos(ui_emotes, "emotes", COURTROOM_DESIGN_INI, ao_app);
-  reconstruct_emotes();
+  construct_emote_page_layout();
 
   set_size_and_pos(ui_emote_left, "emote_left", COURTROOM_DESIGN_INI, ao_app);
   ui_emote_left->set_image("arrow_left.png");

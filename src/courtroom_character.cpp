@@ -73,10 +73,28 @@ void Courtroom::update_iniswap_list()
     drSetItemIcon(ui_iniswap_dropdown, i, i_name, ao_app);
   }
   update_default_iniswap_item();
-  ui_iniswap_dropdown->setCurrentText(get_current_character());
+
+  select_base_character_iniswap();
 }
 
 void Courtroom::update_default_iniswap_item()
 {
   drSetItemIcon(ui_iniswap_dropdown, 0, get_base_character(), ao_app);
+}
+
+void Courtroom::select_base_character_iniswap()
+{
+  const QString l_current_chr = get_current_character();
+  if (get_base_character() == l_current_chr)
+  {
+    ui_iniswap_dropdown->setCurrentIndex(0);
+    return;
+  }
+  ui_iniswap_dropdown->setCurrentText(l_current_chr);
+}
+
+void Courtroom::on_iniswap_dropdown_changed(int p_index)
+{
+  ao_config->set_character_ini(get_base_character(),
+                               p_index == 0 ? get_base_character() : ui_iniswap_dropdown->itemText(p_index));
 }

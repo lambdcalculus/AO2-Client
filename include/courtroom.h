@@ -118,6 +118,7 @@ public:
   QString get_current_character();
   void update_iniswap_list();
   void update_default_iniswap_item();
+  void select_base_character_iniswap();
 
   // Set the showname of the client
   void set_showname(QString p_showname);
@@ -133,12 +134,6 @@ public:
   void list_music();
 
   void list_areas();
-
-  QString current_sfx_file();
-  void load_character_sfx_list();
-  void update_sfx_widget_list();
-  void select_default_sfx();
-  void clear_sfx_selection();
 
   void list_note_files();
 
@@ -538,10 +533,10 @@ private:
   void set_char_select_page();
 
   void construct_emotes();
-  void reconstruct_emotes();
+  void construct_emote_page_layout();
   void reset_emote_page();
-  void set_emote_page();
-  void set_emote_dropdown();
+  void refresh_emote_page(const bool scroll_to_current_emote = false);
+  void fill_emote_dropdown();
   DREmote get_emote(const int id);
   DREmote get_current_emote();
 
@@ -590,9 +585,6 @@ private slots:
   void on_area_list_clicked();
   void on_music_list_double_clicked(QModelIndex p_model);
   void on_area_list_double_clicked(QModelIndex p_model);
-
-  void on_sfx_search_editing_finished();
-  void on_sfx_widget_list_row_changed();
 
   void select_emote(int p_id);
 
@@ -707,6 +699,25 @@ signals:
 private:
   // character id, which index of the char_list the player is
   CharacterId m_chr_id = SpectatorId;
+
+  // sfx
+public:
+  std::optional<DRSfx> current_sfx();
+  QString current_sfx_file();
+  void load_current_character_sfx_list();
+  void load_sfx_list_theme();
+  void select_default_sfx();
+  void clear_sfx_selection();
+  void update_all_sfx_item_color();
+
+public slots:
+  void filter_sfx_list();
+
+private:
+  void set_sfx_item_color(QListWidgetItem *item);
+
+private slots:
+  void _p_sfxCurrentItemChanged(QListWidgetItem *current_item, QListWidgetItem *previous_item);
 
   /*!
    * =============================================================================
