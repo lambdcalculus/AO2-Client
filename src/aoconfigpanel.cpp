@@ -108,10 +108,10 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(discord_hide_character_changed(bool)), ui_discord_hide_character, SLOT(setChecked(bool)));
 
   // game
-  connect(m_config, SIGNAL(theme_changed(QString)), ui_theme, SLOT(setCurrentText(QString)));
-  connect(m_config, SIGNAL(gamemode_changed(QString)), ui_gamemode, SLOT(setCurrentText(QString)));
+  connect(m_config, SIGNAL(theme_changed(QString)), this, SLOT(on_theme_changed(QString)));
+  connect(m_config, SIGNAL(gamemode_changed(QString)), this, SLOT(on_gamemode_changed(QString)));
   connect(m_config, SIGNAL(manual_gamemode_changed(bool)), ui_manual_gamemode, SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(timeofday_changed(QString)), ui_timeofday, SLOT(setCurrentText(QString)));
+  connect(m_config, SIGNAL(timeofday_changed(QString)), this, SLOT(on_theme_changed(QString)));
   connect(m_config, SIGNAL(manual_timeofday_changed(bool)), ui_manual_timeofday, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(showname_changed(QString)), ui_showname, SLOT(setText(QString)));
   connect(m_config, SIGNAL(showname_placeholder_changed(QString)), this,
@@ -127,7 +127,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(log_format_use_newline_changed(bool)), ui_log_format_use_newline, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_display_empty_messages_changed(bool)), ui_log_display_empty_messages,
           SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(log_display_music_switch_changed(bool)), ui_log_display_music_switch, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_display_music_switch_changed(bool)), ui_log_display_music_switch,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_log_is_topdown_changed(bool)));
   connect(m_config, SIGNAL(log_is_recording_changed(bool)), ui_log_is_recording, SLOT(setChecked(bool)));
 
@@ -140,7 +141,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(effect_ignore_suppression_changed(bool)), ui_effect_ignore_suppression,
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(music_volume_changed(int)), ui_music, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(music_ignore_suppression_changed(bool)), ui_music_ignore_suppression, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(music_ignore_suppression_changed(bool)), ui_music_ignore_suppression,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_volume_changed(int)), ui_blip, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blip_ignore_suppression_changed(bool)), ui_blip_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_rate_changed(int)), ui_blip_rate, SLOT(setValue(int)));
@@ -404,8 +406,31 @@ void AOConfigPanel::update_audio_device_list()
 
 void AOConfigPanel::on_reload_theme_clicked()
 {
-  qDebug() << "reload theme clicked";
   Q_EMIT reload_theme();
+}
+
+void AOConfigPanel::on_theme_changed(QString p_name)
+{
+  refresh_theme_list();
+  refresh_gamemode_list();
+  refresh_timeofday_list();
+  ui_theme->setCurrentText(p_name);
+}
+
+void AOConfigPanel::on_gamemode_changed(QString p_name)
+{
+  refresh_theme_list();
+  refresh_gamemode_list();
+  refresh_timeofday_list();
+  ui_gamemode->setCurrentText(p_name);
+}
+
+void AOConfigPanel::on_timeofday_changed(QString p_name)
+{
+  refresh_theme_list();
+  refresh_gamemode_list();
+  refresh_timeofday_list();
+  ui_timeofday->setCurrentText(p_name);
 }
 
 void AOConfigPanel::on_gamemode_index_changed(QString p_text)

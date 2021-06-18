@@ -42,6 +42,9 @@ private:
 
 private slots:
   void on_reload_theme_clicked();
+  void on_theme_changed(QString);
+  void on_gamemode_changed(QString);
+  void on_timeofday_changed(QString);
   void on_gamemode_index_changed(QString p_text);
   void on_timeofday_index_changed(QString p_text);
   void on_showname_placeholder_changed(QString p_text);

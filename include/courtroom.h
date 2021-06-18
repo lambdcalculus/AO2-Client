@@ -97,22 +97,15 @@ public:
   // called when a DONE#% from the server was received
   void done_received();
 
-  // sets the local mute list based on characters available on the server
-  void set_mute_list();
-
   // sets desk and bg based on pos in chatmessage
   void set_scene();
 
   // sets text color based on text color in chatmessage
   void set_text_color();
 
-  // takes in serverD-formatted IP list as prints a converted version to server
-  // OOC admittedly poorly named
-  void set_ip_list(QString p_list);
-
   // disables chat if current cid matches second argument
   // enables if p_muted is false
-  void set_mute(bool p_muted, int p_cid);
+  void set_muted(bool p_muted, int p_cid);
 
   // send a message that the player is banned and quits the server
   void set_ban(int p_cid);
@@ -120,13 +113,18 @@ public:
   // implementations in path_functions.cpp
   QString get_background_path(QString p_file);
 
-  // cid = character id, returns the cid of the currently selected character
-  int get_character_id();
+public:
   QString get_base_character();
   QString get_current_character();
+  void update_iniswap_list();
+  void update_default_iniswap_item();
+  void select_base_character_iniswap();
 
   // Set the showname of the client
   void set_showname(QString p_showname);
+
+  // sets up widgets
+  void setup_courtroom();
 
   // properly sets up some varibles: resets user state
   void enter_courtroom(int p_cid);
@@ -136,12 +134,6 @@ public:
   void list_music();
 
   void list_areas();
-
-  QString current_sfx_file();
-  void update_sfx_list();
-  void update_sfx_widget_list();
-  void select_default_sfx();
-  void clear_sfx_selection();
 
   void list_note_files();
 
@@ -285,11 +277,6 @@ private:
   QString m_message_color_name;
   QStack<QString> m_message_color_stack;
 
-  // char id, muted or not
-  QMap<int, bool> mute_map;
-
-  // QVector<int> muted_cids;
-
   bool is_client_muted = false;
 
   // state of animation, 0 = objecting, 1 = preanim, 2 = talking, 3 = idle
@@ -299,8 +286,6 @@ private:
   // ticking done
   int text_state = 2;
 
-  // character id, which index of the char_list the player is
-  int m_chr_id = -1;
   // if enabled, disable showing our own sprites when we talk in ic
   bool m_msg_is_first_person = false;
 
@@ -396,7 +381,6 @@ private:
 
   AOTextArea *ui_ooc_chatlog = nullptr;
 
-  QListWidget *ui_mute_list = nullptr;
   QListWidget *ui_area_list = nullptr;
   QListWidget *ui_music_list = nullptr;
 
@@ -490,8 +474,6 @@ private:
   AOButton *ui_effect_flash = nullptr;
   AOButton *ui_effect_gloom = nullptr;
 
-  AOButton *ui_mute = nullptr;
-
   AOButton *ui_defense_plus = nullptr;
   AOButton *ui_defense_minus = nullptr;
 
@@ -551,10 +533,10 @@ private:
   void set_char_select_page();
 
   void construct_emotes();
-  void reconstruct_emotes();
+  void construct_emote_page_layout();
   void reset_emote_page();
-  void set_emote_page();
-  void set_emote_dropdown();
+  void refresh_emote_page(const bool scroll_to_current_emote = false);
+  void fill_emote_dropdown();
   DREmote get_emote(const int id);
   DREmote get_current_emote();
 
@@ -588,11 +570,9 @@ private slots:
   void next_chat_letter();
   void post_chat();
 
-  void on_mute_list_item_changed(QListWidgetItem *p_item);
-
   void on_showname_changed(QString);
   void on_showname_placeholder_changed(QString);
-  void on_character_ini_changed(QString);
+  void on_character_ini_changed();
   void on_ic_showname_editing_finished();
   void on_ic_message_return_pressed();
   void on_chat_config_changed();
@@ -605,9 +585,6 @@ private slots:
   void on_area_list_clicked();
   void on_music_list_double_clicked(QModelIndex p_model);
   void on_area_list_double_clicked(QModelIndex p_model);
-
-  void on_sfx_search_editing_finished();
-  void on_sfx_widget_list_row_changed();
 
   void select_emote(int p_id);
 
@@ -658,8 +635,6 @@ private slots:
   void on_effect_button_clicked(const bool);
   void on_effect_button_toggled(const bool);
 
-  void on_mute_clicked();
-
   void on_defense_minus_clicked();
   void on_defense_plus_clicked();
   void on_prosecution_minus_clicked();
@@ -705,6 +680,44 @@ private slots:
   void on_spectator_clicked();
 
   void ping_server();
+
+  // character
+  // ===========================================================================
+public:
+  using CharacterId = int;
+  enum : CharacterId
+  {
+    SpectatorId = -1,
+  };
+
+  int get_character_id();
+public slots:
+  void set_character_id(const int);
+signals:
+  void character_id_changed(int);
+
+private:
+  // character id, which index of the char_list the player is
+  CharacterId m_chr_id = SpectatorId;
+
+  // sfx
+public:
+  std::optional<DRSfx> current_sfx();
+  QString current_sfx_file();
+  void load_current_character_sfx_list();
+  void load_sfx_list_theme();
+  void select_default_sfx();
+  void clear_sfx_selection();
+  void update_all_sfx_item_color();
+
+public slots:
+  void filter_sfx_list();
+
+private:
+  void set_sfx_item_color(QListWidgetItem *item);
+
+private slots:
+  void _p_sfxCurrentItemChanged(QListWidgetItem *current_item, QListWidgetItem *previous_item);
 
   /*!
    * =============================================================================

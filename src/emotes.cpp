@@ -29,10 +29,10 @@ void Courtroom::construct_emotes()
   ui_pos_dropdown->addItem("hld", "hld");
   ui_pos_dropdown->addItem("hlp", "hlp");
 
-  reconstruct_emotes();
+  construct_emote_page_layout();
 }
 
-void Courtroom::reconstruct_emotes()
+void Courtroom::construct_emote_page_layout()
 {
   // delete previous buttons
   while (!ui_emote_list.isEmpty())
@@ -78,24 +78,19 @@ void Courtroom::reconstruct_emotes()
     }
   }
 
-  reset_emote_page();
+  refresh_emote_page(true);
 }
 
 void Courtroom::reset_emote_page()
 {
-  m_current_emote_page = 0;
   m_emote_id = 0;
-
-  if (is_spectating())
-    ui_emotes->hide();
-  else
-    ui_emotes->show();
-
-  set_emote_page();
-  set_emote_dropdown();
+  m_current_emote_page = 0;
+  if (ui_emote_dropdown->count())
+    ui_emote_dropdown->setCurrentIndex(m_emote_id);
+  refresh_emote_page(true);
 }
 
-void Courtroom::set_emote_page()
+void Courtroom::refresh_emote_page(const bool p_scroll_to_current_emote)
 {
   ui_emote_left->hide();
   ui_emote_right->hide();
@@ -109,7 +104,11 @@ void Courtroom::set_emote_page()
 
   const int l_page_count =
       qFloor(l_emote_count / m_page_max_emote_count) + bool(l_emote_count % m_page_max_emote_count);
+
+  if (p_scroll_to_current_emote)
+    m_current_emote_page = m_emote_id / m_page_max_emote_count;
   m_current_emote_page = qBound(0, m_current_emote_page, l_page_count - 1);
+
   const int l_current_page_emote_count =
       qBound(0, l_emote_count - m_current_emote_page * m_page_max_emote_count, m_page_max_emote_count);
 
@@ -128,7 +127,7 @@ void Courtroom::set_emote_page()
   }
 }
 
-void Courtroom::set_emote_dropdown()
+void Courtroom::fill_emote_dropdown()
 {
   QSignalBlocker l_blocker(ui_emote_dropdown);
   ui_emote_dropdown->clear();
@@ -139,11 +138,11 @@ void Courtroom::set_emote_dropdown()
   ui_emote_dropdown->addItems(l_emote_list);
 }
 
-DREmote Courtroom::get_emote(const int id)
+DREmote Courtroom::get_emote(const int p_emote_id)
 {
-  if (id < 0 || id >= m_emote_list.length())
+  if (p_emote_id < 0 || p_emote_id >= m_emote_list.length())
     return DREmote();
-  return m_emote_list.at(id);
+  return m_emote_list.at(p_emote_id);
 }
 
 DREmote Courtroom::get_current_emote()
@@ -189,7 +188,7 @@ void Courtroom::on_emote_left_clicked()
 {
   --m_current_emote_page;
 
-  set_emote_page();
+  refresh_emote_page();
 
   ui_ic_chat_message->setFocus();
 }
@@ -198,7 +197,7 @@ void Courtroom::on_emote_right_clicked()
 {
   ++m_current_emote_page;
 
-  set_emote_page();
+  refresh_emote_page();
 
   ui_ic_chat_message->setFocus();
 }
@@ -206,10 +205,4 @@ void Courtroom::on_emote_right_clicked()
 void Courtroom::on_emote_dropdown_changed(int p_index)
 {
   select_emote(p_index);
-}
-
-void Courtroom::on_iniswap_dropdown_changed(int p_index)
-{
-  ao_config->set_character_ini(get_base_character(),
-                               p_index == 0 ? get_base_character() : ui_iniswap_dropdown->itemText(p_index));
 }
