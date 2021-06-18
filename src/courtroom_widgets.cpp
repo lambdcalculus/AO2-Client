@@ -833,12 +833,12 @@ void Courtroom::set_widgets()
       ui_note_button->setText("Notes");
   }
 
-  // The config panel has a special property. If it is displayed beyond the
-  // right or lower limit of the window, it will be moved to 0, 0 A similar
-  // behavior will occur if the button is hidden due to 'config_panel' not being
-  // found in courtroom_design.ini This is to assist with people who switch to
-  // incompatible and/or smaller themes and have the button disappear
-  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() || !ui_config_panel->isVisible())
+  // The config panel has a special property. If it is displayed beyond the right or lower limit of the window, it will
+  // be moved to 0, 0 A similar behavior will occur if the button is resized to 0, 0 due to 'config_panel' not being
+  // found in courtroom_design.ini This is to assist with people who switch to incompatible and/or smaller themes and
+  // have the button disappear
+  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() || ui_config_panel->width() <= 0
+      || ui_config_panel->height() <= 0)
   {
     ui_config_panel->setVisible(true);
     ui_config_panel->move(0, 0);
@@ -1005,7 +1005,9 @@ void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
     qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
-    p_widget->hide();
+    // Don't hide, as some widgets don't have a built-in way of reappearing again.
+    p_widget->move(0, 0);
+    p_widget->resize(0, 0);
   }
   else
   {
