@@ -51,12 +51,6 @@ void Courtroom::create_widgets()
   m_flash_timer = new QTimer(this);
   m_flash_timer->setSingleShot(true);
 
-  m_testimony_show_timer = new QTimer(this);
-  m_testimony_show_timer->setSingleShot(true);
-
-  m_testimony_hide_timer = new QTimer(this);
-  m_testimony_hide_timer->setSingleShot(true);
-
   char_button_mapper = new QSignalMapper(this);
 
   m_system_player = new AOSystemPlayer(ao_app, this);
@@ -104,7 +98,6 @@ void Courtroom::create_widgets()
 
   ui_vp_showname_image = new AOImageDisplay(this, ao_app);
 
-  ui_vp_testimony = new AOImageDisplay(this, ao_app);
   ui_vp_effect = new AOMovie(this, ao_app);
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
@@ -258,9 +251,6 @@ void Courtroom::connect_widgets()
 
   connect(m_flash_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
-  connect(m_testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
-  connect(m_testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
-
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 
@@ -357,7 +347,6 @@ void Courtroom::reset_widget_names()
       {"showname", ui_vp_showname},
       {"message", ui_vp_message},
       {"showname_image", ui_vp_showname_image},
-      {"vp_testimony", ui_vp_testimony},
       {"vp_effect", ui_vp_effect},
       {"vp_wtce", ui_vp_wtce},
       {"vp_objection", ui_vp_objection},
@@ -602,11 +591,6 @@ void Courtroom::set_widgets()
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
-
-  ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_testimony->resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_testimony->set_image("testimony.png");
-  ui_vp_testimony->hide();
 
   ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_effect->resize(ui_viewport->width(), ui_viewport->height());
