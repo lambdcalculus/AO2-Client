@@ -14,6 +14,8 @@ class Lobby;
 #include <QApplication>
 #include <QVector>
 
+#include <optional>
+
 class AOApplication : public QApplication
 {
   Q_OBJECT
@@ -131,6 +133,9 @@ public:
 
   // Returns the name of the font with p_identifier from p_file
   QString get_font_name(QString p_identifier, QString p_file);
+
+  // Returns the color with p_identifier from p_file
+  std::optional<QColor> maybe_color(QString p_identifier, QString p_file);
 
   // Returns the color with p_identifier from p_file
   QColor get_color(QString p_identifier, QString p_file);

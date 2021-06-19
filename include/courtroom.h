@@ -33,6 +33,7 @@ class DRTextEdit;
 #include <QModelIndex>
 #include <QQueue>
 #include <QStack>
+#include <QTextCharFormat>
 
 class QCheckBox;
 class QComboBox;
@@ -163,6 +164,16 @@ public:
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
+  struct IcLogTextFormat
+  {
+    QTextCharFormat text;
+    QTextCharFormat name;
+    QTextCharFormat selfname;
+    QTextCharFormat system;
+  };
+  IcLogTextFormat m_ic_log_format;
+  void load_ic_text_format();
+
   // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
@@ -211,6 +222,7 @@ public:
   int adapt_numbered_items(QVector<T *> &item_vector, QString config_item_number, QString item_name);
 
 signals:
+  void loaded_theme();
   void closing();
 
 private:
