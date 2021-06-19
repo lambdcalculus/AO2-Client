@@ -63,8 +63,6 @@ void Courtroom::create_widgets()
 
   ui_viewport = new QWidget(this);
   ui_vp_background = new AOScene(ui_viewport, ao_app);
-  ui_vp_speedlines = new AOMovie(ui_viewport, ao_app);
-  ui_vp_speedlines->set_play_once(false);
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
 
@@ -333,7 +331,6 @@ void Courtroom::reset_widget_names()
       {"courtroom", this},
       {"viewport", ui_viewport},
       {"background", ui_vp_background},   //*
-      {"speedlines", ui_vp_speedlines},   //*
       {"player_char", ui_vp_player_char}, //*
       {"desk", ui_vp_desk},               //*
       {"music_display_a", ui_vp_music_display_a},
@@ -561,9 +558,6 @@ void Courtroom::set_widgets()
 
   ui_vp_background->move(0, 0);
   ui_vp_background->combo_resize(ui_viewport->size());
-
-  ui_vp_speedlines->move(0, 0);
-  ui_vp_speedlines->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_player_char->move(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->size());

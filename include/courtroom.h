@@ -332,7 +332,6 @@ private:
 
   QWidget *ui_viewport = nullptr;
   AOScene *ui_vp_background = nullptr;
-  AOMovie *ui_vp_speedlines = nullptr;
   AOCharMovie *ui_vp_player_char = nullptr;
   AOScene *ui_vp_desk = nullptr;
   AOEvidenceDisplay *ui_vp_evidence_display = nullptr;

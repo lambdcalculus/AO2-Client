@@ -814,10 +814,8 @@ void Courtroom::objection_done()
 
 void Courtroom::handle_chatmessage_2() // handles IC
 {
-  ui_vp_speedlines->stop();
-  ui_vp_player_char->stop();
-
   qDebug() << "handle_chatmessage_2";
+  ui_vp_player_char->stop();
 
   if (shout_delayed_reload_theme)
   {
@@ -908,19 +906,6 @@ void Courtroom::handle_chatmessage_3()
     // def jud and hlp should display the evidence icon on the RIGHT side
     bool is_left_side = !(f_side == "def" || f_side == "hlp" || f_side == "jud");
     ui_vp_evidence_display->show_evidence(f_image, is_left_side);
-  }
-
-  int emote_mod = m_chatmessage[CMEmoteModifier].toInt();
-
-  if (emote_mod == 5 || emote_mod == 6)
-  {
-    QString side = m_chatmessage[CMPosition];
-    ui_vp_desk->hide();
-
-    if (side == "pro" || side == "hlp" || side == "wit")
-      ui_vp_speedlines->play("prosecution_speedlines");
-    else
-      ui_vp_speedlines->play("defense_speedlines");
   }
 
   int f_anim_state = 0;
