@@ -13,6 +13,7 @@
 #include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aonotearea.h"
+#include "aonotepicker.h"
 #include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aoshoutplayer.h"
@@ -961,6 +962,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_note_area, "note_area", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_note_scroll_area, "note_area", COURTROOM_DESIGN_INI, ao_app);
   ui_note_scroll_area->setWidget(ui_note_area);
+
   ui_note_area->set_image("note_area.png");
   ui_note_area->add_button->set_image("add_button.png");
   ui_note_area->add_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -974,6 +976,17 @@ void Courtroom::set_widgets()
   {
     ui_note_area->m_layout->addWidget(ui_note_area->add_button);
     contains_add_button = true;
+  }
+
+  // This is used to force already existing notepicker elements to reset their image and theme setting
+  for (AONotePicker *notepicker : ui_note_area->findChildren<AONotePicker*>())
+  {
+    for (AOButton *button : notepicker->findChildren<AOButton*>())
+    {
+      button->refresh_image();
+    }
+    QLineEdit *f_line = notepicker->findChild<QLineEdit*>();
+    set_dropdown(f_line, "[LINE EDIT]");
   }
 
   adapt_numbered_items(ui_timers, "timer_number", "timer");

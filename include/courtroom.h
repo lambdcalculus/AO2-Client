@@ -132,11 +132,9 @@ public:
   // helper function that populates ui_music_list with the contents of
   // music_list
   void list_music();
-
   void list_areas();
 
   void list_note_files();
-
   void set_note_files();
 
   void move_widget(QWidget *p_widget, QString p_identifier);
