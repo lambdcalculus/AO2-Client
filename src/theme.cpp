@@ -70,16 +70,12 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
   }
   p_widget->setFont(QFont(font_name, f_weight));
 
-  QString font_color = ao_app->read_theme_ini(p_identifier + "_color", ini_file);
-  if (font_color.isEmpty())
-    font_color = "255, 255, 255";
-  QString color = "rgba(" + font_color + ", 255)";
-
+  const QColor l_font_color = ao_app->get_color(p_identifier + "_color", ini_file);
   int bold = ao_app->get_font_property(p_identifier + "_bold", ini_file);
   QString is_bold = (bold == 1 ? "bold" : "");
 
-  QString style_sheet_string = class_name + " { " + "background-color: rgba(0, 0, 0, 0);\n" + "color: " + color +
-                               ";\n" + "font: " + is_bold + ";" + " }";
+  QString style_sheet_string = class_name + " { " + "background-color: rgba(0, 0, 0, 0);\n" +
+                               "color: " + l_font_color.name(QColor::HexArgb) + ";\n" + "font: " + is_bold + ";" + " }";
   p_widget->setStyleSheet(style_sheet_string);
 }
 
