@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
+#include "aoconfig.h"
 #include "aoimagedisplay.h"
 #include "commondefs.h"
 #include "debug_functions.h"
@@ -38,6 +39,8 @@ void Courtroom::construct_char_select()
 
   connect(ui_chr_select_left, SIGNAL(clicked()), this, SLOT(on_char_select_left_clicked()));
   connect(ui_chr_select_right, SIGNAL(clicked()), this, SLOT(on_char_select_right_clicked()));
+
+  connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(update_character_icon(QString)));
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
 
@@ -125,10 +128,7 @@ void Courtroom::set_char_select_page()
   ui_chr_select_right->hide();
 
   for (AOCharButton *button : qAsConst(ui_char_button_list))
-  {
-    button->reset();
     button->hide();
-  }
 
   const int l_item_count = m_chr_list.length();
   const int l_page_count = qFloor(l_item_count / m_page_max_chr_count) + bool(l_item_count % m_page_max_chr_count);
@@ -147,15 +147,44 @@ void Courtroom::set_char_select_page()
   {
     int l_real_i = i + m_current_chr_page * m_page_max_chr_count;
     AOCharButton *l_button = ui_char_button_list.at(i);
-    l_button->set_image(m_chr_list.at(l_real_i).name);
+    const QString l_base_chr = m_chr_list.at(l_real_i).name;
+    l_button->set_character(l_base_chr, ao_config->character_ini(l_base_chr));
+    l_button->set_taken((m_chr_list.at(l_real_i).taken));
     l_button->show();
-    if (m_chr_list.at(l_real_i).taken)
-      l_button->set_taken();
+  }
+}
+
+void Courtroom::on_char_select_left_clicked()
+{
+  --m_current_chr_page;
+  set_char_select_page();
+}
+
+void Courtroom::on_char_select_right_clicked()
+{
+  ++m_current_chr_page;
+  set_char_select_page();
+}
+
+void Courtroom::update_character_icon(QString p_character)
+{
+  for (AOCharButton *i_button : qAsConst(ui_char_button_list))
+  {
+    if (i_button->character() != p_character)
+      continue;
+    i_button->set_character(p_character, ao_config->character_ini(p_character));
+    break;
   }
 }
 
 void Courtroom::char_clicked(int n_char)
 {
+  if (get_character() == ui_char_button_list.at(n_char)->character())
+  {
+    enter_courtroom(get_character_id());
+    return;
+  }
+
   int n_real_char = n_char + m_current_chr_page * m_page_max_chr_count;
 
   QString char_ini_path = ao_app->get_character_path(m_chr_list.at(n_real_char).name, CHARACTER_CHAR_INI);

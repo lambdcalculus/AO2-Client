@@ -153,7 +153,7 @@ void Courtroom::enter_courtroom(int p_cid)
   // unmute audio
   suppress_audio(false);
 
-  const QString l_prev_chr_name = get_current_character();
+  const QString l_prev_chr_name = get_character_ini();
 
   // character =================================================================
   const bool l_changed_chr_id = (m_chr_id != p_cid);
@@ -167,7 +167,7 @@ void Courtroom::enter_courtroom(int p_cid)
     l_current_field = ui_ooc_chat_message;
   const int l_current_cursor_pos = l_current_field->cursorPosition();
 
-  const QString l_chr_name = get_current_character();
+  const QString l_chr_name = get_character_ini();
   if (is_spectating())
   {
     ao_app->get_discord()->clear_character_name();
@@ -603,7 +603,7 @@ void Courtroom::on_ic_message_return_pressed()
 
   packet_contents.append(l_emote.anim);
 
-  packet_contents.append(get_current_character());
+  packet_contents.append(get_character_ini());
 
   if (ui_hidden->isChecked())
     packet_contents.append("../../misc/blank");
@@ -612,7 +612,7 @@ void Courtroom::on_ic_message_return_pressed()
 
   packet_contents.append(ui_ic_chat_message->text());
 
-  const QString l_side = ao_app->get_char_side(get_current_character());
+  const QString l_side = ao_app->get_char_side(get_character_ini());
   packet_contents.append(l_side);
 
   // sfx file
@@ -2255,18 +2255,6 @@ void Courtroom::on_back_to_lobby_clicked()
   ao_app->get_lobby()->list_servers();
   ao_app->get_lobby()->set_choose_a_server();
   ao_app->destruct_courtroom();
-}
-
-void Courtroom::on_char_select_left_clicked()
-{
-  --m_current_chr_page;
-  set_char_select_page();
-}
-
-void Courtroom::on_char_select_right_clicked()
-{
-  ++m_current_chr_page;
-  set_char_select_page();
 }
 
 void Courtroom::on_spectator_clicked()

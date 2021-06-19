@@ -1058,7 +1058,7 @@ void Courtroom::check_effects()
 
   for (int i = 0; i < ui_effects.size(); ++i)
   {
-    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_current_character(), effect_names.at(i))},
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), effect_names.at(i))},
                                            animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(effect_names.at(i), animated_extensions());
@@ -1078,7 +1078,7 @@ void Courtroom::check_free_blocks()
   for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
     QString path = ao_app->find_asset_path(
-        {ao_app->get_character_path(get_current_character(), free_block_names.at(i))}, animated_extensions());
+        {ao_app->get_character_path(get_character_ini(), free_block_names.at(i))}, animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(free_block_names.at(i), animated_extensions());
     free_blocks_enabled[i] = (!path.isEmpty());
@@ -1096,7 +1096,7 @@ void Courtroom::check_shouts()
 
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_current_character(), shout_names.at(i))},
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), shout_names.at(i))},
                                            animated_extensions());
 
     if (path.isEmpty())
@@ -1117,7 +1117,7 @@ void Courtroom::check_wtce()
 
   for (int i = 0; i < ui_wtce.size(); ++i)
   {
-    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_current_character(), wtce_names.at(i))},
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), wtce_names.at(i))},
                                            animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(wtce_names.at(i), animated_extensions());

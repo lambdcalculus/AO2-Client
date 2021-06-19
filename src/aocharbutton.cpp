@@ -5,6 +5,7 @@
 #include "file_functions.h"
 
 #include <QFile>
+#include <QLabel>
 
 AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos) : QPushButton(parent)
 {
@@ -13,6 +14,11 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, 
   this->resize(60, 60);
   this->move(x_pos, y_pos);
 
+  ui_character = new QLabel(this);
+  ui_character->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_character->resize(30, 30);
+  ui_character->move(28, 28);
+
   ui_taken = new AOImageDisplay(this, ao_app);
   ui_taken->resize(60, 60);
   ui_taken->set_image("char_taken.png");
@@ -20,22 +26,32 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, 
   ui_taken->hide();
 }
 
-void AOCharButton::reset()
+QString AOCharButton::character()
 {
-  ui_taken->hide();
+  return m_character;
 }
 
-void AOCharButton::set_taken()
+void AOCharButton::set_character(QString p_character, QString p_character_ini)
 {
-  ui_taken->show();
+  m_character = p_character;
+  const QString l_icon_path = ao_app->get_character_path(m_character, "char_icon.png");
+  const bool l_file_exist = file_exists(l_icon_path);
+  setStyleSheet(l_file_exist ? QString("AOCharButton { border-image: url(\"%1\");  }").arg(l_icon_path) : nullptr);
+  const QString l_final_character = QString(m_character).replace("&", "&&");
+  setText(l_file_exist ? nullptr : l_final_character);
+
+  const bool l_is_different_chr = m_character != p_character_ini;
+  if (l_is_different_chr)
+    ui_character->setStyleSheet(
+        QString("border-image: url(\"%1\");").arg(ao_app->get_character_path(p_character_ini, "char_icon.png")));
+  ui_character->setVisible(l_is_different_chr);
+  setToolTip(l_is_different_chr ? QString("%1 as %2").arg(m_character, QString(p_character_ini).replace("&", "&&"))
+                                : l_final_character);
 }
 
-void AOCharButton::set_image(QString p_character)
+void AOCharButton::set_taken(const bool p_enabled)
 {
-  const QString l_image = ao_app->get_character_path(p_character, "char_icon.png");
-  const bool l_file_exist = file_exists(l_image);
-  setStyleSheet(l_file_exist ? QString("border-image: url(\"%1\");").arg(l_image) : nullptr);
-  setText(l_file_exist ? nullptr : p_character.replace("&", "&&"));
+  ui_taken->setVisible(p_enabled);
 }
 
 void AOCharButton::enterEvent(QEvent *e)
