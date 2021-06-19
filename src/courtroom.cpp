@@ -1112,6 +1112,11 @@ void Courtroom::update_ic_log(bool p_reset_log)
   const QTextCharFormat &l_selfname_format = m_ic_log_format.selfname;
   const QTextCharFormat &l_system_format = m_ic_log_format.system;
 
+  QScrollBar *l_scrollbar = ui_ic_chatlog->verticalScrollBar();
+  const int l_scroll_pos = l_scrollbar->value();
+  const bool l_is_end_scroll_pos = p_reset_log || (l_topdown_orientation ? l_scroll_pos == l_scrollbar->maximum()
+                                                                         : l_scroll_pos == l_scrollbar->minimum());
+
   while (!m_ic_record_queue.isEmpty())
   {
     const DRChatRecord l_record = m_ic_record_queue.takeFirst();
@@ -1174,6 +1179,9 @@ void Courtroom::update_ic_log(bool p_reset_log)
       l_cursor.removeSelectedText();
     }
   }
+
+  if (l_is_end_scroll_pos)
+    l_scrollbar->setValue(l_topdown_orientation ? l_scrollbar->maximum() : l_scrollbar->minimum());
 }
 
 void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, bool p_self)
