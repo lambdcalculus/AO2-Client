@@ -39,7 +39,7 @@ bool AOCharMovie::play(QString p_chr, QString p_emote, QString p_prefix, bool p_
   for (const QString &i_chr : ao_app->get_char_include_tree(p_chr))
   {
     if (!p_prefix.isEmpty())
-      l_file_list.append(ao_app->get_character_path(i_chr, QString("%1%2").arg(p_emote, p_prefix)));
+      l_file_list.append(ao_app->get_character_path(i_chr, QString("%1%2").arg(p_prefix, p_emote)));
     l_file_list.append(ao_app->get_character_path(i_chr, p_emote));
   }
 
