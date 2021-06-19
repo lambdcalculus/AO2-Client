@@ -1130,7 +1130,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
       l_cursor.insertText(l_linefeed + QString(l_use_newline ? l_linefeed : nullptr), l_text_format);
     l_log_is_empty = false;
 
-    if (!ao_config->log_is_topdown_enabled())
+    if (!l_topdown_orientation)
       l_cursor.movePosition(move_type);
 
     // self-highlight check
@@ -1162,13 +1162,17 @@ void Courtroom::update_ic_log(bool p_reset_log)
     const int l_max_block_count = m_ic_record_list.length() * (1 + l_use_newline) +
                                   (l_use_newline * (m_ic_record_list.length() - 1)) + !l_topdown_orientation;
     const QTextCursor::MoveOperation l_orientation = l_topdown_orientation ? QTextCursor::Start : QTextCursor::End;
-
-    l_cursor.movePosition(l_orientation);
     const QTextCursor::MoveOperation l_block_orientation =
         l_topdown_orientation ? QTextCursor::NextBlock : QTextCursor::PreviousBlock;
-    for (int i = 0, i_max = ui_ic_chatlog->document()->blockCount() - l_max_block_count; i < i_max; ++i)
-      l_cursor.movePosition(l_block_orientation, QTextCursor::KeepAnchor);
-    l_cursor.removeSelectedText();
+
+    const int l_remove_block_count = ui_ic_chatlog->document()->blockCount() - l_max_block_count;
+    if (l_remove_block_count > 0)
+    {
+      l_cursor.movePosition(l_orientation);
+      for (int i = 0; i < l_remove_block_count; ++i)
+        l_cursor.movePosition(l_block_orientation, QTextCursor::KeepAnchor);
+      l_cursor.removeSelectedText();
+    }
   }
 }
 
