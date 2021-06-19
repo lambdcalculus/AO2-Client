@@ -1052,9 +1052,9 @@ void Courtroom::on_chat_config_changed()
 void Courtroom::load_ic_text_format()
 {
   ui_ic_chatlog->ensurePolished();
-  m_ic_log_format.text = QTextCharFormat();
-  m_ic_log_format.text.setFont(ui_ic_chatlog->font());
-  m_ic_log_format.text.setForeground(ui_ic_chatlog->palette().color(ui_ic_chatlog->foregroundRole()));
+  m_ic_log_format.base = QTextCharFormat();
+  m_ic_log_format.base.setFont(ui_ic_chatlog->font());
+  m_ic_log_format.base.setForeground(ui_ic_chatlog->palette().color(ui_ic_chatlog->foregroundRole()));
 
   auto set_format_color = [this](const QString &f_identifier, QTextCharFormat &f_format) {
     if (const std::optional<QColor> l_color =
@@ -1067,14 +1067,17 @@ void Courtroom::load_ic_text_format()
       f_format.setFontWeight(QFont::Bold);
   };
 
-  m_ic_log_format.name = m_ic_log_format.text;
+  m_ic_log_format.name = m_ic_log_format.base;
   set_format_color("showname", m_ic_log_format.name);
 
   m_ic_log_format.selfname = m_ic_log_format.name;
   if (ao_config->log_display_self_highlight_enabled())
     set_format_color("selfname", m_ic_log_format.selfname);
 
-  m_ic_log_format.system = m_ic_log_format.text;
+  m_ic_log_format.message = m_ic_log_format.base;
+  set_format_color("message", m_ic_log_format.message);
+
+  m_ic_log_format.system = m_ic_log_format.base;
   set_format_color("system", m_ic_log_format.system);
 }
 
@@ -1105,9 +1108,9 @@ void Courtroom::update_ic_log(bool p_reset_log)
   QTextCursor l_cursor = ui_ic_chatlog->textCursor();
   const QTextCursor::MoveOperation move_type = l_topdown_orientation ? QTextCursor::End : QTextCursor::Start;
 
-  const QTextCharFormat &l_text_format = m_ic_log_format.text;
   const QTextCharFormat &l_name_format = m_ic_log_format.name;
   const QTextCharFormat &l_selfname_format = m_ic_log_format.selfname;
+  const QTextCharFormat &l_message_format = m_ic_log_format.message;
   const QTextCharFormat &l_system_format = m_ic_log_format.system;
 
   QScrollBar *l_scrollbar = ui_ic_chatlog->verticalScrollBar();
@@ -1130,7 +1133,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
 
     const QString l_linefeed(QChar::LineFeed);
     if (!l_log_is_empty)
-      l_cursor.insertText(l_linefeed + QString(l_use_newline ? l_linefeed : nullptr), l_text_format);
+      l_cursor.insertText(l_linefeed + QString(l_use_newline ? l_linefeed : nullptr), l_message_format);
     l_log_is_empty = false;
 
     if (!l_topdown_orientation)
@@ -1157,7 +1160,7 @@ void Courtroom::update_ic_log(bool p_reset_log)
       else
         l_separator = " ";
       l_cursor.insertText(l_record.get_name() + l_separator, l_target_name_format);
-      l_cursor.insertText(l_record.get_message(), l_text_format);
+      l_cursor.insertText(l_record.get_message(), l_message_format);
     }
   }
 

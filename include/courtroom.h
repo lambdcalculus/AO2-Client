@@ -166,9 +166,10 @@ public:
 
   struct IcLogTextFormat
   {
-    QTextCharFormat text;
+    QTextCharFormat base;
     QTextCharFormat name;
     QTextCharFormat selfname;
+    QTextCharFormat message;
     QTextCharFormat system;
   };
   IcLogTextFormat m_ic_log_format;
