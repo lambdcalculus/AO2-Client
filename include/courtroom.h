@@ -114,8 +114,8 @@ public:
   QString get_background_path(QString p_file);
 
 public:
-  QString get_base_character();
-  QString get_current_character();
+  QString get_character();
+  QString get_character_ini();
   void update_iniswap_list();
   void update_default_iniswap_item();
   void select_base_character_iniswap();
@@ -673,6 +673,7 @@ private slots:
 
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
+  void update_character_icon(QString character);
   void char_clicked(int n_char);
   void char_mouse_entered(AOCharButton *p_caller);
   void char_mouse_left();

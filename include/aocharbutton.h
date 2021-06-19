@@ -6,6 +6,8 @@ class AOImageDisplay;
 
 #include <QPushButton>
 
+class QLabel;
+
 class AOCharButton : public QPushButton
 {
   Q_OBJECT
@@ -13,9 +15,9 @@ class AOCharButton : public QPushButton
 public:
   AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos);
 
-  void reset();
-  void set_taken();
-  void set_image(QString p_character);
+  QString character();
+  void set_character(QString character, QString ini_character);
+  void set_taken(const bool);
 
 signals:
   void mouse_entered(AOCharButton *p_caller);
@@ -28,6 +30,9 @@ protected:
 private:
   AOApplication *ao_app = nullptr;
 
+  QString m_character;
+
+  QLabel *ui_character = nullptr;
   AOImageDisplay *ui_taken = nullptr;
 };
 

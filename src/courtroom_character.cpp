@@ -23,14 +23,14 @@ void Courtroom::set_character_id(const int p_chr_id)
   Q_EMIT character_id_changed(m_chr_id);
 }
 
-QString Courtroom::get_base_character()
+QString Courtroom::get_character()
 {
   return is_spectating() ? nullptr : m_chr_list.at(m_chr_id).name;
 }
 
-QString Courtroom::get_current_character()
+QString Courtroom::get_character_ini()
 {
-  return ao_config->character_ini(get_base_character());
+  return ao_config->character_ini(get_character());
 }
 
 namespace
@@ -79,13 +79,13 @@ void Courtroom::update_iniswap_list()
 
 void Courtroom::update_default_iniswap_item()
 {
-  drSetItemIcon(ui_iniswap_dropdown, 0, get_base_character(), ao_app);
+  drSetItemIcon(ui_iniswap_dropdown, 0, get_character(), ao_app);
 }
 
 void Courtroom::select_base_character_iniswap()
 {
-  const QString l_current_chr = get_current_character();
-  if (get_base_character() == l_current_chr)
+  const QString l_current_chr = get_character_ini();
+  if (get_character() == l_current_chr)
   {
     ui_iniswap_dropdown->setCurrentIndex(0);
     return;
@@ -95,6 +95,6 @@ void Courtroom::select_base_character_iniswap()
 
 void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
-  ao_config->set_character_ini(get_base_character(),
-                               p_index == 0 ? get_base_character() : ui_iniswap_dropdown->itemText(p_index));
+  ao_config->set_character_ini(get_character(),
+                               p_index == 0 ? get_character() : ui_iniswap_dropdown->itemText(p_index));
 }

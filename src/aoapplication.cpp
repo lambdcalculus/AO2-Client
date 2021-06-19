@@ -214,7 +214,7 @@ QString AOApplication::get_current_char()
 {
   if (!is_courtroom_constructed)
     return nullptr;
-  return m_courtroom->get_current_character();
+  return m_courtroom->get_character_ini();
 }
 
 /**
