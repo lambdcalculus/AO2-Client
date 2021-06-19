@@ -51,9 +51,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   m_reload_timer->setInterval(200);
   m_reload_timer->setSingleShot(true);
   connect(m_reload_timer, SIGNAL(timeout()), this, SLOT(on_app_reload_theme_requested()));
-  connect(ao_config, SIGNAL(theme_changed(QString)), m_reload_timer, SLOT(start()));
-  connect(ao_config, SIGNAL(gamemode_changed(QString)), m_reload_timer, SLOT(start()));
-  connect(ao_config, SIGNAL(timeofday_changed(QString)), m_reload_timer, SLOT(start()));
+  connect(ao_app, SIGNAL(reload_theme()), m_reload_timer, SLOT(start()));
 
   create_widgets();
   connect_widgets();
