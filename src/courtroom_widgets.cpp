@@ -149,11 +149,11 @@ void Courtroom::create_widgets()
   ui_note_area = new AONoteArea(this, ao_app);
   ui_note_area->add_button = new AOButton(ui_note_area, ao_app);
   ui_note_area->m_layout = new QVBoxLayout(ui_note_area);
-  ui_note_scroll_area = new QScrollArea(this);
 
-  ui_note_scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  ui_note_scroll_area = new QScrollArea(this);
+  ui_note_scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_note_scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  ui_note_scroll_area->setWidgetResizable(false);
+  ui_note_scroll_area->setWidgetResizable(true);
 
   ui_set_notes = new AOButton(this, ao_app);
 
@@ -661,11 +661,11 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_FONTS_INI, ao_app);
-  ui_ooc_chat_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ooc_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_FONTS_INI, ao_app);
-  ui_ooc_chat_name->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+  ui_ooc_chat_name->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
 
   set_size_and_pos(ui_music_search, "music_search", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_music_search, "music_search", COURTROOM_FONTS_INI, ao_app);
@@ -821,12 +821,12 @@ void Courtroom::set_widgets()
       ui_note_button->setText("Notes");
   }
 
-  // The config panel has a special property. If it is displayed beyond the
-  // right or lower limit of the window, it will be moved to 0, 0 A similar
-  // behavior will occur if the button is hidden due to 'config_panel' not being
-  // found in courtroom_design.ini This is to assist with people who switch to
-  // incompatible and/or smaller themes and have the button disappear
-  if (ui_config_panel->x() > width() || ui_config_panel->y() > height())
+  // The config panel has a special property. If it is displayed beyond the right or lower limit of the window, it will
+  // be moved to 0, 0 A similar behavior will occur if the button is resized to 0, 0 due to 'config_panel' not being
+  // found in courtroom_design.ini This is to assist with people who switch to incompatible and/or smaller themes and
+  // have the button disappear
+  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() || ui_config_panel->width() <= 0
+      || ui_config_panel->height() <= 0)
   {
     ui_config_panel->setVisible(true);
     ui_config_panel->move(0, 0);
@@ -990,7 +990,9 @@ void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
     qDebug() << "W: could not find \"" << p_identifier << "\" in " << filename;
-    p_widget->hide();
+    // Don't hide, as some widgets don't have a built-in way of reappearing again.
+    p_widget->move(0, 0);
+    p_widget->resize(0, 0);
   }
   else
   {

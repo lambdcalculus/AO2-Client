@@ -43,7 +43,7 @@ void Courtroom::on_add_button_clicked()
 
   f_line->setReadOnly(true);
 
-  f_layout->setSizeConstraint(QLayout::SetFixedSize);
+  f_layout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
   f_layout->addWidget(f_hover);
   f_layout->addWidget(f_line);

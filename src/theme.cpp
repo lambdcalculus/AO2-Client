@@ -18,7 +18,9 @@ void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_ini_fil
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
     qDebug() << "W: could not find \"" << p_identifier << "\" in " << p_ini_file;
-    p_widget->hide();
+    // Don't hide, as some widgets don't have a built-in way of reappearing again.
+    p_widget->move(0, 0);
+    p_widget->resize(0, 0);
   }
   else
   {
