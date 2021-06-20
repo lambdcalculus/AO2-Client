@@ -13,6 +13,7 @@
 #include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aonotearea.h"
+#include "aonotepicker.h"
 #include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aoshoutplayer.h"
@@ -50,12 +51,6 @@ void Courtroom::create_widgets()
   m_flash_timer = new QTimer(this);
   m_flash_timer->setSingleShot(true);
 
-  m_testimony_show_timer = new QTimer(this);
-  m_testimony_show_timer->setSingleShot(true);
-
-  m_testimony_hide_timer = new QTimer(this);
-  m_testimony_hide_timer->setSingleShot(true);
-
   char_button_mapper = new QSignalMapper(this);
 
   m_system_player = new AOSystemPlayer(ao_app, this);
@@ -68,8 +63,6 @@ void Courtroom::create_widgets()
 
   ui_viewport = new QWidget(this);
   ui_vp_background = new AOScene(ui_viewport, ao_app);
-  ui_vp_speedlines = new AOMovie(ui_viewport, ao_app);
-  ui_vp_speedlines->set_play_once(false);
   ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
   ui_vp_desk = new AOScene(ui_viewport, ao_app);
 
@@ -103,7 +96,6 @@ void Courtroom::create_widgets()
 
   ui_vp_showname_image = new AOImageDisplay(this, ao_app);
 
-  ui_vp_testimony = new AOImageDisplay(this, ao_app);
   ui_vp_effect = new AOMovie(this, ao_app);
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
@@ -258,9 +250,6 @@ void Courtroom::connect_widgets()
 
   connect(m_flash_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
-  connect(m_testimony_show_timer, SIGNAL(timeout()), this, SLOT(hide_testimony()));
-  connect(m_testimony_hide_timer, SIGNAL(timeout()), this, SLOT(show_testimony()));
-
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 
@@ -344,7 +333,6 @@ void Courtroom::reset_widget_names()
       {"courtroom", this},
       {"viewport", ui_viewport},
       {"background", ui_vp_background},   //*
-      {"speedlines", ui_vp_speedlines},   //*
       {"player_char", ui_vp_player_char}, //*
       {"desk", ui_vp_desk},               //*
       {"music_display_a", ui_vp_music_display_a},
@@ -358,7 +346,6 @@ void Courtroom::reset_widget_names()
       {"showname", ui_vp_showname},
       {"message", ui_vp_message},
       {"showname_image", ui_vp_showname_image},
-      {"vp_testimony", ui_vp_testimony},
       {"vp_effect", ui_vp_effect},
       {"vp_wtce", ui_vp_wtce},
       {"vp_objection", ui_vp_objection},
@@ -574,9 +561,6 @@ void Courtroom::set_widgets()
   ui_vp_background->move(0, 0);
   ui_vp_background->combo_resize(ui_viewport->size());
 
-  ui_vp_speedlines->move(0, 0);
-  ui_vp_speedlines->combo_resize(ui_viewport->width(), ui_viewport->height());
-
   ui_vp_player_char->move(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->size());
 
@@ -603,11 +587,6 @@ void Courtroom::set_widgets()
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
-
-  ui_vp_testimony->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_testimony->resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_testimony->set_image("testimony.png");
-  ui_vp_testimony->hide();
 
   ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_effect->resize(ui_viewport->width(), ui_viewport->height());
@@ -963,6 +942,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_note_area, "note_area", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_note_scroll_area, "note_area", COURTROOM_DESIGN_INI, ao_app);
   ui_note_scroll_area->setWidget(ui_note_area);
+
   ui_note_area->set_image("note_area.png");
   ui_note_area->add_button->set_image("add_button.png");
   ui_note_area->add_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -976,6 +956,17 @@ void Courtroom::set_widgets()
   {
     ui_note_area->m_layout->addWidget(ui_note_area->add_button);
     contains_add_button = true;
+  }
+
+  // This is used to force already existing notepicker elements to reset their image and theme setting
+  for (AONotePicker *notepicker : ui_note_area->findChildren<AONotePicker*>())
+  {
+    for (AOButton *button : notepicker->findChildren<AOButton*>())
+    {
+      button->refresh_image();
+    }
+    QLineEdit *f_line = notepicker->findChild<QLineEdit*>();
+    set_dropdown(f_line, "[LINE EDIT]");
   }
 
   adapt_numbered_items(ui_timers, "timer_number", "timer");

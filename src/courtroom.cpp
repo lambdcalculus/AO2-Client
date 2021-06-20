@@ -132,8 +132,6 @@ void Courtroom::setup_courtroom()
   list_music();
   list_areas();
 
-  is_testimony_in_progress = false;
-
   set_widget_names();
   set_widget_layers();
 
@@ -245,9 +243,6 @@ void Courtroom::set_window_title(QString p_title)
 
 void Courtroom::set_scene()
 {
-  if (is_testimony_in_progress)
-    show_testimony();
-
   // witness is default if pos is invalid
   QString f_background = "witnessempty";
   QString f_desk_image = "stand";
@@ -338,7 +333,6 @@ void Courtroom::set_taken(int n_char, bool p_taken)
 
 void Courtroom::set_background(QString p_background)
 {
-  is_testimony_in_progress = false;
   current_background = p_background;
 }
 
@@ -815,10 +809,8 @@ void Courtroom::objection_done()
 
 void Courtroom::handle_chatmessage_2() // handles IC
 {
-  ui_vp_speedlines->stop();
-  ui_vp_player_char->stop();
-
   qDebug() << "handle_chatmessage_2";
+  ui_vp_player_char->stop();
 
   if (shout_delayed_reload_theme)
   {
@@ -909,19 +901,6 @@ void Courtroom::handle_chatmessage_3()
     // def jud and hlp should display the evidence icon on the RIGHT side
     bool is_left_side = !(f_side == "def" || f_side == "hlp" || f_side == "jud");
     ui_vp_evidence_display->show_evidence(f_image, is_left_side);
-  }
-
-  int emote_mod = m_chatmessage[CMEmoteModifier].toInt();
-
-  if (emote_mod == 5 || emote_mod == 6)
-  {
-    QString side = m_chatmessage[CMPosition];
-    ui_vp_desk->hide();
-
-    if (side == "pro" || side == "hlp" || side == "wit")
-      ui_vp_speedlines->play("prosecution_speedlines");
-    else
-      ui_vp_speedlines->play("defense_speedlines");
   }
 
   int f_anim_state = 0;
@@ -1491,26 +1470,6 @@ void Courtroom::post_chat()
   m_message_color_stack.clear();
 }
 
-void Courtroom::show_testimony()
-{
-  if (!is_testimony_in_progress || m_chatmessage[CMPosition] != "wit")
-    return;
-
-  ui_vp_testimony->show();
-
-  m_testimony_show_timer->start(TESTIMONY_SHOW_INTERVAL);
-}
-
-void Courtroom::hide_testimony()
-{
-  ui_vp_testimony->hide();
-
-  if (!is_testimony_in_progress)
-    return;
-
-  m_testimony_hide_timer->start(TESTIMONY_HIDE_INTERVAL);
-}
-
 void Courtroom::play_sfx()
 {
   const QString l_effect = m_chatmessage[CMSoundName];
@@ -1635,12 +1594,6 @@ void Courtroom::handle_wtce(QString p_wtce)
     {
       m_effects_player->play_effect(ao_app->get_sfx(wtce_names[index - 1]));
       ui_vp_wtce->play(wtce_names[index - 1]);
-      if (index == 1)
-      {
-        is_testimony_in_progress = true;
-      }
-      else if (index == 2)
-        is_testimony_in_progress = false;
     }
   }
 }
@@ -2092,26 +2045,6 @@ void Courtroom::on_prosecution_plus_clicked()
 void Courtroom::on_text_color_changed(int p_color)
 {
   m_text_color = p_color;
-  ui_ic_chat_message->setFocus();
-}
-
-void Courtroom::on_witness_testimony_clicked()
-{
-  if (is_client_muted)
-    return;
-
-  ao_app->send_server_packet(DRPacket("RT", {"testimony1"}));
-
-  ui_ic_chat_message->setFocus();
-}
-
-void Courtroom::on_cross_examination_clicked()
-{
-  if (is_client_muted)
-    return;
-
-  ao_app->send_server_packet(DRPacket("RT", {"testimony2"}));
-
   ui_ic_chat_message->setFocus();
 }
 

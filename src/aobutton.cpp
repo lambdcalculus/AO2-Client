@@ -23,6 +23,7 @@ bool AOButton::has_image()
 
 void AOButton::set_image(QString p_image)
 {
+  m_image_stem = p_image;
   m_image = ao_app->find_theme_asset_path(p_image);
   // Get the path of the found image without the extension
   const QString l_image_name = p_image.left(p_image.lastIndexOf(QChar('.')));
@@ -43,4 +44,9 @@ void AOButton::set_image(QString p_image)
     m_image = "";
     this->setStyleSheet("border-image:url(\"" + m_image + "\")");
   }
+}
+
+void AOButton::refresh_image()
+{
+  set_image(m_image_stem);
 }

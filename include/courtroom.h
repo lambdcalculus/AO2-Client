@@ -133,11 +133,9 @@ public:
   // helper function that populates ui_music_list with the contents of
   // music_list
   void list_music();
-
   void list_areas();
 
   void list_note_files();
-
   void set_note_files();
 
   void move_widget(QWidget *p_widget, QString p_identifier);
@@ -197,8 +195,7 @@ public:
 
   void play_preanim();
 
-  // plays the witness testimony or cross examination animation based on
-  // argument
+  // plays a splash animation based on the argument
   void handle_wtce(QString p_wtce);
 
   // sets the hp bar of defense(p_bar 1) or pro(p_bar 2)
@@ -267,15 +264,6 @@ private:
   // keeps track of how long realization is visible(it's just a white square and
   // should be visible less than a second)
   QTimer *m_flash_timer = nullptr;
-
-  // times how long the blinking testimony should be shown(green one in the
-  // corner)
-  static const int TESTIMONY_SHOW_INTERVAL = 1500;
-  QTimer *m_testimony_show_timer = nullptr;
-  // times how long the blinking testimony should be hidden
-  static const int TESTIMONY_HIDE_INTERVAL = 500;
-  QTimer *m_testimony_hide_timer = nullptr;
-  bool is_testimony_in_progress = false;
 
   // Generate a File Name based on the time you launched the client
   QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
@@ -357,7 +345,6 @@ private:
 
   QWidget *ui_viewport = nullptr;
   AOScene *ui_vp_background = nullptr;
-  AOMovie *ui_vp_speedlines = nullptr;
   AOCharMovie *ui_vp_player_char = nullptr;
   AOScene *ui_vp_desk = nullptr;
   AOEvidenceDisplay *ui_vp_evidence_display = nullptr;
@@ -370,7 +357,6 @@ private:
   AOImageDisplay *ui_vp_chatbox = nullptr;
   DRTextEdit *ui_vp_showname = nullptr;
   DRTextEdit *ui_vp_message = nullptr;
-  AOImageDisplay *ui_vp_testimony = nullptr;
   AOMovie *ui_vp_effect = nullptr;
   AOMovie *ui_vp_wtce = nullptr;
   AOMovie *ui_vp_objection = nullptr;
@@ -461,11 +447,6 @@ private:
   QVector<bool> effects_enabled;
   QVector<bool> wtce_enabled;
   QVector<bool> free_blocks_enabled;
-
-  AOButton *ui_witness_testimony = nullptr;
-  AOButton *ui_cross_examination = nullptr;
-  AOButton *ui_investigation = nullptr;
-  AOButton *ui_nonstop = nullptr;
 
   AOButton *ui_change_character = nullptr;
   AOButton *ui_call_mod = nullptr;
@@ -568,9 +549,6 @@ public slots:
 
   void realization_done();
 
-  void show_testimony();
-  void hide_testimony();
-
   void mod_called(QString p_ip);
 
 private slots:
@@ -655,8 +633,6 @@ private slots:
 
   void on_text_color_changed(int p_color);
 
-  void on_witness_testimony_clicked();
-  void on_cross_examination_clicked();
   void reset_wtce_buttons();
   void on_wtce_clicked();
 
