@@ -51,9 +51,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   m_reload_timer->setInterval(200);
   m_reload_timer->setSingleShot(true);
   connect(m_reload_timer, SIGNAL(timeout()), this, SLOT(on_app_reload_theme_requested()));
-  connect(ao_config, SIGNAL(theme_changed(QString)), m_reload_timer, SLOT(start()));
-  connect(ao_config, SIGNAL(gamemode_changed(QString)), m_reload_timer, SLOT(start()));
-  connect(ao_config, SIGNAL(timeofday_changed(QString)), m_reload_timer, SLOT(start()));
+  connect(ao_app, SIGNAL(reload_theme()), m_reload_timer, SLOT(start()));
 
   create_widgets();
   connect_widgets();
@@ -93,9 +91,6 @@ void Courtroom::setup_courtroom()
   load_wtce();
   load_free_blocks();
   load_sfx_list_theme();
-
-  // setup chat
-  update_ic_log(true);
 
   current_evidence_page = 0;
   current_evidence = 0;
@@ -1054,201 +1049,140 @@ void Courtroom::on_chat_config_changed()
   update_ic_log(true);
 }
 
+void Courtroom::load_ic_text_format()
+{
+  ui_ic_chatlog->ensurePolished();
+  m_ic_log_format.base = QTextCharFormat();
+  m_ic_log_format.base.setFont(ui_ic_chatlog->font());
+  m_ic_log_format.base.setForeground(ui_ic_chatlog->palette().color(ui_ic_chatlog->foregroundRole()));
+
+  auto set_format_color = [this](const QString &f_identifier, QTextCharFormat &f_format) {
+    if (const std::optional<QColor> l_color =
+            ao_app->maybe_color(QString("ic_chatlog_%1_color").arg(f_identifier), COURTROOM_FONTS_INI);
+        l_color.has_value())
+      f_format.setForeground(l_color.value());
+
+    if (const bool l_is_bold =
+            ao_app->get_font_property(QString("ic_chatlog_%1_bold").arg(f_identifier), COURTROOM_FONTS_INI))
+      f_format.setFontWeight(QFont::Bold);
+  };
+
+  m_ic_log_format.name = m_ic_log_format.base;
+  set_format_color("showname", m_ic_log_format.name);
+
+  m_ic_log_format.selfname = m_ic_log_format.name;
+  if (ao_config->log_display_self_highlight_enabled())
+    set_format_color("selfname", m_ic_log_format.selfname);
+
+  m_ic_log_format.message = m_ic_log_format.base;
+  set_format_color("message", m_ic_log_format.message);
+
+  m_ic_log_format.system = m_ic_log_format.base;
+  set_format_color("system", m_ic_log_format.system);
+}
+
 void Courtroom::update_ic_log(bool p_reset_log)
 {
-  // resize if needed
-  const int record_count = m_ic_record_list.length() + m_ic_record_queue.length();
-  if (record_count > ao_config->log_max_lines())
-    m_ic_record_list = m_ic_record_list.mid(record_count - ao_config->log_max_lines());
+  if (const int l_record_count = m_ic_record_list.length() + m_ic_record_queue.length();
+      l_record_count > ao_config->log_max_lines())
+    m_ic_record_list = m_ic_record_list.mid(l_record_count - ao_config->log_max_lines());
 
-  if (p_reset_log)
+  if (p_reset_log || ao_config->log_max_lines() == 1)
   {
-    // Turn off auto align. That is because we are going to be performing a lot of text change operations
-    // but we don't necessarily care the intermediate states are not aligned
-    ui_ic_chatlog->set_auto_align(false);
-    // we need all recordings
-    QQueue<DRChatRecord> new_queue;
-    while (!m_ic_record_list.isEmpty())
-      new_queue.append(m_ic_record_list.takeFirst());
-    new_queue.append(m_ic_record_queue);
-    m_ic_record_queue = std::move(new_queue);
+    if (p_reset_log)
+    {
+      load_ic_text_format();
+      QQueue<DRChatRecord> l_new_queue;
+      dynamic_cast<QList<DRChatRecord> &>(l_new_queue) = std::move(m_ic_record_list);
+      l_new_queue.append(std::move(m_ic_record_queue));
+      m_ic_record_queue = std::move(l_new_queue);
+    }
 
-    // clear log
     ui_ic_chatlog->clear();
-    ui_ic_chatlog->realign_text();
+    ui_ic_chatlog->setAlignment(ui_ic_chatlog->get_text_alignment());
   }
+  bool l_log_is_empty = m_ic_record_list.length() == 0;
 
-  // prepare the formats we need
-  // default color
-  QColor default_color = ao_app->get_color("ic_chatlog_color", COURTROOM_FONTS_INI);
-  QColor not_found_color = QColor(255, 255, 255);
+  const bool l_topdown_orientation = ao_config->log_is_topdown_enabled();
+  const bool l_use_newline = ao_config->log_format_use_newline_enabled();
+  QTextCursor l_cursor = ui_ic_chatlog->textCursor();
+  const QTextCursor::MoveOperation move_type = l_topdown_orientation ? QTextCursor::End : QTextCursor::Start;
 
-  QTextCharFormat name_format = ui_ic_chatlog->currentCharFormat();
-  if (ao_app->get_font_property("ic_chatlog_bold", COURTROOM_FONTS_INI))
-    name_format.setFontWeight(QFont::Bold);
-  else
-    name_format.setFontWeight(QFont::Normal);
+  const QTextCharFormat &l_name_format = m_ic_log_format.name;
+  const QTextCharFormat &l_selfname_format = m_ic_log_format.selfname;
+  const QTextCharFormat &l_message_format = m_ic_log_format.message;
+  const QTextCharFormat &l_system_format = m_ic_log_format.system;
 
-  QColor showname_color = ao_app->get_color("ic_chatlog_showname_color", COURTROOM_FONTS_INI);
-  if (showname_color == not_found_color)
-    showname_color = default_color;
-  name_format.setForeground(showname_color);
-
-  QTextCharFormat selfname_format = name_format;
-
-  if (ao_config->log_display_self_highlight_enabled())
-  {
-    QColor selfname_color = ao_app->get_color("ic_chatlog_selfname_color", COURTROOM_FONTS_INI);
-    if (selfname_color == not_found_color)
-      selfname_color = showname_color;
-    selfname_format.setForeground(selfname_color);
-  }
-
-  QTextCharFormat line_format = ui_ic_chatlog->currentCharFormat();
-  line_format.setFontWeight(QFont::Normal);
-  QColor message_color = ao_app->get_color("ic_chatlog_message_color", COURTROOM_FONTS_INI);
-  if (message_color == not_found_color)
-    message_color = default_color;
-  line_format.setForeground(message_color);
-
-  QTextCharFormat system_format = ui_ic_chatlog->currentCharFormat();
-  system_format.setFontWeight(QFont::Normal);
-  QColor system_color = ao_app->get_color("ic_chatlog_system_color", COURTROOM_FONTS_INI);
-  if (system_color == not_found_color)
-    system_color = not_found_color;
-  system_format.setForeground(system_color);
-
-  // need vscroll bar for cache
-  QScrollBar *vscrollbar = ui_ic_chatlog->verticalScrollBar();
-
-  // format values
-  const bool chatlog_scrolldown = ao_config->log_is_topdown_enabled();
-  const bool chatlog_newline = ao_config->log_format_use_newline_enabled();
-
-  // cache previous values
-  const QTextCursor prev_cursor = ui_ic_chatlog->textCursor();
-  const int scroll_pos = vscrollbar->value();
-  const bool is_scrolled =
-      chatlog_scrolldown ? scroll_pos == vscrollbar->maximum() : scroll_pos == vscrollbar->minimum();
-
-  // recover cursor
-  QTextCursor cursor = ui_ic_chatlog->textCursor();
-  // figure out if we need to move up or down
-  const QTextCursor::MoveOperation move_type = chatlog_scrolldown ? QTextCursor::End : QTextCursor::Start;
+  QScrollBar *l_scrollbar = ui_ic_chatlog->verticalScrollBar();
+  const int l_scroll_pos = l_scrollbar->value();
+  const bool l_is_end_scroll_pos = p_reset_log || (l_topdown_orientation ? l_scroll_pos == l_scrollbar->maximum()
+                                                                         : l_scroll_pos == l_scrollbar->minimum());
 
   while (!m_ic_record_queue.isEmpty())
   {
-    DRChatRecord record = m_ic_record_queue.takeFirst();
-    m_ic_record_list.append(record);
-    const QTextCharFormat l_record_name_format = record.is_self() ? selfname_format : name_format;
+    const DRChatRecord l_record = m_ic_record_queue.takeFirst();
+    m_ic_record_list.append(l_record);
 
-    if (record.get_message().trimmed().isEmpty() && !ao_config->log_display_empty_messages_enabled())
+    if (!ao_config->log_display_empty_messages_enabled() && l_record.get_message().trimmed().isEmpty())
       continue;
 
-    if (record.is_music() && !ao_config->log_display_music_switch_enabled())
+    if (!ao_config->log_display_music_switch_enabled() && l_record.is_music())
       continue;
 
-    // move cursor
-    cursor.movePosition(move_type);
+    l_cursor.movePosition(move_type);
 
-    const QString record_end = (QString(QChar::LineFeed) + (chatlog_newline ? QString(QChar::LineFeed) : ""));
+    const QString l_linefeed(QChar::LineFeed);
+    if (!l_log_is_empty)
+      l_cursor.insertText(l_linefeed + QString(l_use_newline ? l_linefeed : nullptr), l_message_format);
+    l_log_is_empty = false;
+
+    if (!l_topdown_orientation)
+      l_cursor.movePosition(move_type);
+
+    // self-highlight check
+    const QTextCharFormat &l_target_name_format =
+        (l_record.is_self() && ao_config->log_display_self_highlight_enabled()) ? l_selfname_format : l_name_format;
 
     if (ao_config->log_display_timestamp_enabled())
-      cursor.insertText(QString("[%1] ").arg(record.get_timestamp().toString("hh:mm")), l_record_name_format);
+      l_cursor.insertText(QString("[%1] ").arg(l_record.get_timestamp().toString("hh:mm")), l_target_name_format);
 
-    if (record.is_system())
+    if (l_record.is_system())
     {
-      cursor.insertText(record.get_message() + record_end, system_format);
+      l_cursor.insertText(l_record.get_message(), l_system_format);
     }
     else
     {
-      QString separator;
-      if (chatlog_newline)
-        separator = QString(QChar::LineFeed);
-      else if (!record.is_music())
-        separator = ": ";
+      QString l_separator;
+      if (l_use_newline)
+        l_separator = QString(QChar::LineFeed);
+      else if (!l_record.is_music())
+        l_separator = ": ";
       else
-        separator = " ";
-      cursor.insertText(record.get_name() + separator, l_record_name_format);
-      cursor.insertText(record.get_message() + record_end, line_format);
+        l_separator = " ";
+      l_cursor.insertText(l_record.get_name() + l_separator, l_target_name_format);
+      l_cursor.insertText(l_record.get_message(), l_message_format);
     }
   }
 
-  // figure out the number of blocks we need overall
-  // this is always going to amount to at least the current length of records
-  int block_count = m_ic_record_list.length() + 1; // there's always one extra block
-  // to do that, we need to go through the records
-  for (DRChatRecord &record : m_ic_record_list)
-    if (!record.is_system())
-      if (chatlog_newline)
-        block_count += 2; // if newline is actived, it always inserts two extra
-                          // newlines; therefor two paragraphs
+  { // remove unneeded blocks
+    const int l_max_block_count = m_ic_record_list.length() * (1 + l_use_newline) +
+                                  (l_use_newline * (m_ic_record_list.length() - 1)) + !l_topdown_orientation;
+    const QTextCursor::MoveOperation l_orientation = l_topdown_orientation ? QTextCursor::Start : QTextCursor::End;
+    const QTextCursor::MoveOperation l_block_orientation =
+        l_topdown_orientation ? QTextCursor::NextBlock : QTextCursor::PreviousBlock;
 
-  // there's always one extra block count, so deduce one from block_count
-  int blocks_to_delete = ui_ic_chatlog->document()->blockCount() - block_count;
-
-  // the orientation at which we need to delete from
-  const QTextCursor::MoveOperation start_location = chatlog_scrolldown ? QTextCursor::Start : QTextCursor::End;
-  const QTextCursor::MoveOperation block_orientation =
-      chatlog_scrolldown ? QTextCursor::NextBlock : QTextCursor::PreviousBlock;
-
-  /* Blocks appear like this
-   * textQChar(0x2029)
-   * additionaltextQChar(0x2029)
-   * moretextQChar(0x2029)
-   * where QChar(0x2029) is the paragraph break block.
-   * Do note that the above example has FOUR blocks: text, additionaltext,
-   * moretext, and an empty block. That is because QTextCursor separates blocks
-   * by paragraph break block (which is why the above code has a -1) and does
-   * not consider this break character as part of the block (which is why we
-   * move Left in the loop, to 'be in the block'). Finally, BlockUnderCursor
-   * does NOT select the break character, so we deleteChar after removing the
-   * selection to remove the straggling newline.
-   * */
-
-  // move our cursor at the start
-  cursor.movePosition(start_location);
-
-  // move the cursor around, depending on the orientation we need
-  for (int i = 0; i < blocks_to_delete; ++i)
-    cursor.movePosition(block_orientation, QTextCursor::KeepAnchor);
-
-  // now that everything is selected, delete it
-  cursor.removeSelectedText();
-
-  /*
-   * However, if we do this, we also remove the last newline of the last block
-   * that remains, which will make it difficult to append new blocks to
-   * it/figure out the amount of blocks if we have a scroll up log, so we add it
-   * again if we removed any break characters at all
-   * */
-  if (!chatlog_scrolldown && blocks_to_delete > 0)
-    cursor.insertBlock();
-
-  /*
-   * Unfortunately, the simplest alternative, that is, move cursor to the last
-   * block, remove the block under it and delete the last char does not work, as
-   * this also removes the last character of the block that remains. That's why
-   * we have to do this whole complicated process.
-   * */
-  if (prev_cursor.hasSelection() || !is_scrolled)
-  {
-    // restore previous selection and vscrollbar
-    ui_ic_chatlog->setTextCursor(prev_cursor);
-    vscrollbar->setValue(scroll_pos);
-  }
-  // scroll up/down depending on context
-  else
-  {
-    ui_ic_chatlog->moveCursor(move_type);
-    vscrollbar->setValue(chatlog_scrolldown ? vscrollbar->maximum() : vscrollbar->minimum());
+    const int l_remove_block_count = ui_ic_chatlog->document()->blockCount() - l_max_block_count;
+    if (l_remove_block_count > 0)
+    {
+      l_cursor.movePosition(l_orientation);
+      for (int i = 0; i < l_remove_block_count; ++i)
+        l_cursor.movePosition(l_block_orientation, QTextCursor::KeepAnchor);
+      l_cursor.removeSelectedText();
+    }
   }
 
-  if (p_reset_log)
-  {
-    // We are done updating the IC chat log, now do all alignment computations
-    ui_ic_chatlog->set_auto_align(true);
-  }
+  if (l_is_end_scroll_pos)
+    l_scrollbar->setValue(l_topdown_orientation ? l_scrollbar->maximum() : l_scrollbar->minimum());
 }
 
 void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, bool p_self)

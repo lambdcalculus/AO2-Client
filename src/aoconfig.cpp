@@ -130,7 +130,7 @@ void AOConfigPrivate::read_file()
   manual_timeofday = cfg.value("manual_timeofday", false).toBool();
   always_pre = cfg.value("always_pre", true).toBool();
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
-  log_max_lines = cfg.value("chatlog_limit", 200).toInt();
+  log_max_lines = cfg.value("chatlog_limit", 100).toInt();
   log_is_topdown = cfg.value("chatlog_scrolldown", true).toBool();
   log_display_timestamp = cfg.value("chatlog_display_timestamp", true).toBool();
   log_display_self_highlight = cfg.value("chatlog_display_self_highlight", true).toBool();

@@ -206,24 +206,30 @@ int AOApplication::get_font_property(QString p_identifier, QString p_file)
   return f_result.toInt();
 }
 
+std::optional<QColor> AOApplication::maybe_color(QString p_identifier, QString p_file)
+{
+  const QString l_raw_color = read_theme_ini(p_identifier, p_file);
+  if (l_raw_color.isEmpty())
+    return std::nullopt;
+
+  const QStringList l_raw_light_list = l_raw_color.split(",");
+  if (l_raw_light_list.length() < 3)
+    return std::nullopt;
+
+  QColor r_color;
+  r_color.setRed(l_raw_light_list.at(0).toInt());
+  r_color.setGreen(l_raw_light_list.at(1).toInt());
+  r_color.setBlue(l_raw_light_list.at(2).toInt());
+  if (l_raw_light_list.length() == 4)
+    r_color.setAlpha(l_raw_light_list.at(3).toInt());
+  if (!r_color.isValid())
+    return std::nullopt;
+  return r_color;
+}
+
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
-  QColor return_color(255, 255, 255);
-
-  QString f_result = read_theme_ini(p_identifier, p_file);
-  if (f_result.isEmpty())
-    return return_color;
-
-  QStringList color_list = f_result.split(",");
-
-  if (color_list.size() < 3)
-    return return_color;
-
-  return_color.setRed(color_list.at(0).toInt());
-  return_color.setGreen(color_list.at(1).toInt());
-  return_color.setBlue(color_list.at(2).toInt());
-
-  return return_color;
+  return maybe_color(p_identifier, p_file).value_or(QColor(255, 255, 255));
 }
 
 QString AOApplication::get_font_name(QString p_identifier, QString p_file)

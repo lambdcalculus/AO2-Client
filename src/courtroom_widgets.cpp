@@ -112,6 +112,7 @@ void Courtroom::create_widgets()
 
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
+  ui_ic_chatlog->set_auto_align(false);
 
   ui_ooc_chatlog = new AOTextArea(this);
   ui_ooc_chatlog->setReadOnly(true);
@@ -301,6 +302,7 @@ void Courtroom::connect_widgets()
 
   connect(ui_text_color, SIGNAL(currentIndexChanged(int)), this, SLOT(on_text_color_changed(int)));
 
+  connect(this, SIGNAL(loaded_theme()), this, SLOT(on_chat_config_changed()));
   connect(ao_config, SIGNAL(log_max_lines_changed(int)), this, SLOT(on_chat_config_changed()));
   connect(ao_config, SIGNAL(log_display_timestamp_changed(bool)), this, SLOT(on_chat_config_changed()));
   connect(ao_config, SIGNAL(log_display_self_highlight_changed(bool)), this, SLOT(on_chat_config_changed()));
@@ -825,8 +827,8 @@ void Courtroom::set_widgets()
   // be moved to 0, 0 A similar behavior will occur if the button is resized to 0, 0 due to 'config_panel' not being
   // found in courtroom_design.ini This is to assist with people who switch to incompatible and/or smaller themes and
   // have the button disappear
-  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() || ui_config_panel->width() <= 0
-      || ui_config_panel->height() <= 0)
+  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() || ui_config_panel->width() <= 0 ||
+      ui_config_panel->height() <= 0)
   {
     ui_config_panel->setVisible(true);
     ui_config_panel->move(0, 0);
@@ -979,6 +981,8 @@ void Courtroom::set_widgets()
   adapt_numbered_items(ui_timers, "timer_number", "timer");
   set_dropdowns();
   set_fonts();
+
+  Q_EMIT loaded_theme();
 }
 
 void Courtroom::move_widget(QWidget *p_widget, QString p_identifier)
@@ -1079,8 +1083,8 @@ void Courtroom::check_free_blocks()
 
   for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
-    QString path = ao_app->find_asset_path(
-        {ao_app->get_character_path(get_character_ini(), free_block_names.at(i))}, animated_extensions());
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), free_block_names.at(i))},
+                                           animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(free_block_names.at(i), animated_extensions());
     free_blocks_enabled[i] = (!path.isEmpty());
@@ -1402,6 +1406,7 @@ void Courtroom::set_fonts()
   set_drtextedit_font(ui_vp_showname, "showname", COURTROOM_FONTS_INI, ao_app);
   set_drtextedit_font(ui_vp_message, "message", COURTROOM_FONTS_INI, ao_app);
   set_drtextedit_font(ui_ic_chatlog, "ic_chatlog", COURTROOM_FONTS_INI, ao_app);
+
   // Chatlog does not support drtextedit because html
   set_font(ui_ooc_chatlog, "server_chatlog", COURTROOM_FONTS_INI, ao_app);
   set_font(ui_music_list, "music_list", COURTROOM_FONTS_INI, ao_app);
