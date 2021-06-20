@@ -1244,7 +1244,6 @@ void Courtroom::load_shouts()
     QString name = ao_app->get_spbutton("[SHOUTS]", i).trimmed();
     if (!name.isEmpty())
     {
-      qDebug() << "SHOUT " << name << " " << ui_shouts[i - 1];
       shout_names.append(name);
       AOButton *l_button = ui_shouts.at(i - 1);
       widget_names.insert(name, l_button);
@@ -1253,7 +1252,6 @@ void Courtroom::load_shouts()
       Q_EMIT l_button->toggled(l_button->isChecked());
     }
   }
-  qDebug() << widget_names;
 }
 
 void Courtroom::load_wtce()
