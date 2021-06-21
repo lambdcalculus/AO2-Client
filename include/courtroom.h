@@ -463,7 +463,7 @@ private:
   QVector<QCheckBox *> ui_checks; // 0 = pre, 1 = flip, 2 = hidden
   QVector<AOLabel *> ui_labels;   // 0 = music, 1 = sfx, 2 = blip
   QVector<AOImageDisplay *> ui_label_images;
-  QVector<QString> label_images = {"Pre", "Flip", "Hidden", "Music", "SFX", "Blip"};
+  QVector<QString> label_images = {"Pre", "Flip", "Hidden"};
 
   AOButton *ui_effect_flash = nullptr;
   AOButton *ui_effect_gloom = nullptr;

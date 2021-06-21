@@ -1039,8 +1039,7 @@ void Courtroom::load_ic_text_format()
         l_color.has_value())
       f_format.setForeground(l_color.value());
 
-    if (const bool l_is_bold =
-            ao_app->get_font_property(QString("ic_chatlog_%1_bold").arg(f_identifier), COURTROOM_FONTS_INI))
+    if (ao_app->get_font_property(QString("ic_chatlog_%1_bold").arg(f_identifier), COURTROOM_FONTS_INI))
       f_format.setFontWeight(QFont::Bold);
   };
 

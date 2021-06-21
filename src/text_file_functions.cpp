@@ -237,7 +237,7 @@ QString AOApplication::get_font_name(QString p_identifier, QString p_file)
   QString f_result = read_theme_ini(p_identifier, p_file);
 
   if (f_result.isEmpty())
-    qDebug() << "Failure retreiving font name";
+    qDebug() << "Failure retrieving font name";
 
   return f_result;
 }
