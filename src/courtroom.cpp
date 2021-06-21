@@ -56,10 +56,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   create_widgets();
   connect_widgets();
 
-  set_widgets();
-  set_char_select();
-  set_widget_names();
   setup_courtroom();
+  set_char_select();
 }
 
 Courtroom::~Courtroom()
