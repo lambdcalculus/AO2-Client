@@ -209,24 +209,18 @@ jobs:
         cp ../libbass.dylib "./Danganronpa Online.app/Contents/Frameworks/"
         cp ../libbass.dylib "./Danganronpa Online.app/Contents/MacOS/"
         cp -R ../clang_64/plugins/imageformats "./Danganronpa Online.app/Contents/MacOS/"
-                
+         
+    - name: Make DMG
+      working-directory: ${{env.parentworkspace}}
+      shell: bash
+      run: |
+        hdiutil create -volname "Danganronpa Online" -srcfolder "./Danganronpa Online" -ov -format UDZO "Danganronpa Online.dmg"
+       
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-         name: "Danganronpa Online (MacOS)"
-         path: "${{env.parentworkspace}}/Danganronpa Online/**/Danganronpa Online.app"
-         
-    # - name: Make DMG
-    #  working-directory: ${{env.parentworkspace}}
-    #  shell: bash
-    #  run: |
-    #    hdiutil create -volname "Danganronpa Online" -srcfolder "./Danganronpa Online" -ov -format UDZO "Danganronpa Online.dmg"
-    #   
-    # - name: Upload Artifact
-    #  uses: actions/upload-artifact@v2
-    #  with:
-    #     name: "Danganronpa Online (MacOS)"
-    #     path: "${{env.parentworkspace}}/Danganronpa Online.dmg"
+          name: "Danganronpa Online (MacOS)"
+          path: "${{env.parentworkspace}}/Danganronpa Online.dmg"
          
   ###############################################################################
   # UBUNTU #
