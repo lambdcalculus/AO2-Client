@@ -81,8 +81,8 @@ void Courtroom::construct_emote_page_layout()
     f_emote->set_emote_number(n);
 
     connect(f_emote, SIGNAL(emote_clicked(int)), this, SLOT(on_emote_clicked(int)));
-    connect(f_emote, SIGNAL(tooltip_requested(int, QPoint)), this, SLOT(on_emote_tooltip_requested(int, QPoint)));
-    connect(f_emote, SIGNAL(mouse_left(int)), this, SLOT(on_emote_mouse_left(int)));
+    connect(f_emote, SIGNAL(tooltip_requested(int, QPoint)), this, SLOT(show_emote_tooltip(int, QPoint)));
+    connect(f_emote, SIGNAL(mouse_left(int)), this, SLOT(hide_emote_tooltip(int)));
 
     ++x_mod_count;
 
@@ -116,6 +116,7 @@ void Courtroom::refresh_emote_page(const bool p_scroll_to_current_emote)
   const int l_emote_count = m_emote_list.length();
   for (AOEmoteButton *i_button : qAsConst(ui_emote_list))
     i_button->hide();
+  hide_emote_tooltip(m_emote_preview_id);
 
   const int l_page_count =
       qFloor(l_emote_count / m_page_max_emote_count) + bool(l_emote_count % m_page_max_emote_count);
@@ -199,13 +200,13 @@ void Courtroom::on_emote_clicked(int p_id)
   select_emote(p_id + m_page_max_emote_count * m_current_emote_page);
 }
 
-void Courtroom::on_emote_tooltip_requested(int p_id, QPoint p_global_pos)
+void Courtroom::show_emote_tooltip(int p_id, QPoint p_global_pos)
 {
-  const int l_real_id = p_id + m_page_max_emote_count * m_current_emote_page;
-  if (m_emote_preview_id != -1 || m_emote_preview_id == l_real_id)
+  if (m_emote_preview_id != -1 || m_emote_preview_id == p_id)
     return;
-  m_emote_preview_id = l_real_id;
-  const DREmote &l_emote = m_emote_list.at(m_emote_preview_id);
+  m_emote_preview_id = p_id;
+  const int l_real_id = p_id + m_page_max_emote_count * m_current_emote_page;
+  const DREmote &l_emote = m_emote_list.at(l_real_id);
   ui_emote_preview_character->set_mirrored(ui_flip->isChecked());
   ui_emote_preview_character->play_idle(l_emote.character, l_emote.dialog);
 
@@ -232,10 +233,9 @@ void Courtroom::on_emote_tooltip_requested(int p_id, QPoint p_global_pos)
   ui_emote_preview->show();
 }
 
-void Courtroom::on_emote_mouse_left(int p_id)
+void Courtroom::hide_emote_tooltip(int p_id)
 {
-  const int l_real_id = p_id + m_page_max_emote_count * m_current_emote_page;
-  if (m_emote_preview_id == -1 || m_emote_preview_id != l_real_id)
+  if (m_emote_preview_id == -1 || m_emote_preview_id != p_id)
     return;
   m_emote_preview_id = -1;
   ui_emote_preview->hide();

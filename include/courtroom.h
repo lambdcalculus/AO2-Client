@@ -583,8 +583,8 @@ private slots:
   void select_emote(int p_id);
 
   void on_emote_clicked(int id);
-  void on_emote_tooltip_requested(int id, QPoint global_pos);
-  void on_emote_mouse_left(int id);
+  void show_emote_tooltip(int id, QPoint global_pos);
+  void hide_emote_tooltip(int id);
 
   void on_emote_left_clicked();
   void on_emote_right_clicked();
