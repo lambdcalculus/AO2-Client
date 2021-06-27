@@ -11,9 +11,14 @@
 
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDebug>
 #include <QLineEdit>
 #include <QtMath>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+#include <QDesktopWidget>
+#else
+#include <QScreen>
+#endif
 
 void Courtroom::construct_emotes()
 {
@@ -24,7 +29,9 @@ void Courtroom::construct_emotes()
 
   ui_emote_preview = new AOImageDisplay(nullptr, ao_app);
   ui_emote_preview->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint | Qt::BypassGraphicsProxyWidget);
+  ui_emote_preview->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_emote_preview_character = new AOCharMovie(ui_emote_preview, ao_app);
+  ui_emote_preview_character->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_emote_dropdown = new QComboBox(this);
   ui_pos_dropdown = new QComboBox(this);
@@ -201,7 +208,27 @@ void Courtroom::on_emote_tooltip_requested(int p_id, QPoint p_global_pos)
   const DREmote &l_emote = m_emote_list.at(m_emote_preview_id);
   ui_emote_preview_character->set_mirrored(ui_flip->isChecked());
   ui_emote_preview_character->play_idle(l_emote.character, l_emote.dialog);
-  ui_emote_preview->move(p_global_pos.x(), p_global_pos.y() + 8);
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+  QRect l_screen_geometry = QApplication::desktop()->screenGeometry();
+#else
+  QScreen *screen = QApplication::screenAt(p_global_pos);
+  if (screen == nullptr)
+    return;
+  QRect l_screen_geometry = screen->geometry();
+#endif
+
+  // position below cursor
+  const int l_vertical_spacing = 8;
+  p_global_pos.setY(p_global_pos.y() + l_vertical_spacing);
+
+  if (l_screen_geometry.width() < ui_emote_preview->width() + p_global_pos.x())
+    p_global_pos.setX(p_global_pos.x() - ui_emote_preview->width());
+
+  if (l_screen_geometry.height() < ui_emote_preview->height() + p_global_pos.y() + l_vertical_spacing)
+    p_global_pos.setY(p_global_pos.y() - ui_emote_preview->height() - l_vertical_spacing);
+
+  ui_emote_preview->move(p_global_pos);
   ui_emote_preview->show();
 }
 
