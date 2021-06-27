@@ -204,9 +204,9 @@ void Courtroom::enter_courtroom(int p_cid)
   select_default_sfx();
 
   ui_emotes->setHidden(is_spectating());
-  ui_emote_dropdown->setHidden(is_spectating());
-  ui_iniswap_dropdown->setHidden(is_spectating());
-  ui_ic_chat_message->setEnabled(!is_spectating());
+  ui_emote_dropdown->setDisabled(is_spectating());
+  ui_iniswap_dropdown->setDisabled(is_spectating());
+  ui_ic_chat_message->setDisabled(is_spectating());
 
   // restore line field focus
   l_current_field->setFocus();

@@ -2,8 +2,10 @@
 
 #include "aoapplication.h"
 #include "aobutton.h"
+#include "aocharmovie.h"
 #include "aoconfig.h"
 #include "aoemotebutton.h"
+#include "aoimagedisplay.h"
 #include "commondefs.h"
 #include "theme.h"
 
@@ -19,6 +21,10 @@ void Courtroom::construct_emotes()
 
   ui_emote_left = new AOButton(this, ao_app);
   ui_emote_right = new AOButton(this, ao_app);
+
+  ui_emote_preview = new AOImageDisplay(nullptr, ao_app);
+  ui_emote_preview->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint | Qt::BypassGraphicsProxyWidget);
+  ui_emote_preview_character = new AOCharMovie(ui_emote_preview, ao_app);
 
   ui_emote_dropdown = new QComboBox(this);
   ui_pos_dropdown = new QComboBox(this);
@@ -68,6 +74,8 @@ void Courtroom::construct_emote_page_layout()
     f_emote->set_emote_number(n);
 
     connect(f_emote, SIGNAL(emote_clicked(int)), this, SLOT(on_emote_clicked(int)));
+    connect(f_emote, SIGNAL(tooltip_requested(int, QPoint)), this, SLOT(on_emote_tooltip_requested(int, QPoint)));
+    connect(f_emote, SIGNAL(mouse_left(int)), this, SLOT(on_emote_mouse_left(int)));
 
     ++x_mod_count;
 
@@ -182,6 +190,29 @@ void Courtroom::select_emote(int p_id)
 void Courtroom::on_emote_clicked(int p_id)
 {
   select_emote(p_id + m_page_max_emote_count * m_current_emote_page);
+}
+
+void Courtroom::on_emote_tooltip_requested(int p_id, QPoint p_global_pos)
+{
+  const int l_real_id = p_id + m_page_max_emote_count * m_current_emote_page;
+  if (m_emote_preview_id != -1 || m_emote_preview_id == l_real_id)
+    return;
+  m_emote_preview_id = l_real_id;
+  const DREmote &l_emote = m_emote_list.at(m_emote_preview_id);
+  ui_emote_preview_character->set_mirrored(ui_flip->isChecked());
+  ui_emote_preview_character->play_idle(l_emote.character, l_emote.dialog);
+  ui_emote_preview->move(p_global_pos.x(), p_global_pos.y() + 8);
+  ui_emote_preview->show();
+}
+
+void Courtroom::on_emote_mouse_left(int p_id)
+{
+  const int l_real_id = p_id + m_page_max_emote_count * m_current_emote_page;
+  if (m_emote_preview_id == -1 || m_emote_preview_id != l_real_id)
+    return;
+  m_emote_preview_id = -1;
+  ui_emote_preview->hide();
+  ui_emote_preview_character->stop();
 }
 
 void Courtroom::on_emote_left_clicked()

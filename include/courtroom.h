@@ -326,6 +326,7 @@ private:
   int emote_columns = 5;
   int emote_rows = 2;
   int m_page_max_emote_count = 10;
+  int m_emote_preview_id = -1;
 
   //  inmchatlog_changed;
 
@@ -403,6 +404,8 @@ private:
   QVector<AOEmoteButton *> ui_emote_list;
   AOButton *ui_emote_left = nullptr;
   AOButton *ui_emote_right = nullptr;
+  AOImageDisplay *ui_emote_preview = nullptr;
+  AOCharMovie *ui_emote_preview_character = nullptr;
 
   QComboBox *ui_emote_dropdown = nullptr;
   QComboBox *ui_iniswap_dropdown = nullptr;
@@ -579,7 +582,9 @@ private slots:
 
   void select_emote(int p_id);
 
-  void on_emote_clicked(int p_id);
+  void on_emote_clicked(int id);
+  void on_emote_tooltip_requested(int id, QPoint global_pos);
+  void on_emote_mouse_left(int id);
 
   void on_emote_left_clicked();
   void on_emote_right_clicked();
