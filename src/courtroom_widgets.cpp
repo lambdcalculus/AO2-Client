@@ -667,9 +667,6 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_emote_right, "emote_right", COURTROOM_DESIGN_INI, ao_app);
   ui_emote_right->set_image("arrow_right.png");
 
-  set_size_and_pos(ui_emote_right, "emote_right", COURTROOM_DESIGN_INI, ao_app);
-  ui_emote_right->set_image("arrow_right.png");
-
   { // emote preview
     pos_size_type l_emote_preview_size = ao_app->get_element_dimensions("emote_preview", COURTROOM_DESIGN_INI);
     if (l_emote_preview_size.width <= 0 || l_emote_preview_size.height <= 0)
