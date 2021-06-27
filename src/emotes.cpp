@@ -220,15 +220,15 @@ void Courtroom::on_emote_tooltip_requested(int p_id, QPoint p_global_pos)
 
   // position below cursor
   const int l_vertical_spacing = 8;
-  p_global_pos.setY(p_global_pos.y() + l_vertical_spacing);
+  QPoint l_final_global_pos(p_global_pos.x(), p_global_pos.y() + l_vertical_spacing);
 
-  if (l_screen_geometry.width() < ui_emote_preview->width() + p_global_pos.x())
-    p_global_pos.setX(p_global_pos.x() - ui_emote_preview->width());
+  if (l_screen_geometry.width() < ui_emote_preview->width() + l_final_global_pos.x())
+    l_final_global_pos.setX(p_global_pos.x() - ui_emote_preview->width());
 
-  if (l_screen_geometry.height() < ui_emote_preview->height() + p_global_pos.y())
-    p_global_pos.setY(p_global_pos.y() - ui_emote_preview->height() - l_vertical_spacing * 2);
+  if (l_screen_geometry.height() < ui_emote_preview->height() + l_final_global_pos.y())
+    l_final_global_pos.setY(p_global_pos.y() - ui_emote_preview->height() - l_vertical_spacing);
 
-  ui_emote_preview->move(p_global_pos);
+  ui_emote_preview->move(l_final_global_pos);
   ui_emote_preview->show();
 }
 
