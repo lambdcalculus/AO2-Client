@@ -667,6 +667,18 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_emote_right, "emote_right", COURTROOM_DESIGN_INI, ao_app);
   ui_emote_right->set_image("arrow_right.png");
 
+  { // emote preview
+    pos_size_type l_emote_preview_size = ao_app->get_element_dimensions("emote_preview", COURTROOM_DESIGN_INI);
+    if (l_emote_preview_size.width <= 0 || l_emote_preview_size.height <= 0)
+    {
+      l_emote_preview_size.width = 320;
+      l_emote_preview_size.height = 192;
+    }
+    ui_emote_preview->resize(l_emote_preview_size.width, l_emote_preview_size.height);
+    ui_emote_preview->set_image("emote_preview.png");
+    ui_emote_preview_character->resize(l_emote_preview_size.width, l_emote_preview_size.height);
+  }
+
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown", COURTROOM_DESIGN_INI, ao_app);
 
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown", COURTROOM_DESIGN_INI, ao_app);
@@ -959,13 +971,13 @@ void Courtroom::set_widgets()
   }
 
   // This is used to force already existing notepicker elements to reset their image and theme setting
-  for (AONotePicker *notepicker : ui_note_area->findChildren<AONotePicker*>())
+  for (AONotePicker *notepicker : ui_note_area->findChildren<AONotePicker *>())
   {
-    for (AOButton *button : notepicker->findChildren<AOButton*>())
+    for (AOButton *button : notepicker->findChildren<AOButton *>())
     {
       button->refresh_image();
     }
-    QLineEdit *f_line = notepicker->findChild<QLineEdit*>();
+    QLineEdit *f_line = notepicker->findChild<QLineEdit *>();
     set_dropdown(f_line, "[LINE EDIT]");
   }
 

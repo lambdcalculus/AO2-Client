@@ -2,16 +2,23 @@
 
 #include "aoapplication.h"
 #include "aobutton.h"
+#include "aocharmovie.h"
 #include "aoconfig.h"
 #include "aoemotebutton.h"
+#include "aoimagedisplay.h"
 #include "commondefs.h"
 #include "theme.h"
 
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDebug>
 #include <QLineEdit>
 #include <QtMath>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+#include <QDesktopWidget>
+#else
+#include <QScreen>
+#endif
 
 void Courtroom::construct_emotes()
 {
@@ -19,6 +26,12 @@ void Courtroom::construct_emotes()
 
   ui_emote_left = new AOButton(this, ao_app);
   ui_emote_right = new AOButton(this, ao_app);
+
+  ui_emote_preview = new AOImageDisplay(nullptr, ao_app);
+  ui_emote_preview->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint | Qt::BypassGraphicsProxyWidget);
+  ui_emote_preview->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_emote_preview_character = new AOCharMovie(ui_emote_preview, ao_app);
+  ui_emote_preview_character->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_emote_dropdown = new QComboBox(this);
   ui_pos_dropdown = new QComboBox(this);
@@ -68,6 +81,8 @@ void Courtroom::construct_emote_page_layout()
     f_emote->set_emote_number(n);
 
     connect(f_emote, SIGNAL(emote_clicked(int)), this, SLOT(on_emote_clicked(int)));
+    connect(f_emote, SIGNAL(tooltip_requested(int, QPoint)), this, SLOT(show_emote_tooltip(int, QPoint)));
+    connect(f_emote, SIGNAL(mouse_left(int)), this, SLOT(hide_emote_tooltip(int)));
 
     ++x_mod_count;
 
@@ -101,6 +116,7 @@ void Courtroom::refresh_emote_page(const bool p_scroll_to_current_emote)
   const int l_emote_count = m_emote_list.length();
   for (AOEmoteButton *i_button : qAsConst(ui_emote_list))
     i_button->hide();
+  hide_emote_tooltip(m_emote_preview_id);
 
   const int l_page_count =
       qFloor(l_emote_count / m_page_max_emote_count) + bool(l_emote_count % m_page_max_emote_count);
@@ -182,6 +198,48 @@ void Courtroom::select_emote(int p_id)
 void Courtroom::on_emote_clicked(int p_id)
 {
   select_emote(p_id + m_page_max_emote_count * m_current_emote_page);
+}
+
+void Courtroom::show_emote_tooltip(int p_id, QPoint p_global_pos)
+{
+  if (m_emote_preview_id != -1 || m_emote_preview_id == p_id)
+    return;
+  m_emote_preview_id = p_id;
+  const int l_real_id = p_id + m_page_max_emote_count * m_current_emote_page;
+  const DREmote &l_emote = m_emote_list.at(l_real_id);
+  ui_emote_preview_character->set_mirrored(ui_flip->isChecked());
+  ui_emote_preview_character->play_idle(l_emote.character, l_emote.dialog);
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+  QRect l_screen_geometry = QApplication::desktop()->screenGeometry();
+#else
+  QScreen *screen = QApplication::screenAt(p_global_pos);
+  if (screen == nullptr)
+    return;
+  QRect l_screen_geometry = screen->geometry();
+#endif
+
+  // position below cursor
+  const int l_vertical_spacing = 8;
+  QPoint l_final_global_pos(p_global_pos.x(), p_global_pos.y() + l_vertical_spacing);
+
+  if (l_screen_geometry.width() < ui_emote_preview->width() + l_final_global_pos.x())
+    l_final_global_pos.setX(p_global_pos.x() - ui_emote_preview->width());
+
+  if (l_screen_geometry.height() < ui_emote_preview->height() + l_final_global_pos.y())
+    l_final_global_pos.setY(p_global_pos.y() - ui_emote_preview->height() - l_vertical_spacing);
+
+  ui_emote_preview->move(l_final_global_pos);
+  ui_emote_preview->show();
+}
+
+void Courtroom::hide_emote_tooltip(int p_id)
+{
+  if (m_emote_preview_id == -1 || m_emote_preview_id != p_id)
+    return;
+  m_emote_preview_id = -1;
+  ui_emote_preview->hide();
+  ui_emote_preview_character->stop();
 }
 
 void Courtroom::on_emote_left_clicked()

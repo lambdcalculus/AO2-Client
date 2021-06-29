@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "file_functions.h"
 
+#include <QHelpEvent>
 #include <QLabel>
 
 AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
@@ -76,4 +77,23 @@ void AOEmoteButton::set_image(DREmote p_emote, bool p_enabled)
 void AOEmoteButton::on_clicked()
 {
   Q_EMIT emote_clicked(m_index);
+}
+
+bool AOEmoteButton::event(QEvent *event)
+{
+  switch (event->type())
+  {
+  case QEvent::ToolTip:
+    Q_EMIT tooltip_requested(m_index, dynamic_cast<QHelpEvent *>(event)->globalPos());
+    break;
+
+  case QEvent::HoverLeave:
+    Q_EMIT mouse_left(m_index);
+    break;
+
+  default:
+    break;
+  }
+
+  return QPushButton::event(event);
 }
