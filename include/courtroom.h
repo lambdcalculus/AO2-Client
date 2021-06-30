@@ -295,6 +295,8 @@ private:
   bool m_chatbox_message_enable_highlighting = false;
   QVector<QStringList> m_chatbox_message_highlight_colors;
 
+  bool m_chat_arrow_exists = false;
+
   QString current_file;
 
   // if true, a reload theme order was delayed to be executed *after* a shout
@@ -361,6 +363,7 @@ private:
   AOMovie *ui_vp_effect = nullptr;
   AOMovie *ui_vp_wtce = nullptr;
   AOMovie *ui_vp_objection = nullptr;
+  AOMovie *ui_vp_chat_arrow = nullptr;
 
   AOImageDisplay *ui_vp_music_display_a = nullptr;
   AOImageDisplay *ui_vp_music_display_b = nullptr;

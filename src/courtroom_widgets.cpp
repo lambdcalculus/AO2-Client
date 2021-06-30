@@ -100,6 +100,9 @@ void Courtroom::create_widgets()
   ui_vp_wtce = new AOMovie(this, ao_app);
   ui_vp_objection = new AOMovie(this, ao_app);
 
+  ui_vp_chat_arrow = new AOMovie(this, ao_app);
+  ui_vp_chat_arrow->set_play_once(false);
+
   ui_iniswap_dropdown = new QComboBox(this);
 
   ui_ic_chatlog = new DRTextEdit(this);
@@ -349,6 +352,7 @@ void Courtroom::reset_widget_names()
       {"vp_effect", ui_vp_effect},
       {"vp_wtce", ui_vp_wtce},
       {"vp_objection", ui_vp_objection},
+      {"chat_arrow", ui_vp_chat_arrow},
       {"ic_chatlog", ui_ic_chatlog},
       {"server_chatlog", ui_ooc_chatlog},
       {"area_list", ui_area_list},
@@ -587,6 +591,10 @@ void Courtroom::set_widgets()
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                "color: white");
+
+  set_size_and_pos(ui_vp_chat_arrow, "chat_arrow", COURTROOM_DESIGN_INI, ao_app);
+  ui_vp_chat_arrow->hide();
+  m_chat_arrow_exists = !ao_app->find_theme_asset_path("chat_arrow", animated_or_static_extensions()).isEmpty();
 
   ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_effect->resize(ui_viewport->width(), ui_viewport->height());
