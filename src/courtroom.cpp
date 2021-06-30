@@ -19,6 +19,7 @@
 #include "aotimer.h"
 #include "commondefs.h"
 #include "debug_functions.h"
+#include "drchatlog.h"
 #include "drdiscord.h"
 #include "drpacket.h"
 #include "file_functions.h"

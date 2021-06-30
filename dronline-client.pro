@@ -54,6 +54,7 @@ HEADERS += \
   include/draudioerror.h \
   include/draudiostream.h \
   include/draudiostreamfamily.h \
+  include/drchatlog.h \
   include/drpacket.h \
   include/drpather.h \
   include/drserversocket.h \
@@ -111,6 +112,7 @@ SOURCES += \
   src/draudioerror.cpp \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \
+  src/drchatlog.cpp \
   src/drpacket.cpp \
   src/drpather.cpp \
   src/drserversocket.cpp \

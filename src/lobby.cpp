@@ -7,6 +7,7 @@
 #include "aotextarea.h"
 #include "commondefs.h"
 #include "debug_functions.h"
+#include "drchatlog.h"
 #include "drpacket.h"
 #include "drpather.h"
 #include "drtextedit.h"
@@ -47,7 +48,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_player_count->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_player_count->setReadOnly(true);
   ui_description = new AOTextArea(this);
-  ui_chatbox = new AOTextArea(this);
+  ui_chatbox = new DRChatLog(this);
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
