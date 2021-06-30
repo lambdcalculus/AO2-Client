@@ -356,6 +356,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   }
 
   ui_player_count->setText(nullptr);
+  ui_description->clear();
   ui_description->setText("Connecting to " + m_last_server.name + "...");
 
   ao_app->connect_to_server(m_last_server);
@@ -412,6 +413,7 @@ void Lobby::append_error(QString f_message)
 void Lobby::set_choose_a_server()
 {
   ui_player_count->setText(nullptr);
+  ui_description->clear();
   ui_description->setText(tr("Choose a server."));
 }
 
