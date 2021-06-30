@@ -24,7 +24,6 @@ class AOScene;
 class AOSfxPlayer;
 class AOShoutPlayer;
 class AOSystemPlayer;
-class AOTextArea;
 class AOTimer;
 class DRChatLog;
 class DRTextEdit;

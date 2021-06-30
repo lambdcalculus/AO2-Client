@@ -47,7 +47,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_player_count->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_player_count->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_player_count->setReadOnly(true);
-  ui_description = new AOTextArea(this);
+  ui_description = new QTextBrowser(this);
   ui_chatbox = new DRChatLog(this);
   ui_chatbox->setOpenExternalLinks(true);
   ui_chatname = new QLineEdit(this);
@@ -146,9 +146,9 @@ void Lobby::set_widgets()
                                  "qproperty-alignment: AlignCenter;");
 
   set_size_and_pos(ui_description, "description", LOBBY_DESIGN_INI, ao_app);
-  ui_description->setReadOnly(true);
   ui_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "color: white;");
+  ui_description->setReadOnly(true);
 
   set_size_and_pos(ui_chatbox, "chatbox", LOBBY_DESIGN_INI, ao_app);
   ui_chatbox->setReadOnly(true);
@@ -355,10 +355,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   }
 
   ui_player_count->setText(nullptr);
-  ui_description->moveCursor(QTextCursor::Start);
-  ui_description->setText("Connecting to " + m_last_server.name + "...\n\n");
-  ui_description->append(m_last_server.desc);
-  ui_description->ensureCursorVisible();
+  ui_description->setText("Connecting to " + m_last_server.name + "...");
 
   ao_app->connect_to_server(m_last_server);
 }
@@ -423,7 +420,9 @@ void Lobby::set_player_count(int players_online, int max_players)
   ui_player_count->setText(f_string);
   ui_player_count->setAlignment(Qt::AlignHCenter);
 
-  ui_description->setText("Connected to " + m_last_server.name + "\n\n");
-  ui_description->append(m_last_server.desc);
-  ui_description->ensureCursorVisible();
+  QString l_text = m_last_server.desc.toHtmlEscaped();
+  const QRegExp l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
+  if (l_text.contains(l_regex))
+    l_text.replace(l_regex, "<a href=\"\\1\">\\1</a>");
+  ui_description->setText(l_text.replace("\n", "<br />"));
 }

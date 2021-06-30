@@ -7,7 +7,6 @@ class AOApplication;
 class AOButton;
 class AOConfig;
 class AOImageDisplay;
-class AOTextArea;
 class DRChatLog;
 class DRTextEdit;
 
@@ -17,6 +16,7 @@ class DRTextEdit;
 class QListWidget;
 class QLineEdit;
 class QProgressBar;
+class QTextBrowser;
 
 class Lobby : public QMainWindow
 {
@@ -61,7 +61,7 @@ private:
   AOButton *ui_about = nullptr;
   QListWidget *ui_server_list = nullptr;
   DRTextEdit *ui_player_count = nullptr;
-  AOTextArea *ui_description = nullptr;
+  QTextBrowser *ui_description = nullptr;
   DRChatLog *ui_chatbox = nullptr;
   QLineEdit *ui_chatname = nullptr;
   QLineEdit *ui_chatmessage = nullptr;
