@@ -47,8 +47,11 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_player_count->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_player_count->setReadOnly(true);
   ui_description = new QTextBrowser(this);
+  ui_description->setOpenExternalLinks(true);
+  ui_description->setReadOnly(true);
   ui_chatbox = new DRChatLog(this);
   ui_chatbox->setOpenExternalLinks(true);
+  ui_chatbox->setReadOnly(true);
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
   ui_chatmessage = new QLineEdit(this);
@@ -147,7 +150,6 @@ void Lobby::set_widgets()
   set_size_and_pos(ui_description, "description", LOBBY_DESIGN_INI, ao_app);
   ui_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "color: white;");
-  ui_description->setReadOnly(true);
 
   set_size_and_pos(ui_chatbox, "chatbox", LOBBY_DESIGN_INI, ao_app);
   ui_chatbox->setReadOnly(true);
