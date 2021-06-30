@@ -15,7 +15,6 @@
 #include "aosfxplayer.h"
 #include "aoshoutplayer.h"
 #include "aosystemplayer.h"
-#include "aotextarea.h"
 #include "aotimer.h"
 #include "commondefs.h"
 #include "debug_functions.h"
