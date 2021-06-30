@@ -42,7 +42,7 @@ void DRChatLog::_p_write_message_queue()
   while (!m_message_queue.isEmpty())
   {
     if (!m_message_list.isEmpty())
-      l_cursor.insertText(QString(QChar::LineFeed));
+      l_cursor.insertHtml(QString("<br />"));
     const Message l_message = m_message_queue.dequeue();
     m_message_list.append(l_message);
 
