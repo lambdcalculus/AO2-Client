@@ -4,7 +4,6 @@
 #include "aobutton.h"
 #include "aoconfig.h"
 #include "aoimagedisplay.h"
-#include "aotextarea.h"
 #include "commondefs.h"
 #include "debug_functions.h"
 #include "drchatlog.h"
