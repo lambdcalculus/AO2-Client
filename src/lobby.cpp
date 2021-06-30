@@ -356,8 +356,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
   }
 
   ui_player_count->setText(nullptr);
-  ui_description->clear();
-  ui_description->setText("Connecting to " + m_last_server.name + "...");
+  ui_description->setHtml("Connecting to " + m_last_server.name + "...");
 
   ao_app->connect_to_server(m_last_server);
 }
@@ -413,8 +412,7 @@ void Lobby::append_error(QString f_message)
 void Lobby::set_choose_a_server()
 {
   ui_player_count->setText(nullptr);
-  ui_description->clear();
-  ui_description->setText(tr("Choose a server."));
+  ui_description->setHtml(tr("Choose a server."));
 }
 
 void Lobby::set_player_count(int players_online, int max_players)
@@ -427,5 +425,5 @@ void Lobby::set_player_count(int players_online, int max_players)
   const QRegExp l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
   if (l_text.contains(l_regex))
     l_text.replace(l_regex, "<a href=\"\\1\">\\1</a>");
-  ui_description->setText(l_text.replace("\n", "<br />"));
+  ui_description->setHtml(l_text.replace("\n", "<br />"));
 }
