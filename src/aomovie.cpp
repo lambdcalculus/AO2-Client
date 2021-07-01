@@ -50,12 +50,18 @@ void AOMovie::play(QString p_file, QString p_char)
   // 4. In the theme folder (gamemode-timeofday/main/default), look for
   // "placeholder" + extensions in `exts` in order
 
-  file_path = ao_app->find_asset_path(
-      {
-          ao_app->get_character_path(p_char, char_p_file),
-          ao_app->get_character_path(p_char, "overlay/" + char_p_file),
-      },
-      animated_or_static_extensions());
+  // Small optimization. If p_char is empty, the function call would trivially return empty anyway
+  // Then, it only makes sense to call the IO function if p_char is not empty
+  if (!p_char.isEmpty())
+  {
+    file_path = ao_app->find_asset_path(
+        {
+            ao_app->get_character_path(p_char, char_p_file),
+            ao_app->get_character_path(p_char, "overlay/" + char_p_file),
+        },
+        animated_or_static_extensions());
+  }
+
   if (file_path.isEmpty())
   {
     file_path = ao_app->find_theme_asset_path(p_file, animated_or_static_extensions());
