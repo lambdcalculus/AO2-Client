@@ -32,12 +32,6 @@ void AOMovie::play(QString p_file, QString p_char)
   m_movie->stop();
   QString file_path = "";
 
-  // Remove ! at the beginning of p_file if needed
-  // This is an indicator that the file is not selectable in the current theme
-  // (gamemode-timeofday) but is still usable by other people
-  if (p_file.length() > 0 && p_file.at(0) == "!")
-    p_file = p_file.remove(0, 1);
-
   QString char_p_file;
   // FIXME: When looking in the character folder, append "_bubble" except for
   // custom We probably should drop this
