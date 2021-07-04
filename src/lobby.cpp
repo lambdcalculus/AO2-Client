@@ -418,8 +418,8 @@ void Lobby::set_choose_a_server()
 
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  const QString f_string =
-      "Connected: " + QString::number(players_online) + " user" + QString(players_online > 1 ? "s" : nullptr);
+  const QString f_string = "Connected: " + QString::number(players_online) + "/" + QString::number(max_players) +
+                           " user" + QString(players_online > 1 ? "s" : nullptr);
   ui_player_count->setText(f_string);
   ui_player_count->setAlignment(Qt::AlignHCenter);
 
