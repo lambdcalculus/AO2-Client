@@ -45,6 +45,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_player_count->setFrameStyle(QFrame::NoFrame);
   ui_player_count->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_player_count->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_player_count->setWordWrapMode(QTextOption::NoWrap);
   ui_player_count->setReadOnly(true);
   ui_description = new QTextBrowser(this);
   ui_description->setOpenExternalLinks(true);
@@ -355,7 +356,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
     m_last_server = ao_app->get_favorite_list().at(p_model.row());
   }
 
-  ui_player_count->setText(nullptr);
+  ui_player_count->setText("Connecting...");
   ui_description->setHtml("Connecting to " + m_last_server.name + "...");
 
   ao_app->connect_to_server(m_last_server);
@@ -417,7 +418,8 @@ void Lobby::set_choose_a_server()
 
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
+  const QString f_string =
+      "Connected: " + QString::number(players_online) + " user" + QString(players_online > 1 ? "s" : nullptr);
   ui_player_count->setText(f_string);
   ui_player_count->setAlignment(Qt::AlignHCenter);
 
