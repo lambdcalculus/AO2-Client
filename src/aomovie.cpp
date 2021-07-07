@@ -32,12 +32,6 @@ void AOMovie::play(QString p_file, QString p_char)
   m_movie->stop();
   QString file_path = "";
 
-  // Remove ! at the beginning of p_file if needed
-  // This is an indicator that the file is not selectable in the current theme
-  // (gamemode-timeofday) but is still usable by other people
-  if (p_file.length() > 0 && p_file.at(0) == "!")
-    p_file = p_file.remove(0, 1);
-
   QString char_p_file;
   // FIXME: When looking in the character folder, append "_bubble" except for
   // custom We probably should drop this
@@ -47,21 +41,25 @@ void AOMovie::play(QString p_file, QString p_char)
     char_p_file = p_file;
 
   // Asset lookup order
-  // 1. In the character folder, look for
+  // 1. If p_char is not empty, in the character folder, look for
   // `char_p_file` + extensions in `exts` in order
-  // 2. In the character folder, look for
+  // 2. If p_char is not empty, in the character folder, look for
   // `overlay/char_p_file` + extensions in `exts` in order
   // 3. In the theme folder (gamemode-timeofday/main/default), look for
   // `p_file` + extensions in `exts` in order
   // 4. In the theme folder (gamemode-timeofday/main/default), look for
   // "placeholder" + extensions in `exts` in order
 
-  file_path = ao_app->find_asset_path(
-      {
-          ao_app->get_character_path(p_char, char_p_file),
-          ao_app->get_character_path(p_char, "overlay/" + char_p_file),
-      },
-      animated_or_static_extensions());
+  if (!p_char.isEmpty())
+  {
+    file_path = ao_app->find_asset_path(
+        {
+            ao_app->get_character_path(p_char, char_p_file),
+            ao_app->get_character_path(p_char, "overlay/" + char_p_file),
+        },
+        animated_or_static_extensions());
+  }
+
   if (file_path.isEmpty())
   {
     file_path = ao_app->find_theme_asset_path(p_file, animated_or_static_extensions());
