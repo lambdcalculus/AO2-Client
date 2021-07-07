@@ -756,6 +756,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     f_showname = m_chatmessage[CMShowName];
   }
 
+  ui_vp_chat_arrow->hide();
   m_effects_player->stop_all();
 
   text_state = 0;
@@ -1465,6 +1466,9 @@ void Courtroom::post_chat()
 
   m_message_color_name = "";
   m_message_color_stack.clear();
+  if (!chatmessage_is_empty)
+    ui_vp_chat_arrow->restart();
+  ui_vp_chat_arrow->setHidden(chatmessage_is_empty);
 }
 
 void Courtroom::play_sfx()

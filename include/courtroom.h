@@ -361,6 +361,7 @@ private:
   AOMovie *ui_vp_effect = nullptr;
   AOMovie *ui_vp_wtce = nullptr;
   AOMovie *ui_vp_objection = nullptr;
+  AOMovie *ui_vp_chat_arrow = nullptr;
 
   AOImageDisplay *ui_vp_music_display_a = nullptr;
   AOImageDisplay *ui_vp_music_display_b = nullptr;

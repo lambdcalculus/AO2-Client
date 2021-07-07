@@ -119,6 +119,12 @@ void AOMovie::play_interjection(QString p_char_name, QString p_interjection_name
   m_movie->start();
 }
 
+void AOMovie::restart()
+{
+  m_movie->stop();
+  m_movie->start();
+}
+
 void AOMovie::stop()
 {
   m_movie->stop();
@@ -131,13 +137,11 @@ void AOMovie::stop()
 
 void AOMovie::frame_change(int n_frame)
 {
-  if (n_frame == (m_movie->frameCount() - 1) && is_play_once)
+  const int l_real_frame = n_frame + 1;
+  if (is_play_once && l_real_frame == m_movie->frameCount())
   {
-    // we need this or else the last frame wont show
     delay(m_movie->nextFrameDelay());
-    this->stop();
-
-    // signal connected to courtroom object, let it figure out what to do
+    m_movie->stop();
     Q_EMIT done();
   }
 }
