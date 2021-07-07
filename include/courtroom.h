@@ -295,8 +295,6 @@ private:
   bool m_chatbox_message_enable_highlighting = false;
   QVector<QStringList> m_chatbox_message_highlight_colors;
 
-  bool m_chat_arrow_exists = false;
-
   QString current_file;
 
   // if true, a reload theme order was delayed to be executed *after* a shout

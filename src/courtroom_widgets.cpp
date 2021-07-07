@@ -593,8 +593,9 @@ void Courtroom::set_widgets()
                                "color: white");
 
   set_size_and_pos(ui_vp_chat_arrow, "chat_arrow", COURTROOM_DESIGN_INI, ao_app);
+  if (!ao_app->find_theme_asset_path("chat_arrow", animated_or_static_extensions()).isEmpty())
+    ui_vp_chat_arrow->play("chat_arrow");
   ui_vp_chat_arrow->hide();
-  m_chat_arrow_exists = !ao_app->find_theme_asset_path("chat_arrow", animated_or_static_extensions()).isEmpty();
 
   ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_effect->resize(ui_viewport->width(), ui_viewport->height());
