@@ -18,9 +18,9 @@
 #include "aosfxplayer.h"
 #include "aoshoutplayer.h"
 #include "aosystemplayer.h"
-#include "aotextarea.h"
 #include "aotimer.h"
 #include "commondefs.h"
+#include "drchatlog.h"
 #include "drtextedit.h"
 #include "file_functions.h"
 #include "theme.h"
@@ -109,7 +109,7 @@ void Courtroom::create_widgets()
   ui_ic_chatlog->setReadOnly(true);
   ui_ic_chatlog->set_auto_align(false);
 
-  ui_ooc_chatlog = new AOTextArea(this);
+  ui_ooc_chatlog = new DRChatLog(this);
   ui_ooc_chatlog->setReadOnly(true);
   ui_ooc_chatlog->setOpenExternalLinks(true);
 

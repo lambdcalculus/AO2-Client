@@ -4,9 +4,9 @@
 #include "aobutton.h"
 #include "aoconfig.h"
 #include "aoimagedisplay.h"
-#include "aotextarea.h"
 #include "commondefs.h"
 #include "debug_functions.h"
+#include "drchatlog.h"
 #include "drpacket.h"
 #include "drpather.h"
 #include "drtextedit.h"
@@ -45,10 +45,14 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_player_count->setFrameStyle(QFrame::NoFrame);
   ui_player_count->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_player_count->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  ui_player_count->setWordWrapMode(QTextOption::NoWrap);
   ui_player_count->setReadOnly(true);
-  ui_description = new AOTextArea(this);
-  ui_chatbox = new AOTextArea(this);
+  ui_description = new QTextBrowser(this);
+  ui_description->setOpenExternalLinks(true);
+  ui_description->setReadOnly(true);
+  ui_chatbox = new DRChatLog(this);
   ui_chatbox->setOpenExternalLinks(true);
+  ui_chatbox->setReadOnly(true);
   ui_chatname = new QLineEdit(this);
   ui_chatname->setPlaceholderText("Name");
   ui_chatmessage = new QLineEdit(this);
@@ -145,7 +149,6 @@ void Lobby::set_widgets()
                                  "qproperty-alignment: AlignCenter;");
 
   set_size_and_pos(ui_description, "description", LOBBY_DESIGN_INI, ao_app);
-  ui_description->setReadOnly(true);
   ui_description->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "color: white;");
 
@@ -353,11 +356,8 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
     m_last_server = ao_app->get_favorite_list().at(p_model.row());
   }
 
-  ui_player_count->setText(nullptr);
-  ui_description->moveCursor(QTextCursor::Start);
-  ui_description->setText("Connecting to " + m_last_server.name + "...\n\n");
-  ui_description->append(m_last_server.desc);
-  ui_description->ensureCursorVisible();
+  ui_player_count->setText("Connecting...");
+  ui_description->setHtml("Connecting to " + m_last_server.name + "...");
 
   ao_app->connect_to_server(m_last_server);
 }
@@ -413,16 +413,18 @@ void Lobby::append_error(QString f_message)
 void Lobby::set_choose_a_server()
 {
   ui_player_count->setText(nullptr);
-  ui_description->setText(tr("Choose a server."));
+  ui_description->setHtml(tr("Choose a server."));
 }
 
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  QString f_string = "Online: " + QString::number(players_online) + "/" + QString::number(max_players);
+  const QString f_string = "Connected: " + QString::number(players_online) + "/" + QString::number(max_players);
   ui_player_count->setText(f_string);
   ui_player_count->setAlignment(Qt::AlignHCenter);
 
-  ui_description->setText("Connected to " + m_last_server.name + "\n\n");
-  ui_description->append(m_last_server.desc);
-  ui_description->ensureCursorVisible();
+  QString l_text = m_last_server.desc.toHtmlEscaped();
+  const QRegExp l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
+  if (l_text.contains(l_regex))
+    l_text.replace(l_regex, "<a href=\"\\1\">\\1</a>");
+  ui_description->setHtml(l_text.replace("\n", "<br />"));
 }

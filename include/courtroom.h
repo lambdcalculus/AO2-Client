@@ -24,8 +24,8 @@ class AOScene;
 class AOSfxPlayer;
 class AOShoutPlayer;
 class AOSystemPlayer;
-class AOTextArea;
 class AOTimer;
+class DRChatLog;
 class DRTextEdit;
 
 #include <QMainWindow>
@@ -380,7 +380,7 @@ private:
   QList<DRChatRecord> m_ic_record_list;
   QQueue<DRChatRecord> m_ic_record_queue;
 
-  AOTextArea *ui_ooc_chatlog = nullptr;
+  DRChatLog *ui_ooc_chatlog = nullptr;
 
   QListWidget *ui_area_list = nullptr;
   QListWidget *ui_music_list = nullptr;

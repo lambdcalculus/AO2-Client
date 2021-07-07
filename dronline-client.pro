@@ -41,7 +41,6 @@ HEADERS += \
   include/aosfxplayer.h \
   include/aoshoutplayer.h \
   include/aosystemplayer.h \
-  include/aotextarea.h \
   include/aotimer.h \
   include/commondefs.h \
   include/courtroom.h \
@@ -54,6 +53,7 @@ HEADERS += \
   include/draudioerror.h \
   include/draudiostream.h \
   include/draudiostreamfamily.h \
+  include/drchatlog.h \
   include/drpacket.h \
   include/drpather.h \
   include/drserversocket.h \
@@ -93,7 +93,6 @@ SOURCES += \
   src/aosfxplayer.cpp \
   src/aoshoutplayer.cpp \
   src/aosystemplayer.cpp \
-  src/aotextarea.cpp \
   src/aotimer.cpp \
   src/audio_functions.cpp \
   src/charselect.cpp \
@@ -111,6 +110,7 @@ SOURCES += \
   src/draudioerror.cpp \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \
+  src/drchatlog.cpp \
   src/drpacket.cpp \
   src/drpather.cpp \
   src/drserversocket.cpp \
