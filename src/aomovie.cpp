@@ -41,17 +41,15 @@ void AOMovie::play(QString p_file, QString p_char)
     char_p_file = p_file;
 
   // Asset lookup order
-  // 1. In the character folder, look for
+  // 1. If p_char is not empty, in the character folder, look for
   // `char_p_file` + extensions in `exts` in order
-  // 2. In the character folder, look for
+  // 2. If p_char is not empty, in the character folder, look for
   // `overlay/char_p_file` + extensions in `exts` in order
   // 3. In the theme folder (gamemode-timeofday/main/default), look for
   // `p_file` + extensions in `exts` in order
   // 4. In the theme folder (gamemode-timeofday/main/default), look for
   // "placeholder" + extensions in `exts` in order
 
-  // Small optimization. If p_char is empty, the function call would trivially return empty anyway
-  // Then, it only makes sense to call the IO function if p_char is not empty
   if (!p_char.isEmpty())
   {
     file_path = ao_app->find_asset_path(
