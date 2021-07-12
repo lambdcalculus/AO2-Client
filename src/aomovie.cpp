@@ -1,6 +1,7 @@
 #include "aomovie.h"
 
 #include "aoapplication.h"
+#include "aopixmap.h"
 #include "file_functions.h"
 #include "misc_functions.h"
 
@@ -12,9 +13,8 @@ AOMovie::AOMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_parent)
 
   m_movie = new QMovie();
 
-  this->setMovie(m_movie);
-
   connect(m_movie, SIGNAL(frameChanged(int)), this, SLOT(frame_change(int)));
+  connect(m_movie, SIGNAL(stateChanged(QMovie::MovieState)), this, SLOT(handle_state(QMovie::MovieState)));
 }
 
 AOMovie::~AOMovie()
@@ -22,14 +22,28 @@ AOMovie::~AOMovie()
   delete m_movie;
 }
 
+bool AOMovie::is_play_once()
+{
+  return m_play_once;
+}
+
 void AOMovie::set_play_once(bool p_play_once)
 {
-  is_play_once = p_play_once;
+  m_play_once = p_play_once;
+}
+
+void AOMovie::play_file_name(QString p_file_name)
+{
+  m_movie->stop();
+  m_movie->setFileName(p_file_name);
+  m_first_loop = true;
+  qDebug() << "playing" << p_file_name;
+  m_movie->start();
+  this->show();
 }
 
 void AOMovie::play(QString p_file, QString p_char)
 {
-  m_movie->stop();
   QString file_path = "";
 
   QString char_p_file;
@@ -67,12 +81,7 @@ void AOMovie::play(QString p_file, QString p_char)
       file_path = ao_app->find_theme_asset_path("placeholder", animated_or_static_extensions());
   }
 
-  qDebug() << "playing" << file_path;
-  m_movie->setFileName(file_path);
-
-  this->show();
-  m_movie->setScaledSize(this->size());
-  m_movie->start();
+  play_file_name(file_path);
 }
 
 ///
@@ -81,8 +90,6 @@ void AOMovie::play(QString p_file, QString p_char)
 ///
 void AOMovie::play_interjection(QString p_char_name, QString p_interjection_name)
 {
-  m_movie->stop();
-
   QString p_char_interjection_name;
   // FIXME: When looking in the character folder, append "_bubble" except for
   // custom We probably should drop this
@@ -111,10 +118,7 @@ void AOMovie::play_interjection(QString p_char_name, QString p_interjection_name
   qDebug() << "playing interjection" << (p_interjection_name.isEmpty() ? "(none)" : p_interjection_name)
            << "for character" << (p_char_name.isEmpty() ? "(none)" : p_char_name) << "at"
            << (interjection_filepath.isEmpty() ? "(not found)" : interjection_filepath);
-  m_movie->setFileName(interjection_filepath);
-  this->show();
-  m_movie->setScaledSize(this->size());
-  m_movie->start();
+  play_file_name(interjection_filepath);
 }
 
 void AOMovie::restart()
@@ -126,20 +130,36 @@ void AOMovie::restart()
 void AOMovie::stop()
 {
   m_movie->stop();
-  m_movie->setFileName(""); // Properly free up resources
-  // If the file is not cleared after the movie is stopped, the movie will
-  // continue using as much memory as it requested, which leads to invisible
-  // memory hogging.
+  // free up resources
+  m_movie->setFileName(nullptr);
   this->hide();
 }
 
 void AOMovie::frame_change(int n_frame)
 {
-  const int l_real_frame = n_frame + 1;
-  if (is_play_once && l_real_frame == m_movie->frameCount())
+  const QImage l_frame = m_movie->currentImage();
+  bool l_paint_frame = true;
+
+  if (m_play_once && n_frame == 0 && !m_first_loop)
   {
-    delay(m_movie->nextFrameDelay());
-    m_movie->stop();
+    l_paint_frame = false;
+    stop();
+  }
+
+  if (l_paint_frame || m_first_loop)
+  {
+    m_first_loop = false;
+    // paint
+    AOPixmap l_pixmap(QPixmap::fromImage(l_frame));
+    this->setPixmap(l_pixmap.scale(this->size()));
+  }
+}
+
+void AOMovie::handle_state(QMovie::MovieState p_state)
+{
+  if (m_play_once && p_state == QMovie::NotRunning)
+  {
+    stop();
     Q_EMIT done();
   }
 }
