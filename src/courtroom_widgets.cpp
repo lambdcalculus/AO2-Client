@@ -1408,7 +1408,9 @@ void Courtroom::set_stylesheets()
   set_stylesheet(ui_iniswap_dropdown, "[INISWAP DROPDOWN]");
   set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]");
   set_stylesheet(ui_ic_chat_message, "[IC LINE]");
+  set_stylesheet(ui_ic_chat_showname, "[IC NAME LINE]");
   set_stylesheet(ui_ooc_chat_message, "[OOC LINE]");
+  set_stylesheet(ui_ooc_chat_name, "[OOC NAME LINE]");
 }
 
 void Courtroom::set_fonts()
