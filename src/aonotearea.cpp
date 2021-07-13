@@ -59,7 +59,7 @@ void Courtroom::on_add_button_clicked()
     set_note_files();
   }
 
-  set_dropdown(f_line, "[LINE EDIT]");
+  set_stylesheet(f_line, "[LINE EDIT]");
 
   connect(f_button, SIGNAL(clicked(bool)), this, SLOT(on_set_file_button_clicked()));
   connect(f_delete, SIGNAL(clicked(bool)), this, SLOT(on_delete_button_clicked()));

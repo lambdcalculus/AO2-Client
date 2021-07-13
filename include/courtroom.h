@@ -66,11 +66,11 @@ public:
   // helper function that calls above function on the relevant widgets
   void set_fonts();
 
-  // sets dropdown menu stylesheet
-  void set_dropdown(QWidget *widget, QString target_tag);
+  // sets stylesheet
+  void set_stylesheet(QWidget *widget, QString target_tag);
 
   // helper funciton that call above function on the relevant widgets
-  void set_dropdowns();
+  void set_stylesheets();
 
   void set_window_title(QString p_title);
 

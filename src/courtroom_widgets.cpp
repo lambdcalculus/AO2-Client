@@ -987,11 +987,11 @@ void Courtroom::set_widgets()
       button->refresh_image();
     }
     QLineEdit *f_line = notepicker->findChild<QLineEdit *>();
-    set_dropdown(f_line, "[LINE EDIT]");
+    set_stylesheet(f_line, "[LINE EDIT]");
   }
 
   adapt_numbered_items(ui_timers, "timer_number", "timer");
-  set_dropdowns();
+  set_stylesheets();
   set_fonts();
 
   Q_EMIT loaded_theme();
@@ -1393,7 +1393,7 @@ void Courtroom::set_free_blocks()
   }
 }
 
-void Courtroom::set_dropdown(QWidget *widget, QString target_tag)
+void Courtroom::set_stylesheet(QWidget *widget, QString target_tag)
 {
   QString f_file = "courtroom_stylesheets.css";
   QString style_sheet_string = ao_app->get_stylesheet(target_tag, f_file);
@@ -1401,14 +1401,14 @@ void Courtroom::set_dropdown(QWidget *widget, QString target_tag)
     widget->setStyleSheet(style_sheet_string);
 }
 
-void Courtroom::set_dropdowns()
+void Courtroom::set_stylesheets()
 {
-  set_dropdown(ui_text_color, "[TEXT COLOR]");
-  set_dropdown(ui_emote_dropdown, "[EMOTE DROPDOWN]");
-  set_dropdown(ui_iniswap_dropdown, "[INISWAP DROPDOWN]");
-  set_dropdown(ui_pos_dropdown, "[POS DROPDOWN]");
-  set_dropdown(ui_ic_chat_message, "[IC LINE]");
-  set_dropdown(ui_ooc_chat_message, "[OOC LINE]");
+  set_stylesheet(ui_text_color, "[TEXT COLOR]");
+  set_stylesheet(ui_emote_dropdown, "[EMOTE DROPDOWN]");
+  set_stylesheet(ui_iniswap_dropdown, "[INISWAP DROPDOWN]");
+  set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]");
+  set_stylesheet(ui_ic_chat_message, "[IC LINE]");
+  set_stylesheet(ui_ooc_chat_message, "[OOC LINE]");
 }
 
 void Courtroom::set_fonts()
