@@ -17,6 +17,9 @@ public:
   bool is_play_once();
   void set_play_once(bool p_play_once);
 
+  bool is_hide_on_done();
+  void set_hide_on_done(bool p_hide_on_done);
+
   void play_file_name(QString file);
   void play(QString p_file, QString p_char = "");
   void play_interjection(QString p_char_name, QString p_interjection_name);
@@ -34,6 +37,7 @@ private:
   QMovie *m_movie = nullptr;
   bool m_first_loop = false;
   bool m_play_once = true;
+  bool m_hide_on_done = false;
 
 private slots:
   void frame_change(int n_frame);

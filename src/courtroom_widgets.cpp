@@ -97,8 +97,11 @@ void Courtroom::create_widgets()
   ui_vp_showname_image = new AOImageDisplay(this, ao_app);
 
   ui_vp_effect = new AOMovie(this, ao_app);
+  ui_vp_effect->set_hide_on_done(true);
   ui_vp_wtce = new AOMovie(this, ao_app);
+  ui_vp_wtce->set_hide_on_done(true);
   ui_vp_objection = new AOMovie(this, ao_app);
+  ui_vp_objection->set_hide_on_done(true);
 
   ui_vp_chat_arrow = new AOMovie(this, ao_app);
   ui_vp_chat_arrow->set_play_once(false);

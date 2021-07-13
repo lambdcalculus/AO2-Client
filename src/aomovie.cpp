@@ -32,6 +32,16 @@ void AOMovie::set_play_once(bool p_play_once)
   m_play_once = p_play_once;
 }
 
+bool AOMovie::is_hide_on_done()
+{
+  return m_hide_on_done;
+}
+
+void AOMovie::set_hide_on_done(bool p_hide_on_done)
+{
+  m_hide_on_done = p_hide_on_done;
+}
+
 void AOMovie::play_file_name(QString p_file_name)
 {
   m_movie->stop();
@@ -132,7 +142,8 @@ void AOMovie::stop()
   m_movie->stop();
   // free up resources
   m_movie->setFileName(nullptr);
-  this->hide();
+  if (m_hide_on_done)
+    this->hide();
 }
 
 void AOMovie::frame_change(int n_frame)
