@@ -260,11 +260,17 @@ jobs:
         cp ./bass.h ./DRO-Client/3rd/include/bass.h
         cp ./x64/libbass.so ./DRO-Client/3rd/x86_64/libbass.so
         
-    - name: Fetch QtApng external library
+    - name: Build QtApng external library
       shell: bash
       working-directory: ${{env.parentworkspace}}
       run: |
-        curl -L https://cdn.discordapp.com/attachments/422857337133596692/845396654642954260/libqapng.so -o libqapng.so
+        git clone https://github.com/Skycoder42/QtApng
+        cd QtApng
+        qmake
+        make -j2
+        cp plugins/imageformats/libqapng.so ..
+        cd ..
+        rm -r -f QtApng
         
     - name: Install Qt
       shell: bash
