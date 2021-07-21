@@ -260,6 +260,16 @@ jobs:
         cp ./bass.h ./DRO-Client/3rd/include/bass.h
         cp ./x64/libbass.so ./DRO-Client/3rd/x86_64/libbass.so
         
+    - name: Install Qt
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        sudo apt-get install build-essential
+        sudo apt-get install qt5-default qttools5-dev
+        sudo apt-get install libqt5designer5
+        sudo apt-get install git
+        sudo snap install discord
+        
     - name: Build QtApng external library
       shell: bash
       working-directory: ${{env.parentworkspace}}
@@ -271,16 +281,6 @@ jobs:
         cp plugins/imageformats/libqapng.so ..
         cd ..
         rm -r -f QtApng
-        
-    - name: Install Qt
-      shell: bash
-      working-directory: ${{env.parentworkspace}}
-      run: |
-        sudo apt-get install build-essential
-        sudo apt-get install qt5-default qttools5-dev
-        sudo apt-get install libqt5designer5
-        sudo apt-get install git
-        sudo snap install discord
         
     - name: Run qmake
       shell: bash
