@@ -79,15 +79,30 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
   p_widget->setStyleSheet(style_sheet_string);
 }
 
-void set_drtextedit_font(DRTextEdit *p_widget, QString p_identifier, QString ini_file, AOApplication *ao_app)
+void set_drtextedit_font(DRTextEdit *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
 {
-  set_font(p_widget, p_identifier, ini_file, ao_app);
+  set_font(p_widget, p_identifier, p_ini_file, ao_app);
 
   // Do outlines
-  bool outline = (ao_app->get_font_property(p_identifier + "_outline", ini_file) == 1);
+  bool outline = (ao_app->get_font_property(p_identifier + "_outline", p_ini_file) == 1);
   p_widget->set_outline(outline);
 
   // alignment
-  set_text_alignment_or_default(p_widget, p_identifier, ini_file, ao_app, "text_alignment", Qt::AlignLeft,
+  set_text_alignment_or_default(p_widget, p_identifier, p_ini_file, ao_app, "text_alignment", Qt::AlignLeft,
                                 Qt::AlignTop);
+}
+
+/**
+ * @brief set_stylesheet
+ * @param p_widget The widget to apply the stylesheet to
+ * @param p_identifier The identifier within the stylesheet
+ * @param p_ini_file The stylesheet file (glorified ini)
+ * @param ao_app AOApplication shenanigan
+ * @return Return true if any data (even if invalid) was applied to the widget
+ */
+bool set_stylesheet(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
+{
+  const QString p_style = ao_app->get_stylesheet(p_identifier, p_ini_file);
+  p_widget->setStyleSheet(p_style);
+  return !p_style.isEmpty();
 }
