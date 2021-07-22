@@ -181,6 +181,7 @@ void Courtroom::enter_courtroom(int p_cid)
   if (l_changed_chr)
     set_character_position(ao_app->get_char_side(l_chr_name));
   select_base_character_iniswap();
+  refresh_character_content_url();
 
   const int l_prev_emote_count = m_emote_list.count();
   m_emote_list = ao_app->get_emote_list(l_chr_name);
