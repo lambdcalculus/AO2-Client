@@ -621,10 +621,13 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ic_chat_showname, "ic_chat_name", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ic_chat_showname, "ic_chat_name", COURTROOM_FONTS_INI, ao_app);
-  ui_ic_chat_showname->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
+  if (!set_stylesheet(ui_ic_chat_showname, "[IC NAME LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
+    ui_ic_chat_showname->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
+
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ic_chat_message, "ao2_ic_chat_message", COURTROOM_FONTS_INI, ao_app);
-  ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
+  if (!set_stylesheet(ui_ic_chat_message, "[IC LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
+    ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
 
   set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", COURTROOM_DESIGN_INI, ao_app);
 
@@ -651,11 +654,13 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_FONTS_INI, ao_app);
-  ui_ooc_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
+  if (!set_stylesheet(ui_ooc_chat_message, "[OOC LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
+    ui_ooc_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_FONTS_INI, ao_app);
-  ui_ooc_chat_name->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
+  if (!set_stylesheet(ui_ooc_chat_name, "[OOC NAME LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
+    ui_ooc_chat_name->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
 
   set_size_and_pos(ui_music_search, "music_search", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_music_search, "music_search", COURTROOM_FONTS_INI, ao_app);
@@ -689,10 +694,13 @@ void Courtroom::set_widgets()
   }
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown", COURTROOM_DESIGN_INI, ao_app);
+  set_stylesheet(ui_emote_dropdown, "[EMOTE DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown", COURTROOM_DESIGN_INI, ao_app);
+  set_stylesheet(ui_iniswap_dropdown, "[INISWAP DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown", COURTROOM_DESIGN_INI, ao_app);
+  set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
   set_size_and_pos(ui_defense_bar, "defense_bar", COURTROOM_DESIGN_INI, ao_app);
   ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state) + ".png");
@@ -904,6 +912,7 @@ void Courtroom::set_widgets()
   ui_prosecution_minus->set_image("prominus.png");
 
   set_size_and_pos(ui_text_color, "text_color", COURTROOM_DESIGN_INI, ao_app);
+  set_stylesheet(ui_text_color, "[TEXT COLOR]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
   set_size_and_pos(ui_evidence_button, "evidence_button", COURTROOM_DESIGN_INI, ao_app);
   ui_evidence_button->set_image("evidencebutton.png");
@@ -987,11 +996,10 @@ void Courtroom::set_widgets()
       button->refresh_image();
     }
     QLineEdit *f_line = notepicker->findChild<QLineEdit *>();
-    set_stylesheet(f_line, "[LINE EDIT]");
+    set_stylesheet(f_line, "[LINE EDIT]", COURTROOM_STYLESHEETS_CSS, ao_app);
   }
 
   adapt_numbered_items(ui_timers, "timer_number", "timer");
-  set_stylesheets();
   set_fonts();
 
   Q_EMIT loaded_theme();
@@ -1391,26 +1399,6 @@ void Courtroom::set_free_blocks()
     AOMovie *free_block = ui_free_blocks[i];
     free_block->play(free_block_names[i]);
   }
-}
-
-void Courtroom::set_stylesheet(QWidget *widget, QString target_tag)
-{
-  QString f_file = "courtroom_stylesheets.css";
-  QString style_sheet_string = ao_app->get_stylesheet(target_tag, f_file);
-  if (style_sheet_string != "")
-    widget->setStyleSheet(style_sheet_string);
-}
-
-void Courtroom::set_stylesheets()
-{
-  set_stylesheet(ui_text_color, "[TEXT COLOR]");
-  set_stylesheet(ui_emote_dropdown, "[EMOTE DROPDOWN]");
-  set_stylesheet(ui_iniswap_dropdown, "[INISWAP DROPDOWN]");
-  set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]");
-  set_stylesheet(ui_ic_chat_message, "[IC LINE]");
-  set_stylesheet(ui_ic_chat_showname, "[IC NAME LINE]");
-  set_stylesheet(ui_ooc_chat_message, "[OOC LINE]");
-  set_stylesheet(ui_ooc_chat_name, "[OOC NAME LINE]");
 }
 
 void Courtroom::set_fonts()

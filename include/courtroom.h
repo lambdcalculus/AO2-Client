@@ -66,12 +66,6 @@ public:
   // helper function that calls above function on the relevant widgets
   void set_fonts();
 
-  // sets stylesheet
-  void set_stylesheet(QWidget *widget, QString target_tag);
-
-  // helper funciton that call above function on the relevant widgets
-  void set_stylesheets();
-
   void set_window_title(QString p_title);
 
   // sets status as taken on character with cid n_char and places proper shading

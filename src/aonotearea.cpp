@@ -5,6 +5,7 @@
 #include "aonotepicker.h"
 #include "commondefs.h"
 #include "courtroom.h"
+#include "theme.h"
 
 #include <QDebug>
 #include <QFile>
@@ -59,7 +60,7 @@ void Courtroom::on_add_button_clicked()
     set_note_files();
   }
 
-  set_stylesheet(f_line, "[LINE EDIT]");
+  set_stylesheet(f_line, "[LINE EDIT]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
   connect(f_button, SIGNAL(clicked(bool)), this, SLOT(on_set_file_button_clicked()));
   connect(f_delete, SIGNAL(clicked(bool)), this, SLOT(on_delete_button_clicked()));
