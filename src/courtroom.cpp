@@ -1811,8 +1811,8 @@ void Courtroom::on_area_list_clicked()
 
 void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
 {
-  const QString l_song_name = ui_area_list->item(p_model.row())->text();
-  ao_app->send_server_packet(DRPacket("MC", {l_song_name, QString::number(m_chr_id)}));
+  const QString l_area_name = ui_area_list->item(p_model.row())->text();
+  ao_app->send_server_packet(DRPacket("MC", {l_area_name, QString::number(m_chr_id)}));
   ui_ic_chat_message->setFocus();
 }
 
@@ -1835,8 +1835,8 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 {
   if (is_client_muted)
     return;
-  const QString p_area_name = ui_music_list->item(p_model.row())->text();
-  ao_app->send_server_packet(DRPacket("MC", {p_area_name, QString::number(m_chr_id)}));
+  const QString p_song_name = ui_music_list->item(p_model.row())->text();
+  ao_app->send_server_packet(DRPacket("MC", {p_song_name, QString::number(m_chr_id)}));
   ui_ic_chat_message->setFocus();
 }
 
