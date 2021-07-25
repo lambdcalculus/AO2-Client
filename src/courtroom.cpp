@@ -404,7 +404,7 @@ void Courtroom::filter_list_widget(QListWidget *p_list_widget, QString p_filter)
 
 bool Courtroom::is_area_music_list_separated()
 {
-  return ao_app->read_theme_ini_bool("separate_music_and_area_list", COURTROOM_CONFIG_INI);
+  return ao_app->read_theme_ini_bool("enable_music_and_area_list_separation", COURTROOM_CONFIG_INI);
 }
 
 void Courtroom::list_music()
