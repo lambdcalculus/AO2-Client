@@ -117,8 +117,18 @@ void Courtroom::create_widgets()
   ui_ooc_chatlog->setOpenExternalLinks(true);
 
   ui_area_list = new QListWidget(this);
+  ui_area_search = new QLineEdit(this);
+  ui_area_search->setFrame(false);
+  ui_area_search->setPlaceholderText("Area filter");
+
   ui_music_list = new QListWidget(this);
+  ui_music_search = new QLineEdit(this);
+  ui_music_search->setFrame(false);
+  ui_music_search->setPlaceholderText("Music filter");
+
   ui_sfx_list = new QListWidget(this);
+  ui_sfx_search = new QLineEdit(this);
+  ui_sfx_search->setFrame(false);
 
   ui_ic_chat_showname = new QLineEdit(this);
   ui_ic_chat_showname->setFrame(false);
@@ -138,12 +148,6 @@ void Courtroom::create_widgets()
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText("Name");
   ui_ooc_chat_name->setText(ao_config->username());
-
-  ui_music_search = new QLineEdit(this);
-  ui_music_search->setFrame(false);
-
-  ui_sfx_search = new QLineEdit(this);
-  ui_sfx_search->setFrame(false);
 
   ui_note_area = new AONoteArea(this, ao_app);
   ui_note_area->add_button = new AOButton(ui_note_area, ao_app);
@@ -306,8 +310,9 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(log_display_music_switch_changed(bool)), this, SLOT(on_chat_config_changed()));
   connect(ao_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_chat_config_changed()));
 
-  connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited()));
-  connect(ui_sfx_search, SIGNAL(editingFinished()), this, SLOT(filter_sfx_list()));
+  connect(ui_area_search, SIGNAL(textChanged(QString)), this, SLOT(on_area_search_edited(QString)));
+  connect(ui_music_search, SIGNAL(textChanged(QString)), this, SLOT(on_music_search_edited(QString)));
+  connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(filter_sfx_list(QString)));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
@@ -359,15 +364,16 @@ void Courtroom::reset_widget_names()
       {"ic_chatlog", ui_ic_chatlog},
       {"server_chatlog", ui_ooc_chatlog},
       {"area_list", ui_area_list},
+      {"area_search", ui_area_search},
       {"music_list", ui_music_list},
+      {"music_search", ui_music_search},
       {"sfx_list", ui_sfx_list},
+      {"sfx_search", ui_sfx_search},
       {"ic_chat_name", ui_ic_chat_showname},
       {"ao2_ic_chat_message", ui_ic_chat_message},
       // ui_muted
       {"ooc_chat_message", ui_ooc_chat_message},
       {"ooc_chat_name", ui_ooc_chat_name},
-      {"music_search", ui_music_search},
-      {"sfx_search", ui_sfx_search},
       {"note_scroll_area", ui_note_scroll_area},
       {"note_area", ui_note_area},
       // add_button
@@ -614,12 +620,6 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_ooc_chatlog, "server_chatlog", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_music_list, "music_list", COURTROOM_DESIGN_INI, ao_app);
-  set_size_and_pos(ui_area_list, "area_list", COURTROOM_DESIGN_INI, ao_app);
-  if (ui_music_list->isVisible())
-    ui_area_list->hide();
-  //  ui_area_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
-
   set_size_and_pos(ui_sfx_list, "sfx_list", COURTROOM_DESIGN_INI, ao_app);
 
   set_size_and_pos(ui_ic_chat_showname, "ic_chat_name", COURTROOM_DESIGN_INI, ao_app);
@@ -665,11 +665,27 @@ void Courtroom::set_widgets()
   if (!set_stylesheet(ui_ooc_chat_name, "[OOC NAME LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
     ui_ooc_chat_name->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
 
-  set_size_and_pos(ui_music_search, "music_search", COURTROOM_DESIGN_INI, ao_app);
-  set_text_alignment(ui_music_search, "music_search", COURTROOM_FONTS_INI, ao_app);
-
   set_size_and_pos(ui_sfx_search, "sfx_search", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_sfx_search, "sfx_search", COURTROOM_FONTS_INI, ao_app);
+
+  set_size_and_pos(ui_music_list, "music_list", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_music_search, "music_search", COURTROOM_DESIGN_INI, ao_app);
+  set_text_alignment(ui_music_search, "music_search", COURTROOM_FONTS_INI, ao_app);
+  ui_music_list->show();
+  ui_music_search->show();
+
+  { // area separation logic
+    const bool l_is_area_music_list_separated = is_area_music_list_separated();
+    const QString p_area_identifier = l_is_area_music_list_separated ? "area" : "music";
+
+    set_size_and_pos(ui_area_list, p_area_identifier + "_list", COURTROOM_DESIGN_INI, ao_app);
+    set_size_and_pos(ui_area_search, p_area_identifier + "_search", COURTROOM_DESIGN_INI, ao_app);
+    set_text_alignment(ui_area_search, p_area_identifier + "_search", COURTROOM_FONTS_INI, ao_app);
+
+    ui_area_list->setVisible(l_is_area_music_list_separated);
+    ui_area_search->setVisible(l_is_area_music_list_separated);
+    ui_switch_area_music->setHidden(l_is_area_music_list_separated);
+  }
 
   // char select
   reconstruct_char_select();

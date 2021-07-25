@@ -72,14 +72,14 @@ void Courtroom::load_current_character_sfx_list()
   filter_sfx_list();
 }
 
+void Courtroom::filter_sfx_list(QString p_filter)
+{
+  filter_list_widget(ui_sfx_list, p_filter);
+}
+
 void Courtroom::filter_sfx_list()
 {
-  const QString l_filter = ui_sfx_search->text();
-  for (int i = 0; i < ui_sfx_list->count(); ++i)
-  {
-    QListWidgetItem *i_item = ui_sfx_list->item(i);
-    i_item->setHidden(!i_item->text().contains(l_filter, Qt::CaseInsensitive));
-  }
+  filter_sfx_list(ui_sfx_search->text());
 }
 
 void Courtroom::select_default_sfx()

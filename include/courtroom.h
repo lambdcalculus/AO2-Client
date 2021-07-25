@@ -126,6 +126,8 @@ public:
 
   // helper function that populates ui_music_list with the contents of
   // music_list
+  void filter_list_widget(QListWidget *widget, QString filter);
+  bool is_area_music_list_separated();
   void list_music();
   void list_areas();
 
@@ -377,7 +379,9 @@ private:
   DRChatLog *ui_ooc_chatlog = nullptr;
 
   QListWidget *ui_area_list = nullptr;
+  QLineEdit *ui_area_search = nullptr;
   QListWidget *ui_music_list = nullptr;
+  QLineEdit *ui_music_search = nullptr;
 
   QListWidget *ui_sfx_list = nullptr;
   QVector<DRSfx> m_sfx_list;
@@ -390,8 +394,6 @@ private:
 
   QLineEdit *ui_ooc_chat_name = nullptr;
   QLineEdit *ui_ooc_chat_message = nullptr;
-
-  QLineEdit *ui_music_search = nullptr;
 
   QLineEdit *ui_sfx_search = nullptr;
 
@@ -569,11 +571,15 @@ private slots:
   void on_ooc_name_editing_finished();
   void on_ooc_return_pressed();
 
-  void on_music_search_edited();
-  void on_music_list_clicked();
   void on_area_list_clicked();
-  void on_music_list_double_clicked(QModelIndex p_model);
   void on_area_list_double_clicked(QModelIndex p_model);
+  void on_area_search_edited(QString);
+  void on_area_search_edited();
+
+  void on_music_list_clicked();
+  void on_music_list_double_clicked(QModelIndex p_model);
+  void on_music_search_edited(QString);
+  void on_music_search_edited();
 
   void select_emote(int p_id);
 
@@ -701,6 +707,7 @@ public:
   void update_all_sfx_item_color();
 
 public slots:
+  void filter_sfx_list(QString);
   void filter_sfx_list();
 
 private:
