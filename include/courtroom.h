@@ -127,6 +127,7 @@ public:
   // helper function that populates ui_music_list with the contents of
   // music_list
   void filter_list_widget(QListWidget *widget, QString filter);
+  bool is_area_music_list_separated();
   void list_music();
   void list_areas();
 

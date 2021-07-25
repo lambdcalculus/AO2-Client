@@ -671,19 +671,20 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_music_list, "music_list", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_music_search, "music_search", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_music_search, "music_search", COURTROOM_FONTS_INI, ao_app);
+  ui_music_list->show();
+  ui_music_search->show();
 
   { // area separation logic
-    const bool l_separate_music_area_list =
-        ao_app->read_theme_ini_bool("separate_music_and_area_list", COURTROOM_CONFIG_INI);
-    const QString p_area_identifier = l_separate_music_area_list ? "area" : "music";
+    const bool l_is_area_music_list_separated = is_area_music_list_separated();
+    const QString p_area_identifier = l_is_area_music_list_separated ? "area" : "music";
 
     set_size_and_pos(ui_area_list, p_area_identifier + "_list", COURTROOM_DESIGN_INI, ao_app);
     set_size_and_pos(ui_area_search, p_area_identifier + "_search", COURTROOM_DESIGN_INI, ao_app);
     set_text_alignment(ui_area_search, p_area_identifier + "_search", COURTROOM_FONTS_INI, ao_app);
 
-    ui_area_list->setVisible(l_separate_music_area_list);
-    ui_area_search->setVisible(l_separate_music_area_list);
-    ui_switch_area_music->setHidden(l_separate_music_area_list);
+    ui_area_list->setVisible(l_is_area_music_list_separated);
+    ui_area_search->setVisible(l_is_area_music_list_separated);
+    ui_switch_area_music->setHidden(l_is_area_music_list_separated);
   }
 
   // char select

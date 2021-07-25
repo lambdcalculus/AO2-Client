@@ -402,6 +402,11 @@ void Courtroom::filter_list_widget(QListWidget *p_list_widget, QString p_filter)
   }
 }
 
+bool Courtroom::is_area_music_list_separated()
+{
+  return ao_app->read_theme_ini_bool("separate_music_and_area_list", COURTROOM_CONFIG_INI);
+}
+
 void Courtroom::list_music()
 {
   const QBrush l_song_brush(ao_app->get_color("found_song_color", COURTROOM_DESIGN_INI));
@@ -2168,7 +2173,7 @@ void Courtroom::on_call_mod_clicked()
 
 void Courtroom::on_switch_area_music_clicked()
 {
-  if (ao_app->read_theme_ini_bool("separate_music_and_area_list", COURTROOM_CONFIG_INI))
+  if (is_area_music_list_separated())
     return;
 
   if (ui_area_list->isHidden())
