@@ -7,8 +7,10 @@
 
 #include <QComboBox>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QPixmap>
+#include <QUrl>
 
 int Courtroom::get_character_id()
 {
@@ -31,6 +33,19 @@ QString Courtroom::get_character()
 QString Courtroom::get_character_ini()
 {
   return ao_config->character_ini(get_character());
+}
+
+QString Courtroom::get_character_content_url()
+{
+  QFile l_contentFile(ao_app->get_character_path(get_character_ini(), "CONTENT.txt"));
+  if (!l_contentFile.open(QIODevice::ReadOnly))
+    return nullptr;
+
+  const QUrl l_url(QString(l_contentFile.readAll()).simplified());
+  if (l_url.isRelative() || l_url.isLocalFile())
+    return nullptr;
+
+  return l_url.toString();
 }
 
 namespace
@@ -91,6 +106,15 @@ void Courtroom::select_base_character_iniswap()
     return;
   }
   ui_iniswap_dropdown->setCurrentText(l_current_chr);
+}
+
+void Courtroom::refresh_character_content_url()
+{
+  const QString l_new_content_url = get_character_content_url();
+  if (m_character_content_url == l_new_content_url)
+    return;
+  m_character_content_url = l_new_content_url;
+  send_ooc_packet("/files_set " + m_character_content_url);
 }
 
 void Courtroom::on_iniswap_dropdown_changed(int p_index)

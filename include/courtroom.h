@@ -111,9 +111,11 @@ public:
 public:
   QString get_character();
   QString get_character_ini();
+  QString get_character_content_url();
   void update_iniswap_list();
   void update_default_iniswap_item();
   void select_base_character_iniswap();
+  void refresh_character_content_url();
 
   // Set the showname of the client
   void set_showname(QString p_showname);
@@ -316,6 +318,7 @@ private:
   int char_rows = 9;
   int m_page_max_chr_count = 90;
 
+  QString m_character_content_url;
   QVector<DREmote> m_emote_list;
   int m_emote_id = 0;
   int m_current_emote_page = 0;
