@@ -55,8 +55,8 @@ private:
   QString theme;
   QString gamemode;
   bool manual_gamemode;
-  QString timeofday;
-  bool manual_timeofday;
+  QString time_of_day;
+  bool manual_time_of_day;
   QString showname;
   QString showname_placeholder;
   QMap<QString, QString> ini_map;
@@ -126,8 +126,8 @@ void AOConfigPrivate::read_file()
 
   gamemode = cfg.value("gamemode").toString();
   manual_gamemode = cfg.value("manual_gamemode", false).toBool();
-  timeofday = cfg.value("timeofday").toString();
-  manual_timeofday = cfg.value("manual_timeofday", false).toBool();
+  time_of_day = cfg.value("timeofday").toString();
+  manual_time_of_day = cfg.value("manual_timeofday", false).toBool();
   always_pre = cfg.value("always_pre", true).toBool();
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
   log_max_lines = cfg.value("chatlog_limit", 100).toInt();
@@ -197,8 +197,8 @@ void AOConfigPrivate::save_file()
   cfg.setValue("theme", theme);
   cfg.setValue("gamemode", gamemode);
   cfg.setValue("manual_gamemode", manual_gamemode);
-  cfg.setValue("timeofday", timeofday);
-  cfg.setValue("manual_timeofday", manual_timeofday);
+  cfg.setValue("timeofday", time_of_day);
+  cfg.setValue("manual_timeofday", manual_time_of_day);
   cfg.setValue("always_pre", always_pre);
   cfg.setValue("chat_tick_interval", chat_tick_interval);
   cfg.setValue("chatlog_limit", log_max_lines);
@@ -385,7 +385,7 @@ QString AOConfig::gamemode() const
  *
  * @return Current manual gamemode status.
  */
-bool AOConfig::manual_gamemode_enabled() const
+bool AOConfig::is_manual_gamemode_enabled() const
 {
   return d->manual_gamemode;
 }
@@ -396,9 +396,9 @@ bool AOConfig::manual_gamemode_enabled() const
  *
  * @return Current gamemode, or empty string if not set.
  */
-QString AOConfig::timeofday() const
+QString AOConfig::time_of_day() const
 {
-  return d->timeofday;
+  return d->time_of_day;
 }
 
 /**
@@ -411,9 +411,9 @@ QString AOConfig::timeofday() const
  *
  * @return Current manual time of day status.
  */
-bool AOConfig::manual_timeofday_enabled() const
+bool AOConfig::is_manual_time_of_day_enabled() const
 {
-  return d->manual_timeofday;
+  return d->manual_time_of_day;
 }
 
 bool AOConfig::always_pre_enabled() const
@@ -641,7 +641,7 @@ void AOConfig::set_gamemode(QString p_string)
   d->invoke_signal("gamemode_changed", Q_ARG(QString, p_string));
 }
 
-void AOConfig::set_manual_gamemode(bool p_enabled)
+void AOConfig::set_manual_gamemode_enabled(bool p_enabled)
 {
   if (d->manual_gamemode == p_enabled)
     return;
@@ -649,20 +649,20 @@ void AOConfig::set_manual_gamemode(bool p_enabled)
   d->invoke_signal("manual_gamemode_changed", Q_ARG(bool, p_enabled));
 }
 
-void AOConfig::set_timeofday(QString p_string)
+void AOConfig::set_time_of_day(QString p_string)
 {
-  if (d->timeofday == p_string)
+  if (d->time_of_day == p_string)
     return;
-  d->timeofday = p_string;
-  d->invoke_signal("timeofday_changed", Q_ARG(QString, p_string));
+  d->time_of_day = p_string;
+  d->invoke_signal("time_of_day_changed", Q_ARG(QString, p_string));
 }
 
-void AOConfig::set_manual_timeofday(bool p_enabled)
+void AOConfig::set_manual_time_of_day_enabled(bool p_enabled)
 {
-  if (d->manual_timeofday == p_enabled)
+  if (d->manual_time_of_day == p_enabled)
     return;
-  d->manual_timeofday = p_enabled;
-  d->invoke_signal("manual_timeofday_changed", Q_ARG(bool, p_enabled));
+  d->manual_time_of_day = p_enabled;
+  d->invoke_signal("manual_time_of_day_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_always_pre(bool p_enabled)

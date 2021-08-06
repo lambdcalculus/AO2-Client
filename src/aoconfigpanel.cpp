@@ -111,8 +111,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(theme_changed(QString)), this, SLOT(on_theme_changed(QString)));
   connect(m_config, SIGNAL(gamemode_changed(QString)), this, SLOT(on_gamemode_changed(QString)));
   connect(m_config, SIGNAL(manual_gamemode_changed(bool)), ui_manual_gamemode, SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(timeofday_changed(QString)), this, SLOT(on_theme_changed(QString)));
-  connect(m_config, SIGNAL(manual_timeofday_changed(bool)), ui_manual_timeofday, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(time_of_day_changed(QString)), this, SLOT(on_theme_changed(QString)));
+  connect(m_config, SIGNAL(manual_time_of_day_changed(bool)), ui_manual_timeofday, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(showname_changed(QString)), ui_showname, SLOT(setText(QString)));
   connect(m_config, SIGNAL(showname_placeholder_changed(QString)), this,
           SLOT(on_showname_placeholder_changed(QString)));
@@ -172,9 +172,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(ui_gamemode, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_gamemode_index_changed(QString)));
-  connect(ui_manual_gamemode, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_gamemode(bool)));
+  connect(ui_manual_gamemode, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_gamemode_enabled(bool)));
   connect(ui_timeofday, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_timeofday_index_changed(QString)));
-  connect(ui_manual_timeofday, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_timeofday(bool)));
+  connect(ui_manual_timeofday, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_time_of_day_enabled(bool)));
   connect(ui_showname, SIGNAL(editingFinished()), this, SLOT(showname_editing_finished()));
   connect(ui_always_pre, SIGNAL(toggled(bool)), m_config, SLOT(set_always_pre(bool)));
   connect(ui_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
@@ -218,9 +218,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // game
   ui_theme->setCurrentText(m_config->theme());
   ui_gamemode->setCurrentText(m_config->gamemode());
-  ui_manual_gamemode->setChecked(m_config->manual_gamemode_enabled());
-  ui_timeofday->setCurrentText(m_config->timeofday());
-  ui_manual_timeofday->setChecked(m_config->manual_timeofday_enabled());
+  ui_manual_gamemode->setChecked(m_config->is_manual_gamemode_enabled());
+  ui_timeofday->setCurrentText(m_config->time_of_day());
+  ui_manual_timeofday->setChecked(m_config->is_manual_time_of_day_enabled());
   ui_showname->setText(m_config->showname());
   on_showname_placeholder_changed(m_config->showname_placeholder());
   ui_always_pre->setChecked(m_config->always_pre_enabled());
@@ -264,12 +264,12 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_blank_blips->setChecked(m_config->blank_blips_enabled());
 
   // Widget enabling connections
-  ui_gamemode->setEnabled(m_config->manual_gamemode_enabled());
-  ui_timeofday->setEnabled(m_config->manual_timeofday_enabled());
+  ui_gamemode->setEnabled(m_config->is_manual_gamemode_enabled());
+  ui_timeofday->setEnabled(m_config->is_manual_time_of_day_enabled());
   // The manual gamemode checkbox enables browsing the gamemode combox
   // similarly with time of day
   connect(m_config, SIGNAL(manual_gamemode_changed(bool)), ui_gamemode, SLOT(setEnabled(bool)));
-  connect(m_config, SIGNAL(manual_timeofday_changed(bool)), ui_timeofday, SLOT(setEnabled(bool)));
+  connect(m_config, SIGNAL(manual_time_of_day_changed(bool)), ui_timeofday, SLOT(setEnabled(bool)));
 }
 
 void AOConfigPanel::showEvent(QShowEvent *event)
@@ -425,7 +425,7 @@ void AOConfigPanel::on_gamemode_changed(QString p_name)
   ui_gamemode->setCurrentText(p_name);
 }
 
-void AOConfigPanel::on_timeofday_changed(QString p_name)
+void AOConfigPanel::on_time_of_day_changed(QString p_name)
 {
   refresh_theme_list();
   refresh_gamemode_list();
@@ -442,7 +442,7 @@ void AOConfigPanel::on_gamemode_index_changed(QString p_text)
 void AOConfigPanel::on_timeofday_index_changed(QString p_text)
 {
   Q_UNUSED(p_text);
-  m_config->set_timeofday(ui_timeofday->currentData().toString());
+  m_config->set_time_of_day(ui_timeofday->currentData().toString());
 }
 
 void AOConfigPanel::on_showname_placeholder_changed(QString p_text)

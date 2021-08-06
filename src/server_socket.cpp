@@ -264,11 +264,23 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     if (l_content.size() < 1)
       return;
 
-    if (is_courtroom_constructed)
+    if (!is_courtroom_constructed)
+      return;
+
+    DRAreaBackground l_area_bg;
+    l_area_bg.background = l_content.at(0);
+
+    for (int i = 1; i < l_content.size(); ++i)
     {
-      m_courtroom->set_background(l_content.at(0));
-      m_courtroom->set_scene();
+      const QStringList l_tod_data = l_content.at(i).split("|", DR::SkipEmptyParts);
+      if (l_tod_data.size() < 2)
+        continue;
+      l_area_bg.background_tod_map.insert(l_tod_data.at(0), l_tod_data.at(1));
     }
+
+    qDebug() << l_area_bg.background << l_area_bg.background_tod_map;
+
+    m_courtroom->set_background(l_area_bg);
   }
   else if (l_header == "chat_tick_rate")
   {
@@ -376,7 +388,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   {
     if (l_content.length() < 1)
       return;
-    if (ao_config->manual_gamemode_enabled())
+    if (ao_config->is_manual_gamemode_enabled())
       return;
     ao_config->set_gamemode(l_content.at(0));
   }
@@ -384,9 +396,9 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   {
     if (l_content.length() < 1)
       return;
-    if (ao_config->manual_timeofday_enabled())
+    if (!is_courtroom_constructed)
       return;
-    ao_config->set_timeofday(l_content.at(0));
+    m_courtroom->set_time_of_day(l_content.at(0));
   }
   else if (l_header == "TR")
   {

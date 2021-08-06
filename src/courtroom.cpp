@@ -240,14 +240,14 @@ void Courtroom::set_window_title(QString p_title)
   this->setWindowTitle(p_title);
 }
 
-void Courtroom::set_scene()
+void Courtroom::update_background_scene()
 {
   // witness is default if pos is invalid
   QString f_background = "witnessempty";
   QString f_desk_image = "stand";
   QString f_desk_mod = m_chatmessage[CMDeskModifier];
   QString f_side = m_chatmessage[CMPosition];
-  QString ini_path = ao_app->get_background_path(BACKGROUND_BACKGROUNDS_INI);
+  QString ini_path = ao_app->format_background_path(BACKGROUND_BACKGROUNDS_INI);
 
   if (file_exists(ini_path))
   {
@@ -291,21 +291,22 @@ void Courtroom::set_scene()
       f_desk_image = "stand";
     }
 
-    bool has_all_desks = true;
+    bool l_all_desks_exists = true;
     QStringList alldesks{"defensedesk", "prosecutiondesk", "stand"};
-    for (const QString &desk : alldesks)
+    for (const QString &i_desk : alldesks)
     {
-      QString full_path = ao_app->find_asset_path({get_background_path(desk)}, animated_or_static_extensions());
-      if (full_path.isEmpty())
+      const QString l_desk_path = ao_app->find_asset_path(ao_app->get_current_background_path() + "/" + i_desk,
+                                                          animated_or_static_extensions());
+      if (l_desk_path.isEmpty())
       {
-        has_all_desks = false;
+        l_all_desks_exists = false;
         break;
       }
     }
 
     if (f_desk_mod == "0" || (f_desk_mod != "1" && (f_side == "jud" || f_side == "hld" || f_side == "hlp")))
       ui_vp_desk->hide();
-    else if (!has_all_desks)
+    else if (!l_all_desks_exists)
       ui_vp_desk->hide();
     else
       ui_vp_desk->show();
@@ -330,9 +331,26 @@ void Courtroom::set_taken(int n_char, bool p_taken)
   m_chr_list.replace(n_char, f_char);
 }
 
-void Courtroom::set_background(QString p_background)
+DRAreaBackground Courtroom::get_background()
 {
-  current_background = p_background;
+  return m_background;
+}
+
+void Courtroom::set_background(DRAreaBackground p_background)
+{
+  m_background = p_background;
+  update_background_scene();
+}
+
+QString Courtroom::get_time_of_day()
+{
+  return m_time_of_day;
+}
+
+void Courtroom::set_time_of_day(QString p_tod)
+{
+  m_time_of_day = p_tod;
+  update_background_scene();
 }
 
 void Courtroom::set_tick_rate(const int p_tick_rate)
@@ -868,7 +886,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
   if (m_msg_is_first_person == false)
   {
-    set_scene();
+    update_background_scene();
   }
 
   int emote_mod = m_chatmessage[CMEmoteModifier].toInt();
@@ -2134,7 +2152,7 @@ void Courtroom::on_app_reload_theme_requested()
   setup_courtroom();
 
   // to update status on the background
-  set_background(current_background);
+  update_background_scene();
 }
 
 void Courtroom::on_back_to_lobby_clicked()
