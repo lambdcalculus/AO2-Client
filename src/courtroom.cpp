@@ -351,6 +351,7 @@ void Courtroom::set_time_of_day(QString p_tod)
 {
   m_time_of_day = p_tod;
   setup_courtroom();
+  update_background_scene();
 }
 
 void Courtroom::set_tick_rate(const int p_tick_rate)
