@@ -350,7 +350,7 @@ QString Courtroom::get_time_of_day()
 void Courtroom::set_time_of_day(QString p_tod)
 {
   m_time_of_day = p_tod;
-  update_background_scene();
+  setup_courtroom();
 }
 
 void Courtroom::set_tick_rate(const int p_tick_rate)
