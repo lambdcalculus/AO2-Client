@@ -83,6 +83,8 @@ QStringList AOApplication::get_available_background_identifier_list()
   return l_bg_list;
 }
 
+#include <QDebug>
+
 QString AOApplication::get_current_background_path()
 {
   QString l_bg_path;
@@ -93,7 +95,7 @@ QString AOApplication::get_current_background_path()
     for (QString &i_bg : l_bg_list)
     {
       i_bg = get_case_sensitive_path(format_background_path(i_bg));
-      if (i_bg.isEmpty())
+      if (!dir_exists(i_bg))
         continue;
       l_bg_path = i_bg;
       break;
