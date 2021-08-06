@@ -34,7 +34,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 
   connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(handle_theme_modification()));
   connect(ao_config, SIGNAL(gamemode_changed(QString)), this, SLOT(handle_theme_modification()));
-  connect(ao_config, SIGNAL(timeofday_changed(QString)), this, SLOT(handle_theme_modification()));
+  connect(ao_config, SIGNAL(time_of_day_changed(QString)), this, SLOT(handle_theme_modification()));
+  connect(ao_config, SIGNAL(manual_time_of_day_changed(bool)), this, SLOT(handle_theme_modification()));
   connect(ao_config_panel, SIGNAL(reload_theme()), this, SLOT(handle_theme_modification()));
   ao_config_panel->hide();
 

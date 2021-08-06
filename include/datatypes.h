@@ -2,6 +2,7 @@
 #define DATATYPES_H
 
 #include <QDateTime>
+#include <QMap>
 
 class DREmote
 {
@@ -15,6 +16,13 @@ public:
   int desk_modifier = -1;
   QString sound_file;
   int sound_delay = 0;
+};
+
+class DRAreaBackground
+{
+public:
+  QString background;
+  QMap<QString, QString> background_tod_map;
 };
 
 class DRChatRecord

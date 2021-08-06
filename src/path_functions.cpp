@@ -1,6 +1,7 @@
 #include "aoapplication.h"
 
 #include "aoconfig.h"
+#include "commondefs.h"
 #include "courtroom.h"
 #include "drpather.h"
 #include "file_functions.h"
@@ -48,21 +49,60 @@ QString AOApplication::get_music_path(QString p_song)
   return get_case_sensitive_path(path);
 }
 
-QString AOApplication::get_background_path(QString p_file)
+QString AOApplication::format_background_path(QString p_identifier)
 {
-  if (is_courtroom_constructed)
-  {
-    return get_case_sensitive_path(m_courtroom->get_background_path(p_file));
-  }
-  // this function being called when the courtroom isn't constructed makes no
-  // sense
-  return "";
+  return get_base_path() + "background/" + p_identifier;
 }
 
-QString AOApplication::get_default_background_path(QString p_file)
+QStringList AOApplication::get_available_background_identifier_list()
 {
-  QString path = get_base_path() + "background/gs4/" + p_file;
-  return get_case_sensitive_path(path);
+  QStringList l_bg_list;
+
+  if (is_courtroom_constructed)
+  {
+    const DRAreaBackground l_area_bg = m_courtroom->get_background();
+
+    const QMap<QString, QString> &l_bg_map = l_area_bg.background_tod_map;
+    if (ao_config->is_manual_time_of_day_enabled())
+    {
+      const QString l_manual_tod = ao_config->time_of_day();
+      if (!l_manual_tod.isEmpty() && l_bg_map.contains(l_manual_tod))
+        l_bg_list.append(l_bg_map.value(l_manual_tod));
+    }
+
+    const QString l_tod = m_courtroom->get_time_of_day();
+    if (!l_tod.isEmpty() && l_bg_map.contains(l_tod))
+      l_bg_list.append(l_bg_map.value(l_tod));
+
+    if (!l_area_bg.background.isEmpty())
+      l_bg_list.append(l_area_bg.background);
+
+    l_bg_list.append(BACKGROUND_DEFAULT_NAME);
+  }
+
+  return l_bg_list;
+}
+
+#include <QDebug>
+
+QString AOApplication::get_current_background_path()
+{
+  QString l_bg_path;
+
+  if (is_courtroom_constructed)
+  {
+    QStringList l_bg_list = get_available_background_identifier_list();
+    for (QString &i_bg : l_bg_list)
+    {
+      i_bg = get_case_sensitive_path(format_background_path(i_bg));
+      if (!dir_exists(i_bg))
+        continue;
+      l_bg_path = i_bg;
+      break;
+    }
+  }
+
+  return l_bg_path;
 }
 
 QString AOApplication::get_evidence_path(QString p_file)
@@ -74,11 +114,6 @@ QString AOApplication::get_evidence_path(QString p_file)
     return default_path;
   else
     return alt_path;
-}
-
-QString Courtroom::get_background_path(QString p_file)
-{
-  return ao_app->get_base_path() + "background/" + current_background + "/" + p_file;
 }
 
 /**
@@ -181,6 +216,16 @@ QString AOApplication::find_asset_path(QStringList p_file_list)
   return find_asset_path(p_file_list, QStringList{""});
 }
 
+QString AOApplication::find_asset_path(QString p_file, QStringList p_extension_list)
+{
+  return find_asset_path(QStringList{p_file}, p_extension_list);
+}
+
+QString AOApplication::find_asset_path(QString p_file)
+{
+  return find_asset_path(QStringList{p_file});
+}
+
 /**
  * @brief Returns the first case-sensitive file in the theme folder that is
  * of the form name+extension, or empty string if it fails.
@@ -208,7 +253,9 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_exten
 
   // Only add gamemode and/or time of day if non empty.
   const QString l_gamemode = ao_config->gamemode();
-  const QString l_timeofday = ao_config->timeofday();
+  const QString l_timeofday = ao_config->is_manual_time_of_day_enabled() ? ao_config->time_of_day()
+                              : is_courtroom_constructed                 ? m_courtroom->get_time_of_day()
+                                                                         : nullptr;
   const QString l_theme_root = get_base_path() + "themes/" + ao_config->theme();
 
   if (!l_gamemode.isEmpty())

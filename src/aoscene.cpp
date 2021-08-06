@@ -13,24 +13,11 @@ AOScene::AOScene(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent), ao_
 
 void AOScene::set_image(QString p_image)
 {
-  QString target_path = ao_app->get_default_background_path(p_image);
-
-  // background specific path
-  QString background_path = ao_app->get_background_path(p_image);
-
-  for (auto &ext : animated_or_static_extensions())
-  {
-    QString full_background_path = ao_app->get_case_sensitive_path(background_path + ext);
-
-    if (file_exists(full_background_path))
-    {
-      target_path = full_background_path;
-      break;
-    }
-  }
+  const QString l_file_path =
+      ao_app->find_asset_path(ao_app->get_current_background_path() + "/" + p_image, animated_or_static_extensions());
 
   // do not update the movie if we're using the same file
-  if (m_reader->fileName() == target_path)
+  if (m_reader->fileName() == l_file_path)
     return;
 
   m_reader->stop();
@@ -38,7 +25,7 @@ void AOScene::set_image(QString p_image)
 
   m_reader = new QMovie(this);
   m_reader->setScaledSize(size());
-  m_reader->setFileName(target_path);
+  m_reader->setFileName(l_file_path);
   setMovie(m_reader);
   m_reader->start();
 }

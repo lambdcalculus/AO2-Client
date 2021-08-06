@@ -71,14 +71,17 @@ public:
   // QString get_demothings_path();
   QString get_sounds_path(QString p_file);
   QString get_music_path(QString p_song);
-  QString get_background_path(QString p_file);
-  QString get_default_background_path(QString p_file);
+  QString format_background_path(QString p_identifier);
+  QStringList get_available_background_identifier_list();
+  QString get_current_background_path();
   QString get_evidence_path(QString p_file);
 
   QString sanitize_path(QString p_file);
 
   QString find_asset_path(QStringList file_list, QStringList extension_list);
   QString find_asset_path(QStringList file_list);
+  QString find_asset_path(QString p_file, QStringList p_extension_list);
+  QString find_asset_path(QString p_file);
   QString find_theme_asset_path(QString file, QStringList extension_list);
   QString find_theme_asset_path(QString file);
 

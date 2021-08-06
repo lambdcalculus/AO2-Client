@@ -74,7 +74,10 @@ public:
 
   // sets the current background to argument. also does some checks to see if
   // it's a legacy bg
-  void set_background(QString p_background);
+  DRAreaBackground get_background();
+  void set_background(DRAreaBackground p_area_bg);
+  QString get_time_of_day();
+  void set_time_of_day(QString p_tod);
 
   void set_tick_rate(const int tick_rate);
 
@@ -93,7 +96,7 @@ public:
   void done_received();
 
   // sets desk and bg based on pos in chatmessage
-  void set_scene();
+  void update_background_scene();
 
   // sets text color based on text color in chatmessage
   void set_text_color();
@@ -339,7 +342,8 @@ private:
 
   int current_clock = -1;
 
-  QString current_background = "gs4";
+  DRAreaBackground m_background;
+  QString m_time_of_day;
 
   AOImageDisplay *ui_background = nullptr;
 
