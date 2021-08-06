@@ -251,8 +251,9 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_exten
 
   // Only add gamemode and/or time of day if non empty.
   const QString l_gamemode = ao_config->gamemode();
-  const QString l_timeofday =
-      ao_config->is_manual_time_of_day_enabled() ? ao_config->time_of_day() : m_courtroom->get_time_of_day();
+  const QString l_timeofday = ao_config->is_manual_time_of_day_enabled() ? ao_config->time_of_day()
+                              : is_courtroom_constructed                 ? m_courtroom->get_time_of_day()
+                                                                         : nullptr;
   const QString l_theme_root = get_base_path() + "themes/" + ao_config->theme();
 
   if (!l_gamemode.isEmpty())
