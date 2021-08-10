@@ -121,6 +121,7 @@ jobs:
         windeployqt.exe --quick --compiler-runtime .
         cp ../discord-rpc/win32-dynamic/bin/discord-rpc.dll .
         cp ../bass.dll .
+        cp ../bassopus.dll .
         cp ../mingw73_32/plugins/imageformats/qapng.dll ./imageformats/
         cp  /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/libgcc_s_dw2-1.dll .
         cp  /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/libwinpthread-1.dll .
@@ -227,6 +228,8 @@ jobs:
         cp ../discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib "./Danganronpa Online.app/Contents/MacOS/"
         cp ../libbass.dylib "./Danganronpa Online.app/Contents/Frameworks/"
         cp ../libbass.dylib "./Danganronpa Online.app/Contents/MacOS/"
+        cp ../libbassopus.dylib "./Danganronpa Online.app/Contents/Frameworks/"
+        cp ../libbassopus.dylib "./Danganronpa Online.app/Contents/MacOS/"
         cp -R ../clang_64/plugins/imageformats "./Danganronpa Online.app/Contents/MacOS/"
          
     - name: Make DMG
@@ -336,6 +339,7 @@ jobs:
         mkdir depends
         cp ../discord-rpc/linux-dynamic/lib/libdiscord-rpc.so "./depends"
         cp ../x64/libbass.so "./depends"
+        cp ../x64/libbassopus.so "./depends"
         mkdir imageformats
         cp -R ../libqapng.so "./imageformats"
         echo "LD_LIBRARY_PATH=.:./depends:$LD_LIBRARY_PATH ./dro-client" > "dro-client.sh"
