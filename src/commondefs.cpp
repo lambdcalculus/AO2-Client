@@ -2,7 +2,6 @@
 
 #include <QString>
 
-const QString BACKGROUND_BACKGROUNDS_INI = "backgrounds.ini";
 const QString BACKGROUND_DEFAULT_NAME = "gs4";
 
 const QString BASE_CONFIG_INI = "/base/config.ini";

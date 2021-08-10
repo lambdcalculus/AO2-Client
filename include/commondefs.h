@@ -2,7 +2,6 @@
 
 class QString;
 
-extern const QString BACKGROUND_BACKGROUNDS_INI;
 extern const QString BACKGROUND_DEFAULT_NAME;
 
 extern const QString BASE_CONFIG_INI;

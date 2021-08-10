@@ -247,73 +247,44 @@ void Courtroom::update_background_scene()
   QString f_desk_image = "stand";
   QString f_desk_mod = m_chatmessage[CMDeskModifier];
   QString f_side = m_chatmessage[CMPosition];
-  QString ini_path = ao_app->format_background_path(BACKGROUND_BACKGROUNDS_INI);
-
-  if (file_exists(ini_path))
+  
+  if (f_side == "def")
   {
-    f_background = ao_app->read_ini(f_side, ini_path);
-    f_desk_image = ao_app->read_ini(f_side + "_desk", ini_path);
+    f_background = "defenseempty";
+    f_desk_image = "defensedesk";
+  }
+  else if (f_side == "pro")
+  {
+    f_background = "prosecutorempty";
+    f_desk_image = "prosecutiondesk";
+  }
+  else if (f_side == "jud")
+  {
+    f_background = "judgestand";
+    f_desk_image = "judgedesk";
+  }
+  else if (f_side == "hld")
+  {
+    f_background = "helperstand";
+    f_desk_image = "helperdesk";
+  }
+  else if (f_side == "hlp")
+  {
+    f_background = "prohelperstand";
+    f_desk_image = "prohelperdesk";
+  }
 
-    if (f_desk_mod == "0") // keeping a bit of the functionality for now
-    {
-      ui_vp_desk->hide();
-    }
+  if (f_desk_mod == "0")
+  {
+    ui_vp_desk->hide();
   }
   else
   {
-    if (f_side == "def")
-    {
-      f_background = "defenseempty";
-      f_desk_image = "defensedesk";
-    }
-    else if (f_side == "pro")
-    {
-      f_background = "prosecutorempty";
-      f_desk_image = "prosecutiondesk";
-    }
-    else if (f_side == "jud")
-    {
-      f_background = "judgestand";
-      f_desk_image = "judgedesk";
-    }
-    else if (f_side == "hld")
-    {
-      f_background = "helperstand";
-      f_desk_image = "helperdesk";
-    }
-    else if (f_side == "hlp")
-    {
-      f_background = "prohelperstand";
-      f_desk_image = "prohelperdesk";
-    }
-    else
-    {
-      f_desk_image = "stand";
-    }
-
-    bool l_all_desks_exists = true;
-    QStringList alldesks{"defensedesk", "prosecutiondesk", "stand"};
-    for (const QString &i_desk : alldesks)
-    {
-      const QString l_desk_path = ao_app->find_asset_path(ao_app->get_current_background_path() + "/" + i_desk,
-                                                          animated_or_static_extensions());
-      if (l_desk_path.isEmpty())
-      {
-        l_all_desks_exists = false;
-        break;
-      }
-    }
-
-    if (f_desk_mod == "0" || (f_desk_mod != "1" && (f_side == "jud" || f_side == "hld" || f_side == "hlp")))
-      ui_vp_desk->hide();
-    else if (!l_all_desks_exists)
-      ui_vp_desk->hide();
-    else
-      ui_vp_desk->show();
+    ui_vp_desk->show();
+    ui_vp_desk->set_image(f_desk_image);
   }
 
   ui_vp_background->set_image(f_background);
-  ui_vp_desk->set_image(f_desk_image);
 }
 
 void Courtroom::set_taken(int n_char, bool p_taken)
@@ -387,21 +358,21 @@ void Courtroom::handle_music_anim()
 
 void Courtroom::handle_clock(QString time)
 {
-  current_clock = time.toInt();
-  if (current_clock < 0 || current_clock > 23)
-    current_clock = -1;
-  qInfo() << QString("Clock time changed to %1").arg(current_clock);
+  m_current_clock = time.toInt();
+  if (m_current_clock < 0 || m_current_clock > 23)
+    m_current_clock = -1;
+  qInfo() << QString("Clock time changed to %1").arg(m_current_clock);
 
   ui_vp_clock->hide();
 
-  if (current_clock == -1)
+  if (m_current_clock == -1)
   {
     qInfo() << "Unknown time; no asset to be used.";
     return;
   }
 
   qDebug() << "Displaying clock asset...";
-  QString clock_filename = "hours/" + QString::number(current_clock);
+  QString clock_filename = "hours/" + QString::number(m_current_clock);
   const QString asset_path = ao_app->find_theme_asset_path(clock_filename, animated_or_static_extensions());
   if (asset_path.isEmpty())
   {

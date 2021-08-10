@@ -647,7 +647,8 @@ void Courtroom::set_widgets()
   ui_vp_music_display_b->show();
 
   set_size_and_pos(ui_vp_clock, "clock", COURTROOM_DESIGN_INI, ao_app);
-  ui_vp_clock->hide();
+  if (m_current_clock == -1)
+    ui_vp_clock->hide();
 
   ui_vp_chatbox->set_image("chatmed.png");
   ui_vp_chatbox->hide();

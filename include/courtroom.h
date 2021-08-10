@@ -340,7 +340,7 @@ private:
   int evidence_rows = 3;
   int max_evidence_on_page = 18;
 
-  int current_clock = -1;
+  int m_current_clock = -1;
 
   DRAreaBackground m_background;
   QString m_time_of_day;
