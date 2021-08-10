@@ -48,6 +48,16 @@ jobs:
         cp ./c/bass.h ./DRO-Client/3rd/include
         cp ./bass.dll ./DRO-Client/3rd/x86
         cp ./c/bass.lib ./DRO-Client/3rd/x86
+      
+    - name: Fetch BassOpus external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
+        unzip bassopus.zip
+        cp ./c/bassopus.h ./DRO-Client/3rd/include
+        cp ./bassopus.dll ./DRO-Client/3rd/x86
+        cp ./c/bassopus.lib ./DRO-Client/3rd/x86
         
     - name: Fetch QtApng external library
       shell: bash
@@ -165,6 +175,15 @@ jobs:
         unzip bass.zip
         cp ./bass.h ./DRO-Client/3rd/include
         cp ./libbass.dylib ./DRO-Client/3rd/x86_64
+      
+    - name: Fetch BassOpus external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
+        unzip bassopus.zip
+        cp ./bassopus.h ./DRO-Client/3rd/include
+        cp ./libbassopus.dylib ./DRO-Client/3rd/x86_64
         
     - name: Fetch QtApng external library
       shell: bash
@@ -259,6 +278,15 @@ jobs:
         unzip bass.zip
         cp ./bass.h ./DRO-Client/3rd/include/bass.h
         cp ./x64/libbass.so ./DRO-Client/3rd/x86_64/libbass.so
+        
+    - name: Fetch BassOpus external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
+        unzip bassopus.zip
+        cp ./bassopus.h ./DRO-Client/3rd/include/bassopus.h
+        cp ./x64/libbassopus.so ./DRO-Client/3rd/x86_64/libbassopus.so
         
     - name: Install Qt
       shell: bash
