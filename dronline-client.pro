@@ -136,7 +136,7 @@ SOURCES += \
 # 2. You need to compile the Discord Rich Presence SDK separately and add the lib/headers
 #    in the same way as BASS. Discord RPC uses CMake, which does not play nicely with
 #    QMake, so this step must be manual.
-LIBS += -L$$PWD/3rd/$${QMAKE_HOST.arch} -lbass -ldiscord-rpc
+LIBS += -L$$PWD/3rd/$${QMAKE_HOST.arch} -lbass -lbassopus -ldiscord-rpc
 
 RESOURCES += \
   res.qrc
