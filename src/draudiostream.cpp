@@ -3,6 +3,8 @@
 #include "draudioengine.h"
 #include "draudiostreamfamily.h"
 
+#include <bassopus.h>
+
 #include <QDebug>
 #include <QFileInfo>
 
@@ -80,7 +82,12 @@ std::optional<DRAudioError> DRAudioStream::set_file(QString p_file)
 
   m_file = p_file;
 
-  HSTREAM stream_handle = BASS_StreamCreateFile(FALSE, m_file->utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+  HSTREAM stream_handle;
+  if (m_file->endsWith("opus", Qt::CaseInsensitive))
+    stream_handle = BASS_OPUS_StreamCreateFile(FALSE, m_file->utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+  else
+    stream_handle = BASS_StreamCreateFile(FALSE, m_file->utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+
   if (stream_handle == 0)
     return DRAudioError(
         QString("failed to create stream for file %1: %2").arg(p_file).arg(DRAudio::get_last_bass_error()));
