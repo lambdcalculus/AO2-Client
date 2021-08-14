@@ -388,9 +388,9 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   {
     if (l_content.length() < 1)
       return;
-    if (ao_config->is_manual_gamemode_enabled())
+    if (!is_courtroom_constructed)
       return;
-    ao_config->set_gamemode(l_content.at(0));
+    m_courtroom->set_gamemode(l_content.at(0));
   }
   else if (l_header == "TOD")
   {

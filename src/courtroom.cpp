@@ -247,7 +247,7 @@ void Courtroom::update_background_scene()
   QString f_desk_image = "stand";
   QString f_desk_mod = m_chatmessage[CMDeskModifier];
   QString f_side = m_chatmessage[CMPosition];
-  
+
   if (f_side == "def")
   {
     f_background = "defenseempty";
@@ -313,14 +313,30 @@ void Courtroom::set_background(DRAreaBackground p_background)
   update_background_scene();
 }
 
+QString Courtroom::get_gamemode()
+{
+  return m_gamemode;
+}
+
+void Courtroom::set_gamemode(QString p_gamemode)
+{
+  if (m_gamemode == p_gamemode)
+    return;
+  m_gamemode = p_gamemode;
+  setup_courtroom();
+  update_background_scene();
+}
+
 QString Courtroom::get_time_of_day()
 {
   return m_time_of_day;
 }
 
-void Courtroom::set_time_of_day(QString p_tod)
+void Courtroom::set_time_of_day(QString p_time_of_day)
 {
-  m_time_of_day = p_tod;
+  if (m_time_of_day == p_time_of_day)
+    return;
+  m_time_of_day = p_time_of_day;
   setup_courtroom();
   update_background_scene();
 }
