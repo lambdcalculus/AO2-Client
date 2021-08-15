@@ -223,7 +223,7 @@
            <item>
             <widget class="QComboBox" name="manual_gamemode">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600; color:#0000ff;&quot;&gt;current manually selected&lt;/span&gt; gamemode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
