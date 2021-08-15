@@ -326,6 +326,8 @@ void Courtroom::set_gamemode(QString p_gamemode)
     return;
   m_gamemode = p_gamemode;
   ao_config->set_gamemode(p_gamemode);
+  if (ao_config->is_manual_gamemode_selection_enabled())
+    return;
   setup_courtroom();
   update_background_scene();
 }
@@ -341,6 +343,8 @@ void Courtroom::set_timeofday(QString p_timeofday)
     return;
   m_timeofday = p_timeofday;
   ao_config->set_timeofday(p_timeofday);
+  if (ao_config->is_manual_timeofday_selection_enabled())
+    return;
   setup_courtroom();
   update_background_scene();
 }
