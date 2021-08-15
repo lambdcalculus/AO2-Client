@@ -44,9 +44,13 @@ private slots:
   void on_reload_theme_clicked();
   void on_theme_changed(QString);
   void on_gamemode_changed(QString);
-  void on_time_of_day_changed(QString);
-  void on_gamemode_index_changed(QString p_text);
-  void on_timeofday_index_changed(QString p_text);
+  void on_manual_gamemode_changed(QString);
+  void on_manual_gamemode_index_changed(QString p_text);
+  void on_manual_gamemode_selection_changed(bool);
+  void on_timeofday_changed(QString);
+  void on_manual_timeofday_changed(QString);
+  void on_manual_timeofday_index_changed(QString p_text);
+  void on_manual_timeofday_selection_changed(bool);
   void on_showname_placeholder_changed(QString p_text);
   void on_log_is_topdown_changed(bool p_enabled);
   void on_device_current_index_changed(int p_index);
@@ -79,10 +83,12 @@ private:
   // game
   QComboBox *ui_theme = nullptr;
   QPushButton *ui_reload_theme = nullptr;
-  QComboBox *ui_gamemode = nullptr;
-  QCheckBox *ui_manual_gamemode = nullptr;
-  QComboBox *ui_timeofday = nullptr;
-  QCheckBox *ui_manual_timeofday = nullptr;
+  QLineEdit *ui_gamemode = nullptr;
+  QComboBox *ui_manual_gamemode = nullptr;
+  QCheckBox *ui_manual_gamemode_selection = nullptr;
+  QLineEdit *ui_timeofday = nullptr;
+  QComboBox *ui_manual_timeofday = nullptr;
+  QCheckBox *ui_manual_timeofday_selection = nullptr;
   QLineEdit *ui_showname = nullptr;
   QCheckBox *ui_always_pre = nullptr;
   QSpinBox *ui_chat_tick_interval = nullptr;

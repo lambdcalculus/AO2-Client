@@ -193,16 +193,47 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QComboBox" name="gamemode">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QLineEdit" name="gamemode">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <italic>true</italic>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600; color:#0000ff;&quot;&gt;currently active&lt;/span&gt; gamemode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>&lt;default&gt;</string>
+             </property>
+             <property name="frame">
+              <bool>false</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="manual_gamemode">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600; color:#0000ff;&quot;&gt;current manually selected&lt;/span&gt; gamemode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
-          <widget class="QCheckBox" name="manual_gamemode">
+          <widget class="QCheckBox" name="manual_gamemode_selection">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -227,12 +258,44 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QComboBox" name="timeofday"/>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QLineEdit" name="timeofday">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <italic>true</italic>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600; color:#0000ff;&quot;&gt;currently active&lt;/span&gt; time of day.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>&lt;default&gt;</string>
+             </property>
+             <property name="frame">
+              <bool>false</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="manual_timeofday">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600; color:#0000ff;&quot;&gt;current manually selected&lt;/span&gt; time of day.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
-          <widget class="QCheckBox" name="manual_timeofday">
+          <widget class="QCheckBox" name="manual_timeofday_selection">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>

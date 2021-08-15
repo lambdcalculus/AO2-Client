@@ -63,14 +63,14 @@ QStringList AOApplication::get_available_background_identifier_list()
     const DRAreaBackground l_area_bg = m_courtroom->get_background();
 
     const QMap<QString, QString> &l_bg_map = l_area_bg.background_tod_map;
-    if (ao_config->is_manual_time_of_day_selection_enabled())
+    if (ao_config->is_manual_timeofday_selection_enabled())
     {
-      const QString l_manual_tod = ao_config->manual_time_of_day();
+      const QString l_manual_tod = ao_config->manual_timeofday();
       if (!l_manual_tod.isEmpty() && l_bg_map.contains(l_manual_tod))
         l_bg_list.append(l_bg_map.value(l_manual_tod));
     }
 
-    const QString l_tod = m_courtroom->get_time_of_day();
+    const QString l_tod = m_courtroom->get_timeofday();
     if (!l_tod.isEmpty() && l_bg_map.contains(l_tod))
       l_bg_list.append(l_bg_map.value(l_tod));
 
@@ -255,9 +255,9 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_exten
   const QString l_gamemode = ao_config->is_manual_gamemode_selection_enabled() ? ao_config->manual_gamemode()
                              : is_courtroom_constructed                        ? m_courtroom->get_gamemode()
                                                                                : nullptr;
-  const QString l_timeofday = ao_config->is_manual_time_of_day_selection_enabled() ? ao_config->manual_time_of_day()
-                              : is_courtroom_constructed                           ? m_courtroom->get_time_of_day()
-                                                                                   : nullptr;
+  const QString l_timeofday = ao_config->is_manual_timeofday_selection_enabled() ? ao_config->manual_timeofday()
+                              : is_courtroom_constructed                         ? m_courtroom->get_timeofday()
+                                                                                 : nullptr;
   const QString l_theme_root = get_base_path() + "themes/" + ao_config->theme();
 
   if (!l_gamemode.isEmpty())
