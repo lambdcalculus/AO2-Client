@@ -33,9 +33,11 @@ public:
   bool discord_hide_character() const;
   QString theme() const;
   QString gamemode() const;
-  bool is_manual_gamemode_enabled() const;
-  QString time_of_day() const;
-  bool is_manual_time_of_day_enabled() const;
+  QString manual_gamemode() const;
+  bool is_manual_gamemode_selection_enabled() const;
+  QString timeofday() const;
+  QString manual_timeofday() const;
+  bool is_manual_timeofday_selection_enabled() const;
   bool always_pre_enabled() const;
   int chat_tick_interval() const;
   int log_max_lines() const;
@@ -80,9 +82,11 @@ public slots:
   void set_discord_hide_character(const bool p_enabled);
   void set_theme(QString p_string);
   void set_gamemode(QString p_string);
-  void set_manual_gamemode_enabled(bool p_enabled);
-  void set_time_of_day(QString p_string);
-  void set_manual_time_of_day_enabled(bool p_enabled);
+  void set_manual_gamemode(QString p_string);
+  void set_manual_gamemode_selection_enabled(bool p_enabled);
+  void set_timeofday(QString p_string);
+  void set_manual_timeofday(QString p_string);
+  void set_manual_timeofday_selection_enabled(bool p_enabled);
   void set_always_pre(bool p_enabled);
   void set_chat_tick_interval(int p_number);
   void set_log_max_lines(int p_number);
@@ -124,9 +128,11 @@ signals:
   // game
   void theme_changed(QString);
   void gamemode_changed(QString);
-  void manual_gamemode_changed(bool);
-  void time_of_day_changed(QString);
-  void manual_time_of_day_changed(bool);
+  void manual_gamemode_changed(QString);
+  void manual_gamemode_selection_changed(bool);
+  void timeofday_changed(QString);
+  void manual_timeofday_changed(QString);
+  void manual_timeofday_selection_changed(bool);
   void showname_changed(QString);
   void showname_placeholder_changed(QString);
   void character_ini_changed(QString base_character);

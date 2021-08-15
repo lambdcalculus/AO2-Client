@@ -76,8 +76,10 @@ public:
   // it's a legacy bg
   DRAreaBackground get_background();
   void set_background(DRAreaBackground p_area_bg);
-  QString get_time_of_day();
-  void set_time_of_day(QString p_tod);
+  QString get_gamemode();
+  void set_gamemode(QString p_gamemode);
+  QString get_timeofday();
+  void set_timeofday(QString p_time_of_day);
 
   void set_tick_rate(const int tick_rate);
 
@@ -343,7 +345,8 @@ private:
   int m_current_clock = -1;
 
   DRAreaBackground m_background;
-  QString m_time_of_day;
+  QString m_gamemode;
+  QString m_timeofday;
 
   AOImageDisplay *ui_background = nullptr;
 

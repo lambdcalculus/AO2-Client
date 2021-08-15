@@ -62,6 +62,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 
 Courtroom::~Courtroom()
 {
+  ao_config->set_gamemode(nullptr);
+  ao_config->set_timeofday(nullptr);
   stop_all_audio();
 }
 
@@ -247,7 +249,7 @@ void Courtroom::update_background_scene()
   QString f_desk_image = "stand";
   QString f_desk_mod = m_chatmessage[CMDeskModifier];
   QString f_side = m_chatmessage[CMPosition];
-  
+
   if (f_side == "def")
   {
     f_background = "defenseempty";
@@ -313,14 +315,36 @@ void Courtroom::set_background(DRAreaBackground p_background)
   update_background_scene();
 }
 
-QString Courtroom::get_time_of_day()
+QString Courtroom::get_gamemode()
 {
-  return m_time_of_day;
+  return m_gamemode;
 }
 
-void Courtroom::set_time_of_day(QString p_tod)
+void Courtroom::set_gamemode(QString p_gamemode)
 {
-  m_time_of_day = p_tod;
+  if (m_gamemode == p_gamemode)
+    return;
+  m_gamemode = p_gamemode;
+  ao_config->set_gamemode(p_gamemode);
+  if (ao_config->is_manual_gamemode_selection_enabled())
+    return;
+  setup_courtroom();
+  update_background_scene();
+}
+
+QString Courtroom::get_timeofday()
+{
+  return m_timeofday;
+}
+
+void Courtroom::set_timeofday(QString p_timeofday)
+{
+  if (m_timeofday == p_timeofday)
+    return;
+  m_timeofday = p_timeofday;
+  ao_config->set_timeofday(p_timeofday);
+  if (ao_config->is_manual_timeofday_selection_enabled())
+    return;
   setup_courtroom();
   update_background_scene();
 }
