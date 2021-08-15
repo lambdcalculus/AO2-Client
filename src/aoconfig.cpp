@@ -659,6 +659,7 @@ void AOConfig::set_manual_gamemode(QString p_string)
     return;
   d->manual_gamemode = p_string;
   d->invoke_signal("manual_gamemode_changed", Q_ARG(QString, p_string));
+  set_manual_timeofday(nullptr);
 }
 
 void AOConfig::set_manual_gamemode_selection_enabled(bool p_enabled)
