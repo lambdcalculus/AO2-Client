@@ -52,6 +52,7 @@ public:
   bool has_character_declaration_feature() const;
   bool has_showname_declaration_feature() const;
   bool has_chat_speed_feature() const;
+  bool has_character_availability_request_feature() const;
 
   ///////////////////////////////////////////
 
@@ -230,6 +231,7 @@ private:
   bool feature_showname = false;
   bool feature_chrini = false;
   bool feature_chat_speed = false;
+  bool feature_charscheck = false;
 
   ///////////////loading info///////////////////
   // player number, it's hardly used but might be needed for some old servers

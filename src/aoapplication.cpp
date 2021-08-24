@@ -194,6 +194,11 @@ bool AOApplication::has_chat_speed_feature() const
   return feature_chat_speed;
 }
 
+bool AOApplication::has_character_availability_request_feature() const
+{
+  return feature_charscheck;
+}
+
 void AOApplication::handle_theme_modification()
 {
   load_fonts();
