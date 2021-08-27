@@ -214,3 +214,32 @@ void Courtroom::char_mouse_left()
 {
   ui_char_button_selector->hide();
 }
+
+void Courtroom::char_set_taken(int n_real_char, bool p_taken)
+{
+  // First update the taken status in the internal list
+  if (n_real_char >= m_chr_list.size())
+  {
+    qDebug() << "W: set_taken attempted to set an index bigger than char_list size";
+    return;
+  }
+
+  char_type f_char;
+  f_char.name = m_chr_list.at(n_real_char).name;
+  f_char.taken = p_taken;
+
+  m_chr_list.replace(n_real_char, f_char);
+
+  // Then visually update the visible character button if necessary
+  // It is not necessary to update a button if visually it is not present
+  if (n_real_char < m_current_chr_page * m_page_max_chr_count)
+    return;
+  if (n_real_char >= (m_current_chr_page+1) * m_page_max_chr_count)
+    return;
+
+  int l_button_id = n_real_char % m_page_max_chr_count;
+  AOCharButton *l_button = ui_char_button_list.at(l_button_id);
+  if (l_button->isVisible()) {
+    l_button->set_taken(p_taken);
+  }
+}

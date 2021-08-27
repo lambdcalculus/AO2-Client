@@ -70,7 +70,7 @@ public:
 
   // sets status as taken on character with cid n_char and places proper shading
   // on charselect
-  void set_taken(int n_char, bool p_taken);
+  void char_set_taken(int n_real_char, bool p_taken);
 
   // sets the current background to argument. also does some checks to see if
   // it's a legacy bg

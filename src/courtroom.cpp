@@ -289,25 +289,6 @@ void Courtroom::update_background_scene()
   ui_vp_background->set_image(f_background);
 }
 
-void Courtroom::set_taken(int n_char, bool p_taken)
-{
-  if (n_char >= m_chr_list.size())
-  {
-    qDebug() << "W: set_taken attempted to set an index bigger than char_list size";
-    return;
-  }
-
-  char_type f_char;
-  f_char.name = m_chr_list.at(n_char).name;
-  f_char.taken = p_taken;
-
-  m_chr_list.replace(n_char, f_char);
-  AOCharButton *l_button = ui_char_button_list.at(n_char);
-  if (l_button->isVisible()) {
-    l_button->set_taken(p_taken);
-  }
-}
-
 DRAreaBackground Courtroom::get_background()
 {
   return m_background;
