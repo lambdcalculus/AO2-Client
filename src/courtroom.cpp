@@ -1330,7 +1330,7 @@ void Courtroom::calculate_chat_tick_interval()
 void Courtroom::next_chat_letter()
 {
   const QString &f_message = m_chatmessage[CMMessage];
-  if (m_tick_step >= f_message.length())
+  if (m_tick_step >= f_message.length() || ui_vp_chatbox->isHidden())
   {
     post_chat();
     return;
@@ -1489,9 +1489,12 @@ void Courtroom::post_chat()
 
   m_message_color_name = "";
   m_message_color_stack.clear();
-  if (!chatmessage_is_empty)
+
+  if (ui_vp_chatbox->isVisible())
+  {
     ui_vp_chat_arrow->restart();
-  ui_vp_chat_arrow->setHidden(chatmessage_is_empty);
+    ui_vp_chat_arrow->show();
+  }
 }
 
 void Courtroom::play_sfx()
