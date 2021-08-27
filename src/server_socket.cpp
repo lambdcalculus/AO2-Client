@@ -61,6 +61,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     feature_showname = false;
     feature_chrini = false;
     feature_chat_speed = false;
+    feature_charscheck = false;
 
     send_server_packet(DRPacket("HI", {get_hdid()}));
   }
@@ -90,6 +91,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     feature_showname = l_content.contains("showname", Qt::CaseInsensitive);
     feature_chrini = l_content.contains("chrini", Qt::CaseInsensitive);
     feature_chat_speed = l_content.contains("chat_speed", Qt::CaseInsensitive);
+    feature_charscheck = l_content.contains("charscheck", Qt::CaseInsensitive);
   }
   else if (l_header == "PN")
   {

@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "aoblipplayer.h"
 #include "aobutton.h"
+#include "aocharbutton.h"
 #include "aocharmovie.h"
 #include "aoconfig.h"
 #include "aoevidencedisplay.h"
@@ -228,9 +229,8 @@ void Courtroom::done_received()
 
   suppress_audio(true);
 
-  set_char_select_page();
-
   set_char_select();
+  set_char_select_page();
 
   show();
 
@@ -302,6 +302,10 @@ void Courtroom::set_taken(int n_char, bool p_taken)
   f_char.taken = p_taken;
 
   m_chr_list.replace(n_char, f_char);
+  AOCharButton *l_button = ui_char_button_list.at(n_char);
+  if (l_button->isVisible()) {
+    l_button->set_taken(p_taken);
+  }
 }
 
 DRAreaBackground Courtroom::get_background()
@@ -2133,9 +2137,12 @@ void Courtroom::on_change_character_clicked()
   suppress_audio(true);
 
   set_char_select();
+  set_char_select_page();
 
-  ui_char_select_background->show();
   ui_spectator->show();
+
+  if (ao_app->has_character_availability_request_feature())
+    ao_app->send_server_packet(DRPacket("CharsCheck"));
 }
 
 void Courtroom::on_app_reload_theme_requested()
