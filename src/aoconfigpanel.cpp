@@ -332,11 +332,11 @@ void AOConfigPanel::refresh_gamemode_list()
     ui_manual_gamemode->addItem(i_folder, i_folder);
   }
 
-  // restore previous selection
-  ui_manual_gamemode->setCurrentText(p_prev_text);
-
   // unblock
   ui_manual_gamemode->blockSignals(false);
+
+  // restore previous selection
+  ui_manual_gamemode->setCurrentText(p_prev_text);
 }
 
 void AOConfigPanel::refresh_timeofday_list()
@@ -367,11 +367,11 @@ void AOConfigPanel::refresh_timeofday_list()
     ui_manual_timeofday->addItem(i_folder, i_folder);
   }
 
-  // restore previous selection
-  ui_manual_timeofday->setCurrentText(p_prev_text);
-
   // unblock
   ui_manual_timeofday->blockSignals(false);
+
+  // restore previous selection
+  ui_manual_timeofday->setCurrentText(p_prev_text);
 }
 
 void AOConfigPanel::update_audio_device_list()
