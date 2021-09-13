@@ -176,13 +176,10 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     if (!is_courtroom_constructed)
       return;
 
-    for (int n_real_char = 0; n_real_char < l_content.size(); ++n_real_char)
-    {
-      if (l_content.at(n_real_char) == "-1")
-        m_courtroom->char_set_taken(n_real_char, true);
-      else
-        m_courtroom->char_set_taken(n_real_char, false);
-    }
+    QVector<char_type> l_chr_list = m_courtroom->get_character_list();
+    for (int i = 0; i < l_chr_list.length(); ++i)
+      l_chr_list[i].taken = l_content.at(i) == "-1";
+    m_courtroom->set_character_list(l_chr_list);
   }
   else if (l_header == "SC")
   {

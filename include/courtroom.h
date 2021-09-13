@@ -57,6 +57,7 @@ public:
   explicit Courtroom(AOApplication *p_ao_app);
   ~Courtroom();
 
+  QVector<char_type> get_character_list();
   void set_character_list(QVector<char_type> character_list);
   void set_area_list(QStringList area_list);
   void set_music_list(QStringList music_list);
@@ -67,10 +68,6 @@ public:
   void set_fonts();
 
   void set_window_title(QString p_title);
-
-  // sets status as taken on character with cid n_char and places proper shading
-  // on charselect
-  void char_set_taken(int n_real_char, bool p_taken);
 
   // sets the current background to argument. also does some checks to see if
   // it's a legacy bg

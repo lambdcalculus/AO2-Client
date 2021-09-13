@@ -68,9 +68,15 @@ Courtroom::~Courtroom()
   stop_all_audio();
 }
 
+QVector<char_type> Courtroom::get_character_list()
+{
+  return m_chr_list;
+}
+
 void Courtroom::set_character_list(QVector<char_type> p_chr_list)
 {
   m_chr_list = p_chr_list;
+  set_char_select_page();
 }
 
 void Courtroom::set_area_list(QStringList p_area_list)
