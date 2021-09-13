@@ -249,8 +249,6 @@ void Courtroom::connect_widgets()
 {
   connect(m_keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
 
-  connect(ao_app, SIGNAL(reload_theme()), this, SLOT(on_app_reload_theme_requested()));
-
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
 

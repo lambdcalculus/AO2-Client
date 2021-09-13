@@ -390,17 +390,13 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   {
     if (l_content.length() < 1)
       return;
-    if (!is_courtroom_constructed)
-      return;
-    m_courtroom->set_gamemode(l_content.at(0));
+    ao_config->set_gamemode(l_content.at(0));
   }
   else if (l_header == "TOD")
   {
     if (l_content.length() < 1)
       return;
-    if (!is_courtroom_constructed)
-      return;
-    m_courtroom->set_timeofday(l_content.at(0));
+    ao_config->set_timeofday(l_content.at(0));
   }
   else if (l_header == "TR")
   {

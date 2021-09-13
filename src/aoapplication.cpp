@@ -159,6 +159,8 @@ void AOApplication::destruct_courtroom()
   {
     delete m_courtroom;
     is_courtroom_constructed = false;
+    ao_config->set_gamemode(nullptr);
+    ao_config->set_timeofday(nullptr);
   }
   else
   {
@@ -203,7 +205,7 @@ void AOApplication::handle_theme_modification()
 {
   load_fonts();
 
-  Q_EMIT reload_theme();
+  Q_EMIT theme_reloaded();
 }
 
 void AOApplication::set_favorite_list()
@@ -232,17 +234,9 @@ QString AOApplication::get_current_char()
  * @return A sanitized path. If any check fails, the path returned is an empty string. The sanitized path does not
  * necessarily exist.
  */
-QString AOApplication::sanitize_path(QString p_file)
+bool AOApplication::is_safe_path(QString p_file)
 {
-  if (!p_file.contains(".."))
-    return p_file;
-
-  QStringList list = p_file.split(QRegularExpression("[\\/]"));
-  while (!list.isEmpty())
-    if (list.takeFirst().contains(QRegularExpression("\\.{2,}")))
-      return nullptr;
-
-  return p_file;
+  return !p_file.contains("..");
 }
 
 void AOApplication::toggle_config_panel()

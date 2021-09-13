@@ -51,8 +51,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   m_reload_timer = new QTimer(this);
   m_reload_timer->setInterval(200);
   m_reload_timer->setSingleShot(true);
-  connect(m_reload_timer, SIGNAL(timeout()), this, SLOT(on_app_reload_theme_requested()));
-  connect(ao_app, SIGNAL(reload_theme()), m_reload_timer, SLOT(start()));
+  connect(m_reload_timer, SIGNAL(timeout()), this, SLOT(reload_theme()));
+  connect(ao_app, SIGNAL(theme_reloaded()), m_reload_timer, SLOT(start()));
 
   create_widgets();
   connect_widgets();
@@ -303,7 +303,8 @@ void Courtroom::set_taken(int n_char, bool p_taken)
 
   m_chr_list.replace(n_char, f_char);
   AOCharButton *l_button = ui_char_button_list.at(n_char);
-  if (l_button->isVisible()) {
+  if (l_button->isVisible())
+  {
     l_button->set_taken(p_taken);
   }
 }
@@ -316,40 +317,6 @@ DRAreaBackground Courtroom::get_background()
 void Courtroom::set_background(DRAreaBackground p_background)
 {
   m_background = p_background;
-  update_background_scene();
-}
-
-QString Courtroom::get_gamemode()
-{
-  return m_gamemode;
-}
-
-void Courtroom::set_gamemode(QString p_gamemode)
-{
-  if (m_gamemode == p_gamemode)
-    return;
-  m_gamemode = p_gamemode;
-  ao_config->set_gamemode(p_gamemode);
-  if (ao_config->is_manual_gamemode_selection_enabled())
-    return;
-  setup_courtroom();
-  update_background_scene();
-}
-
-QString Courtroom::get_timeofday()
-{
-  return m_timeofday;
-}
-
-void Courtroom::set_timeofday(QString p_timeofday)
-{
-  if (m_timeofday == p_timeofday)
-    return;
-  m_timeofday = p_timeofday;
-  ao_config->set_timeofday(p_timeofday);
-  if (ao_config->is_manual_timeofday_selection_enabled())
-    return;
-  setup_courtroom();
   update_background_scene();
 }
 
@@ -838,10 +805,10 @@ void Courtroom::handle_chatmessage_2() // handles IC
   qDebug() << "handle_chatmessage_2";
   ui_vp_player_char->stop();
 
-  if (shout_delayed_reload_theme)
+  if (m_shout_reload_theme)
   {
-    shout_delayed_reload_theme = false;
-    on_app_reload_theme_requested();
+    m_shout_reload_theme = false;
+    reload_theme();
   }
 
   QString real_name = m_chr_list.at(m_chatmessage[CMChrId].toInt()).name;
@@ -2145,21 +2112,20 @@ void Courtroom::on_change_character_clicked()
     ao_app->send_server_packet(DRPacket("CharsCheck"));
 }
 
-void Courtroom::on_app_reload_theme_requested()
+void Courtroom::reload_theme()
 {
-  // If an objection is playing, delay reload theme order to be executed
-  // after objection is done
-  if (ui_vp_objection->state() == QMovie::MovieState::Running)
+  if (ui_vp_objection->state() == QMovie::Running)
   {
-    shout_delayed_reload_theme = true;
+    m_shout_reload_theme = true;
     return;
   }
 
   setup_courtroom();
-
-  // to update status on the background
   update_background_scene();
 }
+
+void Courtroom::schedule_theme_reload()
+{}
 
 void Courtroom::on_back_to_lobby_clicked()
 {

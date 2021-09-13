@@ -643,6 +643,8 @@ void AOConfig::set_theme(QString p_string)
     return;
   d->theme = p_string;
   d->invoke_signal("theme_changed", Q_ARG(QString, p_string));
+  set_manual_gamemode(nullptr);
+  set_manual_timeofday(nullptr);
 }
 
 void AOConfig::set_gamemode(QString p_string)
