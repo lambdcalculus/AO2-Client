@@ -238,8 +238,8 @@ bool AOApplication::is_safe_path(QString p_file)
 {
   if (!p_file.contains(".."))
     return true;
-  const QStringList i_item_list = p_file.split(QRegularExpression("[\\/]"));
-  for (auto it = i_item_list.crbegin(); it != i_item_list.crend(); ++it)
+  const QStringList l_item_list = p_file.split(QRegularExpression("[\\/]"));
+  for (auto it = l_item_list.crbegin(); it != l_item_list.crend(); ++it)
     if (*it == "..")
       return false;
   return true;
