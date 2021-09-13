@@ -236,7 +236,13 @@ QString AOApplication::get_current_char()
  */
 bool AOApplication::is_safe_path(QString p_file)
 {
-  return !p_file.contains("..");
+  if (!p_file.contains(".."))
+    return true;
+  const QStringList i_item_list = p_file.split(QRegularExpression("[\\/]"));
+  for (auto it = i_item_list.crbegin(); it != i_item_list.crend(); ++it)
+    if (*it == "..")
+      return false;
+  return true;
 }
 
 void AOApplication::toggle_config_panel()
