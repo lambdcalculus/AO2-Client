@@ -402,6 +402,8 @@ void AOConfigPanel::on_theme_changed(QString p_name)
 {
   Q_UNUSED(p_name);
   refresh_theme_list();
+  refresh_gamemode_list();
+  refresh_timeofday_list();
 }
 
 void AOConfigPanel::on_gamemode_changed(QString p_text)

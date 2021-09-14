@@ -223,8 +223,6 @@ private:
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
-  QTimer *m_reload_timer = nullptr;
-
   QVector<char_type> m_chr_list;
   QVector<evi_type> m_evidence_list;
   QStringList m_area_list;
@@ -645,7 +643,6 @@ private slots:
 
   void on_change_character_clicked();
   void reload_theme();
-  void schedule_theme_reload();
   void on_call_mod_clicked();
 
   void on_switch_area_music_clicked();

@@ -48,11 +48,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
 
-  m_reload_timer = new QTimer(this);
-  m_reload_timer->setInterval(200);
-  m_reload_timer->setSingleShot(true);
-  connect(m_reload_timer, SIGNAL(timeout()), this, SLOT(reload_theme()));
-  connect(ao_app, SIGNAL(theme_reloaded()), m_reload_timer, SLOT(start()));
+  connect(ao_app, SIGNAL(theme_reloaded()), this, SLOT(reload_theme()));
 
   create_widgets();
   connect_widgets();
@@ -2109,9 +2105,6 @@ void Courtroom::reload_theme()
   setup_courtroom();
   update_background_scene();
 }
-
-void Courtroom::schedule_theme_reload()
-{}
 
 void Courtroom::on_back_to_lobby_clicked()
 {
