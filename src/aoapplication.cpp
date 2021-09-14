@@ -33,6 +33,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   m_server_socket = new DRServerSocket(this);
 
   connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(handle_theme_modification()));
+  connect(ao_config, SIGNAL(gamemode_changed(QString)), this, SLOT(handle_theme_modification()));
+  connect(ao_config, SIGNAL(timeofday_changed(QString)), this, SLOT(handle_theme_modification()));
   connect(ao_config, SIGNAL(manual_gamemode_changed(QString)), this, SLOT(handle_theme_modification()));
   connect(ao_config, SIGNAL(manual_gamemode_selection_changed(bool)), this, SLOT(handle_theme_modification()));
   connect(ao_config, SIGNAL(manual_timeofday_changed(QString)), this, SLOT(handle_theme_modification()));
