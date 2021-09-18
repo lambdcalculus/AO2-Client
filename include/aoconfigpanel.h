@@ -92,6 +92,8 @@ private:
   QLineEdit *ui_showname = nullptr;
   QCheckBox *ui_always_pre = nullptr;
   QSpinBox *ui_chat_tick_interval = nullptr;
+  QCheckBox *ui_emote_preview = nullptr;
+
   // IC Chatlog
   QSpinBox *ui_log_max_lines = nullptr;
   QCheckBox *ui_log_display_timestamp = nullptr;

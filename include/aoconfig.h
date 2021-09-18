@@ -40,6 +40,7 @@ public:
   bool is_manual_timeofday_selection_enabled() const;
   bool always_pre_enabled() const;
   int chat_tick_interval() const;
+  bool emote_preview_enabled() const;
   int log_max_lines() const;
   bool log_display_timestamp_enabled() const;
   bool log_display_self_highlight_enabled() const;
@@ -89,6 +90,7 @@ public slots:
   void set_manual_timeofday_selection_enabled(bool p_enabled);
   void set_always_pre(bool p_enabled);
   void set_chat_tick_interval(int p_number);
+  void set_emote_preview(bool p_enabled);
   void set_log_max_lines(int p_number);
   void set_log_display_timestamp(bool p_enabled);
   void set_log_display_self_highlight(bool p_enabled);
@@ -138,6 +140,7 @@ signals:
   void character_ini_changed(QString base_character);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);
+  void emote_preview_changed(bool);
 
   // log
   void log_max_lines_changed(int);
