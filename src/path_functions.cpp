@@ -70,7 +70,7 @@ QStringList AOApplication::get_available_background_identifier_list()
         l_bg_list.append(l_bg_map.value(l_manual_tod));
     }
 
-    const QString l_tod = m_courtroom->get_timeofday();
+    const QString l_tod = ao_config->timeofday();
     if (!l_tod.isEmpty() && l_bg_map.contains(l_tod))
       l_bg_list.append(l_bg_map.value(l_tod));
 
@@ -193,7 +193,7 @@ QString AOApplication::find_asset_path(QStringList p_file_list, QStringList p_ex
     // We can assume that possible_exts will only be populated with hardcoded strings.
     // Therefore, the only place where sanitize_path could catch something bad is in the root.
     // So, check that now, so we don't need to check later.
-    if (sanitize_path(i_root).isEmpty())
+    if (!is_safe_path(i_root))
       continue;
 
     // Check if parent folder actually exists. If it does not, none of the following files would exist
@@ -252,12 +252,10 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_exten
   QStringList l_path_list;
 
   // Only add gamemode and/or time of day if non empty.
-  const QString l_gamemode = ao_config->is_manual_gamemode_selection_enabled() ? ao_config->manual_gamemode()
-                             : is_courtroom_constructed                        ? m_courtroom->get_gamemode()
-                                                                               : nullptr;
-  const QString l_timeofday = ao_config->is_manual_timeofday_selection_enabled() ? ao_config->manual_timeofday()
-                              : is_courtroom_constructed                         ? m_courtroom->get_timeofday()
-                                                                                 : nullptr;
+  const QString l_gamemode =
+      ao_config->is_manual_gamemode_selection_enabled() ? ao_config->manual_gamemode() : ao_config->gamemode();
+  const QString l_timeofday =
+      ao_config->is_manual_timeofday_selection_enabled() ? ao_config->manual_timeofday() : ao_config->timeofday();
   const QString l_theme_root = get_base_path() + "themes/" + ao_config->theme();
 
   if (!l_gamemode.isEmpty())

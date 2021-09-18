@@ -282,18 +282,12 @@ void AOConfigPanel::showEvent(QShowEvent *event)
 
   if (isVisible())
   {
-    // refresh theme, gamemode and time of day comboboxes
     refresh_theme_list();
-    refresh_gamemode_list();
-    refresh_timeofday_list();
   }
 }
 
 void AOConfigPanel::refresh_theme_list()
 {
-  const QString p_prev_text = ui_theme->currentText();
-
-  // block signals
   ui_theme->blockSignals(true);
   ui_theme->clear();
 
@@ -307,17 +301,12 @@ void AOConfigPanel::refresh_theme_list()
   }
 
   // restore previous selection
-  ui_theme->setCurrentText(p_prev_text);
-
-  // unblock
+  ui_theme->setCurrentText(m_config->theme());
   ui_theme->blockSignals(false);
 }
 
 void AOConfigPanel::refresh_gamemode_list()
 {
-  const QString p_prev_text = ui_manual_gamemode->currentText();
-
-  // block signals
   ui_manual_gamemode->blockSignals(true);
   ui_manual_gamemode->clear();
 
@@ -332,45 +321,41 @@ void AOConfigPanel::refresh_gamemode_list()
     ui_manual_gamemode->addItem(i_folder, i_folder);
   }
 
-  // restore previous selection
-  ui_manual_gamemode->setCurrentText(p_prev_text);
-
-  // unblock
+  ui_manual_gamemode->setCurrentText(m_config->manual_gamemode());
   ui_manual_gamemode->blockSignals(false);
 }
 
 void AOConfigPanel::refresh_timeofday_list()
 {
-  const QString p_prev_text = ui_manual_timeofday->currentText();
-
-  // block signals
   ui_manual_timeofday->blockSignals(true);
   ui_manual_timeofday->clear();
 
   // add empty entry indicating no time of day chosen
   ui_manual_timeofday->addItem("<default>");
 
+  const QString l_theme = m_config->theme();
+  const QString l_gamemode =
+      m_config->is_manual_gamemode_selection_enabled() ? m_config->manual_gamemode() : m_config->gamemode();
+
   // decide path to look for times of day. This differs whether there is a
   // gamemode chosen or not
-  QString path;
-  if (m_config->manual_gamemode().isEmpty())
-    path = DRPather::get_application_path() + "/base/themes/" + m_config->theme() + "/times/";
+  QString l_timeofday_path;
+
+  if (l_gamemode.isEmpty())
+    l_timeofday_path = DRPather::get_application_path() + "/base/themes/" + l_theme + "/times/";
   else
-    path = DRPather::get_application_path() + "/base/themes/" + m_config->theme() + "/gamemodes/" +
-           m_config->manual_gamemode() + "/times/";
+    l_timeofday_path =
+        DRPather::get_application_path() + "/base/themes/" + l_theme + "/gamemodes/" + l_gamemode + "/times/";
 
   // times of day
-  for (const QString &i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
+  for (const QString &i_folder : QDir(ao_app->get_case_sensitive_path(l_timeofday_path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
       continue;
     ui_manual_timeofday->addItem(i_folder, i_folder);
   }
 
-  // restore previous selection
-  ui_manual_timeofday->setCurrentText(p_prev_text);
-
-  // unblock
+  ui_manual_timeofday->setCurrentText(m_config->manual_timeofday());
   ui_manual_timeofday->blockSignals(false);
 }
 
@@ -415,10 +400,10 @@ void AOConfigPanel::on_reload_theme_clicked()
 
 void AOConfigPanel::on_theme_changed(QString p_name)
 {
+  Q_UNUSED(p_name);
   refresh_theme_list();
   refresh_gamemode_list();
   refresh_timeofday_list();
-  ui_theme->setCurrentText(p_name);
 }
 
 void AOConfigPanel::on_gamemode_changed(QString p_text)
@@ -426,20 +411,20 @@ void AOConfigPanel::on_gamemode_changed(QString p_text)
   ui_gamemode->setText(p_text.isEmpty() ? "<default>" : p_text);
 }
 
-void AOConfigPanel::on_manual_gamemode_changed(QString p_name)
+void AOConfigPanel::on_manual_gamemode_selection_changed(bool p_enabled)
 {
-  refresh_theme_list();
+  ui_gamemode->setHidden(p_enabled);
+  ui_manual_gamemode->setVisible(p_enabled);
+  ui_manual_gamemode_selection->setChecked(p_enabled);
   refresh_gamemode_list();
   refresh_timeofday_list();
-  ui_manual_gamemode->setCurrentText(p_name);
 }
 
-void AOConfigPanel::on_manual_timeofday_changed(QString p_name)
+void AOConfigPanel::on_manual_gamemode_changed(QString p_name)
 {
-  refresh_theme_list();
+  Q_UNUSED(p_name);
   refresh_gamemode_list();
   refresh_timeofday_list();
-  ui_manual_timeofday->setCurrentText(p_name);
 }
 
 void AOConfigPanel::on_manual_gamemode_index_changed(QString p_text)
@@ -448,53 +433,29 @@ void AOConfigPanel::on_manual_gamemode_index_changed(QString p_text)
   m_config->set_manual_gamemode(ui_manual_gamemode->currentData().toString());
 }
 
-void AOConfigPanel::on_manual_gamemode_selection_changed(bool p_enabled)
-{
-  /***
-   * As of time of writing, it is better to do this kind of ordered
-   * visibility calls to prevent layout reorganization 'lag'.
-   *
-   * The lag occurs due to themes immediately attempting to reload.
-   */
-  if (p_enabled)
-  {
-    ui_gamemode->hide();
-    ui_manual_gamemode->show();
-  }
-  else
-  {
-    ui_manual_gamemode->hide();
-    ui_gamemode->show();
-  }
-
-  ui_manual_gamemode_selection->setChecked(p_enabled);
-}
-
 void AOConfigPanel::on_timeofday_changed(QString p_text)
 {
   ui_timeofday->setText(p_text.isEmpty() ? "<default>" : p_text);
+}
+
+void AOConfigPanel::on_manual_timeofday_selection_changed(bool p_enabled)
+{
+  ui_timeofday->setHidden(p_enabled);
+  ui_manual_timeofday->setVisible(p_enabled);
+  ui_manual_timeofday_selection->setChecked(p_enabled);
+  refresh_timeofday_list();
+}
+
+void AOConfigPanel::on_manual_timeofday_changed(QString p_name)
+{
+  Q_UNUSED(p_name);
+  refresh_timeofday_list();
 }
 
 void AOConfigPanel::on_manual_timeofday_index_changed(QString p_text)
 {
   Q_UNUSED(p_text);
   m_config->set_manual_timeofday(ui_manual_timeofday->currentData().toString());
-}
-
-void AOConfigPanel::on_manual_timeofday_selection_changed(bool p_enabled)
-{
-  if (p_enabled)
-  {
-    ui_timeofday->hide();
-    ui_manual_timeofday->show();
-  }
-  else
-  {
-    ui_manual_timeofday->hide();
-    ui_timeofday->show();
-  }
-
-  ui_manual_timeofday_selection->setChecked(p_enabled);
 }
 
 void AOConfigPanel::on_showname_placeholder_changed(QString p_text)

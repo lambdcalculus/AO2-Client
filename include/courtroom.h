@@ -73,10 +73,6 @@ public:
   // it's a legacy bg
   DRAreaBackground get_background();
   void set_background(DRAreaBackground p_area_bg);
-  QString get_gamemode();
-  void set_gamemode(QString p_gamemode);
-  QString get_timeofday();
-  void set_timeofday(QString p_time_of_day);
 
   void set_tick_rate(const int tick_rate);
 
@@ -227,8 +223,6 @@ private:
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
-  QTimer *m_reload_timer = nullptr;
-
   QVector<char_type> m_chr_list;
   QVector<evi_type> m_evidence_list;
   QStringList m_area_list;
@@ -300,7 +294,7 @@ private:
   // if true, a reload theme order was delayed to be executed *after* a shout
   // this allows reload theme orders that were received while a shout was
   // playing to be executed only after the shout is done playing
-  bool shout_delayed_reload_theme = false;
+  bool m_shout_reload_theme = false;
 
   int m_shout_state = 0;
   int m_effect_state = 0;
@@ -342,8 +336,6 @@ private:
   int m_current_clock = -1;
 
   DRAreaBackground m_background;
-  QString m_gamemode;
-  QString m_timeofday;
 
   AOImageDisplay *ui_background = nullptr;
 
@@ -650,7 +642,7 @@ private slots:
   void on_wtce_clicked();
 
   void on_change_character_clicked();
-  void on_app_reload_theme_requested();
+  void reload_theme();
   void on_call_mod_clicked();
 
   void on_switch_area_music_clicked();

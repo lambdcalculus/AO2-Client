@@ -642,6 +642,8 @@ void AOConfig::set_theme(QString p_string)
   if (d->theme == p_string)
     return;
   d->theme = p_string;
+  d->manual_gamemode.clear();
+  d->manual_timeofday.clear();
   d->invoke_signal("theme_changed", Q_ARG(QString, p_string));
 }
 
@@ -658,8 +660,8 @@ void AOConfig::set_manual_gamemode(QString p_string)
   if (d->manual_gamemode == p_string)
     return;
   d->manual_gamemode = p_string;
+  d->manual_timeofday.clear();
   d->invoke_signal("manual_gamemode_changed", Q_ARG(QString, p_string));
-  set_manual_timeofday(nullptr);
 }
 
 void AOConfig::set_manual_gamemode_selection_enabled(bool p_enabled)

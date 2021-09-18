@@ -77,7 +77,7 @@ public:
   QString get_current_background_path();
   QString get_evidence_path(QString p_file);
 
-  QString sanitize_path(QString p_file);
+  bool is_safe_path(QString p_file);
 
   QString find_asset_path(QStringList file_list, QStringList extension_list);
   QString find_asset_path(QStringList file_list);
@@ -207,7 +207,7 @@ public slots:
   void loading_cancelled();
 
 signals:
-  void reload_theme();
+  void theme_reloaded();
 
 private:
   AOConfig *ao_config = nullptr;
