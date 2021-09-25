@@ -245,6 +245,12 @@ void Courtroom::hide_emote_tooltip(int p_id)
   ui_emote_preview_character->stop();
 }
 
+void Courtroom::on_emote_preview_toggled(bool p_enabled)
+{
+  if (!p_enabled)
+    hide_emote_tooltip(m_emote_preview_id);
+}
+
 void Courtroom::on_emote_left_clicked()
 {
   --m_current_emote_page;
