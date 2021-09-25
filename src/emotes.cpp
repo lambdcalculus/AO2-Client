@@ -202,6 +202,9 @@ void Courtroom::on_emote_clicked(int p_id)
 
 void Courtroom::show_emote_tooltip(int p_id, QPoint p_global_pos)
 {
+  if (!ao_config->emote_preview_enabled())
+    return;
+
   if (m_emote_preview_id != -1 || m_emote_preview_id == p_id)
     return;
   m_emote_preview_id = p_id;
@@ -240,6 +243,12 @@ void Courtroom::hide_emote_tooltip(int p_id)
   m_emote_preview_id = -1;
   ui_emote_preview->hide();
   ui_emote_preview_character->stop();
+}
+
+void Courtroom::on_emote_preview_toggled(bool p_enabled)
+{
+  if (!p_enabled)
+    hide_emote_tooltip(m_emote_preview_id);
 }
 
 void Courtroom::on_emote_left_clicked()

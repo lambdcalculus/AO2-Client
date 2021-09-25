@@ -87,7 +87,7 @@ bool AOEmoteButton::event(QEvent *event)
     Q_EMIT tooltip_requested(m_index, dynamic_cast<QHelpEvent *>(event)->globalPos());
     break;
 
-  case QEvent::HoverLeave:
+  case QEvent::Leave:
     Q_EMIT mouse_left(m_index);
     break;
 

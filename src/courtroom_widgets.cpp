@@ -258,6 +258,7 @@ void Courtroom::connect_widgets()
 
   connect(m_flash_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
+  connect(ao_config, SIGNAL(emote_preview_changed(bool)), this, SLOT(on_emote_preview_toggled(bool)));
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
 

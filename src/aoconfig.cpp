@@ -64,6 +64,7 @@ private:
   QMap<QString, QString> ini_map;
   bool always_pre;
   int chat_tick_interval;
+  bool emote_preview;
   int log_max_lines;
   bool log_display_timestamp;
   bool log_display_self_highlight;
@@ -132,6 +133,7 @@ void AOConfigPrivate::read_file()
   manual_timeofday_selection = cfg.value("manual_timeofday", false).toBool();
   always_pre = cfg.value("always_pre", true).toBool();
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
+  emote_preview = cfg.value("emote_preview", true).toBool();
   log_max_lines = cfg.value("chatlog_limit", 100).toInt();
   log_is_topdown = cfg.value("chatlog_scrolldown", true).toBool();
   log_display_timestamp = cfg.value("chatlog_display_timestamp", true).toBool();
@@ -203,6 +205,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("manual_timeofday", manual_timeofday_selection);
   cfg.setValue("always_pre", always_pre);
   cfg.setValue("chat_tick_interval", chat_tick_interval);
+  cfg.setValue("emote_preview", emote_preview);
   cfg.setValue("chatlog_limit", log_max_lines);
   cfg.setValue("chatlog_display_timestamp", log_display_timestamp);
   cfg.setValue("chatlog_display_self_highlight", log_display_self_highlight);
@@ -436,6 +439,11 @@ bool AOConfig::always_pre_enabled() const
 int AOConfig::chat_tick_interval() const
 {
   return d->chat_tick_interval;
+}
+
+bool AOConfig::emote_preview_enabled() const
+{
+  return d->emote_preview;
 }
 
 int AOConfig::log_max_lines() const
@@ -710,6 +718,14 @@ void AOConfig::set_chat_tick_interval(int p_number)
     return;
   d->chat_tick_interval = p_number;
   d->invoke_signal("chat_tick_interval_changed", Q_ARG(int, p_number));
+}
+
+void AOConfig::set_emote_preview(bool p_enabled)
+{
+  if (d->emote_preview == p_enabled)
+    return;
+  d->emote_preview = p_enabled;
+  d->invoke_signal("emote_preview_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_log_max_lines(int p_number)
