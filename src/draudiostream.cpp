@@ -80,13 +80,13 @@ QWORD DRAudioStream::loop_end()
 }
 
 // the sync callback
-static void CALLBACK loop_sync(unsigned long syncHandle, unsigned long channel, unsigned long data, void* user)
+static void CALLBACK loop_sync(HSYNC syncHandle, DWORD channel, DWORD data, void *user)
 {
   Q_UNUSED(syncHandle);
   Q_UNUSED(data);
 
   // move the position to the loopStart
-  DRAudioStream *stream = static_cast<DRAudioStream*>(user);
+  DRAudioStream *stream = static_cast<DRAudioStream *>(user);
   QWORD loop_start = stream->loop_start();
   BASS_ChannelSetPosition(channel, loop_start, BASS_POS_BYTE);
 }
@@ -119,7 +119,7 @@ void DRAudioStream::setup_looping()
     return;
   // Now sample_rate holds the sample rate in Hertz
 
-  const char* ogg_value = BASS_ChannelGetTags(m_hstream.value(), BASS_TAG_OGG);
+  const char *ogg_value = BASS_ChannelGetTags(m_hstream.value(), BASS_TAG_OGG);
   QStringList ogg_comments;
   while (*ogg_value)
   {
@@ -147,8 +147,7 @@ void DRAudioStream::setup_looping()
   m_loop_start = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_start / sample_rate);
   m_loop_end = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_end / sample_rate);
 
-  m_loop_sync = BASS_ChannelSetSync(m_hstream.value(), BASS_SYNC_POS | BASS_SYNC_MIXTIME,
-                                    m_loop_end, loop_sync, this);
+  m_loop_sync = BASS_ChannelSetSync(m_hstream.value(), BASS_SYNC_POS | BASS_SYNC_MIXTIME, m_loop_end, &loop_sync, this);
 }
 
 std::optional<DRAudioError> DRAudioStream::set_file(QString p_file)
