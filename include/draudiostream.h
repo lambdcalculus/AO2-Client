@@ -39,13 +39,15 @@ public:
   // state
   bool is_playing() const;
 
+  QWORD loop_start();
+  QWORD loop_end();
+
 public slots:
   std::optional<DRAudioError> set_file(QString m_file);
   void set_volume(float p_volume);
 
   void play();
   void stop();
-
 signals:
   void file_changed(QString p_file);
   void finished();
@@ -61,7 +63,11 @@ private:
   // static method
   DRAudio::Family m_family;
   std::optional<QString> m_file;
+  QWORD m_loop_start;
+  QWORD m_loop_end;
   float m_volume;
+
+  int m_loop_sync;
 
   // bass
   std::optional<HSTREAM> m_hstream;
@@ -70,6 +76,8 @@ private:
 
   void cache_position();
   void update_device();
+
+  void setup_looping();
 
 private slots:
   void on_device_error();
