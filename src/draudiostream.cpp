@@ -103,12 +103,7 @@ void DRAudioStream::setup_looping()
     m_loop_sync = 0;
   }
 
-  // Right now we only support files that satisfy the following:
-  // 1. They are OGG files
-  // 2. They indicate a positive sample rate
-  // 3. They have, as OGG comments, positive values of LoopStart and LoopEnd (denoted as an int in samples)
-  // 4. LoopStart <= LoopEnd
-
+  // Now decide whether the track we are playing now is loopable.
   if (!m_file->endsWith("ogg", Qt::CaseInsensitive))
     return;
 
@@ -132,7 +127,7 @@ void DRAudioStream::setup_looping()
   for (const QString &ogg_comment : ogg_comments)
   {
     QStringList split = ogg_comment.split('=');
-    if (split.size() == 0)
+    if (split.size() != 2)
       continue;
     if (split.at(0) == "LoopStart")
       loop_start = split.at(1).toFloat();

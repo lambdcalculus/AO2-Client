@@ -77,6 +77,15 @@ private:
   void cache_position();
   void update_device();
 
+  /**
+   * @brief Sets up looping.
+   *
+   * Right now we only support files that satisfy the following:
+   * 1. They are OGG files
+   * 2. They indicate a positive sample rate
+   * 3. They have, as OGG comments, positive values of LoopStart and LoopEnd (denoted as an int in samples)
+   * 4. LoopStart <= LoopEnd
+   */
   void setup_looping();
 
 private slots:
