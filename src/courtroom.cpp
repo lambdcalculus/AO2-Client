@@ -1177,12 +1177,15 @@ void Courtroom::play_preanim()
 
   QString f_preanim = m_chatmessage[CMPreAnim];
 
-  if (f_preanim.trimmed() == "-")
+  if (f_preanim.trimmed() == "-" || f_preanim.trimmed() == "../../misc/blank")
   {
     // no animation, continue
     preanim_done();
     return;
   }
+
+  // If the player char was previously hidden due to playing blank, manually show it again.
+  ui_vp_player_char->show();
 
   QString f_char = m_chatmessage[CMChrName];
   // set state
