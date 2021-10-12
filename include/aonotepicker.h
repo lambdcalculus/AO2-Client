@@ -24,8 +24,12 @@ public:
   AOButton *ui_hover = nullptr;
   QHBoxLayout *ui_layout = nullptr;
 
+  void set_active(bool p_active);
+  bool is_active();
 private:
   AOApplication *ao_app = nullptr;
+
+  bool m_active = false;
 };
 
 #endif // AONOTEPICKER_HPP
