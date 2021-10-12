@@ -23,6 +23,11 @@ AOCharMovie::AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app) : QLabel(p_
   connect(m_frame_timer, SIGNAL(timeout()), this, SLOT(on_timer_timeout()));
 }
 
+QString AOCharMovie::file_name()
+{
+  return m_movie->fileName();
+}
+
 bool AOCharMovie::play(QString p_chr, QString p_emote, QString p_prefix, bool p_play_once)
 {
   // Asset lookup order
@@ -35,10 +40,12 @@ bool AOCharMovie::play(QString p_chr, QString p_emote, QString p_prefix, bool p_
 
   bool r_exist = true;
 
+  const bool l_is_anim = p_prefix.isEmpty();
+
   QStringList l_file_list;
   for (const QString &i_chr : ao_app->get_char_include_tree(p_chr))
   {
-    if (!p_prefix.isEmpty())
+    if (!l_is_anim)
       l_file_list.append(ao_app->get_character_path(i_chr, QString("%1%2").arg(p_prefix, p_emote)));
     l_file_list.append(ao_app->get_character_path(i_chr, p_emote));
   }
@@ -46,26 +53,23 @@ bool AOCharMovie::play(QString p_chr, QString p_emote, QString p_prefix, bool p_
   QString l_file = ao_app->find_asset_path(l_file_list, animated_or_static_extensions());
   if (l_file.isEmpty())
   {
-    l_file = ao_app->find_theme_asset_path("placeholder", animated_extensions());
+    if (!l_is_anim)
+      l_file = ao_app->find_theme_asset_path("placeholder", animated_extensions());
     r_exist = false;
   }
 
   stop();
-  m_movie->setFileName(l_file);
   is_play_once = p_play_once;
-  m_movie->start();
+  m_movie->setFileName(l_file);
+  if (m_movie->isValid())
+    m_movie->start();
 
   return r_exist;
 }
 
-bool AOCharMovie::play(QString p_chr, QString p_emote, bool p_play_once)
-{
-  return play(p_chr, p_emote, nullptr, p_play_once);
-}
-
 bool AOCharMovie::play_pre(QString p_chr, QString p_emote)
 {
-  return play(p_chr, p_emote, true);
+  return play(p_chr, p_emote, nullptr, true);
 }
 
 bool AOCharMovie::play_talk(QString p_chr, QString p_emote)
