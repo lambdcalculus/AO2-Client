@@ -68,7 +68,7 @@ void DRChatLog::_p_write_message_queue()
       l_cursor.insertText(": ", l_normal_format);
     }
 
-    const QString l_text = l_message.text.toHtmlEscaped();
+    const QString l_text = l_message.text;
 
     class TextPiece
     {
