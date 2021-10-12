@@ -1190,7 +1190,8 @@ void Courtroom::play_preanim()
 
   if (!ui_vp_player_char->play_pre(l_chr_name, l_anim_name))
   {
-    qDebug() << "Unable to play animation: missing file; character:" << l_chr_name << ", animation:" << l_anim_name;
+    qDebug() << "Unable to play animation: missing or invalid file; character:" << l_chr_name
+             << ", animation:" << l_anim_name;
     preanim_done();
     return;
   }
