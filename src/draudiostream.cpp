@@ -7,6 +7,7 @@
 
 #include <QDebug>
 #include <QFileInfo>
+#include <QtMath>
 
 DRAudioStream::DRAudioStream(DRAudio::Family p_family) : m_family(p_family)
 {
@@ -94,8 +95,8 @@ static void CALLBACK loop_sync(HSYNC syncHandle, DWORD channel, DWORD data, void
 void DRAudioStream::setup_looping()
 {
   // Remove all previously set loop information
-  m_loop_start = 0;
-  m_loop_end = 0;
+  m_loop_start = {};
+  m_loop_end = {};
 
   if (m_loop_sync > 0)
   {
@@ -107,12 +108,13 @@ void DRAudioStream::setup_looping()
   if (!m_file->endsWith("ogg", Qt::CaseInsensitive))
     return;
 
-  float sample_rate = 0;
-  if (!BASS_ChannelGetAttribute(m_hstream.value(), BASS_ATTRIB_FREQ, &sample_rate))
+  double l_sample_rate = 0.0;
+  if (float l_float_sample_rate = 0.0f;
+      BASS_ChannelGetAttribute(m_hstream.value(), BASS_ATTRIB_FREQ, &l_float_sample_rate))
+    l_sample_rate = double(l_float_sample_rate);
+  if (qFabs(l_sample_rate) == 0.0)
     return;
-  if (sample_rate == 0)
-    return;
-  // Now sample_rate holds the sample rate in Hertz
+  // Now sample_rate holds the sample rate in hertz
 
   const char *ogg_value = BASS_ChannelGetTags(m_hstream.value(), BASS_TAG_OGG);
   QStringList ogg_comments;
@@ -122,25 +124,25 @@ void DRAudioStream::setup_looping()
     ogg_value += ogg_comments.back().size() + 1;
   }
 
-  float loop_start = 0;
-  float loop_end = 0;
+  double loop_start = 0;
+  double loop_end = 0;
   for (const QString &ogg_comment : ogg_comments)
   {
     QStringList split = ogg_comment.split('=');
     if (split.size() != 2)
       continue;
     if (split.at(0) == "LoopStart")
-      loop_start = split.at(1).toFloat();
+      loop_start = split.at(1).toDouble();
     else if (split.at(0) == "LoopEnd")
-      loop_end = split.at(1).toFloat();
+      loop_end = split.at(1).toDouble();
   }
   if (loop_start > loop_end || (loop_start == 0 && loop_end == 0))
     return;
 
   // If we are at this point, we are successful in fetching all required values
 
-  m_loop_start = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_start / sample_rate);
-  m_loop_end = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_end / sample_rate);
+  m_loop_start = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_start / l_sample_rate);
+  m_loop_end = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_end / l_sample_rate);
 
   m_loop_sync = BASS_ChannelSetSync(m_hstream.value(), BASS_SYNC_POS | BASS_SYNC_MIXTIME, m_loop_end, &loop_sync, this);
 }

@@ -63,8 +63,8 @@ private:
   // static method
   DRAudio::Family m_family;
   std::optional<QString> m_file;
-  QWORD m_loop_start;
-  QWORD m_loop_end;
+  QWORD m_loop_start = {};
+  QWORD m_loop_end = {};
   float m_volume;
 
   int m_loop_sync;
