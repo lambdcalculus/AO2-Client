@@ -60,12 +60,12 @@ void DRChatLog::_p_write_message_queue()
     const Message l_message = m_message_queue.dequeue();
     m_message_list.append(l_message);
 
-    l_cursor.insertText(QString(QString("[%1] ").arg(l_message.timestamp.toString("hh:mm"))));
+    l_cursor.insertText(QString(QString("[%1] ").arg(l_message.timestamp.toString("hh:mm"))), l_normal_format);
 
     if (!l_message.name.isEmpty())
     {
       l_cursor.insertText(l_message.name, l_name_format);
-      l_cursor.insertText(": ");
+      l_cursor.insertText(": ", l_normal_format);
     }
 
     const QString l_text = l_message.text.toHtmlEscaped();
