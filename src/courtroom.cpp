@@ -1191,13 +1191,13 @@ void Courtroom::play_preanim()
   if (!ui_vp_player_char->play_pre(l_chr_name, l_anim_name))
   {
     qDebug() << "Unable to play animation: missing or invalid file; character:" << l_chr_name
-             << ", animation:" << l_anim_name;
+             << "animation:" << l_anim_name;
     preanim_done();
     return;
   }
 
-  qDebug() << "Playing character animation; character:" << l_chr_name << ", animation: " << l_anim_name
-           << ", file:" << ui_vp_player_char->file_name();
+  qDebug() << "Playing character animation; character:" << l_chr_name << "animation: " << l_anim_name
+           << "file:" << ui_vp_player_char->file_name();
 }
 
 void Courtroom::preanim_done()
