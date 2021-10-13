@@ -8,6 +8,7 @@
 #include "drpacket.h"
 #include "drserversocket.h"
 #include "lobby.h"
+#include "version.h"
 
 #include <QDir>
 #include <QFontDatabase>
