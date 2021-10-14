@@ -96,12 +96,12 @@ jobs:
     
     - name: Setup branch and commit hash tags
       shell: bash
-      working-directory: ${{env.parentworkspace}}
+      working-directory: ${{github.workspace}}
       run: |
         git_hash=$(git rev-parse --short "$GITHUB_SHA")
         git_branch=${branch#refs/heads/}
-        echo "$git_hash" >> ./DRO-Client/res/git/git_hash.txt
-        echo "$git_branch" >> ./DRO-Client/res/git/git_branch.txt
+        echo "$git_hash" >> ./res/git/git_hash.txt
+        echo "$git_branch" >> ./res/git/git_branch.txt
         
     - name: Run qmake
       shell: bash
@@ -209,12 +209,12 @@ jobs:
     
     - name: Setup branch and commit hash tags
       shell: bash
-      working-directory: ${{env.parentworkspace}}
+      working-directory: ${{github.workspace}}
       run: |
         git_hash=$(git rev-parse --short "$GITHUB_SHA")
         git_branch=${branch#refs/heads/}
-        echo "$git_hash" >> ./DRO-Client/res/git/git_hash.txt
-        echo "$git_branch" >> ./DRO-Client/res/git/git_branch.txt
+        echo "$git_hash" >> ./res/git/git_hash.txt
+        echo "$git_branch" >> ./res/git/git_branch.txt
 
     - name: Run qmake
       shell: bash
@@ -340,12 +340,12 @@ jobs:
     
     - name: Setup branch and commit hash tags
       shell: bash
-      working-directory: ${{env.parentworkspace}}
+      working-directory: ${{github.workspace}}
       run: |
         git_hash=$(git rev-parse --short "$GITHUB_SHA")
         git_branch=${branch#refs/heads/}
-        echo "$git_hash" >> ./DRO-Client/res/git/git_hash.txt
-        echo "$git_branch" >> ./DRO-Client/res/git/git_branch.txt
+        echo "$git_hash" >> ./res/git/git_hash.txt
+        echo "$git_branch" >> ./res/git/git_branch.txt
         
     - name: Run qmake
       shell: bash
