@@ -57,12 +57,13 @@ QString get_about_message()
     "https://github.com/AttorneyOnline/AO2-Client</a>"
     "<p>Running on Qt version %2 with the BASS audio engine.<br>"
     "APNG plugin loaded: %3"
-    "<p>Built on %4<br>"
+    "<p>Built on %4 %5<br>"
   )
       .arg(get_version_string())
       .arg(QLatin1String(QT_VERSION_STR))
       .arg(hasApng ? "Yes" : "No")
-      .arg(QLatin1String(__DATE__));
+      .arg(QLatin1String(__DATE__))
+      .arg(QLatin1String(__TIME__));
 
   if (git_branch.isEmpty())
     msg += QString("No git branch information available.<br>");
