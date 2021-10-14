@@ -93,6 +93,15 @@ jobs:
         export PATH=/d/a/DRO-Client/Qt/Tools/mingw730_32/bin:$PATH
         rm -r /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/
         cp -r /d/a/DRO-Client/Qt/Tools/mingw730_32/ /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/
+    
+    - name: Setup branch and commit hash tags
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        git_hash=$(git rev-parse --short "$GITHUB_SHA")
+        git_branch=${branch#refs/heads/}
+        echo "$git_hash" >> ./DRO-Client/res/git/git_hash.txt
+        echo "$git_branch" >> ./DRO-Client/res/git/git_branch.txt
         
     - name: Run qmake
       shell: bash
@@ -197,6 +206,15 @@ jobs:
       uses: jurplel/install-qt-action@v2
       with:
         version: '5.14.2'
+    
+    - name: Setup branch and commit hash tags
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        git_hash=$(git rev-parse --short "$GITHUB_SHA")
+        git_branch=${branch#refs/heads/}
+        echo "$git_hash" >> ./DRO-Client/res/git/git_hash.txt
+        echo "$git_branch" >> ./DRO-Client/res/git/git_branch.txt
 
     - name: Run qmake
       shell: bash
@@ -319,6 +337,15 @@ jobs:
         cp plugins/imageformats/libqapng.so ..
         cd ..
         rm -r -f QtApng
+    
+    - name: Setup branch and commit hash tags
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        git_hash=$(git rev-parse --short "$GITHUB_SHA")
+        git_branch=${branch#refs/heads/}
+        echo "$git_hash" >> ./DRO-Client/res/git/git_hash.txt
+        echo "$git_branch" >> ./DRO-Client/res/git/git_branch.txt
         
     - name: Run qmake
       shell: bash
