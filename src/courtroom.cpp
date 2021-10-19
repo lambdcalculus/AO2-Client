@@ -1175,37 +1175,29 @@ void Courtroom::play_preanim()
   int sfx_delay = m_chatmessage[CMSoundDelay].toInt() * 60;
   m_sound_timer->start(sfx_delay);
 
-  QString f_preanim = m_chatmessage[CMPreAnim];
+  // set state
+  anim_state = 1;
+  ui_vp_player_char->show();
 
-  if (f_preanim.trimmed() == "-")
+  if (m_msg_is_first_person)
   {
-    // no animation, continue
     preanim_done();
     return;
   }
 
-  QString f_char = m_chatmessage[CMChrName];
-  // set state
-  anim_state = 1;
+  const QString l_chr_name = m_chatmessage[CMChrName];
+  const QString l_anim_name = m_chatmessage[CMPreAnim];
 
-  if (m_msg_is_first_person == false)
+  if (!ui_vp_player_char->play_pre(l_chr_name, l_anim_name))
   {
-    QString f_anim_path = ao_app->get_character_path(f_char, f_preanim);
-    if (ui_vp_player_char->play_pre(f_char, f_preanim))
-    {
-      qDebug() << "Playing" << f_anim_path;
-
-      // finished
-      return;
-    }
-    else
-    {
-      qDebug() << "could not find " + f_anim_path;
-    }
+    qDebug() << "Unable to play animation: missing or invalid file; character:" << l_chr_name
+             << "animation:" << l_anim_name;
+    preanim_done();
+    return;
   }
 
-  // no animation, continue
-  preanim_done();
+  qDebug() << "Playing character animation; character:" << l_chr_name << "animation: " << l_anim_name
+           << "file:" << ui_vp_player_char->file_name();
 }
 
 void Courtroom::preanim_done()

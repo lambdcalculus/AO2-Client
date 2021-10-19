@@ -15,8 +15,9 @@ class AOCharMovie : public QLabel
 public:
   AOCharMovie(QWidget *p_parent, AOApplication *p_ao_app);
 
+  QString file_name();
+
   bool play(QString character, QString emote, QString prefix, bool play_once);
-  bool play(QString character, QString emote, bool play_once);
   bool play_pre(QString character, QString emote);
   bool play_talk(QString character, QString emote);
   bool play_idle(QString character, QString emote);

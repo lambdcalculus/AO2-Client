@@ -2,7 +2,9 @@
 
 #include "aoconfig.h"
 
-#include <QRegExp>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#include <QRegularExpressionMatchIterator>
 #include <QScrollBar>
 
 DRChatLog::DRChatLog(QWidget *parent) : QTextBrowser(parent), dr_config(new AOConfig(this))
@@ -36,26 +38,84 @@ void DRChatLog::_p_write_message_queue()
   QScrollBar *l_scrollbar = verticalScrollBar();
   const bool l_is_end_scroll_pos = l_scrollbar->value() == l_scrollbar->maximum();
 
+  QTextCharFormat l_normal_format;
+  l_normal_format.setFont(font());
+  l_normal_format.setFontWeight(QFont::Normal);
+  QTextCharFormat l_name_format = l_normal_format;
+  l_name_format.setFontWeight(QFont::Bold);
+  QTextCharFormat l_href_format = l_normal_format;
+  l_href_format.setAnchor(true);
+  l_href_format.setFontWeight(QFont::Bold);
+  l_href_format.setForeground(Qt::blue);
+  l_href_format.setUnderlineStyle(QTextCharFormat::SingleUnderline);
+
   QTextCursor l_cursor = textCursor();
   l_cursor.movePosition(QTextCursor::End);
+  l_cursor.setCharFormat(l_normal_format);
 
   while (!m_message_queue.isEmpty())
   {
     if (!m_message_list.isEmpty())
-      l_cursor.insertHtml(QString("<br />"));
+      l_cursor.insertText(QString(QChar::LineFeed));
     const Message l_message = m_message_queue.dequeue();
     m_message_list.append(l_message);
 
-    l_cursor.insertText(QString(QString("[%1] ").arg(l_message.timestamp.toString("hh:mm"))));
+    l_cursor.insertText(QString(QString("[%1] ").arg(l_message.timestamp.toString("hh:mm"))), l_normal_format);
 
     if (!l_message.name.isEmpty())
-      l_cursor.insertHtml(QString("<b>%1</b>: ").arg(l_message.name.toHtmlEscaped()));
+    {
+      l_cursor.insertText(l_message.name, l_name_format);
+      l_cursor.insertText(": ", l_normal_format);
+    }
 
-    QString l_text = l_message.text.toHtmlEscaped();
-    const QRegExp l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
-    if (l_text.contains(l_regex))
-      l_text.replace(l_regex, "<a href=\"\\1\">\\1</a>");
-    l_cursor.insertHtml(l_text.replace("\n", "<br />"));
+    const QString l_text = l_message.text;
+
+    class TextPiece
+    {
+    public:
+      QString text;
+      bool is_href = false;
+
+      TextPiece()
+      {}
+      TextPiece(QString p_text, bool p_is_href = false) : text(p_text), is_href(p_is_href)
+      {}
+    };
+    QVector<TextPiece> l_piece_list;
+
+    const QRegularExpression l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
+    QRegularExpressionMatchIterator l_iterator = l_regex.globalMatch(l_text);
+    { // capture all text pieces
+      int l_index = 0;
+
+      while (l_iterator.hasNext())
+      {
+        QRegularExpressionMatch l_match = l_iterator.next();
+
+        const int l_captureIndex = l_match.capturedStart();
+        if (l_index < l_captureIndex)
+          l_piece_list.append(l_text.mid(l_index, l_captureIndex - l_index));
+        l_piece_list.append(TextPiece(l_match.captured(), true));
+        l_index = l_match.capturedEnd();
+      }
+
+      l_piece_list.append(l_text.mid(l_index));
+    }
+
+    for (const TextPiece &i_piece : qAsConst(l_piece_list))
+    {
+      if (i_piece.text.isEmpty())
+        continue;
+
+      QTextCharFormat l_piece_format = l_normal_format;
+      if (i_piece.is_href)
+      {
+        l_piece_format = l_href_format;
+        l_piece_format.setAnchorHref(i_piece.text);
+      }
+
+      l_cursor.insertText(i_piece.text, l_piece_format);
+    }
   }
 
   if (l_is_end_scroll_pos)
