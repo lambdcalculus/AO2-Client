@@ -11,7 +11,6 @@
 DRChatLog::DRChatLog(QWidget *parent) : QTextBrowser(parent), dr_config(new AOConfig(this))
 {
   connect(this, SIGNAL(message_queued()), this, SLOT(_p_write_message_queue()));
-  connect(dr_config, SIGNAL(loaded_theme()), this, SLOT(_p_reset_log()));
 }
 
 void DRChatLog::append_chatmessage(QString p_name, QString p_text)
@@ -22,6 +21,11 @@ void DRChatLog::append_chatmessage(QString p_name, QString p_text)
 void DRChatLog::append_error(QString p_text)
 {
   queue_message(nullptr, p_text);
+}
+
+void DRChatLog::reset_message_format()
+{
+  _p_reset_log();
 }
 
 void DRChatLog::queue_message(QString p_name, QString p_text)

@@ -1428,6 +1428,8 @@ void Courtroom::set_fonts()
 
   // Chatlog does not support drtextedit because html
   set_font(ui_ooc_chatlog, "server_chatlog", COURTROOM_FONTS_INI, ao_app);
+  ui_ooc_chatlog->reset_message_format();
+
   set_font(ui_music_list, "music_list", COURTROOM_FONTS_INI, ao_app);
   set_font(ui_area_list, "area_list", COURTROOM_FONTS_INI, ao_app);
   set_font(ui_sfx_list, "sfx_list", COURTROOM_FONTS_INI, ao_app);

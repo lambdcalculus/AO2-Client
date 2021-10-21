@@ -16,6 +16,7 @@ public:
 
   void append_chatmessage(QString name, QString text);
   void append_error(QString text);
+  void reset_message_format();
 
 signals:
   void message_queued();
