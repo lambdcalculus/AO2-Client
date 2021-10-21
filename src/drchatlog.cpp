@@ -6,6 +6,7 @@
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionMatchIterator>
 #include <QScrollBar>
+#include <QUrl>
 
 DRChatLog::DRChatLog(QWidget *parent) : QTextBrowser(parent), dr_config(new AOConfig(this))
 {
@@ -114,7 +115,7 @@ void DRChatLog::_p_write_message_queue()
         l_piece_format.setAnchorHref(i_piece.text);
       }
 
-      l_cursor.insertText(i_piece.text, l_piece_format);
+      l_cursor.insertText(i_piece.is_href ? QUrl(i_piece.text).toString() : i_piece.text, l_piece_format);
     }
   }
 

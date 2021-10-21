@@ -45,7 +45,7 @@ QString Courtroom::get_character_content_url()
   if (l_url.isRelative() || l_url.isLocalFile())
     return nullptr;
 
-  return l_url.toString();
+  return l_url.toString(QUrl::FullyEncoded);
 }
 
 namespace
