@@ -741,6 +741,9 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   ui_vp_objection->stop();
   ui_vp_evidence_display->reset();
 
+  m_message_color_name = "";
+  m_message_color_stack.clear();
+
   // reset effect
   ui_vp_effect->stop();
 
