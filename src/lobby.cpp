@@ -236,9 +236,9 @@ void Lobby::set_loading_text(QString p_text)
   ui_loading_text->append(p_text);
 }
 
-int Lobby::get_selected_server()
+server_type Lobby::get_selected_server()
 {
-  return ui_server_list->currentRow();
+  return m_last_server;
 }
 
 void Lobby::set_loading_value(int p_value)
@@ -354,6 +354,7 @@ void Lobby::on_server_list_clicked(QModelIndex p_model)
       return;
 
     m_last_server = ao_app->get_favorite_list().at(p_model.row());
+    m_last_server.is_favorite = true;
   }
 
   ui_player_count->setText("Connecting...");

@@ -106,6 +106,7 @@ struct server_type
   QString desc;
   QString ip;
   int port;
+  bool is_favorite = false;
 
   QString to_info() const
   {
@@ -117,10 +118,14 @@ struct server_type
     }
     else if (!ip.isEmpty())
     {
-      r_info = ip + ":" + QString::number(port);
+      r_info = to_address();
     }
 
     return r_info;
+  }
+  QString to_address() const
+  {
+    return ip + ":" + QString::number(port);
   }
 };
 
