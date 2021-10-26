@@ -40,7 +40,7 @@ public:
   void set_fonts();
   void show_loading_overlay();
   void hide_loading_overlay();
-  int get_selected_server();
+  server_type get_selected_server();
   void set_loading_value(int p_value);
 
 private:
