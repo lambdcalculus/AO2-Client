@@ -3,7 +3,7 @@ QT += core gui widgets uitools network
 CONFIG += c++17
 
 TEMPLATE = app
-VERSION = 1.0.0.0
+VERSION = 1.0.2.0
 TARGET = dro-client
 
 RC_ICONS = icon.ico

@@ -14,7 +14,7 @@ int get_major_version()
 
 int get_minor_version()
 {
-  return 1;
+  return 2;
 }
 
 QString get_version_string()
