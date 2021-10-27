@@ -2,11 +2,13 @@
 
 #include "lobby.h"
 
+#include <QDebug>
+
 int main(int argc, char *argv[])
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
   // High-DPI support is for Qt version >=5.6.
-  AOApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  bool l_dpi_scaling = false;
 
   for (int i = 0; i < argc; ++i)
   {
@@ -14,9 +16,18 @@ int main(int argc, char *argv[])
 
     if (l_arg == "-noscaling")
     {
-      QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, false);
-      QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+      l_dpi_scaling = false;
     }
+  }
+
+  if (l_dpi_scaling)
+  {
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  }
+  else
+  {
+    QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_Use96Dpi);
   }
 #endif
 
