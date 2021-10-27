@@ -6,9 +6,9 @@
 
 int main(int argc, char *argv[])
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
   // High-DPI support is for Qt version >=5.6.
-  bool l_dpi_scaling = false;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+  bool l_dpi_scaling = true;
 
   for (int i = 0; i < argc; ++i)
   {
@@ -26,8 +26,12 @@ int main(int argc, char *argv[])
   }
   else
   {
+    qputenv("QT_FONT_DPI", "96");
+    qputenv("QT_SCALE_FACTOR", "1");
+    qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "0");
+
     QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
-    QCoreApplication::setAttribute(Qt::AA_Use96Dpi);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, false);
   }
 #endif
 
