@@ -35,11 +35,17 @@ private:
   AOApplication *ao_app = nullptr;
 
   int m_index = 0;
+  QImage m_texture;
+  QString m_comment;
 
   QLabel *ui_selected = nullptr;
 
 private slots:
   void on_clicked();
+
+  // QWidget interface
+protected:
+  void paintEvent(QPaintEvent *event) final;
 };
 
 #endif // AOEMOTEBUTTON_H
