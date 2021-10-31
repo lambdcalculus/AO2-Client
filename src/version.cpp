@@ -1,5 +1,7 @@
 #include "version.h"
 
+#include <bass.h>
+
 #include <QFile>
 #include <QImageReader>
 #include <QString>
@@ -30,8 +32,9 @@ QString get_resource_file_text(QString filename)
   QString data;
 
   QFile file(filename);
-  if (!file.open(QIODevice::ReadOnly)) {
-      return "";
+  if (!file.open(QIODevice::ReadOnly))
+  {
+    return "";
   }
   data = file.readAll();
   file.close();
@@ -44,26 +47,25 @@ QString get_about_message()
   const QString git_branch = get_resource_file_text(":/res/git/git_branch.txt");
   const QString git_hash = get_resource_file_text(":/res/git/git_hash.txt");
 
-  QString msg = QString(
-    "<h2>Danganronpa Online</h2>"
-    "version: %1"
-    "<p><b>Source code:</b> "
-    "<a href='https://github.com/Chrezm/DRO-Client'>"
-    "https://github.com/Chrezm/DRO-Client</a>"
-    "<p><b>Development:</b><br>"
-    "Cerapter, Elf, Iuvee, Tricky Leifa, Ziella"
-    "<p>Based on Attorney Online 2:<br>"
-    "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
-    "https://github.com/AttorneyOnline/AO2-Client</a>"
-    "<p>Running on Qt version %2 with the BASS audio engine.<br>"
-    "APNG plugin loaded: %3"
-    "<p>Built on %4 %5<br>"
-  )
-      .arg(get_version_string())
-      .arg(QLatin1String(QT_VERSION_STR))
-      .arg(hasApng ? "Yes" : "No")
-      .arg(QLatin1String(__DATE__))
-      .arg(QLatin1String(__TIME__));
+  QString msg = QString("<h2>Danganronpa Online</h2>"
+                        "version: %1"
+                        "<p><b>Source code:</b> "
+                        "<a href='https://github.com/Chrezm/DRO-Client'>"
+                        "https://github.com/Chrezm/DRO-Client</a>"
+                        "<p><b>Development:</b><br>"
+                        "Cerapter, Elf, Iuvee, Tricky Leifa, Ziella"
+                        "<p>Based on Attorney Online 2:<br>"
+                        "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
+                        "https://github.com/AttorneyOnline/AO2-Client</a>"
+                        "<p>Running on Qt version %2 with the BASS %3 audio engine.<br>"
+                        "APNG plugin loaded: %4"
+                        "<p>Built on %4 %5<br>")
+                    .arg(get_version_string())
+                    .arg(QLatin1String(QT_VERSION_STR))
+                    .arg(QLatin1String(BASSVERSIONTEXT))
+                    .arg(hasApng ? "Yes" : "No")
+                    .arg(QLatin1String(__DATE__))
+                    .arg(QLatin1String(__TIME__));
 
   if (git_branch.isEmpty())
     msg += QString("No git branch information available.<br>");
