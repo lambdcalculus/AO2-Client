@@ -43,8 +43,15 @@ bool AOCharMovie::play(QString p_chr, QString p_emote, QString p_prefix, bool p_
   const bool l_is_anim = p_prefix.isEmpty();
 
   QStringList l_file_list;
+  QStringList l_blacklist;
   for (const QString &i_chr : ao_app->get_char_include_tree(p_chr))
   {
+    l_blacklist.append(QStringList{
+        ao_app->get_character_path(i_chr, "char_icon.png"),
+        ao_app->get_character_path(i_chr, "showname.png"),
+        ao_app->get_character_path(i_chr, "emotions"),
+    });
+
     if (!l_is_anim)
       l_file_list.append(ao_app->get_character_path(i_chr, QString("%1%2").arg(p_prefix, p_emote)));
     l_file_list.append(ao_app->get_character_path(i_chr, p_emote));
@@ -56,6 +63,15 @@ bool AOCharMovie::play(QString p_chr, QString p_emote, QString p_prefix, bool p_
     if (!l_is_anim)
       l_file = ao_app->find_theme_asset_path("placeholder", animated_extensions());
     r_exist = false;
+  }
+
+  for (const QString &i_blacklisted_file : qAsConst(l_blacklist))
+  {
+    if (!l_file.startsWith(i_blacklisted_file, Qt::CaseInsensitive))
+      continue;
+    l_file.clear();
+    r_exist = false;
+    break;
   }
 
   stop();
