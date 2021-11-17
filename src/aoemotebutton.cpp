@@ -4,7 +4,10 @@
 #include "file_functions.h"
 
 #include <QHelpEvent>
+#include <QImage>
 #include <QLabel>
+#include <QPaintEvent>
+#include <QPainter>
 
 AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
 {
@@ -67,16 +70,28 @@ void AOEmoteButton::set_image(DREmote p_emote, bool p_enabled)
     }
   }
 
-  const bool l_texture_exist = file_exists(l_texture);
-  setText(l_texture_exist ? nullptr : p_emote.comment);
-  setStyleSheet(l_texture_exist
-                    ? QString("%1 { border-image: url(\"%2\"); }").arg(metaObject()->className()).arg(l_texture)
-                    : nullptr);
+  m_texture.load(l_texture);
+  m_comment = p_emote.comment;
+  setText(m_texture.isNull() ? p_emote.comment : nullptr);
 }
 
 void AOEmoteButton::on_clicked()
 {
   Q_EMIT emote_clicked(m_index);
+}
+
+void AOEmoteButton::paintEvent(QPaintEvent *event)
+{
+  if (m_texture.isNull())
+  {
+    QPushButton::paintEvent(event);
+    return;
+  }
+
+  QPainter l_painter(this);
+  l_painter.drawImage(event->rect(),
+                      m_texture.scaled(event->rect().size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+  l_painter.end();
 }
 
 bool AOEmoteButton::event(QEvent *event)
