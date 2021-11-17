@@ -124,6 +124,9 @@ private:
   QSpinBox *ui_blip_rate = nullptr;
   QCheckBox *ui_blank_blips = nullptr;
 
+  // about
+  QLabel *ui_about = nullptr;
+
 private slots:
   void username_editing_finished();
   void showname_editing_finished();

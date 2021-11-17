@@ -5,6 +5,7 @@
 #include "aoguiloader.h"
 #include "datatypes.h"
 #include "drpather.h"
+#include "version.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -92,6 +93,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_blip_value = AO_GUI_WIDGET(QLabel, "blip_value");
   ui_blip_rate = AO_GUI_WIDGET(QSpinBox, "blip_rate");
   ui_blank_blips = AO_GUI_WIDGET(QCheckBox, "blank_blips");
+
+  // about
+  ui_about = AO_GUI_WIDGET(QLabel, "about_label");
 
   // themes
   refresh_theme_list();
@@ -278,6 +282,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
 
   on_manual_gamemode_selection_changed(m_config->is_manual_gamemode_selection_enabled());
   on_manual_timeofday_selection_changed(m_config->is_manual_timeofday_selection_enabled());
+
+  ui_about->setText(get_about_message());
 }
 
 void AOConfigPanel::showEvent(QShowEvent *event)

@@ -1175,8 +1175,7 @@ void Courtroom::delete_widget(QWidget *p_widget)
   // remove the widget from recorded names
   widget_names.remove(p_widget->objectName());
 
-  // transfer the children to our grandparent since our parent is
-  // about to commit suicide
+  // transfer the children to our grandparent since our parent is about to be deleted
   QWidget *grand_parent = p_widget->parentWidget();
   // if we don't have a grand parent, attach ourselves to courtroom
   if (!grand_parent)
