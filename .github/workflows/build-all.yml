@@ -1,4 +1,4 @@
-# Original code from skyedeving and oldmud0
+# Based from code from skyedeving and oldmud0
 # at https://github.com/AttorneyOnline/AO2-Client/blob/master/.github/workflows/build.yml
 name: build-all
 
@@ -66,21 +66,28 @@ jobs:
         curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-mingw73_32-5.14.1.zip -o apng.zip
         unzip apng.zip
         
+    - name: Update Python Pip
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        python -m pip install --upgrade pip
+        
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '5.14.2'
-        arch: 'win32_mingw73'
+        version: '5.15.2'
+        arch: 'win32_mingw81'
 
     - name: Install AQt
       shell: bash
       working-directory: ${{env.parentworkspace}} 
-      run: pip install aqtinstall
+      run: |
+        pip install aqtinstall
 
     - name: Install MinGW
       shell: bash
       working-directory: ${{env.parentworkspace}}
-      run: aqt tool -O ./Qt windows tools_mingw 7.3.0-1-202004170606 qt.tools.win32_mingw730
+      run: aqt tool -O ./Qt windows tools_mingw 8.1.0-1-202004170606 qt.tools.win32_mingw810
 
     - name: Setup MinGW
       shell: bash
@@ -90,9 +97,9 @@ jobs:
       # Therefore, I just brought the MinGW32 folder to the MinGW64 folder.
       # Tom Scott would be proud of this bodge
       run: |
-        export PATH=/d/a/DRO-Client/Qt/Tools/mingw730_32/bin:$PATH
+        export PATH=/d/a/DRO-Client/Qt/Tools/mingw810_32/bin:$PATH
         rm -r /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/
-        cp -r /d/a/DRO-Client/Qt/Tools/mingw730_32/ /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/
+        cp -r /d/a/DRO-Client/Qt/Tools/mingw810_32/ /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/
     
     - name: Setup branch and commit hash tags
       shell: bash
@@ -107,14 +114,14 @@ jobs:
       shell: bash
       working-directory: ${{env.parentworkspace}}
       run: |
-        ./Qt/5.14.2/mingw73_32/bin/qmake.exe -makefile -o Makefile ./DRO-Client/dronline-client.pro -spec win32-g++ "CONFIG+=qtquickcompiler"
+        ./Qt/5.15.2/mingw81_32/bin/qmake.exe -makefile -o Makefile ./DRO-Client/dronline-client.pro -spec win32-g++ "CONFIG+=qtquickcompiler"
   
     - name: Run Make
       shell: bash
       working-directory: ${{env.parentworkspace}}
       run: |
-        ./Qt/Tools/mingw730_32/bin/mingw32-make.exe -f ./Makefile qmake_all
-        ./Qt/Tools/mingw730_32/bin/mingw32-make.exe -j8
+        ./Qt/Tools/mingw810_32/bin/mingw32-make.exe -f ./Makefile qmake_all
+        ./Qt/Tools/mingw810_32/bin/mingw32-make.exe -j8
       
     - name: Set up deploy folder
       shell: bash
@@ -202,10 +209,16 @@ jobs:
         curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-clang_64-5.14.1.tar.xz -o qtapng.tar.xz
         tar -xvf qtapng.tar.xz
         
+    - name: Update Python Pip
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        python3 -m pip install --upgrade pip
+        
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '5.14.2'
+        version: '5.15.2'
     
     - name: Setup branch and commit hash tags
       shell: bash
@@ -220,7 +233,7 @@ jobs:
       shell: bash
       working-directory: ${{env.parentworkspace}}
       run: |
-        ./Qt/5.14.2/clang_64/bin/qmake -makefile -o Makefile ./DRO-Client/dronline-client.pro -spec macx-clang "CONFIG+=x86_64" "CONFIG+=qtquickcompiler"
+        ./Qt/5.15.2/clang_64/bin/qmake -makefile -o Makefile ./DRO-Client/dronline-client.pro -spec macx-clang "CONFIG+=x86_64" "CONFIG+=qtquickcompiler"
   
     - name: Run make
       shell: bash
@@ -241,7 +254,7 @@ jobs:
       working-directory: "${{env.parentworkspace}}/Danganronpa Online"
       shell: bash
       run: |
-        ../Qt/5.14.2/clang_64/bin/macdeployqt "Danganronpa Online.app"
+        ../Qt/5.15.2/clang_64/bin/macdeployqt "Danganronpa Online.app"
         cp ../discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib "./Danganronpa Online.app/Contents/Frameworks/"
         cp ../discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib "./Danganronpa Online.app/Contents/MacOS/"
         cp ../libbass.dylib "./Danganronpa Online.app/Contents/Frameworks/"
@@ -378,17 +391,12 @@ jobs:
         cp -R ../libqapng.so "./imageformats"
         echo "LD_LIBRARY_PATH=.:./depends:$LD_LIBRARY_PATH ./dro-client" > "dro-client.sh"
         echo "Installation instructions
-
-        1. Download the Full Pack for Windows and extract on the same folder as this folder.
-
-        2. On your terminal, run 
+        1. On your terminal, run
         sudo apt install qt5-default
-
-        3. Change directory to this folder, and run 
+        2. Change directory to this folder, and run
         chmod +x dro-client.sh
         chmod +x dro-client
-
-        4. To launch, run
+        3. To launch, run
         ./dro-client.sh" > "Readme (Ubuntu).txt"
       
     - name: Upload Artifact
