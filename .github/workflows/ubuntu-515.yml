@@ -4,133 +4,133 @@
   # UBUNTU #
   ###############################################################################
          
-  ubuntu:
-    runs-on: ubuntu-20.04
+  # ubuntu:
+  #  runs-on: ubuntu-20.04
 
-    steps:
-    - uses: actions/checkout@v2
+  # steps:
+  #  - uses: actions/checkout@v2
 
-    - name: Update worker
-      shell: bash
-      working-directory: ${{github.workspace}}
-      run: |
-        sudo apt-get update
-        sudo apt-get upgrade
+  #  - name: Update worker
+  #    shell: bash
+  #    working-directory: ${{github.workspace}}
+  #    run: |
+  #      sudo apt-get update
+  #      sudo apt-get upgrade
         
-    - name: Setup workspace
-      shell: bash
-      working-directory: ${{github.workspace}}
-      run: |
-        echo "parentworkspace=/home/runner/work/DRO-Client/" >> $GITHUB_ENV
-        mkdir "3rd"
-        mkdir "3rd/include"
-        mkdir "3rd/x86_64"
+  #  - name: Setup workspace
+  #    shell: bash
+  #    working-directory: ${{github.workspace}}
+  #    run: |
+  #      echo "parentworkspace=/home/runner/work/DRO-Client/" >> $GITHUB_ENV
+  #      mkdir "3rd"
+  #      mkdir "3rd/include"
+  #      mkdir "3rd/x86_64"
         
-    - name: Fetch Discord external library
-      shell: bash
-      working-directory: ${{env.parentworkspace}}
-      run: |
-        curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip
-        unzip discord_rpc_linux.zip
-        cp ./discord-rpc/linux-dynamic/include/discord_register.h ./DRO-Client/3rd/include/discord_register.h
-        cp ./discord-rpc/linux-dynamic/include/discord_rpc.h ./DRO-Client/3rd/include/discord_rpc.h
-        cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./DRO-Client/3rd/x86_64/libdiscord-rpc.so
+  #  - name: Fetch Discord external library
+  #    shell: bash
+  #    working-directory: ${{env.parentworkspace}}
+  #    run: |
+  #      curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip
+  #      unzip discord_rpc_linux.zip
+  #      cp ./discord-rpc/linux-dynamic/include/discord_register.h ./DRO-Client/3rd/include/discord_register.h
+  #      cp ./discord-rpc/linux-dynamic/include/discord_rpc.h ./DRO-Client/3rd/include/discord_rpc.h
+  #      cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./DRO-Client/3rd/x86_64/libdiscord-rpc.so
         
-    - name: Fetch Bass external library
-      shell: bash
-      working-directory: ${{env.parentworkspace}}
-      run: |
-        curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
-        unzip bass.zip
-        cp ./bass.h ./DRO-Client/3rd/include/bass.h
-        cp ./x64/libbass.so ./DRO-Client/3rd/x86_64/libbass.so
+  #  - name: Fetch Bass external library
+  #    shell: bash
+  #    working-directory: ${{env.parentworkspace}}
+  #    run: |
+  #      curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
+  #      unzip bass.zip
+  #      cp ./bass.h ./DRO-Client/3rd/include/bass.h
+  #      cp ./x64/libbass.so ./DRO-Client/3rd/x86_64/libbass.so
         
-    - name: Fetch BassOpus external library
-      shell: bash
-      working-directory: ${{env.parentworkspace}}
-      run: |
-        curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
-        unzip bassopus.zip
-        cp ./bassopus.h ./DRO-Client/3rd/include/bassopus.h
-        cp ./x64/libbassopus.so ./DRO-Client/3rd/x86_64/libbassopus.so
+  #  - name: Fetch BassOpus external library
+  #    shell: bash
+  #    working-directory: ${{env.parentworkspace}}
+  #    run: |
+  #      curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
+  #      unzip bassopus.zip
+  #      cp ./bassopus.h ./DRO-Client/3rd/include/bassopus.h
+  #      cp ./x64/libbassopus.so ./DRO-Client/3rd/x86_64/libbassopus.so
 
-    - name: Update Python Pip
-      shell: bash
-      working-directory: ${{env.parentworkspace}}
-      run: |
-        pip install --upgrade pip
+  #  - name: Update Python Pip
+  #    shell: bash
+  #    working-directory: ${{env.parentworkspace}}
+  #    run: |
+  #      pip install --upgrade pip
         
-    - name: Install AQt
-      shell: bash
-      working-directory: ${{env.parentworkspace}} 
-      run: |
-        pip install aqtinstall
+  #  - name: Install AQt
+  #    shell: bash
+  #    working-directory: ${{env.parentworkspace}} 
+  #    run: |
+  #      pip install aqtinstall
       
-    - name: Install Qt
-      shell: bash
-      working-directory: ${{env.parentworkspace}}
-      run: |
-        aqt install-qt linux desktop 5.15.2
-        sudo apt install libgl1-mesa-dev
+  #  - name: Install Qt
+  #    shell: bash
+  #    working-directory: ${{env.parentworkspace}}
+  #    run: |
+  #      aqt install-qt linux desktop 5.15.2
+  #      sudo apt install libgl1-mesa-dev
         
-    - name: Build QtApng external library
-      shell: bash
-      working-directory: ${{env.parentworkspace}}
-      run: |
-        git clone https://github.com/Skycoder42/QtApng
-        cd QtApng
-        ../5.15.2/gcc_64/bin/qmake
-        make -j2
-        cp plugins/imageformats/libqapng.so ..
-        cd ..
-        rm -r -f QtApng
+  #  - name: Build QtApng external library
+  #    shell: bash
+  #    working-directory: ${{env.parentworkspace}}
+  #    run: |
+  #      git clone https://github.com/Skycoder42/QtApng
+  #      cd QtApng
+  #      ../5.15.2/gcc_64/bin/qmake
+  #      make -j2
+  #      cp plugins/imageformats/libqapng.so ..
+  #      cd ..
+  #      rm -r -f QtApng
         
-    - name: Run qmake
-      shell: bash
-      working-directory: ${{github.workspace}}
-      run: |
-        ../5.15.2/gcc_64/bin/qmake
+  #  - name: Run qmake
+  #    shell: bash
+  #    working-directory: ${{github.workspace}}
+  #    run: |
+  #      ../5.15.2/gcc_64/bin/qmake
   
-    - name: Run Make
-      shell: bash
-      working-directory: ${{github.workspace}}
-      run: |
-        make
+  #  - name: Run Make
+  #    shell: bash
+  #    working-directory: ${{github.workspace}}
+  #    run: |
+  #      make
         
-    - name: Set up deploy folder
-      shell: bash
-      working-directory: ${{env.parentworkspace}}
-      run: |
-        mkdir "Danganronpa Online"
-        cp -R ./DRO-Client/dro-client "./Danganronpa Online/dro-client"
+  #  - name: Set up deploy folder
+  #    shell: bash
+  #    working-directory: ${{env.parentworkspace}}
+  #    run: |
+  #      mkdir "Danganronpa Online"
+  #      cp -R ./DRO-Client/dro-client "./Danganronpa Online/dro-client"
         
-    - name: Deploy
-      working-directory: "${{env.parentworkspace}}/Danganronpa Online"
-      shell: bash
-      run: |
-        mkdir depends
-        cp ../discord-rpc/linux-dynamic/lib/libdiscord-rpc.so "./depends"
-        cp ../x64/libbass.so "./depends"
-        cp ../x64/libbassopus.so "./depends"
-        mkdir imageformats
-        cp -R ../libqapng.so "./imageformats"
-        echo "LD_LIBRARY_PATH=.:./depends:$LD_LIBRARY_PATH ./dro-client" > "dro-client.sh"
-        echo "Installation instructions
+  #  - name: Deploy
+  #    working-directory: "${{env.parentworkspace}}/Danganronpa Online"
+  #    shell: bash
+  #    run: |
+  #      mkdir depends
+  #      cp ../discord-rpc/linux-dynamic/lib/libdiscord-rpc.so "./depends"
+  #      cp ../x64/libbass.so "./depends"
+  #      cp ../x64/libbassopus.so "./depends"
+  #      mkdir imageformats
+  #      cp -R ../libqapng.so "./imageformats"
+  #      echo "LD_LIBRARY_PATH=.:./depends:$LD_LIBRARY_PATH ./dro-client" > "dro-client.sh"
+  #      echo "Installation instructions
 
-        1. On your terminal, run these commands, one after the other.
-        pip install --upgrade pip
-        pip install aqtinstall
-        aqt install-qt linux desktop 5.15.2
+  #      1. On your terminal, run these commands, one after the other.
+  #      pip install --upgrade pip
+  #      pip install aqtinstall
+  #      aqt install-qt linux desktop 5.15.2
 
-        2. Change directory to this folder, and run 
-        chmod +x dro-client.sh
-        chmod +x dro-client
+  #      2. Change directory to this folder, and run 
+  #      chmod +x dro-client.sh
+  #      chmod +x dro-client
 
-        3. To launch, run
-        ./dro-client.sh" > "Readme (Ubuntu).txt"
+  #      3. To launch, run
+  #      ./dro-client.sh" > "Readme (Ubuntu).txt"
       
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      with:
-         name: "Danganronpa Online (Ubuntu)"
-         path: "${{env.parentworkspace}}/**/Danganronpa Online"
+  #  - name: Upload Artifact
+  #    uses: actions/upload-artifact@v2
+  #    with:
+  #       name: "Danganronpa Online (Ubuntu)"
+  #       path: "${{env.parentworkspace}}/**/Danganronpa Online"
