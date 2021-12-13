@@ -1355,15 +1355,18 @@ void Courtroom::next_chat_letter()
     if (m_message_color_stack.isEmpty())
       m_message_color_stack.push("");
 
-    for (const auto &col : qAsConst(m_chatbox_message_highlight_colors))
+    if (!is_ignore_next_letter)
     {
-      if (f_character == col[0][0] && m_message_color_name != col[1])
+      for (const auto &col : qAsConst(m_chatbox_message_highlight_colors))
       {
-        m_message_color_stack.push(col[1]);
-        m_message_color_name = m_message_color_stack.top();
-        highlight_found = true;
-        render_character = (col[2] != "0");
-        break;
+        if (f_character == col[0][0] && m_message_color_name != col[1])
+        {
+          m_message_color_stack.push(col[1]);
+          m_message_color_name = m_message_color_stack.top();
+          highlight_found = true;
+          render_character = (col[2] != "0");
+          break;
+        }
       }
     }
 
@@ -1379,15 +1382,18 @@ void Courtroom::next_chat_letter()
 
     QString m_future_string_color = m_message_color_name;
 
-    for (const auto &col : qAsConst(m_chatbox_message_highlight_colors))
+    if (!highlight_found && !is_ignore_next_letter)
     {
-      if (f_character == col[0][1] && !highlight_found)
+      for (const auto &col : qAsConst(m_chatbox_message_highlight_colors))
       {
-        if (m_message_color_stack.size() > 1)
-          m_message_color_stack.pop();
-        m_future_string_color = m_message_color_stack.top();
-        render_character = (col[2] != "0");
-        break;
+        if (f_character == col[0][1])
+        {
+          if (m_message_color_stack.size() > 1)
+            m_message_color_stack.pop();
+          m_future_string_color = m_message_color_stack.top();
+          render_character = (col[2] != "0");
+          break;
+        }
       }
     }
 
