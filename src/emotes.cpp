@@ -173,14 +173,22 @@ void Courtroom::select_emote(int p_id)
 
   const DREmote &l_prev_emote = get_emote(m_emote_id);
   if (m_emote_id >= l_min && m_emote_id <= l_max)
-    ui_emote_list.at(m_emote_id % m_page_max_emote_count)->set_image(l_prev_emote, false);
+  {
+    AOEmoteButton* l_prev_button = ui_emote_list.at(m_emote_id % m_page_max_emote_count);
+    l_prev_button->set_image(l_prev_emote, false);
+    l_prev_button->repaint();
+  }
 
   const int l_prev_emote_id = m_emote_id;
   m_emote_id = p_id;
   const DREmote &l_emote = get_emote(m_emote_id);
 
   if (m_emote_id >= l_min && m_emote_id <= l_max)
-    ui_emote_list.at(m_emote_id % m_page_max_emote_count)->set_image(l_emote, true);
+  {
+    AOEmoteButton* l_new_button = ui_emote_list.at(m_emote_id % m_page_max_emote_count);
+    l_new_button->set_image(l_emote, true);
+    l_new_button->repaint();
+  }
 
   const int emote_mod = l_emote.modifier;
   if (l_prev_emote_id == m_emote_id) // toggle
