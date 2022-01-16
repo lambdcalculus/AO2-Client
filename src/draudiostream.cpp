@@ -7,6 +7,7 @@
 
 #include <QDebug>
 #include <QFileInfo>
+#include <QtMath>
 
 DRAudioStream::DRAudioStream(DRAudio::Family p_family) : m_family(p_family)
 {
@@ -58,6 +59,7 @@ void DRAudioStream::play()
                       .what();
     Q_EMIT finished();
   }
+  setup_looping();
 }
 
 void DRAudioStream::stop()
@@ -66,6 +68,83 @@ void DRAudioStream::stop()
     return;
   BASS_ChannelStop(m_hstream.value());
   Q_EMIT finished();
+}
+
+QWORD DRAudioStream::loop_start()
+{
+  return m_loop_start;
+}
+
+QWORD DRAudioStream::loop_end()
+{
+  return m_loop_end;
+}
+
+// the sync callback
+static void CALLBACK loop_sync(HSYNC syncHandle, DWORD channel, DWORD data, void *user)
+{
+  Q_UNUSED(syncHandle);
+  Q_UNUSED(data);
+
+  // move the position to the loopStart
+  DRAudioStream *stream = static_cast<DRAudioStream *>(user);
+  QWORD loop_start = stream->loop_start();
+  BASS_ChannelSetPosition(channel, loop_start, BASS_POS_BYTE);
+}
+
+void DRAudioStream::setup_looping()
+{
+  // Remove all previously set loop information
+  m_loop_start = {};
+  m_loop_end = {};
+
+  if (m_loop_sync > 0)
+  {
+    BASS_ChannelRemoveSync(m_hstream.value(), m_loop_sync);
+    m_loop_sync = 0;
+  }
+
+  // Now decide whether the track we are playing now is loopable.
+  if (!m_file->endsWith("ogg", Qt::CaseInsensitive))
+    return;
+
+  double l_sample_rate = 0.0;
+  if (float l_float_sample_rate = 0.0f;
+      BASS_ChannelGetAttribute(m_hstream.value(), BASS_ATTRIB_FREQ, &l_float_sample_rate))
+    l_sample_rate = double(l_float_sample_rate);
+  if (qFabs(l_sample_rate) == 0.0)
+    return;
+  // Now sample_rate holds the sample rate in hertz
+
+  const char *ogg_value = BASS_ChannelGetTags(m_hstream.value(), BASS_TAG_OGG);
+  QStringList ogg_comments;
+  while (*ogg_value)
+  {
+    ogg_comments.push_back(QString(ogg_value));
+    ogg_value += ogg_comments.back().size() + 1;
+  }
+
+  double loop_start = 0;
+  double loop_end = 0;
+  for (const QString &ogg_comment : ogg_comments)
+  {
+    QStringList split = ogg_comment.split('=');
+    if (split.size() != 2)
+      continue;
+    if (split.at(0) == "LoopStart")
+      loop_start = split.at(1).toDouble();
+    else if (split.at(0) == "LoopEnd")
+      loop_end = split.at(1).toDouble();
+  }
+  if (loop_start > loop_end || (loop_start == 0 && loop_end == 0))
+    return;
+
+  // If we are at this point, we are successful in fetching all required values
+
+  m_loop_start = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_start / l_sample_rate);
+  m_loop_end = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_end / l_sample_rate);
+
+  m_loop_sync = BASS_ChannelSetSync(m_hstream.value(), BASS_SYNC_POS | BASS_SYNC_MIXTIME, m_loop_end, &loop_sync, this);
 }
 
 std::optional<DRAudioError> DRAudioStream::set_file(QString p_file)
