@@ -59,7 +59,7 @@ QString get_about_message()
                         "https://github.com/AttorneyOnline/AO2-Client</a>"
                         "<p>Running on Qt version %2 with the BASS %3 audio engine.<br>"
                         "APNG plugin loaded: %4"
-                        "<p>Built on %4 %5<br>")
+                        "<p>Built on %5<br>")
                     .arg(get_version_string())
                     .arg(QLatin1String(QT_VERSION_STR))
                     .arg(QLatin1String(BASSVERSIONTEXT))
