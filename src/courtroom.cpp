@@ -8,6 +8,7 @@
 #include "aoconfig.h"
 #include "aoevidencedisplay.h"
 #include "aoimagedisplay.h"
+#include "aolabel.h"
 #include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aonotearea.h"
@@ -1138,7 +1139,39 @@ void Courtroom::update_ic_log(bool p_reset_log)
   }
 
   if (l_is_end_scroll_pos)
+  {
     l_scrollbar->setValue(l_topdown_orientation ? l_scrollbar->maximum() : l_scrollbar->minimum());
+    ui_ic_chatlog_scroll_td->hide();
+  }
+  else
+  {
+    ui_ic_chatlog_scroll_td->show();
+  }
+}
+
+void Courtroom::on_ic_chatlog_scroll_changed()
+{
+  const bool l_topdown_orientation = ao_config->log_is_topdown_enabled();
+  QScrollBar *l_scrollbar = ui_ic_chatlog->verticalScrollBar();
+  const int l_scroll_pos = l_scrollbar->value();
+  const bool l_is_end_scroll_pos = (l_topdown_orientation ?
+                                      l_scroll_pos == l_scrollbar->maximum(): l_scroll_pos == l_scrollbar->minimum());
+  if (l_is_end_scroll_pos)
+  {
+    ui_ic_chatlog_scroll_td->hide();
+  }
+  else
+  {
+    ui_ic_chatlog_scroll_td->show();
+  }
+
+}
+
+void Courtroom::on_ic_chatlog_scroll_td_clicked()
+{
+  const bool l_topdown_orientation = ao_config->log_is_topdown_enabled();
+  QScrollBar *l_scrollbar = ui_ic_chatlog->verticalScrollBar();
+  l_scrollbar->setValue(l_topdown_orientation ? l_scrollbar->maximum() : l_scrollbar->minimum());
 }
 
 void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, bool p_self)
