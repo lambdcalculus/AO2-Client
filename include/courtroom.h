@@ -375,6 +375,7 @@ private:
   QList<DRChatRecord> m_ic_record_list;
   QQueue<DRChatRecord> m_ic_record_queue;
   AOButton *ui_ic_chatlog_scroll_td = nullptr;
+  AOButton *ui_ic_chatlog_scroll_bu = nullptr;
 
   DRChatLog *ui_ooc_chatlog = nullptr;
 
@@ -570,6 +571,7 @@ private slots:
 
   void on_ic_chatlog_scroll_changed();
   void on_ic_chatlog_scroll_td_clicked();
+  void on_ic_chatlog_scroll_bu_clicked();
 
   void on_ooc_name_editing_finished();
   void on_ooc_return_pressed();
