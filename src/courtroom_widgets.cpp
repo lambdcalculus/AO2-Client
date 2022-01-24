@@ -110,11 +110,17 @@ void Courtroom::create_widgets()
   ui_vp_chat_arrow = new DRStickerMovie(this);
   ui_vp_chat_arrow->set_play_once(false);
 
+  QListView* view = new QListView(ui_iniswap_dropdown);
+  view->setTextElideMode(Qt::TextElideMode::ElideNone);
+  view->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
   ui_iniswap_dropdown = new QComboBox(this);
+  ui_iniswap_dropdown->setView(view);
   ui_iniswap_dropdown->setEditable(true);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::NoInsert);
   ui_iniswap_dropdown->completer()->setCompletionMode(QCompleter::PopupCompletion);
   ui_iniswap_dropdown->completer()->setFilterMode(Qt::MatchContains);
+  ui_iniswap_dropdown->completer()->popup()->setTextElideMode(Qt::TextElideMode::ElideNone);
+  ui_iniswap_dropdown->completer()->popup()->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
