@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Get the default Qt message handler.
+static const QtMessageHandler QT_DEFAULT_MESSAGE_HANDLER = qInstallMessageHandler(0);
+
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QByteArray localMsg = msg.toLocal8Bit();
@@ -53,6 +56,9 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
     QTextStream ts(&outFile);
     ts << output << Qt::endl;
     outFile.close();
+
+    // Call the default handler.
+    (*QT_DEFAULT_MESSAGE_HANDLER)(type, context, msg);
 }
 
 int main(int argc, char *argv[])
