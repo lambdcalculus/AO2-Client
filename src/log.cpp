@@ -87,7 +87,11 @@ void save_log_line(QString log_line)
   QFile outFile("base/logs/debug.log");
   outFile.open(QIODevice::WriteOnly | QIODevice::Append);
   QTextStream ts(&outFile);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
   ts << log_line << Qt::endl;
+#else
+  ts << log_line << "\n"; // Hopefully Windows users don't compile with <Qt 5.14
+#endif
   outFile.close();
 }
 
