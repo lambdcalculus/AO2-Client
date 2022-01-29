@@ -2120,7 +2120,7 @@ void Courtroom::on_back_to_lobby_clicked()
 
 void Courtroom::on_spectator_clicked()
 {
-  ao_app->send_server_packet(DRPacket("CC", {QString::number(ao_app->get_client_id()), "-1", get_hdid()}));
+  ao_app->send_server_packet(DRPacket("CC", {QString::number(ao_app->get_client_id()), "-1", "HDID"}));
 }
 
 void Courtroom::on_call_mod_clicked()
