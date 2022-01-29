@@ -1,5 +1,6 @@
 #include <QDateTime>
 #include <QFile>
+#include <QLockFile>
 #include <QString>
 #include <QTextStream>
 
@@ -53,11 +54,26 @@ QString generate_message(QtMsgType type, const QMessageLogContext &context, cons
 
 void save_log_line(QString log_line)
 {
-  QFile outFile("base/logs/debug.log");
-  outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-  QTextStream ts(&outFile);
+  // Log should only be up to some size, then rename existing log file to something else
+  // At any point there should be at most two log files: the current one, and the one
+  // generated immediately before.
+  int max_size = 100; // 10 MB
+  QFile outFileA("base/logs/debug.log");
+  if (outFileA.size() > max_size)
+  {
+    // Prevent concurrency issues
+    QLockFile lock_file("base/logs/debugLock");
+    lock_file.lock();
+    QFile outFileB("base/logs/debugB.log");
+    if (outFileB.exists())
+      outFileB.remove();
+    outFileA.rename("base/logs/debugB.log");
+    lock_file.unlock();
+  }
+  outFileA.open(QIODevice::WriteOnly | QIODevice::Append);
+  QTextStream ts(&outFileA);
   ts << log_line << Qt::endl;
-  outFile.close();
+  outFileA.close();
 }
 
 void DROLogger(QtMsgType type, const QMessageLogContext &context, const QString &msg)
