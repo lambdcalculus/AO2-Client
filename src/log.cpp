@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QDebug>
 #include <QFile>
 #include <QLockFile>
 #include <QString>
