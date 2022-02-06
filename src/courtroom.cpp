@@ -39,6 +39,7 @@
 #include <QScrollBar>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QWindowStateChangeEvent>
 
 const int Courtroom::DEFAULT_WIDTH = 714;
 const int Courtroom::DEFAULT_HEIGHT = 668;
@@ -2231,6 +2232,19 @@ void Courtroom::closeEvent(QCloseEvent *event)
 {
   Q_EMIT closing();
   QMainWindow::closeEvent(event);
+}
+
+void Courtroom::changeEvent(QEvent* e )
+{
+  if (e->type() == QEvent::WindowStateChange)
+  {
+    QWindowStateChangeEvent* event = static_cast< QWindowStateChangeEvent* >( e );
+    const Qt::WindowStates oldState = event->oldState();
+    const Qt::WindowStates newState = this->windowState();
+
+    if (oldState == Qt::WindowMaximized && newState == Qt::WindowNoState)
+      resize(size());
+  }
 }
 
 void Courtroom::on_set_notes_clicked()

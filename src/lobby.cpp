@@ -19,6 +19,7 @@
 #include <QListWidget>
 #include <QMessageBox>
 #include <QProgressBar>
+#include <QWindowStateChangeEvent>
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -407,4 +408,17 @@ void Lobby::set_player_count(int players_online, int max_players)
   if (l_text.contains(l_regex))
     l_text.replace(l_regex, "<a href=\"\\1\">\\1</a>");
   ui_description->setHtml(l_text.replace("\n", "<br />"));
+}
+
+void Lobby::changeEvent(QEvent* e)
+{
+  if (e->type() == QEvent::WindowStateChange)
+  {
+    QWindowStateChangeEvent* event = static_cast< QWindowStateChangeEvent* >( e );
+    const Qt::WindowStates oldState = event->oldState();
+    const Qt::WindowStates newState = this->windowState();
+
+    if (oldState == Qt::WindowMaximized && newState == Qt::WindowNoState)
+      resize(size());
+  }
 }

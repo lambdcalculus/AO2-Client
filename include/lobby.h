@@ -83,6 +83,10 @@ private slots:
   void on_about_clicked();
   void on_server_list_clicked(QModelIndex p_model);
   void on_chatfield_return_pressed();
+
+  // QWidget interface
+protected:
+  virtual void changeEvent(QEvent *event) override;
 };
 
 #endif // LOBBY_H
