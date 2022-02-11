@@ -19,7 +19,6 @@
 #include <QListWidget>
 #include <QMessageBox>
 #include <QProgressBar>
-#include <QWindowStateChangeEvent>
 
 Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
 {
@@ -92,7 +91,9 @@ void Lobby::set_widgets()
 
   if (f_lobby.width < 0 || f_lobby.height < 0)
   {
-    qDebug() << "W: did not find lobby width or height in " << LOBBY_DESIGN_INI;
+    qWarning() << "W: did not find lobby width or height in " << LOBBY_DESIGN_INI;
+    f_lobby.width = 517;
+    f_lobby.height = 666;
 
     // Most common symptom of bad config files, missing assets, or misnamed
     // theme folder
@@ -107,13 +108,10 @@ void Lobby::set_widgets()
                 "3. If it is there, check that your current theme folder exists in "
                 "base/themes. According to base/config.ini, your current theme is " +
                 ao_config->theme());
-
-    this->resize(517, 666);
   }
-  else
-  {
-    this->resize(f_lobby.width, f_lobby.height);
-  }
+  setWindowState(Qt::WindowNoState);
+  resize(f_lobby.width, f_lobby.height);
+  center_widget_to_screen(this);
 
   set_size_and_pos(ui_background, "lobby", LOBBY_DESIGN_INI, ao_app);
   ui_background->set_image("lobbybackground.png");
@@ -408,17 +406,4 @@ void Lobby::set_player_count(int players_online, int max_players)
   if (l_text.contains(l_regex))
     l_text.replace(l_regex, "<a href=\"\\1\">\\1</a>");
   ui_description->setHtml(l_text.replace("\n", "<br />"));
-}
-
-void Lobby::changeEvent(QEvent* e)
-{
-  if (e->type() == QEvent::WindowStateChange)
-  {
-    QWindowStateChangeEvent* event = static_cast< QWindowStateChangeEvent* >( e );
-    const Qt::WindowStates oldState = event->oldState();
-    const Qt::WindowStates newState = this->windowState();
-
-    if (oldState == Qt::WindowMaximized && newState == Qt::WindowNoState)
-      resize(size());
-  }
 }

@@ -552,17 +552,16 @@ void Courtroom::set_widget_layers()
 void Courtroom::set_widgets()
 {
   pos_size_type f_courtroom = ao_app->get_element_dimensions("courtroom", COURTROOM_DESIGN_INI);
-
   if (f_courtroom.width < 0 || f_courtroom.height < 0)
   {
-    qDebug() << "W: did not find courtroom width or height in " << COURTROOM_DESIGN_INI;
+    qWarning() << "W: did not find courtroom width or height in " << COURTROOM_DESIGN_INI;
+    f_courtroom.width = DEFAULT_WIDTH;
+    f_courtroom.height = DEFAULT_HEIGHT;
+  }
 
-    resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-  }
-  else
-  {
-    resize(f_courtroom.width, f_courtroom.height);
-  }
+  setWindowState(Qt::WindowNoState);
+  resize(f_courtroom.width, f_courtroom.height);
+  center_widget_to_screen(this);
 
   ui_background->move(0, 0);
   ui_background->resize(size());

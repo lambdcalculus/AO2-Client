@@ -739,7 +739,6 @@ private:
   // QWidget interface
 protected:
   void closeEvent(QCloseEvent *event) override;
-  virtual void changeEvent(QEvent *event) override;
 };
 
 template <typename T> void Courtroom::insert_widget_names(QVector<QString> &p_widget_names, QVector<T *> &p_widgets)

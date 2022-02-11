@@ -8,17 +8,12 @@
 #include "drpacket.h"
 #include "drserversocket.h"
 #include "lobby.h"
+#include "theme.h"
 #include "version.h"
 
 #include <QDir>
 #include <QFontDatabase>
 #include <QRegularExpression>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-#include <QDesktopWidget>
-#else
-#include <QScreen>
-#endif
 
 const QString AOApplication::MASTER_NAME = "Master";
 const QString AOApplication::MASTER_HOST = "master.aceattorneyonline.com";
@@ -93,19 +88,7 @@ void AOApplication::construct_lobby()
 
   m_lobby = new Lobby(this);
   is_lobby_constructed = true;
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-  QRect screen_geometry = QApplication::desktop()->screenGeometry();
-#else
-  QScreen *screen = QApplication::screenAt(m_lobby->pos());
-  if (screen == nullptr)
-    return;
-  QRect screen_geometry = screen->geometry();
-#endif
-  int x = (screen_geometry.width() - m_lobby->width()) / 2;
-  int y = (screen_geometry.height() - m_lobby->height()) / 2;
-  m_lobby->move(x, y);
-
+  center_widget_to_screen(m_lobby);
   m_lobby->show();
 
   dr_discord->set_state(DRDiscord::State::Idle);
@@ -141,18 +124,7 @@ void AOApplication::construct_courtroom()
   connect(m_courtroom, SIGNAL(closing()), this, SLOT(on_courtroom_closing()));
   connect(m_courtroom, SIGNAL(destroyed()), this, SLOT(on_courtroom_destroyed()));
   is_courtroom_constructed = true;
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-  QRect screen_geometry = QApplication::desktop()->screenGeometry();
-#else
-  QScreen *screen = QApplication::screenAt(m_courtroom->pos());
-  if (screen == nullptr)
-    return;
-  QRect screen_geometry = screen->geometry();
-#endif
-  int x = (screen_geometry.width() - m_courtroom->width()) / 2;
-  int y = (screen_geometry.height() - m_courtroom->height()) / 2;
-  m_courtroom->move(x, y);
+  center_widget_to_screen(m_courtroom);
 }
 
 void AOApplication::destruct_courtroom()
@@ -253,19 +225,9 @@ void AOApplication::toggle_config_panel()
   ao_config_panel->setVisible(!ao_config_panel->isVisible());
   if (ao_config_panel->isVisible())
   {
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-    QRect screen_geometry = QApplication::desktop()->screenGeometry();
-#else
-    QScreen *screen = QApplication::screenAt(ao_config_panel->pos());
-    if (screen == nullptr)
-      return;
-    QRect screen_geometry = screen->geometry();
-#endif
-    int x = (screen_geometry.width() - ao_config_panel->width()) / 2;
-    int y = (screen_geometry.height() - ao_config_panel->height()) / 2;
     ao_config_panel->setFocus();
     ao_config_panel->raise();
-    ao_config_panel->move(x, y);
+    center_widget_to_screen(ao_config_panel);
   }
 }
 
