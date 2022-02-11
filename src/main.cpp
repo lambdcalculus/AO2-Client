@@ -4,7 +4,6 @@
 
 #include <QDebug>
 
-
 int main(int argc, char *argv[])
 {
   qInstallMessageHandler(DROLogger);

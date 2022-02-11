@@ -1,3 +1,5 @@
+#include "log.h"
+
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
@@ -6,36 +8,41 @@
 #include <QString>
 #include <QTextStream>
 
-#include "log.h"
-
 // Get the default Qt message handler.
 static const QtMessageHandler QT_DEFAULT_MESSAGE_HANDLER = qInstallMessageHandler(0);
+static const int C_DEBUG_FILE_MAX_SIZE = 1e5; // 10 MB
+static const QString C_DEBUG_FILE = "base/logs/debug.log";
+static const QString C_DEBUG_FILE_LOCK = "base/logs/debug.log.lock";
+static const QString C_DEBUG_B_FILE = "base/logs/debug_b.log";
+static bool s_verbose_logging = false;
 
-QString generate_message(QtMsgType type, const QMessageLogContext &context, const QString &msg, const bool super_debug)
+QString generate_message(QtMsgType p_type, const QMessageLogContext &p_context, const QString &p_message)
 {
-  QByteArray localMsg = msg.toLocal8Bit();
-  const char *file = context.file ? context.file : "";
-  const char *function = context.function ? context.function : "";
+  QByteArray l_localMsg = p_message.toLocal8Bit();
+  const QString l_fileName(p_context.file);
+  const QString l_function(p_context.function);
 
-  QString output;
-  switch (type) {
+  QString l_output;
+  switch (p_type)
+  {
   case QtDebugMsg:
-      output = QString("D");
-      break;
+    l_output = QString("D");
+    break;
   case QtInfoMsg:
-      output = QString("I");
-      break;
+    l_output = QString("I");
+    break;
   case QtWarningMsg:
-      output = QString("W");
-      break;
+    l_output = QString("W");
+    break;
   case QtCriticalMsg:
-      output = QString("C");
-      break;
+    l_output = QString("C");
+    break;
   case QtFatalMsg:
-      output = QString("F");
-      break;
+    l_output = QString("F");
+    break;
   }
-  const QString raw_msg = localMsg.constData();
+
+  const QString raw_msg = l_localMsg.constData();
   QString final_msg;
   // Censor HDID
   if (raw_msg.startsWith("S/S: HI#"))
@@ -45,62 +52,60 @@ QString generate_message(QtMsgType type, const QMessageLogContext &context, cons
   else
     final_msg = raw_msg;
 
-  QString now = QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz");
-  QString pid = QString::number(QCoreApplication::applicationPid());
+  const QString now = QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz");
+  const QString pid = QString::number(QCoreApplication::applicationPid());
 
-  if (super_debug)
-    output = QString("[%1] [%2] %3: %4 (%5:%6, %7)").arg(
-          now, pid, output, final_msg, file, QString::number(context.line), function);
-  else
-    output = QString("[%1] [%2] %3: %4").arg(now, pid, output, final_msg);
-  return output;
+  l_output = QString("[%1] [%2] %3: ").arg(now, pid, l_output);
+  l_output.append(final_msg);
+
+  if (s_verbose_logging)
+    l_output.append(QString(" (%1:%2, %3)").arg(l_fileName, QString::number(p_context.line), l_function));
+
+  return l_output;
 }
 
-void check_log_size()
+void save_log_line(QString p_log_line)
 {
-  // Log should only be up to some size, then rename existing log file to something else
-  // At any point there should be at most two log files: the current one, and the one
-  // generated immediately before.
-  int max_size = 1e7; // 10 MB
-  QFile outFileA("base/logs/debug.log");
-  if (outFileA.size() <= max_size)
+  QLockFile l_log_lock(C_DEBUG_FILE_LOCK);
+  l_log_lock.lock();
+
+  QFile l_log_file(C_DEBUG_FILE);
+  if (!l_log_file.open(QFile::WriteOnly | QFile::Append))
+  {
+    qInstallMessageHandler(0);
+    qCritical().noquote() << QString("Failed to open debug.log! error: %1").arg(l_log_file.errorString());
+    l_log_lock.unlock();
     return;
+  }
 
-  // Prevent concurrency issues with the lock
-  QLockFile lock_file("base/logs/debugLock");
-  lock_file.lock();
-  QFile outFileB("base/logs/debugB.log");
-  if (outFileB.exists())
-    outFileB.remove();
-  outFileA.rename("base/logs/debugB.log");
-
-  // Make sure there is an empty file available always
-  QFile outFileC("base/logs/debug.log");
-  outFileC.open(QIODevice::WriteOnly | QIODevice::Append);
-  outFileC.close();
-  lock_file.unlock();
-}
-
-void save_log_line(QString log_line)
-{
-  check_log_size();
-
-  QFile outFile("base/logs/debug.log");
-  outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-  QTextStream ts(&outFile);
+  QTextStream in(&l_log_file);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-  ts << log_line << Qt::endl;
+  in << p_log_line << Qt::endl;
 #else
-  ts << log_line << "\n"; // Hopefully Windows users don't compile with <Qt 5.14
+  in << p_log_line << "\n"; // Hopefully Windows users don't compile with <Qt 5.14
 #endif
-  outFile.close();
+  l_log_file.close();
+
+  // rename the file if now too big
+  if (l_log_file.size() >= 1e4)
+  {
+    if (l_log_file.exists(C_DEBUG_B_FILE))
+      l_log_file.remove(C_DEBUG_B_FILE);
+    l_log_file.rename(C_DEBUG_B_FILE);
+  }
+
+  l_log_lock.unlock();
 }
 
 void DROLogger(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-  const bool super_debug = false; // Set to true for longer log lines
-  QString log_line = generate_message(type, context, msg, super_debug);
-  save_log_line(log_line);
+  save_log_line(generate_message(type, context, msg));
+
   // Call the default handler.
   (*QT_DEFAULT_MESSAGE_HANDLER)(type, context, msg);
+}
+
+void set_verbose_logging(bool enabled)
+{
+  s_verbose_logging = enabled;
 }
