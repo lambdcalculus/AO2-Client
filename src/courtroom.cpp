@@ -1140,46 +1140,38 @@ void Courtroom::update_ic_log(bool p_reset_log)
   if (l_is_end_scroll_pos)
   {
     l_scrollbar->setValue(l_topdown_orientation ? l_scrollbar->maximum() : l_scrollbar->minimum());
-    ui_ic_chatlog_scroll_td->hide();
-    ui_ic_chatlog_scroll_bu->hide();
-  }
-  else
-  {
-    if (l_topdown_orientation)
-      ui_ic_chatlog_scroll_td->show();
-    else
-      ui_ic_chatlog_scroll_bu->show();
   }
 }
 
 void Courtroom::on_ic_chatlog_scroll_changed()
 {
-  const bool l_topdown_orientation = ao_config->log_is_topdown_enabled();
   QScrollBar *l_scrollbar = ui_ic_chatlog->verticalScrollBar();
   const int l_scroll_pos = l_scrollbar->value();
-  const bool l_is_end_scroll_pos = (l_topdown_orientation ?
-                                      l_scroll_pos == l_scrollbar->maximum(): l_scroll_pos == l_scrollbar->minimum());
+  const bool l_topdown_orientation = ao_config->log_is_topdown_enabled();
+  const bool l_is_end_scroll_pos =
+      (l_topdown_orientation ? l_scroll_pos == l_scrollbar->maximum() : l_scroll_pos == l_scrollbar->minimum());
+
   if (l_is_end_scroll_pos)
   {
-    ui_ic_chatlog_scroll_td->hide();
-    ui_ic_chatlog_scroll_bu->hide();
+    ui_ic_chatlog_scroll_topdown->hide();
+    ui_ic_chatlog_scroll_bottomup->hide();
   }
   else
   {
     if (l_topdown_orientation)
-      ui_ic_chatlog_scroll_td->show();
+      ui_ic_chatlog_scroll_topdown->show();
     else
-      ui_ic_chatlog_scroll_bu->show();
+      ui_ic_chatlog_scroll_bottomup->show();
   }
 }
 
-void Courtroom::on_ic_chatlog_scroll_td_clicked()
+void Courtroom::on_ic_chatlog_scroll_topdown_clicked()
 {
   QScrollBar *l_scrollbar = ui_ic_chatlog->verticalScrollBar();
   l_scrollbar->setValue(l_scrollbar->maximum());
 }
 
-void Courtroom::on_ic_chatlog_scroll_bu_clicked()
+void Courtroom::on_ic_chatlog_scroll_bottomup_clicked()
 {
   QScrollBar *l_scrollbar = ui_ic_chatlog->verticalScrollBar();
   l_scrollbar->setValue(l_scrollbar->minimum());

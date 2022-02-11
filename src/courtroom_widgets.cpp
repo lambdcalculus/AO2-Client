@@ -112,8 +112,8 @@ void Courtroom::create_widgets()
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
   ui_ic_chatlog->set_auto_align(false);
-  ui_ic_chatlog_scroll_td = new AOButton(this, ao_app);
-  ui_ic_chatlog_scroll_bu = new AOButton(this, ao_app);
+  ui_ic_chatlog_scroll_topdown = new AOButton(this, ao_app);
+  ui_ic_chatlog_scroll_bottomup = new AOButton(this, ao_app);
 
   ui_ooc_chatlog = new DRChatLog(this);
   ui_ooc_chatlog->setReadOnly(true);
@@ -275,10 +275,9 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(on_character_ini_changed()));
   connect(ui_ic_chat_showname, SIGNAL(editingFinished()), this, SLOT(on_ic_showname_editing_finished()));
   connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
-  connect(ui_ic_chatlog->verticalScrollBar(), SIGNAL(valueChanged(int)), this,
-          SLOT(on_ic_chatlog_scroll_changed()));
-  connect(ui_ic_chatlog_scroll_td, SIGNAL(clicked()), this, SLOT(on_ic_chatlog_scroll_td_clicked()));
-  connect(ui_ic_chatlog_scroll_bu, SIGNAL(clicked()), this, SLOT(on_ic_chatlog_scroll_bu_clicked()));
+  connect(ui_ic_chatlog->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(on_ic_chatlog_scroll_changed()));
+  connect(ui_ic_chatlog_scroll_topdown, SIGNAL(clicked()), this, SLOT(on_ic_chatlog_scroll_topdown_clicked()));
+  connect(ui_ic_chatlog_scroll_bottomup, SIGNAL(clicked()), this, SLOT(on_ic_chatlog_scroll_bottomup_clicked()));
   connect(ao_config, SIGNAL(username_changed(QString)), ui_ooc_chat_name, SLOT(setText(QString)));
   connect(ui_ooc_chat_name, SIGNAL(editingFinished()), this, SLOT(on_ooc_name_editing_finished()));
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
@@ -367,8 +366,8 @@ void Courtroom::reset_widget_names()
       {"vp_objection", ui_vp_objection},
       {"chat_arrow", ui_vp_chat_arrow},
       {"ic_chatlog", ui_ic_chatlog},
-      {"ic_chatlog_scroll_td", ui_ic_chatlog_scroll_td},
-      {"ic_chatlog_scroll_bu", ui_ic_chatlog_scroll_bu},
+      {"ic_chatlog_scroll_topdown", ui_ic_chatlog_scroll_topdown},
+      {"ic_chatlog_scroll_bottomup", ui_ic_chatlog_scroll_bottomup},
       {"server_chatlog", ui_ooc_chatlog},
       {"area_list", ui_area_list},
       {"area_search", ui_area_search},
@@ -624,12 +623,12 @@ void Courtroom::set_widgets()
   ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog", COURTROOM_DESIGN_INI, ao_app);
-  set_size_and_pos(ui_ic_chatlog_scroll_td, "ic_chatlog_scroll_td", COURTROOM_DESIGN_INI, ao_app);
-  ui_ic_chatlog_scroll_td->set_image("ic_chatlog_scroll_td.png");
-  ui_ic_chatlog_scroll_td->hide();
-  set_size_and_pos(ui_ic_chatlog_scroll_bu, "ic_chatlog_scroll_bu", COURTROOM_DESIGN_INI, ao_app);
-  ui_ic_chatlog_scroll_bu->set_image("ic_chatlog_scroll_bu.png");
-  ui_ic_chatlog_scroll_bu->hide();
+  set_size_and_pos(ui_ic_chatlog_scroll_topdown, "ic_chatlog_scroll_topdown", COURTROOM_DESIGN_INI, ao_app);
+  ui_ic_chatlog_scroll_topdown->set_image("ic_chatlog_scroll_topdown.png");
+  ui_ic_chatlog_scroll_topdown->hide();
+  set_size_and_pos(ui_ic_chatlog_scroll_bottomup, "ic_chatlog_scroll_bottomup", COURTROOM_DESIGN_INI, ao_app);
+  ui_ic_chatlog_scroll_bottomup->set_image("ic_chatlog_scroll_bottomup.png");
+  ui_ic_chatlog_scroll_bottomup->hide();
 
   set_size_and_pos(ui_ooc_chatlog, "server_chatlog", COURTROOM_DESIGN_INI, ao_app);
 
