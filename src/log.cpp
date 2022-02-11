@@ -87,7 +87,7 @@ void save_log_line(QString p_log_line)
   l_log_file.close();
 
   // rename the file if now too big
-  if (l_log_file.size() >= 1e4)
+  if (l_log_file.size() >= C_DEBUG_FILE_MAX_SIZE)
   {
     if (l_log_file.exists(C_DEBUG_B_FILE))
       l_log_file.remove(C_DEBUG_B_FILE);
