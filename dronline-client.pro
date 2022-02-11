@@ -62,6 +62,7 @@ HEADERS += \
   include/file_functions.h \
   include/hardware_functions.h \
   include/lobby.h \
+  include/log.h \
   include/misc_functions.h \
   include/theme.h \
   include/version.h
@@ -121,6 +122,7 @@ SOURCES += \
   src/file_functions.cpp \
   src/hardware_functions.cpp \
   src/lobby.cpp \
+  src/log.cpp \
   src/main.cpp \
   src/master_socket.cpp \
   src/misc_functions.cpp \

@@ -66,6 +66,7 @@ AOApplication::~AOApplication()
 {
   destruct_lobby();
   destruct_courtroom();
+  qInfo() << "Closing Danganronpa Online...";
 }
 
 int AOApplication::get_client_id() const

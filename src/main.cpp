@@ -1,11 +1,13 @@
 #include "aoapplication.h"
-
 #include "lobby.h"
+#include "log.h"
 
 #include <QDebug>
 
 int main(int argc, char *argv[])
 {
+  qInstallMessageHandler(DROLogger);
+  qInfo() << "Starting Danganronpa Online...";
   // High-DPI support is for Qt version >=5.6.
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
   bool l_dpi_scaling = true;
