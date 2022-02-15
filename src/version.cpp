@@ -21,10 +21,20 @@ int get_minor_version()
   return 2;
 }
 
+QString get_post_version()
+{
+  return "";
+}
+
 QString get_version_string()
 {
-  return QString::number(get_release_version()) + "." + QString::number(get_major_version()) + "." +
-         QString::number(get_minor_version());
+  const QString post = get_post_version();
+  const QString prefix = (
+        QString::number(get_release_version()) + "." + QString::number(get_major_version()) + "." +
+        QString::number(get_minor_version()));
+  if (post.isEmpty())
+    return prefix;
+  return prefix + "-" + post;
 }
 
 QString get_resource_file_text(QString filename)
