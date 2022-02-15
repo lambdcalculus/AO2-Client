@@ -13,17 +13,17 @@ int get_release_version()
 
 int get_major_version()
 {
-  return 0;
+  return 1;
 }
 
 int get_minor_version()
 {
-  return 2;
+  return 0;
 }
 
 QString get_post_version()
 {
-  return "";
+  return "b1";
 }
 
 QString get_version_string()
