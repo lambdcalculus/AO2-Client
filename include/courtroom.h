@@ -374,6 +374,8 @@ private:
   DRTextEdit *ui_ic_chatlog = nullptr;
   QList<DRChatRecord> m_ic_record_list;
   QQueue<DRChatRecord> m_ic_record_queue;
+  AOButton *ui_ic_chatlog_scroll_topdown = nullptr;
+  AOButton *ui_ic_chatlog_scroll_bottomup = nullptr;
 
   DRChatLog *ui_ooc_chatlog = nullptr;
 
@@ -566,6 +568,10 @@ private slots:
   void on_ic_showname_editing_finished();
   void on_ic_message_return_pressed();
   void on_chat_config_changed();
+
+  void on_ic_chatlog_scroll_changed();
+  void on_ic_chatlog_scroll_topdown_clicked();
+  void on_ic_chatlog_scroll_bottomup_clicked();
 
   void on_ooc_name_editing_finished();
   void on_ooc_return_pressed();
