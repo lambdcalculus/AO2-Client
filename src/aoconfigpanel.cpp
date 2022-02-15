@@ -62,6 +62,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
   ui_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
   ui_emote_preview = AO_GUI_WIDGET(QCheckBox, "emote_preview");
+  ui_sticky_sfx = AO_GUI_WIDGET(QCheckBox, "sticky_sfx");
 
   // IC Chatlog
   ui_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
@@ -130,6 +131,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(always_pre_changed(bool)), ui_always_pre, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(chat_tick_interval_changed(int)), ui_chat_tick_interval, SLOT(setValue(int)));
   connect(m_config, SIGNAL(emote_preview_changed(bool)), ui_emote_preview, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(sticky_sfx_changed(bool)), ui_sticky_sfx, SLOT(setChecked(bool)));
 
   // log
   connect(m_config, SIGNAL(log_max_lines_changed(int)), ui_log_max_lines, SLOT(setValue(int)));
@@ -194,6 +196,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_always_pre, SIGNAL(toggled(bool)), m_config, SLOT(set_always_pre(bool)));
   connect(ui_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
   connect(ui_emote_preview, SIGNAL(toggled(bool)), m_config, SLOT(set_emote_preview(bool)));
+  connect(ui_sticky_sfx, SIGNAL(toggled(bool)), m_config, SLOT(set_sticky_sfx(bool)));
 
   // out, log
   connect(ui_log_max_lines, SIGNAL(valueChanged(int)), m_config, SLOT(set_log_max_lines(int)));
@@ -242,6 +245,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_always_pre->setChecked(m_config->always_pre_enabled());
   ui_chat_tick_interval->setValue(m_config->chat_tick_interval());
   ui_emote_preview->setChecked(m_config->emote_preview_enabled());
+  ui_sticky_sfx->setChecked(m_config->sticky_sfx_enabled());
 
   // log
   ui_log_max_lines->setValue(m_config->log_max_lines());

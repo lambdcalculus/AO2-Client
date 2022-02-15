@@ -65,6 +65,7 @@ private:
   bool always_pre;
   int chat_tick_interval;
   bool emote_preview;
+  bool sticky_sfx;
   int log_max_lines;
   bool log_display_timestamp;
   bool log_display_self_highlight;
@@ -134,6 +135,7 @@ void AOConfigPrivate::read_file()
   always_pre = cfg.value("always_pre", true).toBool();
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
   emote_preview = cfg.value("emote_preview", true).toBool();
+  sticky_sfx = cfg.value("sticky_sfx", false).toBool();
   log_max_lines = cfg.value("chatlog_limit", 100).toInt();
   log_is_topdown = cfg.value("chatlog_scrolldown", true).toBool();
   log_display_timestamp = cfg.value("chatlog_display_timestamp", true).toBool();
@@ -206,6 +208,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("always_pre", always_pre);
   cfg.setValue("chat_tick_interval", chat_tick_interval);
   cfg.setValue("emote_preview", emote_preview);
+  cfg.setValue("sticky_sfx", sticky_sfx);
   cfg.setValue("chatlog_limit", log_max_lines);
   cfg.setValue("chatlog_display_timestamp", log_display_timestamp);
   cfg.setValue("chatlog_display_self_highlight", log_display_self_highlight);
@@ -444,6 +447,11 @@ int AOConfig::chat_tick_interval() const
 bool AOConfig::emote_preview_enabled() const
 {
   return d->emote_preview;
+}
+
+bool AOConfig::sticky_sfx_enabled() const
+{
+  return d->sticky_sfx;
 }
 
 int AOConfig::log_max_lines() const
@@ -726,6 +734,14 @@ void AOConfig::set_emote_preview(bool p_enabled)
     return;
   d->emote_preview = p_enabled;
   d->invoke_signal("emote_preview_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_sticky_sfx(bool p_enabled)
+{
+  if (d->sticky_sfx == p_enabled)
+    return;
+  d->sticky_sfx = p_enabled;
+  d->invoke_signal("sticky_sfx_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_log_max_lines(int p_number)

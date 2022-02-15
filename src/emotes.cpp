@@ -196,7 +196,8 @@ void Courtroom::select_emote(int p_id)
   else
     ui_pre->setChecked(emote_mod == 1 || ao_config->always_pre_enabled());
 
-  select_default_sfx();
+  if (!ao_config->sticky_sfx_enabled())
+    select_default_sfx();
 
   ui_emote_dropdown->setCurrentIndex(m_emote_id);
 

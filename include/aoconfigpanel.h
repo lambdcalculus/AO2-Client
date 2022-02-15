@@ -93,6 +93,7 @@ private:
   QCheckBox *ui_always_pre = nullptr;
   QSpinBox *ui_chat_tick_interval = nullptr;
   QCheckBox *ui_emote_preview = nullptr;
+  QCheckBox *ui_sticky_sfx = nullptr;
 
   // IC Chatlog
   QSpinBox *ui_log_max_lines = nullptr;
