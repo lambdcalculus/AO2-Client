@@ -28,13 +28,15 @@ QString get_post_version()
 
 QString get_version_string()
 {
-  const QString post = get_post_version();
-  const QString prefix = (
-        QString::number(get_release_version()) + "." + QString::number(get_major_version()) + "." +
-        QString::number(get_minor_version()));
-  if (post.isEmpty())
-    return prefix;
-  return prefix + "-" + post;
+  QString l_version = QString("%1.%2.%3").arg(get_release_version()).arg(get_major_version()).arg(get_minor_version());
+
+  const QString l_post = get_post_version();
+  if (!l_post.isEmpty())
+  {
+    l_version += QString("-" + l_post);
+  }
+
+  return l_version;
 }
 
 QString get_resource_file_text(QString filename)
