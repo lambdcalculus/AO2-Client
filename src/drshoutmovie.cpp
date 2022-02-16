@@ -3,6 +3,8 @@
 #include "aoapplication.h"
 #include "file_functions.h"
 
+#include <QDebug>
+
 DRShoutMovie::DRShoutMovie(QWidget *parent) : DRMovie(parent), ao_app(dynamic_cast<AOApplication *>(qApp))
 {
   Q_ASSERT(ao_app);
