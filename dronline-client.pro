@@ -60,7 +60,7 @@ HEADERS += \
   include/drpather.h \
   include/drserversocket.h \
   include/drshoutmovie.h \
-  include/drstickermovie_lower.h \
+  include/drstickermovie.h \
   include/drtextedit.h \
   include/drdiscord.h \
   include/file_functions.h \
