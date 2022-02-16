@@ -2092,7 +2092,7 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::reload_theme()
 {
-  if (ui_vp_objection->isRunning())
+  if (ui_vp_objection->is_running())
   {
     m_shout_reload_theme = true;
     return;

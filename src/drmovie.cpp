@@ -115,7 +115,7 @@ void DRMovie::start()
   }
 }
 
-bool DRMovie::isRunning()
+bool DRMovie::is_running()
 {
   return m_movie.state() != QMovie::NotRunning;
 }

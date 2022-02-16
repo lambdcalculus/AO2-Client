@@ -20,7 +20,7 @@ public:
   void set_scale_to_height(bool);
   void set_hide_on_done(bool);
 
-  bool isRunning();
+  bool is_running();
   void start();
   void stop();
 
