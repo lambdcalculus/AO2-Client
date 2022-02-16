@@ -13,18 +13,30 @@ int get_release_version()
 
 int get_major_version()
 {
-  return 0;
+  return 1;
 }
 
 int get_minor_version()
 {
-  return 2;
+  return 0;
+}
+
+QString get_post_version()
+{
+  return "b1";
 }
 
 QString get_version_string()
 {
-  return QString::number(get_release_version()) + "." + QString::number(get_major_version()) + "." +
-         QString::number(get_minor_version());
+  QString l_version = QString("%1.%2.%3").arg(get_release_version()).arg(get_major_version()).arg(get_minor_version());
+
+  const QString l_post = get_post_version();
+  if (!l_post.isEmpty())
+  {
+    l_version += QString("-" + l_post);
+  }
+
+  return l_version;
 }
 
 QString get_resource_file_text(QString filename)
