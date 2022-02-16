@@ -3,24 +3,27 @@
 #include "aoapplication.h"
 #include "aoblipplayer.h"
 #include "aobutton.h"
-#include "aocharmovie.h"
 #include "aoconfig.h"
 #include "aoevidencedescription.h"
 #include "aoevidencedisplay.h"
 #include "aoimagedisplay.h"
 #include "aolabel.h"
 #include "aolineedit.h"
-#include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aonotearea.h"
 #include "aonotepicker.h"
-#include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aoshoutplayer.h"
 #include "aosystemplayer.h"
 #include "aotimer.h"
 #include "commondefs.h"
+#include "drcharactermovie.h"
 #include "drchatlog.h"
+#include "dreffectmovie.h"
+#include "drscenemovie.h"
+#include "drshoutmovie.h"
+#include "drsplashmovie.h"
+#include "drstickermovie.h"
 #include "drtextedit.h"
 #include "file_functions.h"
 #include "theme.h"
@@ -62,9 +65,9 @@ void Courtroom::create_widgets()
   ui_background = new AOImageDisplay(this, ao_app);
 
   ui_viewport = new QWidget(this);
-  ui_vp_background = new AOScene(ui_viewport, ao_app);
-  ui_vp_player_char = new AOCharMovie(ui_viewport, ao_app);
-  ui_vp_desk = new AOScene(ui_viewport, ao_app);
+  ui_vp_background = new DRSceneMovie(ui_viewport);
+  ui_vp_player_char = new DRCharacterMovie(ui_viewport);
+  ui_vp_desk = new DRSceneMovie(ui_viewport);
 
   ui_vp_music_display_a = new AOImageDisplay(this, ao_app);
   ui_vp_music_display_b = new AOImageDisplay(this, ao_app);
@@ -77,7 +80,7 @@ void Courtroom::create_widgets()
   ui_vp_music_name->setReadOnly(true);
   music_anim = new QPropertyAnimation(ui_vp_music_name, "geometry", this);
 
-  ui_vp_clock = new AOMovie(this, ao_app);
+  ui_vp_clock = new DRStickerMovie(this);
   ui_vp_clock->set_play_once(true);
 
   ui_vp_evidence_display = new AOEvidenceDisplay(this, ao_app);
@@ -96,14 +99,14 @@ void Courtroom::create_widgets()
 
   ui_vp_showname_image = new AOImageDisplay(this, ao_app);
 
-  ui_vp_effect = new AOMovie(this, ao_app);
+  ui_vp_effect = new DREffectMovie(this);
   ui_vp_effect->set_hide_on_done(true);
-  ui_vp_wtce = new AOMovie(this, ao_app);
+  ui_vp_wtce = new DRSplashMovie(this);
   ui_vp_wtce->set_hide_on_done(true);
-  ui_vp_objection = new AOMovie(this, ao_app);
+  ui_vp_objection = new DRShoutMovie(this);
   ui_vp_objection->set_hide_on_done(true);
 
-  ui_vp_chat_arrow = new AOMovie(this, ao_app);
+  ui_vp_chat_arrow = new DRStickerMovie(this);
   ui_vp_chat_arrow->set_play_once(false);
 
   ui_iniswap_dropdown = new QComboBox(this);
@@ -571,14 +574,14 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_viewport, "viewport", COURTROOM_DESIGN_INI, ao_app);
 
   ui_vp_background->move(0, 0);
-  ui_vp_background->combo_resize(ui_viewport->size());
+  ui_vp_background->resize(ui_viewport->size());
 
   ui_vp_player_char->move(0, 0);
-  ui_vp_player_char->combo_resize(ui_viewport->size());
+  ui_vp_player_char->resize(ui_viewport->size());
 
   // the AO2 desk element
   ui_vp_desk->move(0, 0);
-  ui_vp_desk->combo_resize(ui_viewport->size());
+  ui_vp_desk->resize(ui_viewport->size());
 
   ui_vp_evidence_display->move(0, 0);
   ui_vp_evidence_display->resize(ui_viewport->width(), ui_viewport->height());
@@ -610,10 +613,10 @@ void Courtroom::set_widgets()
   ui_vp_effect->hide();
 
   ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_wtce->combo_resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_wtce->resize(ui_viewport->width(), ui_viewport->height());
 
   ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_objection->combo_resize(ui_viewport->width(), ui_viewport->height());
+  ui_vp_objection->resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog", COURTROOM_DESIGN_INI, ao_app);
 
@@ -1241,7 +1244,7 @@ void Courtroom::load_free_blocks()
 
   for (int i = 0; i < ui_free_blocks.size(); ++i)
   {
-    ui_free_blocks[i] = new AOMovie(this, ao_app);
+    ui_free_blocks[i] = new DRStickerMovie(this);
     // ui_free_blocks[i]->setProperty("free_block_id", i+1);
     ui_free_blocks[i]->set_play_once(false);
     ui_free_blocks[i]->stackUnder(ui_vp_player_char);
@@ -1414,7 +1417,7 @@ void Courtroom::set_free_blocks()
 {
   for (int i = 0; i < ui_free_blocks.size(); i++)
   {
-    AOMovie *free_block = ui_free_blocks[i];
+    DRStickerMovie *free_block = ui_free_blocks[i];
     free_block->play(free_block_names[i]);
   }
 }

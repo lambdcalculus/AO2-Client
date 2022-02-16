@@ -15,11 +15,13 @@ DEFINES += DRO_ACKMS
 CONFIG(debug, debug|release):DEFINES += DR_DEV
 
 HEADERS += \
+  include/drscenemovie.h \
+  include/drsplashmovie.h \
+  include/drstickermovie.h \
   include/aoapplication.h \
   include/aoblipplayer.h \
   include/aobutton.h \
   include/aocharbutton.h \
-  include/aocharmovie.h \
   include/aoconfig.h \
   include/aoconfigpanel.h \
   include/aoemotebutton.h \
@@ -30,14 +32,12 @@ HEADERS += \
   include/aoimagedisplay.h \
   include/aolabel.h \
   include/aolineedit.h \
-  include/aomovie.h \
   include/aomusicplayer.h \
   include/aonotearea.h \
   include/aonotepad.h \
   include/aonotepicker.h \
   include/aoobject.h \
   include/aopixmap.h \
-  include/aoscene.h \
   include/aosfxplayer.h \
   include/aoshoutplayer.h \
   include/aosystemplayer.h \
@@ -53,10 +53,14 @@ HEADERS += \
   include/draudioerror.h \
   include/draudiostream.h \
   include/draudiostreamfamily.h \
+  include/drcharactermovie.h \
   include/drchatlog.h \
+  include/dreffectmovie.h \
+  include/drmovie.h \
   include/drpacket.h \
   include/drpather.h \
   include/drserversocket.h \
+  include/drshoutmovie.h \
   include/drtextedit.h \
   include/drdiscord.h \
   include/file_functions.h \
@@ -68,11 +72,13 @@ HEADERS += \
   include/version.h
 
 SOURCES += \
+  include/drcharactermovie.cpp \
+  include/dreffectmovie.cpp \
+  include/drsplashmovie.cpp \
   src/aoapplication.cpp \
   src/aoblipplayer.cpp \
   src/aobutton.cpp \
   src/aocharbutton.cpp \
-  src/aocharmovie.cpp \
   src/aoconfig.cpp \
   src/aoconfigpanel.cpp \
   src/aoemotebutton.cpp \
@@ -83,14 +89,12 @@ SOURCES += \
   src/aoimagedisplay.cpp \
   src/aolabel.cpp \
   src/aolineedit.cpp \
-  src/aomovie.cpp \
   src/aomusicplayer.cpp \
   src/aonotearea.cpp \
   src/aonotepad.cpp \
   src/aonotepicker.cpp \
   src/aoobject.cpp \
   src/aopixmap.cpp \
-  src/aoscene.cpp \
   src/aosfxplayer.cpp \
   src/aoshoutplayer.cpp \
   src/aosystemplayer.cpp \
@@ -112,9 +116,13 @@ SOURCES += \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \
   src/drchatlog.cpp \
+  src/drmovie.cpp \
   src/drpacket.cpp \
   src/drpather.cpp \
+  src/drscenemovie.cpp \
   src/drserversocket.cpp \
+  src/drshoutmovie.cpp \
+  src/drstickermovie.cpp \
   src/drtextedit.cpp \
   src/drdiscord.cpp \
   src/emotes.cpp \

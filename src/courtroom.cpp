@@ -4,24 +4,27 @@
 #include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aocharbutton.h"
-#include "aocharmovie.h"
 #include "aoconfig.h"
 #include "aoevidencedisplay.h"
 #include "aoimagedisplay.h"
-#include "aomovie.h"
 #include "aomusicplayer.h"
 #include "aonotearea.h"
 #include "aonotepicker.h"
-#include "aoscene.h"
 #include "aosfxplayer.h"
 #include "aoshoutplayer.h"
 #include "aosystemplayer.h"
 #include "aotimer.h"
 #include "commondefs.h"
 #include "debug_functions.h"
+#include "drcharactermovie.h"
 #include "drchatlog.h"
 #include "drdiscord.h"
+#include "dreffectmovie.h"
 #include "drpacket.h"
+#include "drscenemovie.h"
+#include "drshoutmovie.h"
+#include "drsplashmovie.h"
+#include "drstickermovie.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
@@ -1190,17 +1193,9 @@ void Courtroom::play_preanim()
 
   const QString l_chr_name = m_chatmessage[CMChrName];
   const QString l_anim_name = m_chatmessage[CMPreAnim];
-
-  if (!ui_vp_player_char->play_pre(l_chr_name, l_anim_name))
-  {
-    qDebug() << "Unable to play animation: missing or invalid file; character:" << l_chr_name
-             << "animation:" << l_anim_name;
-    preanim_done();
-    return;
-  }
-
   qDebug() << "Playing character animation; character:" << l_chr_name << "animation: " << l_anim_name
            << "file:" << ui_vp_player_char->file_name();
+  ui_vp_player_char->play_pre(l_chr_name, l_anim_name);
 }
 
 void Courtroom::preanim_done()
@@ -1446,7 +1441,7 @@ void Courtroom::post_chat()
 
   if (ui_vp_chatbox->isVisible())
   {
-    ui_vp_chat_arrow->restart();
+    ui_vp_chat_arrow->start();
     ui_vp_chat_arrow->show();
   }
 }
@@ -2097,7 +2092,7 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::reload_theme()
 {
-  if (ui_vp_objection->state() == QMovie::Running)
+  if (ui_vp_objection->isRunning())
   {
     m_shout_reload_theme = true;
     return;
