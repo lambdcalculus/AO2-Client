@@ -17,7 +17,6 @@ CONFIG(debug, debug|release):DEFINES += DR_DEV
 HEADERS += \
   include/drscenemovie.h \
   include/drsplashmovie.h \
-  include/drstickermovie.h \
   include/aoapplication.h \
   include/aoblipplayer.h \
   include/aobutton.h \
@@ -61,6 +60,7 @@ HEADERS += \
   include/drpather.h \
   include/drserversocket.h \
   include/drshoutmovie.h \
+  include/drstickermovie_lower.h \
   include/drtextedit.h \
   include/drdiscord.h \
   include/file_functions.h \
@@ -72,9 +72,6 @@ HEADERS += \
   include/version.h
 
 SOURCES += \
-  include/drcharactermovie.cpp \
-  include/dreffectmovie.cpp \
-  include/drsplashmovie.cpp \
   src/aoapplication.cpp \
   src/aoblipplayer.cpp \
   src/aobutton.cpp \
@@ -115,13 +112,16 @@ SOURCES += \
   src/draudioerror.cpp \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \
+  src/drcharactermovie.cpp \
   src/drchatlog.cpp \
+  src/dreffectmovie.cpp \
   src/drmovie.cpp \
   src/drpacket.cpp \
   src/drpather.cpp \
   src/drscenemovie.cpp \
   src/drserversocket.cpp \
   src/drshoutmovie.cpp \
+  src/drsplashmovie.cpp \
   src/drstickermovie.cpp \
   src/drtextedit.cpp \
   src/drdiscord.cpp \
