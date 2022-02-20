@@ -873,11 +873,11 @@ void AOConfig::set_effect_volume(int p_number)
 
 void AOConfig::set_effect_ignore_suppression(bool p_enabled)
 {
-  if (d->music_ignore_suppression == p_enabled)
+  if (d->effect_ignore_suppression == p_enabled)
     return;
-  d->music_ignore_suppression = p_enabled;
+  d->effect_ignore_suppression = p_enabled;
   d->audio_engine->get_family(DRAudio::Family::FEffect)->set_ignore_suppression(p_enabled);
-  d->invoke_signal("music_ignore_suppression_changed", Q_ARG(bool, p_enabled));
+  d->invoke_signal("effect_ignore_suppression_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_music_volume(int p_number)
@@ -947,7 +947,7 @@ void AOConfig::set_blank_blips(bool p_enabled)
   if (d->blank_blips == p_enabled)
     return;
   d->blank_blips = p_enabled;
-  d->audio_engine->get_family(DRAudio::Family::FVideo)->set_ignore_suppression(p_enabled);
+  d->audio_engine->get_family(DRAudio::Family::FBlip)->set_ignore_suppression(p_enabled);
   d->invoke_signal("blank_blips_changed", Q_ARG(bool, p_enabled));
 }
 
