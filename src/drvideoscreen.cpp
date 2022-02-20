@@ -58,7 +58,6 @@ void DRVideoWidget::play(QString p_character, QString p_video)
   for (const QString &i_character_name : ao_app->get_char_include_tree(p_character))
   {
     l_filelist.append(ao_app->get_character_path(i_character_name, l_video_path));
-    qDebug() << l_filelist.last();
   }
 
   const QString l_file = ao_app->find_asset_path(l_filelist);
