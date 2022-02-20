@@ -2,11 +2,11 @@
 
 #include "aoapplication.h"
 #include "aobutton.h"
-#include "aocharmovie.h"
 #include "aoconfig.h"
 #include "aoemotebutton.h"
 #include "aoimagedisplay.h"
 #include "commondefs.h"
+#include "drcharactermovie.h"
 #include "theme.h"
 
 #include <QCheckBox>
@@ -30,7 +30,7 @@ void Courtroom::construct_emotes()
   ui_emote_preview = new AOImageDisplay(nullptr, ao_app);
   ui_emote_preview->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint | Qt::BypassGraphicsProxyWidget);
   ui_emote_preview->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_emote_preview_character = new AOCharMovie(ui_emote_preview, ao_app);
+  ui_emote_preview_character = new DRCharacterMovie(ui_emote_preview);
   ui_emote_preview_character->setAttribute(Qt::WA_TransparentForMouseEvents);
 
   ui_emote_dropdown = new QComboBox(this);
@@ -174,7 +174,7 @@ void Courtroom::select_emote(int p_id)
   const DREmote &l_prev_emote = get_emote(m_emote_id);
   if (m_emote_id >= l_min && m_emote_id <= l_max)
   {
-    AOEmoteButton* l_prev_button = ui_emote_list.at(m_emote_id % m_page_max_emote_count);
+    AOEmoteButton *l_prev_button = ui_emote_list.at(m_emote_id % m_page_max_emote_count);
     l_prev_button->set_image(l_prev_emote, false);
     l_prev_button->repaint();
   }
@@ -185,7 +185,7 @@ void Courtroom::select_emote(int p_id)
 
   if (m_emote_id >= l_min && m_emote_id <= l_max)
   {
-    AOEmoteButton* l_new_button = ui_emote_list.at(m_emote_id % m_page_max_emote_count);
+    AOEmoteButton *l_new_button = ui_emote_list.at(m_emote_id % m_page_max_emote_count);
     l_new_button->set_image(l_emote, true);
     l_new_button->repaint();
   }

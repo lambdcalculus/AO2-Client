@@ -7,7 +7,6 @@ class AOApplication;
 class AOBlipPlayer;
 class AOButton;
 class AOCharButton;
-class AOCharMovie;
 class AOConfig;
 class AOEmoteButton;
 class AOEvidenceButton;
@@ -20,12 +19,17 @@ class AOMovie;
 class AOMusicPlayer;
 class AONoteArea;
 class AONotepad;
-class AOScene;
 class AOSfxPlayer;
 class AOShoutPlayer;
 class AOSystemPlayer;
 class AOTimer;
+class DRCharacterMovie;
 class DRChatLog;
+class DREffectMovie;
+class DRSceneMovie;
+class DRShoutMovie;
+class DRSplashMovie;
+class DRStickerMovie;
 class DRTextEdit;
 
 #include <QMainWindow>
@@ -340,9 +344,9 @@ private:
   AOImageDisplay *ui_background = nullptr;
 
   QWidget *ui_viewport = nullptr;
-  AOScene *ui_vp_background = nullptr;
-  AOCharMovie *ui_vp_player_char = nullptr;
-  AOScene *ui_vp_desk = nullptr;
+  DRSceneMovie *ui_vp_background = nullptr;
+  DRCharacterMovie *ui_vp_player_char = nullptr;
+  DRSceneMovie *ui_vp_desk = nullptr;
   AOEvidenceDisplay *ui_vp_evidence_display = nullptr;
 
   AONoteArea *ui_note_area = nullptr;
@@ -353,10 +357,10 @@ private:
   AOImageDisplay *ui_vp_chatbox = nullptr;
   DRTextEdit *ui_vp_showname = nullptr;
   DRTextEdit *ui_vp_message = nullptr;
-  AOMovie *ui_vp_effect = nullptr;
-  AOMovie *ui_vp_wtce = nullptr;
-  AOMovie *ui_vp_objection = nullptr;
-  AOMovie *ui_vp_chat_arrow = nullptr;
+  DREffectMovie *ui_vp_effect = nullptr;
+  DRSplashMovie *ui_vp_wtce = nullptr;
+  DRShoutMovie *ui_vp_objection = nullptr;
+  DRStickerMovie *ui_vp_chat_arrow = nullptr;
 
   AOImageDisplay *ui_vp_music_display_a = nullptr;
   AOImageDisplay *ui_vp_music_display_b = nullptr;
@@ -368,7 +372,7 @@ private:
 
   QWidget *ui_vp_music_area = nullptr;
 
-  AOMovie *ui_vp_clock = nullptr;
+  DRStickerMovie *ui_vp_clock = nullptr;
   QVector<AOTimer *> ui_timers;
 
   DRTextEdit *ui_ic_chatlog = nullptr;
@@ -403,7 +407,7 @@ private:
   AOButton *ui_emote_left = nullptr;
   AOButton *ui_emote_right = nullptr;
   AOImageDisplay *ui_emote_preview = nullptr;
-  AOCharMovie *ui_emote_preview_character = nullptr;
+  DRCharacterMovie *ui_emote_preview_character = nullptr;
 
   QComboBox *ui_emote_dropdown = nullptr;
   QComboBox *ui_iniswap_dropdown = nullptr;
@@ -429,7 +433,7 @@ private:
   // holds all the shout buttons objects
   QVector<AOButton *> ui_wtce;
   // holds all the free block objects
-  QVector<AOMovie *> ui_free_blocks;
+  QVector<DRStickerMovie *> ui_free_blocks;
 
   // holds all the names for sound files for the shouts
   QVector<QString> shout_names;
