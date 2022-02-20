@@ -25,6 +25,7 @@
 #include "drsplashmovie.h"
 #include "drstickermovie.h"
 #include "drtextedit.h"
+#include "drvideoscreen.h"
 #include "file_functions.h"
 #include "theme.h"
 
@@ -66,6 +67,8 @@ void Courtroom::create_widgets()
   ui_background = new AOImageDisplay(this, ao_app);
 
   ui_viewport = new QWidget(this);
+  ui_vp_video = new DRVideoWidget(ui_viewport);
+  ui_vp_video->hide();
   ui_vp_background = new DRSceneMovie(ui_viewport);
   ui_vp_player_char = new DRCharacterMovie(ui_viewport);
   ui_vp_desk = new DRSceneMovie(ui_viewport);
@@ -255,6 +258,7 @@ void Courtroom::connect_widgets()
 {
   connect(m_keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
 
+  connect(ui_vp_video, SIGNAL(done()), this, SLOT(video_done()));
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
 
@@ -350,6 +354,7 @@ void Courtroom::reset_widget_names()
   widget_names = {
       {"courtroom", this},
       {"viewport", ui_viewport},
+      {"video", ui_vp_video},
       {"background", ui_vp_background},   //*
       {"player_char", ui_vp_player_char}, //*
       {"desk", ui_vp_desk},               //*
@@ -579,6 +584,9 @@ void Courtroom::set_widgets()
   ui_background->set_image("courtroombackground.png");
 
   set_size_and_pos(ui_viewport, "viewport", COURTROOM_DESIGN_INI, ao_app);
+
+  ui_vp_video->move(0, 0);
+  ui_vp_video->resize(ui_viewport->size());
 
   ui_vp_background->move(0, 0);
   ui_vp_background->resize(ui_viewport->size());

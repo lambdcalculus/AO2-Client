@@ -205,6 +205,11 @@ bool AOApplication::has_character_availability_request_feature() const
   return feature_charscheck;
 }
 
+bool AOApplication::has_playable_video_feature() const
+{
+  return feature_playable_video;
+}
+
 void AOApplication::handle_theme_modification()
 {
   load_fonts();

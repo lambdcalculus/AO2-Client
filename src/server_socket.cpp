@@ -62,6 +62,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     feature_chrini = false;
     feature_chat_speed = false;
     feature_charscheck = false;
+    feature_playable_video = false;
 
     send_server_packet(DRPacket("HI", {get_hdid()}));
   }
@@ -92,6 +93,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     feature_chrini = l_content.contains("chrini", Qt::CaseInsensitive);
     feature_chat_speed = l_content.contains("chat_speed", Qt::CaseInsensitive);
     feature_charscheck = l_content.contains("charscheck", Qt::CaseInsensitive);
+    feature_playable_video = l_content.contains("playable_video", Qt::CaseInsensitive);
   }
   else if (l_header == "PN")
   {

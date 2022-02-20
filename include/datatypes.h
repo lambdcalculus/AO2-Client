@@ -16,6 +16,7 @@ public:
   int desk_modifier = -1;
   QString sound_file;
   int sound_delay = 0;
+  QString video_file;
 };
 
 class DRAreaBackground
@@ -30,33 +31,14 @@ class DRChatRecord
 public:
   using list = QVector<DRChatRecord>;
 
-  DRChatRecord(QString p_name, QString p_message) : name(p_name), message(p_message)
-  {}
+  DRChatRecord(QString p_name, QString p_message) : name(p_name), message(p_message) {}
 
-  QDateTime get_timestamp() const
-  {
-    return timestamp;
-  }
-  QString get_name() const
-  {
-    return name;
-  }
-  QString get_message() const
-  {
-    return message;
-  }
-  bool is_self() const
-  {
-    return self;
-  }
-  bool is_system() const
-  {
-    return system;
-  }
-  bool is_music() const
-  {
-    return music;
-  }
+  QDateTime get_timestamp() const { return timestamp; }
+  QString get_name() const { return name; }
+  QString get_message() const { return message; }
+  bool is_self() const { return self; }
+  bool is_system() const { return system; }
+  bool is_music() const { return music; }
 
   // set
   void set_self(const bool p_enabled)
@@ -123,10 +105,7 @@ struct server_type
 
     return r_info;
   }
-  QString to_address() const
-  {
-    return ip + ":" + QString::number(port);
-  }
+  QString to_address() const { return ip + ":" + QString::number(port); }
 };
 
 struct char_type
@@ -167,6 +146,7 @@ enum ChatMessage : int32_t
   CMFlipState,
   CMEffectState,
   CMTextColor,
+  CMVideoName,
   CMShowName,
 };
 
@@ -214,8 +194,7 @@ struct ColorInfo
 {
 public:
   ColorInfo() = default;
-  ColorInfo(QString p_showname, QString p_code) : name(p_showname.toLower()), showname(p_showname), code(p_code)
-  {}
+  ColorInfo(QString p_showname, QString p_code) : name(p_showname.toLower()), showname(p_showname), code(p_code) {}
 
   QString name;
   QString showname;

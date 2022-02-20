@@ -1,4 +1,4 @@
-QT += core gui widgets uitools network
+QT += core gui widgets uitools network multimedia multimediawidgets
 
 CONFIG += c++17
 
@@ -63,6 +63,7 @@ HEADERS += \
   include/drstickermovie.h \
   include/drtextedit.h \
   include/drdiscord.h \
+  include/drvideoscreen.h \
   include/file_functions.h \
   include/hardware_functions.h \
   include/lobby.h \
@@ -125,6 +126,7 @@ SOURCES += \
   src/drstickermovie.cpp \
   src/drtextedit.cpp \
   src/drdiscord.cpp \
+  src/drvideoscreen.cpp \
   src/emotes.cpp \
   src/evidence.cpp \
   src/file_functions.cpp \

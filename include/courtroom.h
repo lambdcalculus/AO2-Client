@@ -24,6 +24,7 @@ class AOShoutPlayer;
 class AOSystemPlayer;
 class AOTimer;
 class DRCharacterMovie;
+class DRVideoWidget;
 class DRChatLog;
 class DREffectMovie;
 class DRSceneMovie;
@@ -266,7 +267,7 @@ private:
   // Generate a File Name based on the time you launched the client
   QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
 
-  static const int MESSAGE_SIZE = 16;
+  static const int MESSAGE_SIZE = 17;
   QString m_chatmessage[MESSAGE_SIZE];
   bool chatmessage_is_empty = false;
 
@@ -344,6 +345,7 @@ private:
   AOImageDisplay *ui_background = nullptr;
 
   QWidget *ui_viewport = nullptr;
+  DRVideoWidget *ui_vp_video = nullptr;
   DRSceneMovie *ui_vp_background = nullptr;
   DRCharacterMovie *ui_vp_player_char = nullptr;
   DRSceneMovie *ui_vp_desk = nullptr;
@@ -549,6 +551,7 @@ private:
   bool is_spectating();
 
 public slots:
+  void video_done();
   void objection_done();
   void preanim_done();
 

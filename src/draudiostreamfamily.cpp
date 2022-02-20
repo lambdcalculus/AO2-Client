@@ -112,6 +112,11 @@ DRAudioStreamFamily::stream_list DRAudioStreamFamily::get_stream_list() const
   return m_stream_list;
 }
 
+int32_t DRAudioStreamFamily::get_volume() const
+{
+  return m_volume;
+}
+
 float DRAudioStreamFamily::calculate_volume()
 {
   float volume = float(m_volume) * 0.01f;

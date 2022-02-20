@@ -60,6 +60,8 @@ public:
   bool effect_ignore_suppression() const;
   int music_volume() const;
   bool music_ignore_suppression() const;
+  int video_volume() const;
+  bool video_ignore_suppression() const;
   int blip_volume() const;
   bool blip_ignore_suppression() const;
   int blip_rate() const;
@@ -111,6 +113,8 @@ public slots:
   void set_effect_ignore_suppression(bool p_enabled);
   void set_music_volume(int p_number);
   void set_music_ignore_suppression(bool p_enabled);
+  void set_video_volume(int p_number);
+  void set_video_ignore_suppression(bool p_enabled);
   void set_blip_volume(int p_number);
   void set_blip_ignore_suppression(bool p_enabled);
   void set_blip_rate(int p_number);
@@ -164,6 +168,8 @@ signals:
   void effect_ignore_suppression_changed(bool);
   void music_volume_changed(int);
   void music_ignore_suppression_changed(bool);
+  void video_volume_changed(int);
+  void video_ignore_suppression_changed(bool);
   void blip_volume_changed(int);
   void blip_ignore_suppression_changed(bool);
   void blip_rate_changed(int);

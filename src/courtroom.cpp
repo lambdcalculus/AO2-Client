@@ -25,6 +25,7 @@
 #include "drshoutmovie.h"
 #include "drsplashmovie.h"
 #include "drstickermovie.h"
+#include "drvideoscreen.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
@@ -647,6 +648,10 @@ void Courtroom::on_ic_message_return_pressed()
     f_text_color = QString::number(m_text_color);
 
   packet_contents.append(f_text_color);
+
+  if (ao_app->has_playable_video_feature())
+    packet_contents.append(!l_emote.video_file.isEmpty() ? l_emote.video_file : "0");
+
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 }
 
@@ -670,7 +675,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
 {
   if (p_contents.size() < 15)
     return;
-  else if (p_contents.size() == 15)
+  while (p_contents.length() < MESSAGE_SIZE)
     p_contents.append(nullptr);
 
   for (int i = 0; i < MESSAGE_SIZE; ++i)
@@ -759,6 +764,14 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   {
     save_textlog(f_showname + ": " + l_message);
   }
+
+  ui_vp_video->show();
+  ui_vp_video->play(m_chatmessage[CMChrName], m_chatmessage[CMVideoName]);
+}
+
+void Courtroom::video_done()
+{
+  ui_vp_video->hide();
 
   int objection_mod = m_chatmessage[CMShoutModifier].toInt();
   QString f_char = m_chatmessage[CMChrName];
