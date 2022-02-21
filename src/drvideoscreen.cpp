@@ -69,6 +69,7 @@ void DRVideoWidget::play(QString p_character, QString p_video)
     return;
   }
 
+  update_volume();
   m_player->setMedia(QUrl(l_file));
   m_player->setMuted(true);
   m_player->play();
