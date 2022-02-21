@@ -46,8 +46,8 @@ DRVideoWidget::~DRVideoWidget()
  */
 void DRVideoWidget::play(QString p_character, QString p_video)
 {
-  if (m_player->state() != QMediaPlayer::StoppedState)
-    stop();
+  m_player->stop();
+  m_player->setMedia(nullptr);
 
   qInfo() << "DRVideoWidget::play"
           << "starting:"
