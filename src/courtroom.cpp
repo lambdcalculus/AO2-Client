@@ -250,8 +250,10 @@ void Courtroom::set_window_title(QString p_title)
 void Courtroom::update_background_scene()
 {
   // witness is default if pos is invalid
-  QString f_background = "witnessempty";
-  QString f_desk_image = "stand";
+  QString f_default_background = "witnessempty";
+  QString f_default_desk_image = "stand";
+  QString f_background = f_default_background;
+  QString f_desk_image = f_default_desk_image;
   QString f_desk_mod = m_chatmessage[CMDeskModifier];
   QString f_side = m_chatmessage[CMPosition];
 
@@ -289,9 +291,13 @@ void Courtroom::update_background_scene()
   {
     ui_vp_desk->show();
     ui_vp_desk->set_image(f_desk_image);
+    if (!ui_vp_desk->is_valid())
+      ui_vp_desk->set_image(f_default_desk_image);
   }
 
   ui_vp_background->set_image(f_background);
+  if (!ui_vp_background->is_valid())
+    ui_vp_background->set_image(f_default_background);
 }
 
 DRAreaBackground Courtroom::get_background()

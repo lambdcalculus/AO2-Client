@@ -103,7 +103,7 @@ void DRMovie::start()
   m_movie.setFileName(m_file_name);
   m_frame_count = m_movie.frameCount();
   m_frame_number = m_movie.currentFrameNumber();
-  if (m_movie.isValid())
+  if (is_valid())
   {
     m_movie.start();
     m_movie.setPaused(true);
@@ -203,4 +203,9 @@ void DRMovie::jump_next_frame()
   {
     m_movie.jumpToNextFrame();
   }
+}
+
+bool DRMovie::is_valid()
+{
+  return !m_movie.fileName().isEmpty() && m_movie.isValid();
 }

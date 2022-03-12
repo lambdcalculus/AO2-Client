@@ -21,6 +21,7 @@ public:
   void set_hide_on_done(bool);
 
   bool is_running();
+  bool is_valid();
   void start();
   void stop();
 

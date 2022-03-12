@@ -1,3 +1,4 @@
+#include "commondefs.h"
 #include "drscenemovie.h"
 
 #include "aoapplication.h"
