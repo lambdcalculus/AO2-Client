@@ -125,7 +125,6 @@ void DRAudioStream::loop_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata)
 
   // move the position to the loopStart
   DRAudioStream *l_stream = static_cast<DRAudioStream *>(userdata);
-  qDebug() << l_stream->m_file_name << l_stream->m_loop_start_pos;
   if (l_stream->is_repeatable())
   {
     BASS_ChannelSetPosition(ch, l_stream->m_loop_start_pos, BASS_POS_BYTE);

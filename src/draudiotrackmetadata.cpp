@@ -69,6 +69,7 @@ void DRAudiotrackMetadata::update_cache()
       DRAudiotrackMetadata l_audiotrack;
       l_audiotrack.m_file_name = i_track_name;
       l_audiotrack.m_title = l_settings.value(l_fetcher.lookup_value("title")).toString();
+      l_audiotrack.m_play_once = l_settings.value(l_fetcher.lookup_value("play_once")).toBool();
       l_audiotrack.m_loop_start = l_settings.value(l_fetcher.lookup_value("loop_start")).toULongLong();
       l_audiotrack.m_loop_end = l_settings.value(l_fetcher.lookup_value("loop_end")).toULongLong();
       l_new_audiotrack_cache.insert(l_lower_track_name, std::move(l_audiotrack));
@@ -101,6 +102,11 @@ QString DRAudiotrackMetadata::file_name()
 QString DRAudiotrackMetadata::title()
 {
   return m_title.isEmpty() ? m_file_name : m_title;
+}
+
+bool DRAudiotrackMetadata::play_once()
+{
+  return m_play_once;
 }
 
 quint64 DRAudiotrackMetadata::loop_start()

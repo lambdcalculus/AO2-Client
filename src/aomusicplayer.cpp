@@ -21,9 +21,17 @@ void AOMusicPlayer::play(QString p_song)
   {
     auto l_stream = l_maybe_stream.value();
     DRAudiotrackMetadata l_audiotrack(p_song);
-    l_stream->set_repeatable(true);
-    l_stream->set_loop(l_audiotrack.loop_start(), l_audiotrack.loop_end());
+    if (!l_audiotrack.play_once())
+    {
+      l_stream->set_repeatable(true);
+      l_stream->set_loop(l_audiotrack.loop_start(), l_audiotrack.loop_end());
+    }
     l_stream->play();
+
+    if (l_stream->is_playing())
+    {
+      qDebug() << "playing" << l_stream->get_file_name();
+    }
   }
 }
 

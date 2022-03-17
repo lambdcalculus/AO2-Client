@@ -13,12 +13,14 @@ public:
 
   QString file_name();
   QString title();
+  bool play_once();
   quint64 loop_start();
   quint64 loop_end();
 
 private:
   QString m_file_name;
   QString m_title;
+  bool m_play_once = false;
   quint64 m_loop_start = 0;
   quint64 m_loop_end = 0;
 };
