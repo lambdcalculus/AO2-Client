@@ -22,6 +22,7 @@ void Courtroom::set_character_id(const int p_chr_id)
   if (m_chr_id == p_chr_id)
     return;
   m_chr_id = p_chr_id;
+  load_character();
   Q_EMIT character_id_changed(m_chr_id);
 }
 

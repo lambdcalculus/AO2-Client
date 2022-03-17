@@ -4,7 +4,7 @@
 
 #include <QTimer>
 
-static const int EVENT_TIMER_INTERVAL_DEFAULT = 100;
+static const int UPDATE_TIMER_INTERVAL = 100;
 
 static class DRAudioEngineData
 {
@@ -34,14 +34,12 @@ public:
       d->family_map.value(DRAudio::Family::FSystem)->set_ignore_suppression(true);
 
       // create and init event loop
-      d->event_timer->setInterval(EVENT_TIMER_INTERVAL_DEFAULT);
-      d->event_timer->setSingleShot(false);
+      d->update_timer->setInterval(UPDATE_TIMER_INTERVAL);
+      d->update_timer->setSingleShot(false);
 
-      QObject::connect(d->event_timer, SIGNAL(timeout()), d, SLOT(on_event_tick()));
-
-      d->event_timer->start();
-
-      d->on_event_tick();
+      QObject::connect(d->update_timer, SIGNAL(timeout()), d, SLOT(update_current_device()));
+      d->update_timer->start();
+      d->update_current_device();
     }
 
     return d;
@@ -61,9 +59,14 @@ DRAudioEngine::~DRAudioEngine()
   d->children.removeAll(this);
 }
 
-std::optional<DRAudioDevice> DRAudioEngine::get_device()
+std::optional<DRAudioDevice> DRAudioEngine::get_current_device()
 {
   return d->device;
+}
+
+QString DRAudioEngine::get_favorite_device_driver()
+{
+  return d->favorite_device_driver;
 }
 
 std::optional<DRAudioDevice> DRAudioEngine::get_favorite_device()
@@ -71,9 +74,9 @@ std::optional<DRAudioDevice> DRAudioEngine::get_favorite_device()
   return d->favorite_device;
 }
 
-QList<DRAudioDevice> DRAudioEngine::get_device_list()
+QVector<DRAudioDevice> DRAudioEngine::get_device_list()
 {
-  return d->device_map.values();
+  return d->device_list;
 }
 
 DRAudioStreamFamily::ptr DRAudioEngine::get_family(DRAudio::Family p_family)
@@ -111,32 +114,10 @@ bool DRAudioEngine::is_suppress_background_audio()
   return is_option(DRAudio::OEngineSuppressBackgroundAudio);
 }
 
-void DRAudioEngine::set_device(DRAudioDevice p_device)
+void DRAudioEngine::set_favorite_device_driver(QString p_driver)
 {
-  if (!d->device_map.contains(p_device.get_driver()))
-    return;
-  if (d->device.has_value() && d->device->get_driver() == p_device.get_driver())
-    return;
-  d->previous_device = d->device;
-  d->device = d->device_map.value(p_device.get_driver());
-  d->update_device();
-  Q_EMIT d->invoke_signal("device_changed", Q_ARG(DRAudioDevice, d->device.value()));
-}
-
-void DRAudioEngine::set_favorite_device(DRAudioDevice p_device)
-{
-  if (d->favorite_device.has_value() && d->favorite_device.value().get_driver() == p_device.get_driver())
-    return;
-  d->favorite_device = p_device;
-  Q_EMIT d->invoke_signal("favorite_device_changed", Q_ARG(DRAudioDevice, d->favorite_device.value()));
-}
-
-void DRAudioEngine::set_favorite_device_by_driver(QString p_device_driver)
-{
-  DRAudioDevice favorite_device;
-  favorite_device.m_driver = p_device_driver;
-  d->check_device = true;
-  set_favorite_device(favorite_device);
+  d->favorite_device_driver = p_driver;
+  d->update_current_device();
 }
 
 void DRAudioEngine::set_volume(int32_t p_volume)
@@ -173,9 +154,4 @@ void DRAudioEngine::set_suppressed(bool p_enabled)
 void DRAudioEngine::set_suppress_background_audio(bool p_enabled)
 {
   set_option(DRAudio::OEngineSuppressBackgroundAudio, p_enabled);
-}
-
-void DRAudioEngine::check_stream_error()
-{
-  d->check_stream_error();
 }

@@ -30,6 +30,8 @@ public slots:
 
 signals:
   void reload_theme();
+  void reload_character();
+  void reload_audiotracks();
 
 protected:
   void showEvent(QShowEvent *event) override;
@@ -42,6 +44,8 @@ private:
 
 private slots:
   void on_reload_theme_clicked();
+  void on_reload_character_clicked();
+  void on_reload_audiotracks_clicked();
   void on_theme_changed(QString);
   void on_gamemode_changed(QString);
   void on_manual_gamemode_selection_changed(bool);
@@ -56,7 +60,7 @@ private slots:
   void on_device_current_index_changed(int p_index);
   void on_audio_device_changed(DRAudioDevice p_device);
   void on_favorite_audio_device_changed(DRAudioDevice p_device);
-  void on_audio_device_list_changed(QList<DRAudioDevice> p_device_list);
+  void on_audio_device_list_changed(QVector<DRAudioDevice> p_device_list);
   void on_master_value_changed(int p_num);
   void on_system_value_changed(int p_num);
   void on_effect_value_changed(int p_num);
@@ -69,10 +73,12 @@ private:
   // driver
   AOConfig *m_config = nullptr;
   DRAudioEngine *m_engine = nullptr;
+
   // behaviour
   QPushButton *ui_save = nullptr;
   QPushButton *ui_close = nullptr;
   QCheckBox *ui_autosave = nullptr;
+
   // general
   QLineEdit *ui_username = nullptr;
   QLineEdit *ui_callwords = nullptr;
@@ -80,6 +86,21 @@ private:
   QGroupBox *ui_discord_presence = nullptr;
   QCheckBox *ui_discord_hide_server = nullptr;
   QCheckBox *ui_discord_hide_character = nullptr;
+
+  // character
+  QLineEdit *ui_showname = nullptr;
+  QPushButton *ui_reload_character = nullptr;
+
+  // emotes
+  QCheckBox *ui_emote_preview = nullptr;
+  QCheckBox *ui_always_pre = nullptr;
+  QCheckBox *ui_sticky_sfx = nullptr;
+
+  // dialog
+  QSpinBox *ui_chat_tick_interval = nullptr;
+  QSpinBox *ui_blip_rate = nullptr;
+  QCheckBox *ui_blank_blips = nullptr;
+
   // game
   QComboBox *ui_theme = nullptr;
   QPushButton *ui_reload_theme = nullptr;
@@ -89,13 +110,8 @@ private:
   QLineEdit *ui_timeofday = nullptr;
   QComboBox *ui_manual_timeofday = nullptr;
   QCheckBox *ui_manual_timeofday_selection = nullptr;
-  QLineEdit *ui_showname = nullptr;
-  QCheckBox *ui_always_pre = nullptr;
-  QSpinBox *ui_chat_tick_interval = nullptr;
-  QCheckBox *ui_emote_preview = nullptr;
-  QCheckBox *ui_sticky_sfx = nullptr;
 
-  // IC Chatlog
+  // chatlog
   QSpinBox *ui_log_max_lines = nullptr;
   QCheckBox *ui_log_display_timestamp = nullptr;
   QCheckBox *ui_log_display_self_highlight = nullptr;
@@ -105,6 +121,7 @@ private:
   QRadioButton *ui_log_orientation_top_down = nullptr;
   QRadioButton *ui_log_orientation_bottom_up = nullptr;
   QCheckBox *ui_log_is_recording = nullptr;
+
   // audio
   QComboBox *ui_device = nullptr;
   QCheckBox *ui_favorite_device = nullptr;
@@ -122,8 +139,7 @@ private:
   QSlider *ui_blip = nullptr;
   QCheckBox *ui_blip_ignore_suppression = nullptr;
   QLabel *ui_blip_value = nullptr;
-  QSpinBox *ui_blip_rate = nullptr;
-  QCheckBox *ui_blank_blips = nullptr;
+  QPushButton *ui_reload_audiotracks = nullptr;
 
   // about
   QLabel *ui_about = nullptr;

@@ -2,6 +2,9 @@
 
 #include "aoapplication.h"
 
+#include "draudiotrackmetadata.h"
+#include <QDebug>
+
 AOMusicPlayer::AOMusicPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObject(p_ao_app, p_parent)
 {
   m_family = DRAudioEngine::get_family(DRAudio::Family::FMusic);
@@ -11,8 +14,17 @@ AOMusicPlayer::AOMusicPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObj
 void AOMusicPlayer::play(QString p_song)
 {
   stop();
-  m_song = p_song;
-  m_family->play_stream(ao_app->get_music_path(p_song));
+
+  m_file_name = p_song;
+  auto l_maybe_stream = m_family->create_stream(ao_app->get_music_path(p_song));
+  if (l_maybe_stream)
+  {
+    auto l_stream = l_maybe_stream.value();
+    DRAudiotrackMetadata l_audiotrack(p_song);
+    l_stream->set_repeatable(true);
+    l_stream->set_loop(l_audiotrack.loop_start(), l_audiotrack.loop_end());
+    l_stream->play();
+  }
 }
 
 void AOMusicPlayer::stop()

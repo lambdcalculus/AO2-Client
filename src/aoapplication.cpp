@@ -41,6 +41,8 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   connect(ao_config, SIGNAL(manual_timeofday_changed(QString)), this, SLOT(handle_theme_modification()));
   connect(ao_config, SIGNAL(manual_timeofday_selection_changed(bool)), this, SLOT(handle_theme_modification()));
   connect(ao_config_panel, SIGNAL(reload_theme()), this, SLOT(handle_theme_modification()));
+  connect(ao_config_panel, SIGNAL(reload_character()), this, SLOT(handle_character_reloading()));
+  connect(ao_config_panel, SIGNAL(reload_audiotracks()), this, SLOT(handle_audiotracks_reloading()));
   ao_config_panel->hide();
 
   dr_discord->set_presence(ao_config->discord_presence());
@@ -208,8 +210,17 @@ bool AOApplication::has_character_availability_request_feature() const
 void AOApplication::handle_theme_modification()
 {
   load_fonts();
+  emit reload_theme();
+}
 
-  Q_EMIT theme_reloaded();
+void AOApplication::handle_character_reloading()
+{
+  emit reload_character();
+}
+
+void AOApplication::handle_audiotracks_reloading()
+{
+  emit reload_audiotracks();
 }
 
 void AOApplication::set_favorite_list()

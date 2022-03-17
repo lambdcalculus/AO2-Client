@@ -7,9 +7,10 @@ class DRAudioEngine : public QObject
   Q_OBJECT
 
 public:
-  static std::optional<DRAudioDevice> get_device();
+  static QVector<DRAudioDevice> get_device_list();
+  static std::optional<DRAudioDevice> get_current_device();
+  static QString get_favorite_device_driver();
   static std::optional<DRAudioDevice> get_favorite_device();
-  static QList<DRAudioDevice> get_device_list();
   static DRAudioStreamFamily::ptr get_family(DRAudio::Family p_family);
   static QList<DRAudioStreamFamily::ptr> get_family_list();
   static int32_t get_volume();
@@ -23,9 +24,7 @@ public:
   ~DRAudioEngine();
 
 public slots:
-  void set_device(DRAudioDevice p_device);
-  void set_favorite_device(DRAudioDevice p_device);
-  void set_favorite_device_by_driver(QString p_device_driver);
+  void set_favorite_device_driver(QString driver);
   void set_volume(int32_t p_volume);
   void set_options(DRAudio::Options p_options);
   // option set
@@ -34,14 +33,9 @@ public slots:
   void set_suppress_background_audio(bool p_enabled);
 
 signals:
-  void device_changed(DRAudioDevice);
+  void device_list_changed(QVector<DRAudioDevice>);
+  void current_device_changed(DRAudioDevice);
   void favorite_device_changed(DRAudioDevice);
-  void device_list_changed(QList<DRAudioDevice>);
   void volume_changed(int32_t);
   void options_changed(DRAudio::Options);
-
-private:
-  friend class DRAudioStream;
-
-  static void check_stream_error();
 };

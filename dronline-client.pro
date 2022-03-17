@@ -15,6 +15,7 @@ DEFINES += DRO_ACKMS
 CONFIG(debug, debug|release):DEFINES += DR_DEV
 
 HEADERS += \
+  include/draudiotrackmetadata.h \
   include/drscenemovie.h \
   include/drsplashmovie.h \
   include/aoapplication.h \
@@ -69,6 +70,7 @@ HEADERS += \
   include/log.h \
   include/misc_functions.h \
   include/theme.h \
+  include/utils.h \
   include/version.h
 
 SOURCES += \
@@ -112,6 +114,7 @@ SOURCES += \
   src/draudioerror.cpp \
   src/draudiostream.cpp \
   src/draudiostreamfamily.cpp \
+  src/draudiotrackmetadata.cpp \
   src/drcharactermovie.cpp \
   src/drchatlog.cpp \
   src/dreffectmovie.cpp \
@@ -138,6 +141,7 @@ SOURCES += \
   src/server_socket.cpp \
   src/text_file_functions.cpp \
   src/theme.cpp \
+  src/utils.cpp \
   src/version.cpp
 
 # 1. You need to get BASS and put the x86 bass DLL/headers in the project root folder

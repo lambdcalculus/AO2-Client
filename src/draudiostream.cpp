@@ -1,32 +1,25 @@
 #include "draudiostream.h"
 
-#include "draudioengine.h"
-#include "draudiostreamfamily.h"
-
-#include <bassopus.h>
-
 #include <QDebug>
 #include <QFileInfo>
 #include <QtMath>
 
-DRAudioStream::DRAudioStream(DRAudio::Family p_family) : m_family(p_family)
+#include <bass.h>
+#include <bassopus.h>
+
+#include "draudioengine.h"
+#include "draudiostreamfamily.h"
+
+DRAudioStream::DRAudioStream(DRAudio::Family p_family) : m_engine(new DRAudioEngine(this)), m_family(p_family)
 {
-  connect(this, &DRAudioStream::device_error, this, &DRAudioStream::on_device_error, Qt::QueuedConnection);
+  connect(m_engine, &DRAudioEngine::current_device_changed, this, &DRAudioStream::update_device);
 }
 
 DRAudioStream::~DRAudioStream()
 {
-  if (m_hstream.has_value())
+  if (m_hstream)
   {
-    const HSTREAM hstream = m_hstream.value();
-
-    while (!m_hsync_stack.empty())
-    {
-      BASS_ChannelRemoveSync(hstream, m_hsync_stack.top().sync);
-      m_hsync_stack.pop();
-    }
-
-    BASS_StreamFree(hstream);
+    BASS_StreamFree(m_hstream);
   }
 }
 
@@ -35,242 +28,185 @@ DRAudio::Family DRAudioStream::get_family() const
   return m_family;
 }
 
-std::optional<QString> DRAudioStream::get_file() const
+QString DRAudioStream::get_file_name() const
 {
-  return m_file;
+  return m_file_name;
 }
 
 bool DRAudioStream::is_playing() const
 {
-  if (!m_hstream.has_value())
+  if (!ensure_init())
     return false;
-  return BASS_ChannelIsActive(m_hstream.value()) == BASS_ACTIVE_PLAYING;
+  return BASS_ChannelIsActive(m_hstream) == BASS_ACTIVE_PLAYING;
+}
+
+bool DRAudioStream::is_repeatable() const
+{
+  return m_repeatable;
 }
 
 void DRAudioStream::play()
 {
-  if (!m_hstream.has_value())
+  if (!ensure_init())
     return;
-  const BOOL result = BASS_ChannelPlay(m_hstream.value(), FALSE);
-  if (result == FALSE)
+  if (!BASS_ChannelPlay(m_hstream, FALSE))
   {
-    qWarning() << DRAudioError(
-                      QString("failed to play file %1: %2").arg(m_file.value()).arg(DRAudio::get_last_bass_error()))
-                      .what();
+    qWarning()
+        << QString("error: failed to play file: %1 (file: \"%1\")").arg(DRAudio::get_last_bass_error(), m_file_name);
     Q_EMIT finished();
   }
-  setup_looping();
 }
 
 void DRAudioStream::stop()
 {
-  if (!m_hstream.has_value())
+  if (!ensure_init())
     return;
-  BASS_ChannelStop(m_hstream.value());
+  BASS_ChannelStop(m_hstream);
   Q_EMIT finished();
 }
 
-QWORD DRAudioStream::loop_start()
+std::optional<DRAudioError> DRAudioStream::set_file_name(QString p_file_name)
 {
-  return m_loop_start;
-}
-
-QWORD DRAudioStream::loop_end()
-{
-  return m_loop_end;
-}
-
-// the sync callback
-static void CALLBACK loop_sync(HSYNC syncHandle, DWORD channel, DWORD data, void *user)
-{
-  Q_UNUSED(syncHandle);
-  Q_UNUSED(data);
-
-  // move the position to the loopStart
-  DRAudioStream *stream = static_cast<DRAudioStream *>(user);
-  QWORD loop_start = stream->loop_start();
-  BASS_ChannelSetPosition(channel, loop_start, BASS_POS_BYTE);
-}
-
-void DRAudioStream::setup_looping()
-{
-  // Remove all previously set loop information
-  m_loop_start = {};
-  m_loop_end = {};
-
-  if (m_loop_sync > 0)
+  m_file_name = p_file_name;
+  m_init_state = InitNotDone;
+  if (!ensure_init())
   {
-    BASS_ChannelRemoveSync(m_hstream.value(), m_loop_sync);
-    m_loop_sync = 0;
+    return DRAudioError("failed to set file");
   }
-
-  // Now decide whether the track we are playing now is loopable.
-  if (!m_file->endsWith("ogg", Qt::CaseInsensitive))
-    return;
-
-  double l_sample_rate = 0.0;
-  if (float l_float_sample_rate = 0.0f;
-      BASS_ChannelGetAttribute(m_hstream.value(), BASS_ATTRIB_FREQ, &l_float_sample_rate))
-    l_sample_rate = double(l_float_sample_rate);
-  if (qFabs(l_sample_rate) == 0.0)
-    return;
-  // Now sample_rate holds the sample rate in hertz
-
-  const char *ogg_value = BASS_ChannelGetTags(m_hstream.value(), BASS_TAG_OGG);
-  QStringList ogg_comments;
-  while (*ogg_value)
-  {
-    ogg_comments.push_back(QString(ogg_value));
-    ogg_value += ogg_comments.back().size() + 1;
-  }
-
-  double loop_start = 0;
-  double loop_end = 0;
-  for (const QString &ogg_comment : ogg_comments)
-  {
-    QStringList split = ogg_comment.split('=');
-    if (split.size() != 2)
-      continue;
-    if (split.at(0) == "LoopStart")
-      loop_start = split.at(1).toDouble();
-    else if (split.at(0) == "LoopEnd")
-      loop_end = split.at(1).toDouble();
-  }
-  if (loop_start > loop_end || (loop_start == 0 && loop_end == 0))
-    return;
-
-  // If we are at this point, we are successful in fetching all required values
-
-  m_loop_start = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_start / l_sample_rate);
-  m_loop_end = BASS_ChannelSeconds2Bytes(m_hstream.value(), loop_end / l_sample_rate);
-
-  m_loop_sync = BASS_ChannelSetSync(m_hstream.value(), BASS_SYNC_POS | BASS_SYNC_MIXTIME, m_loop_end, &loop_sync, this);
-}
-
-std::optional<DRAudioError> DRAudioStream::set_file(QString p_file)
-{
-  if (m_file.has_value())
-    return DRAudioError("file already set");
-
-  const QFileInfo file(p_file);
-  if (!file.exists())
-    return DRAudioError(QString("file does not exist: %1").arg(p_file.isEmpty() ? "<empty>" : p_file));
-
-  if (m_file == p_file)
-    return std::nullopt;
-
-  m_file = p_file;
-
-  HSTREAM stream_handle;
-  if (m_file->endsWith("opus", Qt::CaseInsensitive))
-    stream_handle = BASS_OPUS_StreamCreateFile(FALSE, m_file->utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
-  else
-    stream_handle = BASS_StreamCreateFile(FALSE, m_file->utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
-
-  if (stream_handle == 0)
-    return DRAudioError(
-        QString("failed to create stream for file %1: %2").arg(p_file).arg(DRAudio::get_last_bass_error()));
-  m_hstream = stream_handle;
-
-  // bass events
-  for (const DWORD type : {BASS_SYNC_END, BASS_SYNC_DEV_FAIL})
-  {
-    const DWORD final_type = type == BASS_SYNC_DEV_FAIL ? type | BASS_SYNC_MIXTIME : type;
-    HSYNC sync_handle = BASS_ChannelSetSync(stream_handle, final_type, 0, &DRAudioStream::on_sync_callback, this);
-    if (sync_handle == 0)
-      return DRAudioError(
-          QString("failed to create sync %1 for file %2: %3").arg(type).arg(p_file, DRAudio::get_last_bass_error()));
-    m_hsync_stack.push(DRAudioStreamSync{sync_handle, type});
-  }
-
-  Q_EMIT file_changed(p_file);
+  emit file_name_changed(m_file_name);
   return std::nullopt;
 }
 
 void DRAudioStream::set_volume(float p_volume)
 {
-  if (!m_hstream.has_value())
+  if (!ensure_init())
     return;
   m_volume = p_volume;
-  BASS_ChannelSetAttribute(m_hstream.value(), BASS_ATTRIB_VOL, float(p_volume) * 0.01f);
+  BASS_ChannelSetAttribute(m_hstream, BASS_ATTRIB_VOL, float(p_volume) * 0.01f);
 }
 
-#include <QTimer>
-
-void DRAudioStream::on_sync_callback(HSYNC hsync, DWORD ch, DWORD data, void *userdata)
+void DRAudioStream::set_repeatable(bool p_enabled)
 {
-  Q_UNUSED(hsync)
-  Q_UNUSED(ch)
-  Q_UNUSED(data)
+  if (m_repeatable == p_enabled)
+    return;
+  m_repeatable = p_enabled;
+  init_loop();
+}
 
-  /*
-   * BASS only provides what we fed it when we first created our synch even if
-   * the pointer we provided get deleted mid-way through the program lifetime
-   */
-  DRAudioStream *self = static_cast<DRAudioStream *>(userdata);
-  for (auto &v : self->m_hsync_stack)
+void DRAudioStream::set_loop(quint64 p_start, quint64 p_end)
+{
+  if (!ensure_init())
+    return;
+
+  if (m_loop_start == p_start && m_loop_end == p_end)
+    return;
+  m_loop_start = p_start;
+  m_loop_end = p_end;
+  init_loop();
+}
+
+void DRAudioStream::end_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata)
+{
+  Q_UNUSED(hsync);
+  Q_UNUSED(ch);
+  Q_UNUSED(data);
+
+  DRAudioStream *l_stream = static_cast<DRAudioStream *>(userdata);
+  if (!l_stream->is_repeatable())
   {
-    if (v.sync != hsync)
-      continue;
+    emit l_stream->finished();
+  }
+}
 
-    switch (v.type)
+void DRAudioStream::loop_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata)
+{
+  Q_UNUSED(hsync);
+  Q_UNUSED(data);
+
+  // move the position to the loopStart
+  DRAudioStream *l_stream = static_cast<DRAudioStream *>(userdata);
+  qDebug() << l_stream->m_file_name << l_stream->m_loop_start_pos;
+  if (l_stream->is_repeatable())
+  {
+    BASS_ChannelSetPosition(ch, l_stream->m_loop_start_pos, BASS_POS_BYTE);
+    emit l_stream->looped();
+  }
+}
+
+bool DRAudioStream::ensure_init()
+{
+  if (m_init_state != InitNotDone)
+    return m_init_state == InitFinished;
+  m_init_state = InitError;
+
+  if (m_file_name.isEmpty())
+    return false;
+
+  HSTREAM l_hstream;
+  if (m_file_name.endsWith("opus", Qt::CaseInsensitive))
+    l_hstream = BASS_OPUS_StreamCreateFile(FALSE, m_file_name.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+  else
+    l_hstream =
+        BASS_StreamCreateFile(FALSE, m_file_name.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE | BASS_STREAM_PRESCAN);
+
+  if (!l_hstream)
+  {
+    qWarning() << "error: failed to create audio stream (file:" << m_file_name << ")";
+    return false;
+  }
+  m_hstream = l_hstream;
+
+  BASS_ChannelSetSync(l_hstream, BASS_SYNC_END | BASS_SYNC_MIXTIME, 0, &end_sync, this);
+  m_init_state = InitFinished;
+  init_loop();
+  return true;
+}
+
+bool DRAudioStream::ensure_init() const
+{
+  return const_cast<DRAudioStream *>(this)->ensure_init();
+}
+
+void DRAudioStream::init_loop()
+{
+  if (m_loop_sync)
+  {
+    BASS_ChannelRemoveSync(m_hstream, m_loop_sync);
+    m_loop_sync = 0;
+  }
+
+  if (m_repeatable)
+  {
+
+    float l_sample_rate;
+    BASS_ChannelGetAttribute(m_hstream, BASS_ATTRIB_FREQ, &l_sample_rate);
+
+    const QWORD l_length = BASS_ChannelGetLength(m_hstream, BASS_POS_BYTE);
+    m_loop_start_pos = BASS_ChannelSeconds2Bytes(m_hstream, m_loop_start / double(l_sample_rate));
+    if (m_loop_start_pos >= l_length)
     {
-    case BASS_SYNC_END:
-      Q_EMIT self->finished();
-      break;
+      m_loop_start_pos = 0;
+    }
 
-    case BASS_SYNC_DEV_FAIL:
-      Q_EMIT self->device_error(QPrivateSignal());
-      break;
+    m_loop_end_pos = BASS_ChannelSeconds2Bytes(m_hstream, m_loop_end / double(l_sample_rate));
+    if (m_loop_end_pos <= m_loop_start_pos || m_loop_end_pos > l_length)
+    {
+      m_loop_end_pos = l_length;
+    }
+
+    m_loop_sync = BASS_ChannelSetSync(m_hstream, BASS_SYNC_POS | BASS_SYNC_MIXTIME, m_loop_end_pos, &loop_sync, this);
+  }
+}
+
+void DRAudioStream::update_device(DRAudioDevice p_device)
+{
+  if (!ensure_init())
+    return;
+  if (BASS_ChannelGetDevice(m_hstream) != p_device.get_id())
+  {
+    if (!BASS_ChannelSetDevice(m_hstream, p_device.get_id()))
+    {
+      qDebug() << "error: failed to switch stream device;" << DRAudio::get_last_bass_error() << p_device.get_name();
     }
   }
-}
-
-void DRAudioStream::cache_position()
-{
-  if (!m_hstream.has_value())
-    return;
-  if (m_position.has_value())
-    return;
-  m_position = BASS_ChannelGetPosition(m_hstream.value(), BASS_POS_BYTE);
-  BASS_ChannelStop(m_hstream.value());
-}
-
-void DRAudioStream::on_device_error()
-{
-  cache_position();
-  DRAudioEngine::check_stream_error();
-}
-
-void DRAudioStream::update_device()
-{
-  if (!m_hstream.has_value())
-  {
-    Q_EMIT finished();
-    return;
-  }
-
-  if (is_playing())
-    return;
-  const QString file = m_file.value();
-
-  m_file.reset();
-  m_hstream.reset();
-  m_hsync_stack.clear();
-
-  blockSignals(true);
-  set_file(file);
-  set_volume(m_volume);
-  blockSignals(false);
-
-  if (m_position.has_value())
-  {
-    if (BASS_ChannelSetPosition(m_hstream.value(), m_position.value(), BASS_POS_BYTE) == FALSE)
-      qWarning() << DRAudioError(
-                        QString("failed to set position for %1: %2").arg(file).arg(DRAudio::get_last_bass_error()))
-                        .what();
-    m_position.reset();
-  }
-
-  play();
 }

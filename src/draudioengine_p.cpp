@@ -13,14 +13,14 @@
 #include <QGuiApplication>
 #include <QTimer>
 
-static const int EVENT_TIMER_INTERVAL_DEFAULT = 100;
-
-DRAudioEnginePrivate::DRAudioEnginePrivate() : QObject(nullptr), event_timer(new QTimer)
-{}
+DRAudioEnginePrivate::DRAudioEnginePrivate() : QObject(nullptr), update_timer(new QTimer(this))
+{
+  BASS_SetConfig(BASS_CONFIG_DEV_DEFAULT, FALSE);
+}
 
 DRAudioEnginePrivate::~DRAudioEnginePrivate()
 {
-  event_timer->stop();
+  update_timer->stop();
 
   BASS_Free();
 }
@@ -33,73 +33,74 @@ void DRAudioEnginePrivate::invoke_signal(QString p_method_name, QGenericArgument
   }
 }
 
-void DRAudioEnginePrivate::update_device()
+void DRAudioEnginePrivate::update_current_device()
 {
-  // cache the stream's position before we make the switch
-  for (DRAudioStreamFamily::ptr &i_family : family_map.values())
-    for (DRAudioStream::ptr &i_stream : i_family->get_stream_list())
-      i_stream->cache_position();
+  update_device_list();
 
-  if (previous_device.has_value())
+  DRAudioDevice l_new_device;
+  for (const DRAudioDevice &i_device : qAsConst(device_list))
   {
-    qInfo().noquote() << QString("Shutting down current device: %1").arg(previous_device->get_name());
-    if (BASS_Free() == FALSE)
-      qCritical() << DRAudioError(QString("Failed to free: %1").arg(DRAudio::get_last_bass_error())).what();
-    previous_device.reset();
+    if (i_device.get_driver() == favorite_device_driver)
+    {
+      if (!favorite_device.has_value() || favorite_device.value() != i_device)
+      {
+        favorite_device = i_device;
+        invoke_signal("favorite_device_changed", Q_ARG(DRAudioDevice, favorite_device.value()));
+      }
+
+      if (i_device.is_enabled())
+      {
+        l_new_device = i_device;
+        break;
+      }
+    }
+
+    if (i_device.is_default())
+    {
+      l_new_device = i_device;
+    }
   }
 
-  if (!device.has_value())
-  {
-    qCritical() << DRAudioError("Failed to initialize, device not set!").what();
+  if (device.has_value() && device.value() == l_new_device)
     return;
-  }
+  const std::optional<DRAudioDevice> l_prev_device = device;
+  device = l_new_device;
 
-  qInfo().noquote() << QString("Initializing device: %1").arg(device->get_name());
-  if (BASS_Init(device->get_id().value_or(0), 48000, BASS_DEVICE_LATENCY, 0, NULL) == FALSE)
-  {
-    qCritical() << DRAudioError(QString("Failed to initialize: %1").arg(DRAudio::get_last_bass_error())).what();
+  if (l_prev_device.has_value() && l_prev_device->get_id() == device->get_id())
     return;
-  }
 
-  qInfo() << "Switching to initiliazed device";
-  if (BASS_SetDevice(device->get_id().value_or(0)) == FALSE)
+  if (!BASS_IsStarted())
+    BASS_Start();
+
+  if (!device->is_init())
   {
-    qCritical() << DRAudioError(QString("Failed to set device: %1").arg(DRAudio::get_last_bass_error())).what();
-    return;
+    if (!BASS_Init(device->get_id(), 44100, 0, 0, NULL))
+    {
+      qWarning() << "Error: failed to initialize audio device:" << DRAudio::get_last_bass_error()
+                 << "(device:" << device->get_name() << ")";
+      return;
+    }
   }
+  qInfo() << "Audio device changed to" << device->get_name();
+  invoke_signal("current_device_changed", Q_ARG(DRAudioDevice, device.value()));
 
-  for (DRAudioStreamFamily::ptr &i_family : family_map.values())
-    i_family->update_device();
+  if (l_prev_device.has_value())
+  {
+    if (BASS_SetDevice(l_prev_device->get_id()))
+    {
+      BASS_Free();
+    }
+  }
 }
 
 void DRAudioEnginePrivate::update_device_list()
 {
-  QVector<DRAudioDevice> updated_device_list;
-
+  const QVector<DRAudioDevice> l_new_device_list = DRAudioDevice::get_device_list();
+  if (l_new_device_list != device_list)
   {
-    BASS_DEVICEINFO device_info;
-    for (int device = 1; BASS_GetDeviceInfo(device, &device_info); ++device)
-      updated_device_list.append(DRAudioDevice(device, device_info));
+    device_list = std::move(l_new_device_list);
+    invoke_signal("device_list_changed", Q_ARG(QVector<DRAudioDevice>, device_list));
   }
-
-  bool is_changed = false;
-  for (DRAudioDevice &device : updated_device_list)
-  {
-    if (device_map.contains(device.get_driver()))
-    {
-      if (device_map[device.get_driver()].merge(device))
-        is_changed = true;
-      continue;
-    }
-
-    device_map.insert(device.get_driver(), device);
-    is_changed = true;
-  }
-
-  if (!is_changed)
-    return;
-  check_device = true;
-  Q_EMIT invoke_signal("device_list_changed", Q_ARG(QList<DRAudioDevice>, device_map.values()));
 }
 
 void DRAudioEnginePrivate::update_options()
@@ -111,53 +112,4 @@ void DRAudioEnginePrivate::update_volume()
 {
   for (auto &i_group : family_map.values())
     i_group->update_volume();
-}
-
-void DRAudioEnginePrivate::check_stream_error()
-{
-  event_timer->start(EVENT_TIMER_INTERVAL_DEFAULT);
-  check_device = true;
-}
-
-void DRAudioEnginePrivate::on_event_tick()
-{
-  update_device_list();
-
-  if (device.has_value() && !check_device)
-    return;
-  check_device = false;
-
-  std::optional<DRAudioDevice> target_device;
-  for (DRAudioDevice &i_device : device_map.values())
-  {
-    if (!i_device.is_enabled())
-      continue;
-
-    if (favorite_device && favorite_device.value().get_driver() == i_device.get_driver())
-    {
-      // if our favorite device doesn't have an id then
-      // it was most likely set through the driver
-      // in which case we need to update it
-      if (!favorite_device->get_id().has_value())
-      {
-        favorite_device.reset();
-        engine->set_favorite_device(i_device);
-      }
-
-      target_device = i_device;
-      break;
-    }
-
-    if (!target_device.has_value() || i_device.is_default())
-      target_device = i_device;
-  }
-
-  if (!target_device.has_value())
-  {
-#ifdef QT_DEBUG
-    qWarning().noquote() << DRAudioError(QString("NO DEVICE AVAILABLE!")).what();
-#endif
-    return;
-  }
-  engine->set_device(target_device.value());
 }
