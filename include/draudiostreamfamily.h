@@ -60,7 +60,6 @@ private:
 
   float calculate_volume();
 
-  void update_device();
   void update_capacity();
   void update_options();
   void update_volume();

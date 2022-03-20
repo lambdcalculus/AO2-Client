@@ -1,13 +1,34 @@
 #include "draudiodevice.h"
 
-DRAudioDevice::DRAudioDevice() : m_name("<unknown>")
+#include <QMap>
+
+#include <bass.h>
+
+QVector<DRAudioDevice> DRAudioDevice::get_device_list()
+{
+  QVector<DRAudioDevice> r_device_list;
+
+  BASS_DEVICEINFO l_device_info;
+  for (int i = 0; BASS_GetDeviceInfo(i, &l_device_info); ++i)
+  {
+    DRAudioDevice l_device;
+    l_device.m_id = i;
+    l_device.m_name = l_device_info.name;
+    l_device.m_driver = l_device_info.driver;
+    l_device.m_states = State(l_device_info.flags);
+    r_device_list.append(l_device);
+  }
+
+  return r_device_list;
+}
+
+DRAudioDevice::DRAudioDevice() : m_id(0), m_name("<unknown>")
 {}
 
-DRAudioDevice::DRAudioDevice(DWORD p_device, BASS_DEVICEINFO p_device_info)
-    : m_id(p_device), m_name(p_device_info.name), m_driver(p_device_info.driver), m_states(State(p_device_info.flags))
+DRAudioDevice::~DRAudioDevice()
 {}
 
-std::optional<DWORD> DRAudioDevice::get_id() const
+DWORD DRAudioDevice::get_id() const
 {
   return m_id;
 }
@@ -47,18 +68,12 @@ bool DRAudioDevice::is_init() const
   return is_state(SInit);
 }
 
-bool DRAudioDevice::merge(DRAudioDevice &p_device)
+bool DRAudioDevice::operator==(const DRAudioDevice &other) const
 {
-  bool is_changed = false;
-  auto check_and_set = [&](auto &a, auto &b) {
-    if (a == b)
-      return;
-    is_changed = true;
-    a = b;
-  };
+  return m_id == other.m_id && m_name == other.m_name && m_driver == other.m_driver && m_states == other.m_states;
+}
 
-  check_and_set(m_name, p_device.m_name);
-  check_and_set(m_driver, p_device.m_driver);
-  check_and_set(m_states, p_device.m_states);
-  return is_changed;
+bool DRAudioDevice::operator!=(const DRAudioDevice &other) const
+{
+  return !operator==(other);
 }

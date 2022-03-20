@@ -653,7 +653,9 @@ private slots:
   void on_wtce_clicked();
 
   void on_change_character_clicked();
-  void reload_theme();
+  void load_theme();
+  void load_character();
+  void load_audiotracks();
   void on_call_mod_clicked();
 
   void on_switch_area_music_clicked();

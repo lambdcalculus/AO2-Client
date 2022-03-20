@@ -130,13 +130,6 @@ signals:
   void discord_hide_character_changed(bool);
 
   // game
-  void theme_changed(QString);
-  void gamemode_changed(QString);
-  void manual_gamemode_changed(QString);
-  void manual_gamemode_selection_changed(bool);
-  void timeofday_changed(QString);
-  void manual_timeofday_changed(QString);
-  void manual_timeofday_selection_changed(bool);
   void showname_changed(QString);
   void showname_placeholder_changed(QString);
   void character_ini_changed(QString base_character);
@@ -144,6 +137,15 @@ signals:
   void chat_tick_interval_changed(int);
   void emote_preview_changed(bool);
   void sticky_sfx_changed(bool);
+
+  // theme
+  void theme_changed(QString);
+  void gamemode_changed(QString);
+  void manual_gamemode_changed(QString);
+  void manual_gamemode_selection_changed(bool);
+  void timeofday_changed(QString);
+  void manual_timeofday_changed(QString);
+  void manual_timeofday_selection_changed(bool);
 
   // log
   void log_max_lines_changed(int);

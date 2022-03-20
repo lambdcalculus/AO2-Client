@@ -81,7 +81,7 @@ std::optional<DRAudioStream::ptr> DRAudioStreamFamily::create_stream(QString p_f
 {
   DRAudioStream::ptr stream(new DRAudioStream(m_family));
 
-  if (auto err = stream->set_file(p_file); err)
+  if (auto err = stream->set_file_name(p_file); err)
   {
     qWarning() << err->what();
     return std::nullopt;
@@ -101,7 +101,7 @@ std::optional<DRAudioStream::ptr> DRAudioStreamFamily::play_stream(QString p_fil
   if (r_stream.has_value())
   {
     auto stream = r_stream.value();
-    qWarning() << "playing" << stream->get_file().value();
+    qInfo() << "Playing" << stream->get_file_name();
     stream->play();
   }
   return r_stream;
@@ -127,12 +127,6 @@ float DRAudioStreamFamily::calculate_volume()
   }
 
   return volume * 100.0f;
-}
-
-void DRAudioStreamFamily::update_device()
-{
-  for (DRAudioStream::ptr &i_stream : m_stream_list)
-    i_stream->update_device();
 }
 
 void DRAudioStreamFamily::update_capacity()
@@ -162,8 +156,8 @@ void DRAudioStreamFamily::on_stream_finished()
   if (invoker == nullptr)
     return;
 
-  if (auto file = invoker->get_file(); file)
-    qInfo() << "removing" << file.value();
+  if (const QString l_file = invoker->get_file_name(); !l_file.isEmpty())
+    qInfo() << "removing" << l_file;
   else
     qWarning() << "removing unspecified stream";
 
