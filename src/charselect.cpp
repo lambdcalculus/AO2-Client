@@ -107,14 +107,8 @@ void Courtroom::reset_char_select()
 void Courtroom::set_char_select()
 {
   pos_size_type f_charselect = ao_app->get_element_dimensions("char_select", COURTROOM_DESIGN_INI);
-
   if (f_charselect.width < 0 || f_charselect.height < 0)
-  {
-    qDebug() << "W: did not find courtroom width or height in courtroom_design.ini!";
-    this->resize(714, 668);
-  }
-  else
-    this->resize(f_charselect.width, f_charselect.height);
+    qWarning() << "warning: char_select not found or invalid within courtroom_design.ini";
 
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
   ui_char_select_background->set_image("charselect_background.png");

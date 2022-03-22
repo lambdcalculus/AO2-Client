@@ -1,15 +1,22 @@
 #include "theme.h"
 
-// src
-#include "aoapplication.h"
-#include "datatypes.h"
-#include "drtextedit.h"
+// std
+#include <string>
 
 // qt
 #include <QDebug>
 #include <QFontDatabase>
 
-#include <string>
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+#include <QDesktopWidget>
+#else
+#include <QScreen>
+#endif
+
+// src
+#include "aoapplication.h"
+#include "datatypes.h"
+#include "drtextedit.h"
 
 void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
 {
@@ -105,4 +112,26 @@ bool set_stylesheet(QWidget *p_widget, QString p_identifier, QString p_ini_file,
   const QString p_style = ao_app->get_stylesheet(p_identifier, p_ini_file);
   p_widget->setStyleSheet(p_style);
   return !p_style.isEmpty();
+}
+
+/**
+ * @brief Center the widget on the screen it's resting in.
+ * @param widget The widget to center.
+ */
+void center_widget_to_screen(QWidget *p_widget)
+{
+  if (!p_widget || p_widget->parentWidget())
+    return;
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+  QRect screen_geometry = QApplication::desktop()->screenGeometry();
+#else
+  QScreen *screen = QApplication::screenAt(p_widget->pos());
+  if (screen == nullptr)
+    return;
+  QRect screen_geometry = screen->geometry();
+#endif
+  int x = (screen_geometry.width() - p_widget->width()) / 2;
+  int y = (screen_geometry.height() - p_widget->height()) / 2;
+  p_widget->move(x, y);
 }

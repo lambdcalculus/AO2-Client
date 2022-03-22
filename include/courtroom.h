@@ -224,6 +224,10 @@ signals:
   void closing();
 
 private:
+  bool m_first_theme_loading = true;
+  QSize m_default_size;
+  bool m_is_maximized = false;
+
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
@@ -750,6 +754,7 @@ private:
 
   // QWidget interface
 protected:
+  void changeEvent(QEvent *) override;
   void closeEvent(QCloseEvent *event) override;
 };
 
