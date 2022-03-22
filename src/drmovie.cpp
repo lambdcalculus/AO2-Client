@@ -1,6 +1,7 @@
 #include "drmovie.h"
 
 #include <QDebug>
+#include <QFile>
 
 DRMovie::DRMovie(QWidget *parent) : QLabel(parent)
 {
@@ -31,6 +32,7 @@ void DRMovie::set_file_name(QString p_file_name)
 {
   stop();
   m_file_name = p_file_name;
+  m_file_exists = QFile::exists(m_file_name);
 }
 
 /**
@@ -135,7 +137,6 @@ void DRMovie::stop()
 void DRMovie::resizeEvent(QResizeEvent *event)
 {
   QLabel::resizeEvent(event);
-
   paint_frame();
 }
 
@@ -207,5 +208,5 @@ void DRMovie::jump_next_frame()
 
 bool DRMovie::is_valid()
 {
-  return !m_movie.fileName().isEmpty() && m_movie.isValid();
+  return m_file_exists && m_movie.isValid();
 }
