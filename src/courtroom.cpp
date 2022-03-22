@@ -2227,10 +2227,21 @@ void Courtroom::ping_server()
   ao_app->send_server_packet(DRPacket("CH", {QString::number(m_chr_id)}));
 }
 
+void Courtroom::changeEvent(QEvent *event)
+{
+  QMainWindow::changeEvent(event);
+  if (event->type() == QEvent::WindowStateChange)
+  {
+    m_is_maximized = windowState().testFlag(Qt::WindowMaximized);
+    if (!m_is_maximized)
+      resize(m_default_size);
+  }
+}
+
 void Courtroom::closeEvent(QCloseEvent *event)
 {
-  Q_EMIT closing();
   QMainWindow::closeEvent(event);
+  Q_EMIT closing();
 }
 
 void Courtroom::on_set_notes_clicked()

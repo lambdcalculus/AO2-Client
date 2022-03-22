@@ -559,12 +559,20 @@ void Courtroom::set_widgets()
     f_courtroom.height = DEFAULT_HEIGHT;
   }
 
-  setWindowState(Qt::WindowNoState);
-  resize(f_courtroom.width, f_courtroom.height);
-  center_widget_to_screen(this);
+  m_default_size = QSize(f_courtroom.width, f_courtroom.height);
+  if (!m_is_maximized)
+  {
+    resize(m_default_size);
+  }
+
+  if (m_first_theme_loading)
+  {
+    m_first_theme_loading = false;
+    center_widget_to_screen(this);
+  }
 
   ui_background->move(0, 0);
-  ui_background->resize(size());
+  ui_background->resize(m_default_size);
   ui_background->set_image("courtroombackground.png");
 
   set_size_and_pos(ui_viewport, "viewport", COURTROOM_DESIGN_INI, ao_app);
