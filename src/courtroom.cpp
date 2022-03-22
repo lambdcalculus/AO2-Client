@@ -254,10 +254,12 @@ void Courtroom::set_window_title(QString p_title)
 void Courtroom::update_background_scene()
 {
   // witness is default if pos is invalid
-  QString f_background = "witnessempty";
-  QString f_desk_image = "stand";
-  QString f_desk_mod = m_chatmessage[CMDeskModifier];
-  QString f_side = m_chatmessage[CMPosition];
+  const QString L_DEFAULT_BACK = "witnessempty";
+  const QString L_DEFAULT_FRONT = "stand";
+  const QString f_desk_mod = m_chatmessage[CMDeskModifier];
+  const QString f_side = m_chatmessage[CMPosition];
+  QString f_background = L_DEFAULT_BACK;
+  QString f_desk_image = L_DEFAULT_FRONT;
 
   if (f_side == "def")
   {
@@ -293,9 +295,19 @@ void Courtroom::update_background_scene()
   {
     ui_vp_desk->show();
     ui_vp_desk->set_image(f_desk_image);
+    if (!ui_vp_desk->is_valid())
+    {
+      qWarning() << "warning: background missing file (" << m_background.background << f_side << f_desk_image << ")";
+      ui_vp_desk->set_image(L_DEFAULT_FRONT);
+    }
   }
 
   ui_vp_background->set_image(f_background);
+  if (!ui_vp_background->is_valid())
+  {
+    qWarning() << "warning: background missing file (" << m_background.background << f_side << f_background << ")";
+    ui_vp_background->set_image(L_DEFAULT_BACK);
+  }
 }
 
 DRAreaBackground Courtroom::get_background()
