@@ -274,7 +274,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       return;
 
     if (is_courtroom_constructed)
-      m_courtroom->enter_courtroom(l_content.at(2).toInt());
+      m_courtroom->set_character_id(l_content.at(2).toInt());
   }
   else if (l_header == "MS")
   {

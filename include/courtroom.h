@@ -219,6 +219,10 @@ signals:
   void closing();
 
 private:
+  bool m_first_theme_loading = true;
+  QSize m_default_size;
+  bool m_is_maximized = false;
+
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
@@ -607,7 +611,9 @@ private slots:
   void on_wtce_clicked();
 
   void on_change_character_clicked();
-  void reload_theme();
+  void load_theme();
+  void load_character();
+  void load_audiotracks();
   void on_call_mod_clicked();
 
   void on_switch_area_music_clicked();
@@ -697,6 +703,7 @@ private:
 
   // QWidget interface
 protected:
+  void changeEvent(QEvent *) override;
   void closeEvent(QCloseEvent *event) override;
 };
 

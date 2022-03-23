@@ -43,10 +43,16 @@ QString AOApplication::get_sounds_path(QString p_file)
   return get_case_sensitive_path(path);
 }
 
+QString AOApplication::get_music_folder_path()
+{
+  const QString l_path = get_base_path() + "sounds/music/";
+  return get_case_sensitive_path(l_path);
+}
+
 QString AOApplication::get_music_path(QString p_song)
 {
-  QString path = get_base_path() + "sounds/music/" + p_song;
-  return get_case_sensitive_path(path);
+  const QString l_path = get_music_folder_path() + p_song;
+  return get_case_sensitive_path(l_path);
 }
 
 QString AOApplication::format_background_path(QString p_identifier)

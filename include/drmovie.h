@@ -21,6 +21,7 @@ public:
   void set_hide_on_done(bool);
 
   bool is_running();
+  bool is_valid();
   void start();
   void stop();
 
@@ -37,6 +38,7 @@ private:
   bool m_hide_when_done = false;
 
   QString m_file_name;
+  bool m_file_exists = false;
   QMovie m_movie;
   int m_frame_count = 0;
   int m_frame_number = 0;

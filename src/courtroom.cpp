@@ -15,6 +15,7 @@
 #include "aotimer.h"
 #include "commondefs.h"
 #include "debug_functions.h"
+#include "draudiotrackmetadata.h"
 #include "drcharactermovie.h"
 #include "drchatlog.h"
 #include "drdiscord.h"
@@ -51,13 +52,16 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
 
-  connect(ao_app, SIGNAL(theme_reloaded()), this, SLOT(reload_theme()));
+  connect(ao_app, SIGNAL(reload_theme()), this, SLOT(load_theme()));
+  connect(ao_app, SIGNAL(reload_character()), this, SLOT(load_character()));
+  connect(ao_app, SIGNAL(reload_audiotracks()), this, SLOT(load_audiotracks()));
 
   create_widgets();
   connect_widgets();
 
   setup_courtroom();
   set_char_select();
+  load_audiotracks();
 }
 
 Courtroom::~Courtroom()
@@ -246,10 +250,12 @@ void Courtroom::set_window_title(QString p_title)
 void Courtroom::update_background_scene()
 {
   // witness is default if pos is invalid
-  QString f_background = "witnessempty";
-  QString f_desk_image = "stand";
-  QString f_desk_mod = m_chatmessage[CMDeskModifier];
-  QString f_side = m_chatmessage[CMPosition];
+  const QString L_DEFAULT_BACK = "witnessempty";
+  const QString L_DEFAULT_FRONT = "stand";
+  const QString f_desk_mod = m_chatmessage[CMDeskModifier];
+  const QString f_side = m_chatmessage[CMPosition];
+  QString f_background = L_DEFAULT_BACK;
+  QString f_desk_image = L_DEFAULT_FRONT;
 
   if (f_side == "def")
   {
@@ -285,9 +291,19 @@ void Courtroom::update_background_scene()
   {
     ui_vp_desk->show();
     ui_vp_desk->set_image(f_desk_image);
+    if (!ui_vp_desk->is_valid())
+    {
+      qWarning() << "warning: background missing file (" << m_background.background << f_side << f_desk_image << ")";
+      ui_vp_desk->set_image(L_DEFAULT_FRONT);
+    }
   }
 
   ui_vp_background->set_image(f_background);
+  if (!ui_vp_background->is_valid())
+  {
+    qWarning() << "warning: background missing file (" << m_background.background << f_side << f_background << ")";
+    ui_vp_background->set_image(L_DEFAULT_BACK);
+  }
 }
 
 DRAreaBackground Courtroom::get_background()
@@ -381,15 +397,19 @@ void Courtroom::list_music()
   ui_music_list->clear();
   for (const QString &i_song : qAsConst(m_music_list))
   {
-    QListWidgetItem *l_item = new QListWidgetItem(i_song, ui_music_list);
+    DRAudiotrackMetadata l_track(i_song);
+    QListWidgetItem *l_item = new QListWidgetItem(l_track.title(), ui_music_list);
+    l_item->setData(Qt::UserRole, l_track.file_name());
+    if (l_track.title() != l_track.file_name())
+      l_item->setToolTip(l_track.file_name());
     const QString l_song_path = ao_app->find_asset_path({ao_app->get_music_path(i_song)}, audio_extensions());
     l_item->setBackground(l_song_path.isEmpty() ? l_missing_song_brush : l_song_brush);
   }
+  filter_list_widget(ui_music_list, ui_music_search->text());
 }
 
 void Courtroom::list_areas()
 {
-  ui_area_list->clear();
   const QBrush l_area_brush(ao_app->get_color("area_free_color", COURTROOM_DESIGN_INI));
   ui_area_list->clear();
   for (const QString &i_item_name : qAsConst(m_area_list))
@@ -397,6 +417,7 @@ void Courtroom::list_areas()
     QListWidgetItem *l_item = new QListWidgetItem(i_item_name, ui_area_list);
     l_item->setBackground(l_area_brush);
   }
+  filter_list_widget(ui_area_list, ui_area_search->text());
 }
 
 void Courtroom::list_note_files()
@@ -793,7 +814,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   if (m_shout_reload_theme)
   {
     m_shout_reload_theme = false;
-    reload_theme();
+    load_theme();
   }
 
   QString real_name = m_chr_list.at(m_chatmessage[CMChrId].toInt()).name;
@@ -2113,7 +2134,7 @@ void Courtroom::on_change_character_clicked()
     ao_app->send_server_packet(DRPacket("CharsCheck"));
 }
 
-void Courtroom::reload_theme()
+void Courtroom::load_theme()
 {
   if (ui_vp_objection->is_running())
   {
@@ -2123,6 +2144,18 @@ void Courtroom::reload_theme()
 
   setup_courtroom();
   update_background_scene();
+}
+
+void Courtroom::load_character()
+{
+  update_iniswap_list();
+  enter_courtroom(get_character_id());
+}
+
+void Courtroom::load_audiotracks()
+{
+  DRAudiotrackMetadata::update_cache();
+  list_music();
 }
 
 void Courtroom::on_back_to_lobby_clicked()
@@ -2232,10 +2265,21 @@ void Courtroom::ping_server()
   ao_app->send_server_packet(DRPacket("CH", {QString::number(m_chr_id)}));
 }
 
+void Courtroom::changeEvent(QEvent *event)
+{
+  QMainWindow::changeEvent(event);
+  if (event->type() == QEvent::WindowStateChange)
+  {
+    m_is_maximized = windowState().testFlag(Qt::WindowMaximized);
+    if (!m_is_maximized)
+      resize(m_default_size);
+  }
+}
+
 void Courtroom::closeEvent(QCloseEvent *event)
 {
-  Q_EMIT closing();
   QMainWindow::closeEvent(event);
+  Q_EMIT closing();
 }
 
 void Courtroom::on_set_notes_clicked()

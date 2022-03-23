@@ -34,62 +34,56 @@ public:
   ~DRAudioStream();
 
   DRAudio::Family get_family() const;
-  std::optional<QString> get_file() const;
-
-  // state
+  QString get_file_name() const;
+  bool is_repeatable() const;
   bool is_playing() const;
 
-  QWORD loop_start();
-  QWORD loop_end();
-
 public slots:
-  std::optional<DRAudioError> set_file(QString m_file);
+  std::optional<DRAudioError> set_file_name(QString m_file);
   void set_volume(float p_volume);
+  void set_repeatable(bool);
+  void set_loop(quint64 start, quint64 end);
 
   void play();
   void stop();
+
 signals:
-  void file_changed(QString p_file);
+  void file_name_changed(QString p_file);
   void finished();
+  void looped();
 
 public:
-  static void CALLBACK on_sync_callback(HSYNC hsync, DWORD ch, DWORD data, void *userdata);
+  static void CALLBACK end_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata);
+  static void CALLBACK loop_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata);
 
 private:
-  friend class DRAudioEngine;
-  friend class DRAudioEnginePrivate;
   friend class DRAudioStreamFamily;
 
-  // static method
+  enum InitState
+  {
+    InitError,
+    InitNotDone,
+    InitFinished,
+  };
+
+  DRAudioEngine *m_engine = nullptr;
   DRAudio::Family m_family;
-  std::optional<QString> m_file;
-  QWORD m_loop_start = {};
-  QWORD m_loop_end = {};
-  float m_volume;
+  QString m_file_name;
+  InitState m_init_state = InitNotDone;
+  HSTREAM m_hstream = 0;
+  float m_volume = 0.0f;
+  bool m_repeatable = false;
+  QWORD m_loop_start = 0;
+  QWORD m_loop_start_pos = 0;
+  QWORD m_loop_end = 0;
+  QWORD m_loop_end_pos = 0;
+  HSYNC m_loop_sync = 0;
 
-  int m_loop_sync;
-
-  // bass
-  std::optional<HSTREAM> m_hstream;
-  QStack<DRAudioStreamSync> m_hsync_stack;
-  std::optional<DWORD> m_position;
-
-  void cache_position();
-  void update_device();
-
-  /**
-   * @brief Sets up looping.
-   *
-   * Right now we only support files that satisfy the following:
-   * 1. They are OGG files
-   * 2. They indicate a positive sample rate
-   * 3. They have, as OGG comments, positive values of LoopStart and LoopEnd (denoted as an int in samples)
-   * 4. LoopStart <= LoopEnd
-   */
-  void setup_looping();
-
-private slots:
-  void on_device_error();
+  bool ensure_init();
+  bool ensure_init() const;
+  void update_device(DRAudioDevice);
+  void init_loop();
+  void seek_loop_start();
 
 signals:
   void device_error(QPrivateSignal);

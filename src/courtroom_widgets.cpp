@@ -554,20 +554,27 @@ void Courtroom::set_widget_layers()
 void Courtroom::set_widgets()
 {
   pos_size_type f_courtroom = ao_app->get_element_dimensions("courtroom", COURTROOM_DESIGN_INI);
-
   if (f_courtroom.width < 0 || f_courtroom.height < 0)
   {
-    qDebug() << "W: did not find courtroom width or height in " << COURTROOM_DESIGN_INI;
-
-    resize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    qWarning() << "W: did not find courtroom width or height in " << COURTROOM_DESIGN_INI;
+    f_courtroom.width = DEFAULT_WIDTH;
+    f_courtroom.height = DEFAULT_HEIGHT;
   }
-  else
+
+  m_default_size = QSize(f_courtroom.width, f_courtroom.height);
+  if (!m_is_maximized)
   {
-    resize(f_courtroom.width, f_courtroom.height);
+    resize(m_default_size);
+  }
+
+  if (m_first_theme_loading)
+  {
+    m_first_theme_loading = false;
+    center_widget_to_screen(this);
   }
 
   ui_background->move(0, 0);
-  ui_background->resize(size());
+  ui_background->resize(m_default_size);
   ui_background->set_image("courtroombackground.png");
 
   set_size_and_pos(ui_viewport, "viewport", COURTROOM_DESIGN_INI, ao_app);

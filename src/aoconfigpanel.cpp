@@ -59,6 +59,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_manual_timeofday = AO_GUI_WIDGET(QComboBox, "manual_timeofday");
   ui_manual_timeofday_selection = AO_GUI_WIDGET(QCheckBox, "manual_timeofday_selection");
   ui_showname = AO_GUI_WIDGET(QLineEdit, "showname");
+  ui_reload_character = AO_GUI_WIDGET(QPushButton, "reload_character");
   ui_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
   ui_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
   ui_emote_preview = AO_GUI_WIDGET(QCheckBox, "emote_preview");
@@ -97,6 +98,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_blip_value = AO_GUI_WIDGET(QLabel, "blip_value");
   ui_blip_rate = AO_GUI_WIDGET(QSpinBox, "blip_rate");
   ui_blank_blips = AO_GUI_WIDGET(QCheckBox, "blank_blips");
+  ui_reload_audiotracks = AO_GUI_WIDGET(QPushButton, "reload_audiotracks");
 
   // about
   ui_about = AO_GUI_WIDGET(QLabel, "about_label");
@@ -168,9 +170,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(blip_rate_changed(int)), ui_blip_rate, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blank_blips_changed(bool)), ui_blank_blips, SLOT(setChecked(bool)));
 
-  connect(m_engine, SIGNAL(device_changed(DRAudioDevice)), this, SLOT(on_audio_device_changed(DRAudioDevice)));
-  connect(m_engine, SIGNAL(device_list_changed(QList<DRAudioDevice>)), this,
-          SLOT(on_audio_device_list_changed(QList<DRAudioDevice>)));
+  connect(m_engine, SIGNAL(current_device_changed(DRAudioDevice)), this, SLOT(on_audio_device_changed(DRAudioDevice)));
+  connect(m_engine, SIGNAL(device_list_changed(QVector<DRAudioDevice>)), this,
+          SLOT(on_audio_device_list_changed(QVector<DRAudioDevice>)));
   connect(m_engine, SIGNAL(favorite_device_changed(DRAudioDevice)), this,
           SLOT(on_favorite_audio_device_changed(DRAudioDevice)));
 
@@ -190,6 +192,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // game
   connect(ui_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
+  connect(ui_reload_character, SIGNAL(clicked()), this, SLOT(on_reload_character_clicked()));
+  connect(ui_reload_audiotracks, SIGNAL(clicked()), this, SLOT(on_reload_audiotracks_clicked()));
   connect(ui_manual_gamemode, SIGNAL(currentIndexChanged(QString)), this,
           SLOT(on_manual_gamemode_index_changed(QString)));
   connect(ui_manual_gamemode_selection, SIGNAL(toggled(bool)), m_config,
@@ -386,41 +390,53 @@ void AOConfigPanel::refresh_timeofday_list()
 
 void AOConfigPanel::update_audio_device_list()
 {
-  const auto current_device = m_engine->get_device();
-  const auto favorite_device = m_engine->get_favorite_device();
+  const std::optional<DRAudioDevice> l_current_device = m_engine->get_current_device();
+  const std::optional<DRAudioDevice> l_favorite_device = m_engine->get_favorite_device();
 
-  QSignalBlocker device_blocker(ui_device);
+  std::optional<QString> l_prev_driver;
+  std::optional<int> l_prev_driver_index;
+  if (ui_device->currentIndex() != -1)
+    l_prev_driver = ui_device->currentData().toString();
+  QSignalBlocker l_blocker(ui_device);
   ui_device->clear();
 
-  std::optional<int> current_device_index;
+  std::optional<int> l_current_driver_index;
+  for (const DRAudioDevice &i_device : m_engine->get_device_list())
   {
-    for (DRAudioDevice &i_device : m_engine->get_device_list())
+    if (!i_device.is_enabled())
+      continue;
+    ui_device->addItem(i_device.get_name(), i_device.get_driver());
+    int l_item_index = ui_device->count() - 1;
+
+    const QString l_device_driver = i_device.get_driver();
+    if (l_prev_driver.has_value() && l_prev_driver == l_device_driver)
+      l_prev_driver_index = l_item_index;
+
+    if (l_current_device.has_value() && l_current_device->get_driver() == l_device_driver)
     {
-      if (!i_device.is_enabled())
-        continue;
-      ui_device->addItem(i_device.get_name(), i_device.get_driver());
-      int item_index = ui_device->count() - 1;
-
-      if (current_device.has_value() && current_device.value().get_driver() == i_device.get_driver())
-        current_device_index = item_index;
-
-      if (favorite_device.has_value() && favorite_device.value().get_driver() == i_device.get_driver())
-        ui_device->setItemData(item_index, QColor(Qt::green), Qt::BackgroundRole);
+      ui_device->setItemData(l_item_index, QColor(Qt::lightGray), Qt::BackgroundRole);
+      l_current_driver_index = l_item_index;
     }
 
-    const bool has_items(ui_device->count());
-    if (!has_items)
-      ui_device->addItem(tr("<no sound>"));
-    ui_device->setEnabled(has_items);
+    if (l_favorite_device.has_value() && l_favorite_device->get_driver() == l_device_driver)
+      ui_device->setItemData(l_item_index, QColor(Qt::green), Qt::BackgroundRole);
   }
-
-  if (current_device_index.has_value())
-    ui_device->setCurrentIndex(current_device_index.value());
+  ui_device->setCurrentIndex(l_prev_driver_index.value_or(l_current_driver_index.value_or(0)));
 }
 
 void AOConfigPanel::on_reload_theme_clicked()
 {
   Q_EMIT reload_theme();
+}
+
+void AOConfigPanel::on_reload_character_clicked()
+{
+  Q_EMIT reload_character();
+}
+
+void AOConfigPanel::on_reload_audiotracks_clicked()
+{
+  Q_EMIT reload_audiotracks();
 }
 
 void AOConfigPanel::on_theme_changed(QString p_name)
@@ -505,8 +521,6 @@ void AOConfigPanel::on_device_current_index_changed(int p_index)
   for (DRAudioDevice &i_device : m_engine->get_device_list())
     if (target_device_driver == i_device.get_driver())
     {
-      m_engine->set_device(i_device);
-      m_engine->set_favorite_device(i_device);
       m_config->set_favorite_device_driver(i_device.get_driver());
       break;
     }
@@ -524,7 +538,7 @@ void AOConfigPanel::on_favorite_audio_device_changed(DRAudioDevice p_device)
   update_audio_device_list();
 }
 
-void AOConfigPanel::on_audio_device_list_changed(QList<DRAudioDevice> p_device_list)
+void AOConfigPanel::on_audio_device_list_changed(QVector<DRAudioDevice> p_device_list)
 {
   Q_UNUSED(p_device_list);
   update_audio_device_list();

@@ -72,6 +72,7 @@ public:
   QString get_character_path(QString p_character, QString p_file);
   // QString get_demothings_path();
   QString get_sounds_path(QString p_file);
+  QString get_music_folder_path();
   QString get_music_path(QString p_song);
   QString format_background_path(QString p_identifier);
   QStringList get_available_background_identifier_list();
@@ -207,7 +208,9 @@ public slots:
   void loading_cancelled();
 
 signals:
-  void theme_reloaded();
+  void reload_theme();
+  void reload_character();
+  void reload_audiotracks();
 
 private:
   AOConfig *ao_config = nullptr;
@@ -259,6 +262,8 @@ private slots:
   void on_courtroom_closing();
   void on_courtroom_destroyed();
   void handle_theme_modification();
+  void handle_character_reloading();
+  void handle_audiotracks_reloading();
 };
 
 #endif // AOAPPLICATION_H

@@ -268,7 +268,7 @@ void AOConfigPrivate::update_favorite_device()
 {
   if (!favorite_device_driver.has_value())
     return;
-  audio_engine->set_favorite_device_by_driver(favorite_device_driver.value());
+  audio_engine->set_favorite_device_driver(favorite_device_driver.value());
 }
 
 void AOConfigPrivate::on_application_state_changed(Qt::ApplicationState p_state)

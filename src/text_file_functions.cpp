@@ -1,14 +1,15 @@
 #include "aoapplication.h"
 
-#include "aoconfig.h"
-#include "commondefs.h"
-#include "file_functions.h"
-
 #include <QColor>
 #include <QDebug>
 #include <QFile>
 #include <QSettings>
 #include <QTextStream>
+
+#include "aoconfig.h"
+#include "commondefs.h"
+#include "file_functions.h"
+#include "utils.h"
 
 QStringList AOApplication::get_callwords()
 {
@@ -512,15 +513,6 @@ QStringList AOApplication::get_sfx_list()
   return r_sfx_list;
 }
 
-QString drLookupKey(const QStringList &keyList, const QString &targetKey)
-{
-  const QString finalTargetKey = targetKey.toLower();
-  for (const QString &i_key : qAsConst(keyList))
-    if (i_key.toLower() == finalTargetKey)
-      return i_key;
-  return targetKey;
-}
-
 // returns whatever is to the right of "search_line =" within target_tag and
 // terminator_tag, trimmed returns the empty string if the search line couldnt
 // be found
@@ -528,8 +520,9 @@ QVariant AOApplication::read_char_ini(QString p_chr, QString p_group, QString p_
 {
   QSettings s(get_character_path(p_chr, CHARACTER_CHAR_INI), QSettings::IniFormat);
   s.setIniCodec("UTF-8");
-  s.beginGroup(drLookupKey(s.childGroups(), p_group));
-  return s.value(drLookupKey(s.childKeys(), p_key), p_def);
+  utils::QSettingsKeyFetcher l_fetcher(s);
+  s.beginGroup(l_fetcher.lookup_group(p_group));
+  return s.value(l_fetcher.lookup_value(p_key), p_def);
 }
 
 QVariant AOApplication::read_char_ini(QString p_chr, QString p_group, QString p_key)
@@ -589,6 +582,15 @@ QString AOApplication::get_chat(QString p_chr)
   return read_char_ini(p_chr, "options", "chat").toString().toLower();
 }
 
+QString drLookupKey(const QStringList &keyList, const QString &targetKey)
+{
+  const QString finalTargetKey = targetKey.toLower();
+  for (const QString &i_key : qAsConst(keyList))
+    if (i_key.toLower() == finalTargetKey)
+      return i_key;
+  return targetKey;
+}
+
 QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
 {
   QVector<DREmote> r_emote_list;
@@ -613,11 +615,11 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
 
     QSettings l_chrini(get_character_path(i_chr, CHARACTER_CHAR_INI), QSettings::IniFormat);
     l_chrini.setIniCodec("UTF-8");
+    utils::QSettingsKeyFetcher l_fetcher(l_chrini);
 
     QStringList l_keys;
     { // recover all numbered keys, ignore words
-      const QStringList l_group_list = l_chrini.childGroups();
-      l_chrini.beginGroup(drLookupKey(l_group_list, "emotions"));
+      l_chrini.beginGroup(l_fetcher.lookup_group("emotions"));
       l_keys = l_chrini.childKeys();
       l_chrini.endGroup();
 
@@ -646,8 +648,7 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
 
     for (const QString &i_key : qAsConst(l_keys))
     {
-      const QStringList l_group_list = l_chrini.childGroups();
-      l_chrini.beginGroup(drLookupKey(l_group_list, "emotions"));
+      l_chrini.beginGroup(l_fetcher.lookup_group("emotions"));
       const QStringList l_emotions = l_chrini.value(i_key).toString().split("#", DR::KeepEmptyParts);
       l_chrini.endGroup();
 
@@ -675,11 +676,11 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
       if (DeskModifier < l_emotions.length())
         l_emote.desk_modifier = l_emotions.at(DeskModifier).toInt();
 
-      l_chrini.beginGroup(drLookupKey(l_group_list, "soundn"));
+      l_chrini.beginGroup(l_fetcher.lookup_group("soundn"));
       l_emote.sound_file = l_chrini.value(i_key).toString();
       l_chrini.endGroup();
 
-      l_chrini.beginGroup(drLookupKey(l_group_list, "soundt"));
+      l_chrini.beginGroup(l_fetcher.lookup_group("soundt"));
       l_emote.sound_delay = qMax(l_chrini.value(i_key).toInt(), 0);
       l_chrini.endGroup();
 
