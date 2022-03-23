@@ -9,9 +9,6 @@ class AOButton;
 class AOCharButton;
 class AOConfig;
 class AOEmoteButton;
-class AOEvidenceButton;
-class AOEvidenceDescription;
-class AOEvidenceDisplay;
 class AOImageDisplay;
 class AOLabel;
 class AOLineEdit;
@@ -80,9 +77,6 @@ public:
   void set_background(DRAreaBackground p_area_bg);
 
   void set_tick_rate(const int tick_rate);
-
-  // sets the evidence list member variable to argument
-  void set_evidence_list(QVector<evi_type> &p_evi_list);
 
   // sets the character position
   void set_character_position(QString p_pos);
@@ -229,7 +223,6 @@ private:
   AOConfig *ao_config = nullptr;
 
   QVector<char_type> m_chr_list;
-  QVector<evi_type> m_evidence_list;
   QStringList m_area_list;
   QStringList m_music_list;
 
@@ -307,7 +300,6 @@ private:
   int m_shout_current = 0;
   int m_effect_current = 0;
   int m_wtce_current = 0;
-  bool is_presenting_evidence = false;
   bool is_judge = false;
   bool is_system_speaking = false;
 
@@ -328,16 +320,6 @@ private:
   int m_page_max_emote_count = 10;
   int m_emote_preview_id = -1;
 
-  //  inmchatlog_changed;
-
-  QVector<evi_type> local_evidence_list;
-
-  int current_evidence_page = 0;
-  int current_evidence = 0;
-  int evidence_columns = 6;
-  int evidence_rows = 3;
-  int max_evidence_on_page = 18;
-
   int m_current_clock = -1;
 
   DRAreaBackground m_background;
@@ -349,7 +331,6 @@ private:
   DRSceneMovie *ui_vp_background = nullptr;
   DRCharacterMovie *ui_vp_player_char = nullptr;
   DRSceneMovie *ui_vp_desk = nullptr;
-  AOEvidenceDisplay *ui_vp_evidence_display = nullptr;
 
   AONoteArea *ui_note_area = nullptr;
 
@@ -487,21 +468,6 @@ private:
 
   AOButton *ui_note_button = nullptr;
 
-  AOButton *ui_evidence_button = nullptr;
-  AOImageDisplay *ui_evidence = nullptr;
-  AOLineEdit *ui_evidence_name = nullptr;
-  QWidget *ui_evidence_buttons = nullptr;
-  QVector<AOEvidenceButton *> ui_evidence_list;
-  AOButton *ui_evidence_left = nullptr;
-  AOButton *ui_evidence_right = nullptr;
-  AOButton *ui_evidence_present = nullptr;
-  AOImageDisplay *ui_evidence_overlay = nullptr;
-  AOButton *ui_evidence_delete = nullptr;
-  AOLineEdit *ui_evidence_image_name = nullptr;
-  AOButton *ui_evidence_image_button = nullptr;
-  AOButton *ui_evidence_x = nullptr;
-  AOEvidenceDescription *ui_evidence_description = nullptr;
-
   AOImageDisplay *ui_char_select_background = nullptr;
 
   // abstract widget to hold char buttons
@@ -540,9 +506,6 @@ private:
   void fill_emote_dropdown();
   DREmote get_emote(const int id);
   DREmote get_current_emote();
-
-  void construct_evidence();
-  void set_evidence_page();
 
   void load_note();
   void save_note();
@@ -607,18 +570,6 @@ private slots:
   void on_iniswap_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(int p_index);
 
-  void on_evidence_name_edited();
-  void on_evidence_image_name_edited();
-  void on_evidence_image_button_clicked();
-  void on_evidence_clicked(int p_id);
-  void on_evidence_double_clicked(int p_id);
-
-  void on_evidence_hover(int p_id, bool p_state);
-
-  void on_evidence_left_clicked();
-  void on_evidence_right_clicked();
-  void on_evidence_present_clicked();
-
   void on_cycle_clicked();
 
   void cycle_shout(int p_delta);
@@ -671,11 +622,6 @@ private slots:
   void on_pre_clicked();
   void on_flip_clicked();
   void on_hidden_clicked();
-
-  void on_evidence_button_clicked();
-
-  void on_evidence_delete_clicked();
-  void on_evidence_x_clicked();
 
   void on_back_to_lobby_clicked();
 

@@ -98,10 +98,6 @@ void Courtroom::setup_courtroom()
   load_free_blocks();
   load_sfx_list_theme();
 
-  current_evidence_page = 0;
-  current_evidence = 0;
-  set_evidence_page();
-
   // Update widgets first, then check if everything is valid
   // This will also handle showing the correct shouts, effects and wtce buttons,
   // and cycling through them if the buttons that are supposed to be displayed
@@ -625,12 +621,8 @@ void Courtroom::on_ic_message_return_pressed()
 
   packet_contents.append(f_obj_state);
 
-  if (is_presenting_evidence)
-    // the evidence index is shifted by 1 because 0 is no evidence per legacy
-    // standards besides, older clients crash if we pass -1
-    packet_contents.append(QString::number(current_evidence + 1));
-  else
-    packet_contents.append("0");
+  // evidence
+  packet_contents.append("0");
 
   QString f_flip = ui_flip->isChecked() ? "1" : "0";
   packet_contents.append(f_flip);
@@ -665,9 +657,6 @@ void Courtroom::handle_acknowledged_ms()
   reset_effect_buttons();
   reset_wtce_buttons();
   clear_sfx_selection();
-
-  is_presenting_evidence = false;
-  ui_evidence_present->set_image("present_disabled.png");
 }
 
 void Courtroom::handle_chatmessage(QStringList p_contents)
@@ -2208,19 +2197,6 @@ void Courtroom::on_flip_clicked()
 void Courtroom::on_hidden_clicked()
 {
   ui_ic_chat_message->setFocus();
-}
-
-void Courtroom::on_evidence_button_clicked()
-{
-  if (ui_evidence->isHidden())
-  {
-    ui_evidence->show();
-    ui_evidence_overlay->hide();
-  }
-  else
-  {
-    ui_evidence->hide();
-  }
 }
 
 void Courtroom::on_config_panel_clicked()

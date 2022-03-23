@@ -4,7 +4,6 @@
 #include "aoblipplayer.h"
 #include "aobutton.h"
 #include "aoconfig.h"
-#include "aoevidencedescription.h"
 #include "aoimagedisplay.h"
 #include "aolabel.h"
 #include "aolineedit.h"
@@ -234,17 +233,12 @@ void Courtroom::create_widgets()
   ui_text_color->addItem("Yellow");
   ui_text_color->addItem("Purple");
   ui_text_color->addItem("Pink");
-
-  ui_evidence_button = new AOButton(this, ao_app);
-
   ui_vp_notepad_image = new AOImageDisplay(this, ao_app);
   ui_vp_notepad = new DRTextEdit(this);
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
 
   ui_timers.resize(1);
   ui_timers[0] = new AOTimer(this);
-
-  construct_evidence();
 
   load_free_blocks(); // Done last so they are guaranteed to be at bottom
 
@@ -339,8 +333,6 @@ void Courtroom::connect_widgets()
   connect(ui_sfx_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this,
           SLOT(_p_sfxCurrentItemChanged(QListWidgetItem *, QListWidgetItem *)));
 
-  connect(ui_evidence_button, SIGNAL(clicked()), this, SLOT(on_evidence_button_clicked()));
-
   connect(ui_note_area->add_button, SIGNAL(clicked(bool)), this, SLOT(on_add_button_clicked()));
   connect(ui_set_notes, SIGNAL(clicked(bool)), this, SLOT(on_set_notes_clicked()));
 }
@@ -361,7 +353,6 @@ void Courtroom::reset_widget_names()
       {"music_name", ui_vp_music_name},
       // music_anim
       {"clock", ui_vp_clock},
-      // ui_vp_evidence_display
       {"ao2_chatbox", ui_vp_chatbox},
       {"showname", ui_vp_showname},
       {"message", ui_vp_message},
@@ -421,12 +412,9 @@ void Courtroom::reset_widget_names()
       {"prosecution_plus", ui_prosecution_plus},
       {"prosecution_minus", ui_prosecution_minus},
       {"text_color", ui_text_color},
-      {"evidence_button", ui_evidence_button},
       {"notepad_image", ui_vp_notepad_image},
       {"notepad", ui_vp_notepad},
       // Each ui_timers[i]
-      {"evidence_background", ui_evidence},
-      {"evidence_buttons", ui_evidence_buttons},
       {"char_select", ui_char_select_background},
       {"back_to_lobby", ui_back_to_lobby},
       {"char_buttons", ui_char_buttons},
@@ -950,40 +938,6 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_text_color, "text_color", COURTROOM_DESIGN_INI, ao_app);
   set_stylesheet(ui_text_color, "[TEXT COLOR]", COURTROOM_STYLESHEETS_CSS, ao_app);
-
-  set_size_and_pos(ui_evidence_button, "evidence_button", COURTROOM_DESIGN_INI, ao_app);
-  ui_evidence_button->set_image("evidencebutton.png");
-
-  set_size_and_pos(ui_evidence, "evidence_background", COURTROOM_DESIGN_INI, ao_app);
-  ui_evidence->set_image("evidencebackground.png");
-
-  set_size_and_pos(ui_evidence_name, "evidence_name", COURTROOM_DESIGN_INI, ao_app);
-
-  set_size_and_pos(ui_evidence_buttons, "evidence_buttons", COURTROOM_DESIGN_INI, ao_app);
-
-  set_size_and_pos(ui_evidence_left, "evidence_left", COURTROOM_DESIGN_INI, ao_app);
-  ui_evidence_left->set_image("arrow_left.png");
-
-  set_size_and_pos(ui_evidence_right, "evidence_right", COURTROOM_DESIGN_INI, ao_app);
-  ui_evidence_right->set_image("arrow_right.png");
-
-  set_size_and_pos(ui_evidence_present, "evidence_present", COURTROOM_DESIGN_INI, ao_app);
-  ui_evidence_present->set_image("present_disabled.png");
-
-  set_size_and_pos(ui_evidence_overlay, "evidence_overlay", COURTROOM_DESIGN_INI, ao_app);
-  ui_evidence_overlay->set_image("evidenceoverlay.png");
-
-  set_size_and_pos(ui_evidence_delete, "evidence_delete", COURTROOM_DESIGN_INI, ao_app);
-  ui_evidence_delete->set_image("deleteevidence.png");
-
-  set_size_and_pos(ui_evidence_image_name, "evidence_image_name", COURTROOM_DESIGN_INI, ao_app);
-
-  set_size_and_pos(ui_evidence_image_button, "evidence_image_button", COURTROOM_DESIGN_INI, ao_app);
-
-  set_size_and_pos(ui_evidence_x, "evidence_x", COURTROOM_DESIGN_INI, ao_app);
-  ui_evidence_x->set_image("evidencex.png");
-
-  set_size_and_pos(ui_evidence_description, "evidence_description", COURTROOM_DESIGN_INI, ao_app);
 
   ui_char_button_selector->set_image("char_selector.png");
   ui_char_button_selector->hide();

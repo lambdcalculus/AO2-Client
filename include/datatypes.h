@@ -114,13 +114,6 @@ struct char_type
   bool taken = false;
 };
 
-struct evi_type
-{
-  QString name;
-  QString description;
-  QString image;
-};
-
 struct pos_size_type
 {
   int x = 0;

@@ -76,7 +76,6 @@ public:
   QString format_background_path(QString p_identifier);
   QStringList get_available_background_identifier_list();
   QString get_current_background_path();
-  QString get_evidence_path(QString p_file);
 
   bool is_safe_path(QString p_file);
 

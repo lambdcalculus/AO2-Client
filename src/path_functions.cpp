@@ -105,17 +105,6 @@ QString AOApplication::get_current_background_path()
   return l_bg_path;
 }
 
-QString AOApplication::get_evidence_path(QString p_file)
-{
-  QString default_path = get_case_sensitive_path(get_base_path() + "evidence/" + p_file);
-  QString alt_path = get_case_sensitive_path(get_base_path() + "items/" + p_file);
-
-  if (QFile(default_path).exists())
-    return default_path;
-  else
-    return alt_path;
-}
-
 /**
  * @brief Returns the 'correct' path for the file given as the parameter by
  * trying to match the case of the actual path.
