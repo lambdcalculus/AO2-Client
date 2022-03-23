@@ -514,7 +514,7 @@ private:
   bool is_spectating();
 
 public slots:
-  void video_done();
+  void video_finished();
   void objection_done();
   void preanim_done();
 

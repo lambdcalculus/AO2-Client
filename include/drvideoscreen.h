@@ -28,7 +28,8 @@ public:
   bool is_playable();
 
 signals:
-  void done();
+  void started();
+  void finished();
 
 private:
   AOConfig *m_config;

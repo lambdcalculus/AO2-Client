@@ -94,7 +94,7 @@ void DRVideoWidget::play()
   }
   else if (!m_readable)
   {
-    emit done();
+    emit finished();
     return;
   }
 
@@ -149,11 +149,15 @@ void DRVideoWidget::check_video_availability(bool p_state)
 
 void DRVideoWidget::check_state(QMediaPlayer::State p_state)
 {
-  if (m_readable && m_running && p_state == QMediaPlayer::StoppedState)
+  if (p_state == QMediaPlayer::PlayingState)
+  {
+    emit started();
+  }
+  else if (m_readable && m_running && p_state == QMediaPlayer::StoppedState)
   {
     qInfo() << "finished media file playback" << m_file_name;
     stop();
-    emit done();
+    emit finished();
   }
 }
 
@@ -162,7 +166,7 @@ void DRVideoWidget::handle_scan_error()
   if (m_running)
   {
     stop();
-    emit done();
+    emit finished();
   }
 }
 

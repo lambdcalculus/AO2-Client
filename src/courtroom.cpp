@@ -752,14 +752,11 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     save_textlog(f_showname + ": " + l_message);
   }
 
-  ui_video->show();
   ui_video->play_character_video(m_chatmessage[CMChrName], m_chatmessage[CMVideoName]);
 }
 
-void Courtroom::video_done()
+void Courtroom::video_finished()
 {
-  ui_video->hide();
-
   int objection_mod = m_chatmessage[CMShoutModifier].toInt();
   QString f_char = m_chatmessage[CMChrName];
 
