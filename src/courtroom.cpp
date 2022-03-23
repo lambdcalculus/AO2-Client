@@ -5,7 +5,6 @@
 #include "aobutton.h"
 #include "aocharbutton.h"
 #include "aoconfig.h"
-#include "aoevidencedisplay.h"
 #include "aoimagedisplay.h"
 #include "aomusicplayer.h"
 #include "aonotearea.h"
@@ -747,7 +746,6 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   anim_state = 0;
   stop_chat_timer();
   ui_vp_objection->stop();
-  ui_vp_evidence_display->reset();
 
   m_message_color_name = "";
   m_message_color_stack.clear();
@@ -765,13 +763,13 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     save_textlog(f_showname + ": " + l_message);
   }
 
-  ui_vp_video->show();
-  ui_vp_video->play(m_chatmessage[CMChrName], m_chatmessage[CMVideoName]);
+  ui_video->show();
+  ui_video->play_character_video(m_chatmessage[CMChrName], m_chatmessage[CMVideoName]);
 }
 
 void Courtroom::video_done()
 {
-  ui_vp_video->hide();
+  ui_video->hide();
 
   int objection_mod = m_chatmessage[CMShoutModifier].toInt();
   QString f_char = m_chatmessage[CMChrName];
@@ -885,17 +883,7 @@ void Courtroom::handle_chatmessage_3()
   qDebug() << "handle_chatmessage_3";
 
   setup_chat();
-  int f_evi_id = m_chatmessage[CMEvidenceId].toInt();
-  QString f_side = m_chatmessage[CMPosition];
-
-  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size())
-  {
-    // shifted by 1 because 0 is no evidence per legacy standards
-    QString f_image = local_evidence_list.at(f_evi_id - 1).image;
-    // def jud and hlp should display the evidence icon on the RIGHT side
-    bool is_left_side = !(f_side == "def" || f_side == "hlp" || f_side == "jud");
-    ui_vp_evidence_display->show_evidence(f_image, is_left_side);
-  }
+  const QString f_side = m_chatmessage[CMPosition];
 
   int f_anim_state = 0;
   // BLUE is from an enum in datatypes.h

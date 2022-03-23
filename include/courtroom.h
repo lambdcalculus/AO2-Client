@@ -345,7 +345,7 @@ private:
   AOImageDisplay *ui_background = nullptr;
 
   QWidget *ui_viewport = nullptr;
-  DRVideoWidget *ui_vp_video = nullptr;
+  DRVideoWidget *ui_video = nullptr;
   DRSceneMovie *ui_vp_background = nullptr;
   DRCharacterMovie *ui_vp_player_char = nullptr;
   DRSceneMovie *ui_vp_desk = nullptr;

@@ -26,7 +26,6 @@ HEADERS += \
   include/aoemotebutton.h \
   include/aoevidencebutton.h \
   include/aoevidencedescription.h \
-  include/aoevidencedisplay.h \
   include/aoguiloader.h \
   include/aoimagedisplay.h \
   include/aolabel.h \
@@ -82,7 +81,6 @@ SOURCES += \
   src/aoemotebutton.cpp \
   src/aoevidencebutton.cpp \
   src/aoevidencedescription.cpp \
-  src/aoevidencedisplay.cpp \
   src/aoguiloader.cpp \
   src/aoimagedisplay.cpp \
   src/aolabel.cpp \
