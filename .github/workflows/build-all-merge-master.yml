@@ -2,9 +2,10 @@
 # at https://github.com/AttorneyOnline/AO2-Client/blob/master/.github/workflows/build.yml
 name: build-all-merge-master
 
-on: push
-  branches-ignore:    
-    - 'master'
+on: 
+  push:
+    branches-ignore:
+      - 'master'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
