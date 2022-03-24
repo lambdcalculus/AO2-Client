@@ -21,6 +21,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - run: |
+        git fetch --no-tags --depth=1 origin master
+        git checkout -b master
+        git checkout ${{ github.event.pull_request.head.sha }}
 
     - name: Merge master
       shell: bash
@@ -173,6 +177,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - run: |
+        git fetch --no-tags --depth=1 origin master
+        git checkout -b master
+        git checkout ${{ github.event.pull_request.head.sha }}
 
     - name: Merge master
       shell: bash
@@ -299,6 +307,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - run: |
+        git fetch --no-tags --depth=1 origin master
+        git checkout -b master
+        git checkout ${{ github.event.pull_request.head.sha }}
 
     - name: Update worker
       shell: bash
