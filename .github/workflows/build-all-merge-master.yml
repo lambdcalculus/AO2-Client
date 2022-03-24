@@ -1,0 +1,425 @@
+# Based from code from skyedeving and oldmud0
+# at https://github.com/AttorneyOnline/AO2-Client/blob/master/.github/workflows/build.yml
+name: build-all-merge-master
+
+on: push
+  branches-ignore:    
+    - 'master'
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  ###############################################################################
+  # WINDOWS #
+  ###############################################################################
+  
+  windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Merge master
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        git merge master
+      
+    - name: Setup workspace
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        echo "parentworkspace=D:\\a\\DRO-Client\\" >> $GITHUB_ENV
+        mkdir "3rd"
+        mkdir "3rd/include"
+        mkdir "3rd/x86"
+        
+    - name: Fetch Discord external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc_win.zip
+        unzip discord_rpc_win.zip
+        cp ./discord-rpc/win32-dynamic/include/discord_register.h ./DRO-Client/3rd/include
+        cp ./discord-rpc/win32-dynamic/include/discord_rpc.h ./DRO-Client/3rd/include
+        cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./DRO-Client/3rd/x86
+        cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./DRO-Client/3rd/x86
+      
+    - name: Fetch Bass external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl http://www.un4seen.com/files/bass24.zip -o bass.zip
+        unzip bass.zip
+        cp ./c/bass.h ./DRO-Client/3rd/include
+        cp ./bass.dll ./DRO-Client/3rd/x86
+        cp ./c/bass.lib ./DRO-Client/3rd/x86
+      
+    - name: Fetch BassOpus external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
+        unzip bassopus.zip
+        cp ./c/bassopus.h ./DRO-Client/3rd/include
+        cp ./bassopus.dll ./DRO-Client/3rd/x86
+        cp ./c/bassopus.lib ./DRO-Client/3rd/x86
+        
+    - name: Fetch QtApng external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-mingw73_32-5.14.1.zip -o apng.zip
+        unzip apng.zip
+        
+    - name: Update Python Pip
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        python -m pip install --upgrade pip
+        
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2'
+        arch: 'win32_mingw81'
+
+    - name: Install AQt
+      shell: bash
+      working-directory: ${{env.parentworkspace}} 
+      run: |
+        pip install aqtinstall
+
+    - name: Install MinGW
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: aqt tool -O ./Qt windows tools_mingw 8.1.0-1-202004170606 qt.tools.win32_mingw810
+
+    - name: Setup MinGW
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      # For whatever reason, qmake insists on using the MinGW64 installation that came with the host machine rather than the newly installed MinGW32
+      # I could not find any way of making it use that MinGW32 folder, it always insisted on using MinGW64.
+      # Therefore, I just brought the MinGW32 folder to the MinGW64 folder.
+      # Tom Scott would be proud of this bodge
+      run: |
+        export PATH=/d/a/DRO-Client/Qt/Tools/mingw810_32/bin:$PATH
+        rm -r /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/
+        cp -r /d/a/DRO-Client/Qt/Tools/mingw810_32/ /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/
+    
+    - name: Setup branch and commit hash tags
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        git_hash=$(git rev-parse --short "$GITHUB_SHA")
+        git_branch=${GITHUB_REF##*/}
+        echo "$git_hash" >> ./res/git/git_hash.txt
+        echo "$git_branch" >> ./res/git/git_branch.txt
+        
+    - name: Run qmake
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        ./Qt/5.15.2/mingw81_32/bin/qmake.exe -makefile -o Makefile ./DRO-Client/dronline-client.pro -spec win32-g++ "CONFIG+=qtquickcompiler"
+  
+    - name: Run Make
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        ./Qt/Tools/mingw810_32/bin/mingw32-make.exe -f ./Makefile qmake_all
+        ./Qt/Tools/mingw810_32/bin/mingw32-make.exe -j8
+      
+    - name: Set up deploy folder
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        mkdir "Danganronpa Online"
+        cp ./release/dro-client.exe "./Danganronpa Online/dro-client.exe"
+      
+    - name: Deploy
+      working-directory: "${{env.parentworkspace}}/Danganronpa Online"
+      shell: bash
+      run: |
+        windeployqt.exe --quick --compiler-runtime .
+        cp ../discord-rpc/win32-dynamic/bin/discord-rpc.dll .
+        cp ../bass.dll .
+        cp ../bassopus.dll .
+        cp ../mingw73_32/plugins/imageformats/qapng.dll ./imageformats/
+        cp  /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/libgcc_s_dw2-1.dll .
+        cp  /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/libwinpthread-1.dll .
+        cp  /c/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/libstdc++-6.dll .
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+         name: "Danganronpa Online (Windows) (+master)"
+         path: "${{env.parentworkspace}}/**/Danganronpa Online"
+
+    - name: Upload Artifact (just .exe)
+      uses: actions/upload-artifact@v2
+      with:
+         name: "dro-client.exe"
+         path: "${{env.parentworkspace}}/Danganronpa Online/dro-client-and-master.exe"
+         
+  ###############################################################################
+  # MACOS #
+  ###############################################################################
+  
+  macos:
+    runs-on: macos-10.15
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Merge master
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        git merge master
+        
+    - name: Setup workspace
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        echo "parentworkspace=/Users/runner/work/DRO-Client/" >> $GITHUB_ENV
+        mkdir "3rd"
+        mkdir "3rd/include"
+        mkdir "3rd/x86_64"
+        
+    - name: Fetch Discord external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc_osx.zip
+        unzip discord_rpc_osx.zip
+        cp ./discord-rpc/osx-dynamic/include/discord_register.h ./DRO-Client/3rd/include
+        cp ./discord-rpc/osx-dynamic/include/discord_rpc.h ./DRO-Client/3rd/include
+        cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./DRO-Client/3rd/x86_64
+      
+    - name: Fetch Bass external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
+        unzip bass.zip
+        cp ./bass.h ./DRO-Client/3rd/include
+        cp ./libbass.dylib ./DRO-Client/3rd/x86_64
+      
+    - name: Fetch BassOpus external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
+        unzip bassopus.zip
+        cp ./bassopus.h ./DRO-Client/3rd/include
+        cp ./libbassopus.dylib ./DRO-Client/3rd/x86_64
+        
+    - name: Fetch QtApng external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl -L https://github.com/Skycoder42/QtApng/releases/download/1.1.4/qtapng-clang_64-5.14.1.tar.xz -o qtapng.tar.xz
+        tar -xvf qtapng.tar.xz
+        
+    - name: Update Python Pip
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        python3 -m pip install --upgrade pip
+        
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2'
+    
+    - name: Setup branch and commit hash tags
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        git_hash=$(git rev-parse --short "$GITHUB_SHA")
+        git_branch=${GITHUB_REF##*/}
+        echo "$git_hash" >> ./res/git/git_hash.txt
+        echo "$git_branch" >> ./res/git/git_branch.txt
+
+    - name: Run qmake
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        ./Qt/5.15.2/clang_64/bin/qmake -makefile -o Makefile ./DRO-Client/dronline-client.pro -spec macx-clang "CONFIG+=x86_64" "CONFIG+=qtquickcompiler"
+  
+    - name: Run make
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        /usr/bin/make -f ./Makefile qmake_all
+        /usr/bin/make -j12
+        
+    - name: Set up deploy folder
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        mkdir "Danganronpa Online"
+        cp -R ./dro-client.app "./Danganronpa Online"
+        mv "./Danganronpa Online/dro-client.app" "./Danganronpa Online/Danganronpa Online.app"
+        
+    - name: Deploy
+      working-directory: "${{env.parentworkspace}}/Danganronpa Online"
+      shell: bash
+      run: |
+        ../Qt/5.15.2/clang_64/bin/macdeployqt "Danganronpa Online.app"
+        cp ../discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib "./Danganronpa Online.app/Contents/Frameworks/"
+        cp ../discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib "./Danganronpa Online.app/Contents/MacOS/"
+        cp ../libbass.dylib "./Danganronpa Online.app/Contents/Frameworks/"
+        cp ../libbass.dylib "./Danganronpa Online.app/Contents/MacOS/"
+        cp ../libbassopus.dylib "./Danganronpa Online.app/Contents/Frameworks/"
+        cp ../libbassopus.dylib "./Danganronpa Online.app/Contents/MacOS/"
+        cp -R ../clang_64/plugins/imageformats "./Danganronpa Online.app/Contents/MacOS/"
+         
+    - name: Make DMG
+      working-directory: ${{env.parentworkspace}}
+      shell: bash
+      run: |
+        hdiutil create -volname "Danganronpa Online" -srcfolder "./Danganronpa Online" -ov -format UDZO "Danganronpa Online.dmg"
+       
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+          name: "Danganronpa Online (MacOS) (+master)"
+          path: "${{env.parentworkspace}}/Danganronpa Online.dmg"
+         
+  ###############################################################################
+  # UBUNTU #
+  ###############################################################################
+         
+  ubuntu:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Update worker
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        sudo apt-get update
+        sudo apt-get upgrade
+
+    - name: Merge master
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        git merge master
+        
+    - name: Setup workspace
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        echo "parentworkspace=/home/runner/work/DRO-Client/" >> $GITHUB_ENV
+        mkdir "3rd"
+        mkdir "3rd/include"
+        mkdir "3rd/x86_64"
+        
+    - name: Fetch Discord external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip
+        unzip discord_rpc_linux.zip
+        cp ./discord-rpc/linux-dynamic/include/discord_register.h ./DRO-Client/3rd/include/discord_register.h
+        cp ./discord-rpc/linux-dynamic/include/discord_rpc.h ./DRO-Client/3rd/include/discord_rpc.h
+        cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./DRO-Client/3rd/x86_64/libdiscord-rpc.so
+        
+    - name: Fetch Bass external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
+        unzip bass.zip
+        cp ./bass.h ./DRO-Client/3rd/include/bass.h
+        cp ./x64/libbass.so ./DRO-Client/3rd/x86_64/libbass.so
+        
+    - name: Fetch BassOpus external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
+        unzip bassopus.zip
+        cp ./bassopus.h ./DRO-Client/3rd/include/bassopus.h
+        cp ./x64/libbassopus.so ./DRO-Client/3rd/x86_64/libbassopus.so
+        
+    - name: Install Qt
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        sudo apt-get install build-essential
+        sudo apt-get install qt5-default qttools5-dev
+        sudo apt-get install libqt5designer5
+        sudo apt-get install git
+        
+    - name: Build QtApng external library
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        git clone https://github.com/Skycoder42/QtApng
+        cd QtApng
+        qmake
+        make -j2
+        cp plugins/imageformats/libqapng.so ..
+        cd ..
+        rm -r -f QtApng
+    
+    - name: Setup branch and commit hash tags
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        git_hash=$(git rev-parse --short "$GITHUB_SHA")
+        git_branch=${GITHUB_REF##*/}
+        echo "$git_hash" >> ./res/git/git_hash.txt
+        echo "$git_branch" >> ./res/git/git_branch.txt
+        
+    - name: Run qmake
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        qmake
+  
+    - name: Run Make
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        make
+        
+    - name: Set up deploy folder
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        mkdir "Danganronpa Online"
+        cp -R ./DRO-Client/dro-client "./Danganronpa Online/dro-client"
+        
+    - name: Deploy
+      working-directory: "${{env.parentworkspace}}/Danganronpa Online"
+      shell: bash
+      run: |
+        mkdir depends
+        cp ../discord-rpc/linux-dynamic/lib/libdiscord-rpc.so "./depends"
+        cp ../x64/libbass.so "./depends"
+        cp ../x64/libbassopus.so "./depends"
+        mkdir imageformats
+        cp -R ../libqapng.so "./imageformats"
+        echo "LD_LIBRARY_PATH=.:./depends:$LD_LIBRARY_PATH ./dro-client" > "dro-client.sh"
+        echo "Installation instructions
+        1. On your terminal, run
+        sudo apt install qt5-default
+        2. Change directory to this folder, and run
+        chmod +x dro-client.sh
+        chmod +x dro-client
+        3. To launch, run
+        ./dro-client.sh" > "Readme (Ubuntu).txt"
+      
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+         name: "Danganronpa Online (Ubuntu) (+master)"
+         path: "${{env.parentworkspace}}/**/Danganronpa Online"
