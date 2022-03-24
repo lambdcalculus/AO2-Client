@@ -49,12 +49,12 @@ void DRVideoWidget::set_file_name(QString p_file_name)
   m_scanned = false;
   m_readable = false;
   m_running = false;
+  stop();
   if (m_file_name.isEmpty())
   {
     m_scanned = true;
     return;
   }
-  stop();
   m_player->setMuted(true);
   m_player->setMedia(QUrl(p_file_name));
   if (m_player->error())
