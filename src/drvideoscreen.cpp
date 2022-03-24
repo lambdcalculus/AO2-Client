@@ -21,7 +21,7 @@ DRVideoWidget::DRVideoWidget(QWidget *parent) : QVideoWidget(parent), ao_app(dyn
   m_player = new QMediaPlayer(this);
   m_player->setVideoOutput(this);
 
-  connect(m_engine, SIGNAL(device_changed(DRAudioDevice)), this, SLOT(update_device(DRAudioDevice)));
+  connect(m_engine, SIGNAL(current_device_changed(DRAudioDevice)), this, SLOT(update_device(DRAudioDevice)));
   connect(m_config, SIGNAL(video_volume_changed(int)), this, SLOT(update_volume()));
   connect(m_engine, SIGNAL(volume_changed(int32_t)), this, SLOT(update_volume()));
   connect(m_engine, SIGNAL(options_changed(DRAudio::Options)), this, SLOT(update_volume()));
@@ -31,6 +31,10 @@ DRVideoWidget::DRVideoWidget(QWidget *parent) : QVideoWidget(parent), ao_app(dyn
           SLOT(check_media_status(QMediaPlayer::MediaStatus)));
   connect(m_player, SIGNAL(videoAvailableChanged(bool)), this, SLOT(check_video_availability(bool)));
   connect(m_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(check_state(QMediaPlayer::State)));
+
+  const std::optional<DRAudioDevice> l_maybe_device = m_engine->get_current_device();
+  if (l_maybe_device.has_value())
+    update_device(l_maybe_device.value());
 }
 
 DRVideoWidget::~DRVideoWidget()
@@ -176,24 +180,24 @@ void DRVideoWidget::handle_scan_error()
 void DRVideoWidget::update_device(DRAudioDevice p_device)
 {
   const QString l_new_device_name = p_device.get_name();
-  const QList<QAudioDeviceInfo> l_device_list = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
-  for (const QAudioDeviceInfo &i_device : l_device_list)
+  bool l_device_changed = false;
+  QMediaService *l_service = m_player->service();
+  QAudioOutputSelectorControl *l_control = l_service->requestControl<QAudioOutputSelectorControl *>();
+  const QStringList l_device_id_list = l_control->availableOutputs();
+  for (const QString &i_device_id : l_device_id_list)
   {
-    const QString l_device_name = i_device.deviceName();
-    if (l_device_name == l_new_device_name)
+    if (l_control->outputDescription(i_device_id) == l_new_device_name)
     {
-      QMediaService *l_service = m_player->service();
-      QAudioOutputSelectorControl *l_control = l_service->requestControl<QAudioOutputSelectorControl *>();
-      if (!l_control)
-      {
-        qCritical() << "error: failed to change device; QAudioOutputSelectorControl is null";
-        return;
-      }
-      l_control->setActiveOutput(i_device.deviceName());
-      l_service->releaseControl(l_control);
+      qDebug() << "media player changed audio device;" << l_new_device_name;
+      l_device_changed = true;
+      l_control->setActiveOutput(i_device_id);
       break;
     }
   }
+
+  if (!l_device_changed)
+    qWarning() << "error: audio device not found;" << l_new_device_name;
+  l_service->releaseControl(l_control);
 }
 
 void DRVideoWidget::update_volume()
