@@ -141,7 +141,7 @@ jobs:
       working-directory: ${{env.parentworkspace}}
       run: |
         mkdir "Danganronpa Online"
-        cp ./release/dro-client.exe "./Danganronpa Online/dro-client.exe"
+        cp ./release/dro-client.exe "./Danganronpa Online/dro-client-and-master.exe"
       
     - name: Deploy
       working-directory: "${{env.parentworkspace}}/Danganronpa Online"
