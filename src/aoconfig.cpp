@@ -62,6 +62,7 @@ private:
   QString showname;
   QString showname_placeholder;
   QMap<QString, QString> ini_map;
+  bool searchable_iniswap;
   bool always_pre;
   int chat_tick_interval;
   bool emote_preview;
@@ -134,6 +135,7 @@ void AOConfigPrivate::read_file()
   manual_gamemode_selection = cfg.value("manual_gamemode", false).toBool();
   manual_timeofday = cfg.value("timeofday").toString();
   manual_timeofday_selection = cfg.value("manual_timeofday", false).toBool();
+  searchable_iniswap = cfg.value("searchable_iniswap", true).toBool();
   always_pre = cfg.value("always_pre", true).toBool();
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
   emote_preview = cfg.value("emote_preview", true).toBool();
@@ -212,6 +214,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("manual_gamemode", manual_gamemode_selection);
   cfg.setValue("timeofday", manual_timeofday);
   cfg.setValue("manual_timeofday", manual_timeofday_selection);
+  cfg.setValue("searchable_iniswap", searchable_iniswap);
   cfg.setValue("always_pre", always_pre);
   cfg.setValue("chat_tick_interval", chat_tick_interval);
   cfg.setValue("emote_preview", emote_preview);
@@ -441,6 +444,11 @@ QString AOConfig::manual_timeofday() const
 bool AOConfig::is_manual_timeofday_selection_enabled() const
 {
   return d->manual_timeofday_selection;
+}
+
+bool AOConfig::searchable_iniswap_enabled() const
+{
+  return d->searchable_iniswap;
 }
 
 bool AOConfig::always_pre_enabled() const
@@ -729,6 +737,14 @@ void AOConfig::set_manual_timeofday_selection_enabled(bool p_enabled)
     return;
   d->manual_timeofday_selection = p_enabled;
   d->invoke_signal("manual_timeofday_selection_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_searchable_iniswap(bool p_on)
+{
+  if (d->searchable_iniswap == p_on)
+    return;
+  d->searchable_iniswap = p_on;
+  d->invoke_signal("searchable_iniswap_changed", Q_ARG(bool, p_on));
 }
 
 void AOConfig::set_always_pre(bool p_enabled)

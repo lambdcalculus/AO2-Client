@@ -91,6 +91,7 @@ private:
   // character
   QLineEdit *ui_showname = nullptr;
   QPushButton *ui_reload_character = nullptr;
+  QCheckBox *ui_searchable_iniswap = nullptr;
 
   // emotes
   QCheckBox *ui_emote_preview = nullptr;

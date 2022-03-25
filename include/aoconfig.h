@@ -38,6 +38,7 @@ public:
   QString timeofday() const;
   QString manual_timeofday() const;
   bool is_manual_timeofday_selection_enabled() const;
+  bool searchable_iniswap_enabled() const;
   bool always_pre_enabled() const;
   int chat_tick_interval() const;
   bool emote_preview_enabled() const;
@@ -91,6 +92,7 @@ public slots:
   void set_timeofday(QString p_string);
   void set_manual_timeofday(QString p_string);
   void set_manual_timeofday_selection_enabled(bool p_enabled);
+  void set_searchable_iniswap(bool);
   void set_always_pre(bool p_enabled);
   void set_chat_tick_interval(int p_number);
   void set_emote_preview(bool p_enabled);
@@ -137,6 +139,7 @@ signals:
   void showname_changed(QString);
   void showname_placeholder_changed(QString);
   void character_ini_changed(QString base_character);
+  void searchable_iniswap_changed(bool);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);
   void emote_preview_changed(bool);
