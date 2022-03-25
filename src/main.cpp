@@ -1,12 +1,13 @@
 #include "aoapplication.h"
 #include "lobby.h"
-#include "log.h"
+#include "logger.h"
 
 #include <QDebug>
 
 int main(int argc, char *argv[])
 {
-  qInstallMessageHandler(DROLogger);
+  qInstallMessageHandler(logger::log);
+
   qInfo() << "Starting Danganronpa Online...";
   // High-DPI support is for Qt version >=5.6.
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
@@ -49,5 +50,9 @@ int main(int argc, char *argv[])
   app.construct_lobby();
   app.get_lobby()->show();
 
-  return app.exec();
+  const int code = app.exec();
+
+  logger::shutdown();
+
+  return code;
 }
