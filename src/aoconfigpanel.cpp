@@ -60,6 +60,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_manual_timeofday_selection = AO_GUI_WIDGET(QCheckBox, "manual_timeofday_selection");
   ui_showname = AO_GUI_WIDGET(QLineEdit, "showname");
   ui_reload_character = AO_GUI_WIDGET(QPushButton, "reload_character");
+  ui_searchable_iniswap = AO_GUI_WIDGET(QCheckBox, "searchable_iniswap");
   ui_always_pre = AO_GUI_WIDGET(QCheckBox, "always_pre");
   ui_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
   ui_emote_preview = AO_GUI_WIDGET(QCheckBox, "emote_preview");
@@ -90,6 +91,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_music = AO_GUI_WIDGET(QSlider, "music");
   ui_music_ignore_suppression = AO_GUI_WIDGET(QCheckBox, "music_ignore_suppression");
   ui_music_value = AO_GUI_WIDGET(QLabel, "music_value");
+  ui_video = AO_GUI_WIDGET(QSlider, "video");
+  ui_video_ignore_suppression = AO_GUI_WIDGET(QCheckBox, "video_ignore_suppression");
+  ui_video_value = AO_GUI_WIDGET(QLabel, "video_value");
   ui_blip = AO_GUI_WIDGET(QSlider, "blip");
   ui_blip_ignore_suppression = AO_GUI_WIDGET(QCheckBox, "blip_ignore_suppression");
   ui_blip_value = AO_GUI_WIDGET(QLabel, "blip_value");
@@ -130,6 +134,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(showname_changed(QString)), ui_showname, SLOT(setText(QString)));
   connect(m_config, SIGNAL(showname_placeholder_changed(QString)), this,
           SLOT(on_showname_placeholder_changed(QString)));
+  connect(m_config, SIGNAL(searchable_iniswap_changed(bool)), ui_searchable_iniswap, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(always_pre_changed(bool)), ui_always_pre, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(chat_tick_interval_changed(int)), ui_chat_tick_interval, SLOT(setValue(int)));
   connect(m_config, SIGNAL(emote_preview_changed(bool)), ui_emote_preview, SLOT(setChecked(bool)));
@@ -158,6 +163,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(music_volume_changed(int)), ui_music, SLOT(setValue(int)));
   connect(m_config, SIGNAL(music_ignore_suppression_changed(bool)), ui_music_ignore_suppression,
+          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(video_volume_changed(int)), ui_video, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(video_ignore_suppression_changed(bool)), ui_video_ignore_suppression,
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_volume_changed(int)), ui_blip, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blip_ignore_suppression_changed(bool)), ui_blip_ignore_suppression, SLOT(setChecked(bool)));
@@ -197,6 +205,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_manual_timeofday_selection, SIGNAL(toggled(bool)), m_config,
           SLOT(set_manual_timeofday_selection_enabled(bool)));
   connect(ui_showname, SIGNAL(editingFinished()), this, SLOT(showname_editing_finished()));
+  connect(ui_searchable_iniswap, SIGNAL(toggled(bool)), m_config, SLOT(set_searchable_iniswap(bool)));
   connect(ui_always_pre, SIGNAL(toggled(bool)), m_config, SLOT(set_always_pre(bool)));
   connect(ui_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
   connect(ui_emote_preview, SIGNAL(toggled(bool)), m_config, SLOT(set_emote_preview(bool)));
@@ -223,6 +232,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_music, SIGNAL(valueChanged(int)), m_config, SLOT(set_music_volume(int)));
   connect(ui_music, SIGNAL(valueChanged(int)), this, SLOT(on_music_value_changed(int)));
   connect(ui_music_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_music_ignore_suppression(bool)));
+  connect(ui_video, SIGNAL(valueChanged(int)), m_config, SLOT(set_video_volume(int)));
+  connect(ui_video, SIGNAL(valueChanged(int)), this, SLOT(on_video_value_changed(int)));
+  connect(ui_video_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_video_ignore_suppression(bool)));
   connect(ui_blip, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_volume(int)));
   connect(ui_blip, SIGNAL(valueChanged(int)), this, SLOT(on_blip_value_changed(int)));
   connect(ui_blip_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_blip_ignore_suppression(bool)));
@@ -246,6 +258,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_manual_timeofday_selection->setChecked(m_config->is_manual_timeofday_selection_enabled());
   ui_showname->setText(m_config->showname());
   on_showname_placeholder_changed(m_config->showname_placeholder());
+  ui_searchable_iniswap->setChecked(m_config->searchable_iniswap_enabled());
   ui_always_pre->setChecked(m_config->always_pre_enabled());
   ui_chat_tick_interval->setValue(m_config->chat_tick_interval());
   ui_emote_preview->setChecked(m_config->emote_preview_enabled());
@@ -283,6 +296,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_effect_ignore_suppression->setChecked(m_config->effect_ignore_suppression());
   ui_music->setValue(m_config->music_volume());
   ui_music_ignore_suppression->setChecked(m_config->music_ignore_suppression());
+  ui_video->setValue(m_config->video_volume());
+  ui_video_ignore_suppression->setChecked(m_config->video_ignore_suppression());
   ui_blip->setValue(m_config->blip_volume());
   ui_blip_ignore_suppression->setChecked(m_config->blip_ignore_suppression());
   ui_blip_rate->setValue(m_config->blip_rate());
@@ -551,6 +566,11 @@ void AOConfigPanel::on_effect_value_changed(int p_num)
 void AOConfigPanel::on_music_value_changed(int p_num)
 {
   ui_music_value->setText(QString::number(p_num) + "%");
+}
+
+void AOConfigPanel::on_video_value_changed(int p_num)
+{
+  ui_video_value->setText(QString::number(p_num) + "%");
 }
 
 void AOConfigPanel::on_blip_value_changed(int p_num)

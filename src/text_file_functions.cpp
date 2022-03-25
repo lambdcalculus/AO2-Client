@@ -684,6 +684,10 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
       l_emote.sound_delay = qMax(l_chrini.value(i_key).toInt(), 0);
       l_chrini.endGroup();
 
+      l_chrini.beginGroup(l_fetcher.lookup_group("videos"));
+      l_emote.video_file = l_chrini.value(i_key).toString();
+      l_chrini.endGroup();
+
       // add the emote
       r_emote_list.append(l_emote);
     }

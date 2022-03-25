@@ -27,6 +27,8 @@ public:
                            DRAudioStreamFamily::ptr(new DRAudioStreamFamily(DRAudio::Family::FEffect)));
       d->family_map.insert(DRAudio::Family::FMusic,
                            DRAudioStreamFamily::ptr(new DRAudioStreamFamily(DRAudio::Family::FMusic)));
+      d->family_map.insert(DRAudio::Family::FVideo,
+                           DRAudioStreamFamily::ptr(new DRAudioStreamFamily(DRAudio::Family::FVideo)));
       d->family_map.insert(DRAudio::Family::FBlip,
                            DRAudioStreamFamily::ptr(new DRAudioStreamFamily(DRAudio::Family::FBlip)));
 

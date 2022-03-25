@@ -38,6 +38,7 @@ public:
   QString timeofday() const;
   QString manual_timeofday() const;
   bool is_manual_timeofday_selection_enabled() const;
+  bool searchable_iniswap_enabled() const;
   bool always_pre_enabled() const;
   int chat_tick_interval() const;
   bool emote_preview_enabled() const;
@@ -60,6 +61,8 @@ public:
   bool effect_ignore_suppression() const;
   int music_volume() const;
   bool music_ignore_suppression() const;
+  int video_volume() const;
+  bool video_ignore_suppression() const;
   int blip_volume() const;
   bool blip_ignore_suppression() const;
   int blip_rate() const;
@@ -89,6 +92,7 @@ public slots:
   void set_timeofday(QString p_string);
   void set_manual_timeofday(QString p_string);
   void set_manual_timeofday_selection_enabled(bool p_enabled);
+  void set_searchable_iniswap(bool);
   void set_always_pre(bool p_enabled);
   void set_chat_tick_interval(int p_number);
   void set_emote_preview(bool p_enabled);
@@ -111,6 +115,8 @@ public slots:
   void set_effect_ignore_suppression(bool p_enabled);
   void set_music_volume(int p_number);
   void set_music_ignore_suppression(bool p_enabled);
+  void set_video_volume(int p_number);
+  void set_video_ignore_suppression(bool p_enabled);
   void set_blip_volume(int p_number);
   void set_blip_ignore_suppression(bool p_enabled);
   void set_blip_rate(int p_number);
@@ -133,6 +139,7 @@ signals:
   void showname_changed(QString);
   void showname_placeholder_changed(QString);
   void character_ini_changed(QString base_character);
+  void searchable_iniswap_changed(bool);
   void always_pre_changed(bool);
   void chat_tick_interval_changed(int);
   void emote_preview_changed(bool);
@@ -166,6 +173,8 @@ signals:
   void effect_ignore_suppression_changed(bool);
   void music_volume_changed(int);
   void music_ignore_suppression_changed(bool);
+  void video_volume_changed(int);
+  void video_ignore_suppression_changed(bool);
   void blip_volume_changed(int);
   void blip_ignore_suppression_changed(bool);
   void blip_rate_changed(int);

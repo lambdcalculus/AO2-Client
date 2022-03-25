@@ -62,6 +62,7 @@ private:
   QString showname;
   QString showname_placeholder;
   QMap<QString, QString> ini_map;
+  bool searchable_iniswap;
   bool always_pre;
   int chat_tick_interval;
   bool emote_preview;
@@ -84,6 +85,8 @@ private:
   bool effect_ignore_suppression;
   int music_volume;
   bool music_ignore_suppression;
+  int video_volume;
+  bool video_ignore_suppression;
   int blip_volume;
   bool blip_ignore_suppression;
   int blip_rate;
@@ -132,6 +135,7 @@ void AOConfigPrivate::read_file()
   manual_gamemode_selection = cfg.value("manual_gamemode", false).toBool();
   manual_timeofday = cfg.value("timeofday").toString();
   manual_timeofday_selection = cfg.value("manual_timeofday", false).toBool();
+  searchable_iniswap = cfg.value("searchable_iniswap", true).toBool();
   always_pre = cfg.value("always_pre", true).toBool();
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
   emote_preview = cfg.value("emote_preview", true).toBool();
@@ -155,6 +159,8 @@ void AOConfigPrivate::read_file()
   effect_ignore_suppression = cfg.value("effect_ignore_suppression", false).toBool();
   music_volume = cfg.value("default_music", 50).toInt();
   music_ignore_suppression = cfg.value("music_ignore_suppression", false).toBool();
+  video_volume = cfg.value("default_video", 50).toInt();
+  video_ignore_suppression = cfg.value("video_ignore_suppression", false).toBool();
   blip_volume = cfg.value("default_blip", 50).toInt();
   blip_ignore_suppression = cfg.value("blip_ignore_suppression", false).toBool();
   blip_rate = cfg.value("blip_rate", 1000000000).toInt();
@@ -167,6 +173,8 @@ void AOConfigPrivate::read_file()
   audio_engine->get_family(DRAudio::Family::FEffect)->set_ignore_suppression(effect_ignore_suppression);
   audio_engine->get_family(DRAudio::Family::FMusic)->set_volume(music_volume);
   audio_engine->get_family(DRAudio::Family::FMusic)->set_ignore_suppression(effect_ignore_suppression);
+  audio_engine->get_family(DRAudio::Family::FVideo)->set_volume(video_volume);
+  audio_engine->get_family(DRAudio::Family::FVideo)->set_ignore_suppression(effect_ignore_suppression);
   audio_engine->get_family(DRAudio::Family::FBlip)->set_volume(blip_volume);
   audio_engine->get_family(DRAudio::Family::FBlip)->set_ignore_suppression(effect_ignore_suppression);
 
@@ -184,6 +192,7 @@ void AOConfigPrivate::read_file()
 
     cfg.endGroup();
   }
+
   // audio device
   update_favorite_device();
 }
@@ -205,6 +214,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("manual_gamemode", manual_gamemode_selection);
   cfg.setValue("timeofday", manual_timeofday);
   cfg.setValue("manual_timeofday", manual_timeofday_selection);
+  cfg.setValue("searchable_iniswap", searchable_iniswap);
   cfg.setValue("always_pre", always_pre);
   cfg.setValue("chat_tick_interval", chat_tick_interval);
   cfg.setValue("emote_preview", emote_preview);
@@ -229,6 +239,8 @@ void AOConfigPrivate::save_file()
   cfg.setValue("effect_ignore_suppression", effect_ignore_suppression);
   cfg.setValue("default_music", music_volume);
   cfg.setValue("music_ignore_suppression", music_ignore_suppression);
+  cfg.setValue("default_video", video_volume);
+  cfg.setValue("video_ignore_suppression", video_ignore_suppression);
   cfg.setValue("default_blip", blip_volume);
   cfg.setValue("blip_ignore_suppression", blip_ignore_suppression);
   cfg.setValue("blip_rate", blip_rate);
@@ -434,6 +446,11 @@ bool AOConfig::is_manual_timeofday_selection_enabled() const
   return d->manual_timeofday_selection;
 }
 
+bool AOConfig::searchable_iniswap_enabled() const
+{
+  return d->searchable_iniswap;
+}
+
 bool AOConfig::always_pre_enabled() const
 {
   return d->always_pre;
@@ -531,6 +548,16 @@ int AOConfig::music_volume() const
 bool AOConfig::music_ignore_suppression() const
 {
   return d->music_ignore_suppression;
+}
+
+int AOConfig::video_volume() const
+{
+  return d->video_volume;
+}
+
+bool AOConfig::video_ignore_suppression() const
+{
+  return d->video_ignore_suppression;
 }
 
 int AOConfig::blip_volume() const
@@ -712,6 +739,14 @@ void AOConfig::set_manual_timeofday_selection_enabled(bool p_enabled)
   d->invoke_signal("manual_timeofday_selection_changed", Q_ARG(bool, p_enabled));
 }
 
+void AOConfig::set_searchable_iniswap(bool p_on)
+{
+  if (d->searchable_iniswap == p_on)
+    return;
+  d->searchable_iniswap = p_on;
+  d->invoke_signal("searchable_iniswap_changed", Q_ARG(bool, p_on));
+}
+
 void AOConfig::set_always_pre(bool p_enabled)
 {
   if (d->always_pre == p_enabled)
@@ -854,11 +889,11 @@ void AOConfig::set_effect_volume(int p_number)
 
 void AOConfig::set_effect_ignore_suppression(bool p_enabled)
 {
-  if (d->music_ignore_suppression == p_enabled)
+  if (d->effect_ignore_suppression == p_enabled)
     return;
-  d->music_ignore_suppression = p_enabled;
-  d->audio_engine->get_family(DRAudio::Family::FMusic)->set_ignore_suppression(p_enabled);
-  d->invoke_signal("music_ignore_suppression_changed", Q_ARG(bool, p_enabled));
+  d->effect_ignore_suppression = p_enabled;
+  d->audio_engine->get_family(DRAudio::Family::FEffect)->set_ignore_suppression(p_enabled);
+  d->invoke_signal("effect_ignore_suppression_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_music_volume(int p_number)
@@ -877,6 +912,24 @@ void AOConfig::set_music_ignore_suppression(bool p_enabled)
   d->music_ignore_suppression = p_enabled;
   d->audio_engine->get_family(DRAudio::Family::FMusic)->set_ignore_suppression(p_enabled);
   d->invoke_signal("music_ignore_suppression_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_video_volume(int p_number)
+{
+  if (d->video_volume == p_number)
+    return;
+  d->video_volume = p_number;
+  d->audio_engine->get_family(DRAudio::Family::FVideo)->set_volume(p_number);
+  d->invoke_signal("video_volume_changed", Q_ARG(int, p_number));
+}
+
+void AOConfig::set_video_ignore_suppression(bool p_enabled)
+{
+  if (d->video_ignore_suppression == p_enabled)
+    return;
+  d->video_ignore_suppression = p_enabled;
+  d->audio_engine->get_family(DRAudio::Family::FVideo)->set_ignore_suppression(p_enabled);
+  d->invoke_signal("video_ignore_suppression_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_blip_volume(int p_number)
@@ -910,6 +963,7 @@ void AOConfig::set_blank_blips(bool p_enabled)
   if (d->blank_blips == p_enabled)
     return;
   d->blank_blips = p_enabled;
+  d->audio_engine->get_family(DRAudio::Family::FBlip)->set_ignore_suppression(p_enabled);
   d->invoke_signal("blank_blips_changed", Q_ARG(bool, p_enabled));
 }
 

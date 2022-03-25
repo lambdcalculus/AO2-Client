@@ -5,7 +5,6 @@
 #include "aobutton.h"
 #include "aocharbutton.h"
 #include "aoconfig.h"
-#include "aoevidencedisplay.h"
 #include "aoimagedisplay.h"
 #include "aomusicplayer.h"
 #include "aonotearea.h"
@@ -26,6 +25,7 @@
 #include "drshoutmovie.h"
 #include "drsplashmovie.h"
 #include "drstickermovie.h"
+#include "drvideoscreen.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
@@ -101,10 +101,6 @@ void Courtroom::setup_courtroom()
   load_wtce();
   load_free_blocks();
   load_sfx_list_theme();
-
-  current_evidence_page = 0;
-  current_evidence = 0;
-  set_evidence_page();
 
   // Update widgets first, then check if everything is valid
   // This will also handle showing the correct shouts, effects and wtce buttons,
@@ -254,10 +250,12 @@ void Courtroom::set_window_title(QString p_title)
 void Courtroom::update_background_scene()
 {
   // witness is default if pos is invalid
-  QString f_background = "witnessempty";
-  QString f_desk_image = "stand";
-  QString f_desk_mod = m_chatmessage[CMDeskModifier];
-  QString f_side = m_chatmessage[CMPosition];
+  const QString L_DEFAULT_BACK = "witnessempty";
+  const QString L_DEFAULT_FRONT = "stand";
+  const QString f_desk_mod = m_chatmessage[CMDeskModifier];
+  const QString f_side = m_chatmessage[CMPosition];
+  QString f_background = L_DEFAULT_BACK;
+  QString f_desk_image = L_DEFAULT_FRONT;
 
   if (f_side == "def")
   {
@@ -293,9 +291,19 @@ void Courtroom::update_background_scene()
   {
     ui_vp_desk->show();
     ui_vp_desk->set_image(f_desk_image);
+    if (!ui_vp_desk->is_valid())
+    {
+      qWarning() << "warning: background missing file (" << m_background.background << f_side << f_desk_image << ")";
+      ui_vp_desk->set_image(L_DEFAULT_FRONT);
+    }
   }
 
   ui_vp_background->set_image(f_background);
+  if (!ui_vp_background->is_valid())
+  {
+    qWarning() << "warning: background missing file (" << m_background.background << f_side << f_background << ")";
+    ui_vp_background->set_image(L_DEFAULT_BACK);
+  }
 }
 
 DRAreaBackground Courtroom::get_background()
@@ -634,12 +642,8 @@ void Courtroom::on_ic_message_return_pressed()
 
   packet_contents.append(f_obj_state);
 
-  if (is_presenting_evidence)
-    // the evidence index is shifted by 1 because 0 is no evidence per legacy
-    // standards besides, older clients crash if we pass -1
-    packet_contents.append(QString::number(current_evidence + 1));
-  else
-    packet_contents.append("0");
+  // evidence
+  packet_contents.append("0");
 
   QString f_flip = ui_flip->isChecked() ? "1" : "0";
   packet_contents.append(f_flip);
@@ -656,6 +660,10 @@ void Courtroom::on_ic_message_return_pressed()
     f_text_color = QString::number(m_text_color);
 
   packet_contents.append(f_text_color);
+
+  if (ao_app->has_playable_video_feature())
+    packet_contents.append(!l_emote.video_file.isEmpty() ? l_emote.video_file : "0");
+
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 }
 
@@ -670,16 +678,13 @@ void Courtroom::handle_acknowledged_ms()
   reset_effect_buttons();
   reset_wtce_buttons();
   clear_sfx_selection();
-
-  is_presenting_evidence = false;
-  ui_evidence_present->set_image("present_disabled.png");
 }
 
 void Courtroom::handle_chatmessage(QStringList p_contents)
 {
   if (p_contents.size() < 15)
     return;
-  else if (p_contents.size() == 15)
+  while (p_contents.length() < MESSAGE_SIZE)
     p_contents.append(nullptr);
 
   for (int i = 0; i < MESSAGE_SIZE; ++i)
@@ -751,7 +756,6 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   anim_state = 0;
   stop_chat_timer();
   ui_vp_objection->stop();
-  ui_vp_evidence_display->reset();
 
   m_message_color_name = "";
   m_message_color_stack.clear();
@@ -769,6 +773,11 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     save_textlog(f_showname + ": " + l_message);
   }
 
+  ui_video->play_character_video(m_chatmessage[CMChrName], m_chatmessage[CMVideoName]);
+}
+
+void Courtroom::video_finished()
+{
   int objection_mod = m_chatmessage[CMShoutModifier].toInt();
   QString f_char = m_chatmessage[CMChrName];
 
@@ -881,17 +890,7 @@ void Courtroom::handle_chatmessage_3()
   qDebug() << "handle_chatmessage_3";
 
   setup_chat();
-  int f_evi_id = m_chatmessage[CMEvidenceId].toInt();
-  QString f_side = m_chatmessage[CMPosition];
-
-  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size())
-  {
-    // shifted by 1 because 0 is no evidence per legacy standards
-    QString f_image = local_evidence_list.at(f_evi_id - 1).image;
-    // def jud and hlp should display the evidence icon on the RIGHT side
-    bool is_left_side = !(f_side == "def" || f_side == "hlp" || f_side == "jud");
-    ui_vp_evidence_display->show_evidence(f_image, is_left_side);
-  }
+  const QString f_side = m_chatmessage[CMPosition];
 
   int f_anim_state = 0;
   // BLUE is from an enum in datatypes.h
@@ -2230,19 +2229,6 @@ void Courtroom::on_hidden_clicked()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_evidence_button_clicked()
-{
-  if (ui_evidence->isHidden())
-  {
-    ui_evidence->show();
-    ui_evidence_overlay->hide();
-  }
-  else
-  {
-    ui_evidence->hide();
-  }
-}
-
 void Courtroom::on_config_panel_clicked()
 {
   ao_app->toggle_config_panel();
@@ -2279,10 +2265,21 @@ void Courtroom::ping_server()
   ao_app->send_server_packet(DRPacket("CH", {QString::number(m_chr_id)}));
 }
 
+void Courtroom::changeEvent(QEvent *event)
+{
+  QMainWindow::changeEvent(event);
+  if (event->type() == QEvent::WindowStateChange)
+  {
+    m_is_maximized = windowState().testFlag(Qt::WindowMaximized);
+    if (!m_is_maximized)
+      resize(m_default_size);
+  }
+}
+
 void Courtroom::closeEvent(QCloseEvent *event)
 {
-  Q_EMIT closing();
   QMainWindow::closeEvent(event);
+  Q_EMIT closing();
 }
 
 void Courtroom::on_set_notes_clicked()

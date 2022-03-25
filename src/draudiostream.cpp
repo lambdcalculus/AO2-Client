@@ -155,7 +155,7 @@ bool DRAudioStream::ensure_init()
   }
   m_hstream = l_hstream;
 
-  BASS_ChannelSetSync(l_hstream, BASS_SYNC_END | BASS_SYNC_MIXTIME, 0, &end_sync, this);
+  BASS_ChannelSetSync(l_hstream, BASS_SYNC_END, 0, &end_sync, this);
   m_init_state = InitFinished;
   init_loop();
   return true;
@@ -176,7 +176,6 @@ void DRAudioStream::init_loop()
 
   if (m_repeatable)
   {
-
     float l_sample_rate;
     BASS_ChannelGetAttribute(m_hstream, BASS_ATTRIB_FREQ, &l_sample_rate);
 

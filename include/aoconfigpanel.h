@@ -65,6 +65,7 @@ private slots:
   void on_system_value_changed(int p_num);
   void on_effect_value_changed(int p_num);
   void on_music_value_changed(int p_num);
+  void on_video_value_changed(int p_num);
   void on_blip_value_changed(int p_num);
 
 private:
@@ -90,6 +91,7 @@ private:
   // character
   QLineEdit *ui_showname = nullptr;
   QPushButton *ui_reload_character = nullptr;
+  QCheckBox *ui_searchable_iniswap = nullptr;
 
   // emotes
   QCheckBox *ui_emote_preview = nullptr;
@@ -136,6 +138,9 @@ private:
   QSlider *ui_music = nullptr;
   QCheckBox *ui_music_ignore_suppression = nullptr;
   QLabel *ui_music_value = nullptr;
+  QSlider *ui_video = nullptr;
+  QCheckBox *ui_video_ignore_suppression = nullptr;
+  QLabel *ui_video_value = nullptr;
   QSlider *ui_blip = nullptr;
   QCheckBox *ui_blip_ignore_suppression = nullptr;
   QLabel *ui_blip_value = nullptr;
