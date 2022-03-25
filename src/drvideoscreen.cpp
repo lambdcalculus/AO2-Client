@@ -32,9 +32,8 @@ DRVideoWidget::DRVideoWidget(QWidget *parent) : QVideoWidget(parent), ao_app(dyn
   connect(m_player, SIGNAL(videoAvailableChanged(bool)), this, SLOT(check_video_availability(bool)));
   connect(m_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(check_state(QMediaPlayer::State)));
 
-  const std::optional<DRAudioDevice> l_maybe_device = m_engine->get_current_device();
-  if (l_maybe_device.has_value())
-    update_device(l_maybe_device.value());
+  const std::optional<DRAudioDevice> l_device = m_engine->get_current_device();
+  update_device(l_device.value_or(m_device));
 }
 
 DRVideoWidget::~DRVideoWidget()
@@ -158,6 +157,7 @@ void DRVideoWidget::check_state(QMediaPlayer::State p_state)
 {
   if (p_state == QMediaPlayer::PlayingState)
   {
+    update_audio_output();
     emit started();
   }
   else if (m_readable && m_running && p_state == QMediaPlayer::StoppedState)
@@ -179,24 +179,35 @@ void DRVideoWidget::handle_scan_error()
 
 void DRVideoWidget::update_device(DRAudioDevice p_device)
 {
-  const QString l_new_device_name = p_device.get_name();
-  bool l_device_changed = false;
+  if (m_device == p_device)
+    return;
+  m_device = p_device;
+  update_audio_output();
+}
+
+void DRVideoWidget::update_audio_output()
+{
+  const QString l_new_device_name = m_device.get_name();
   QMediaService *l_service = m_player->service();
   QAudioOutputSelectorControl *l_control = l_service->requestControl<QAudioOutputSelectorControl *>();
-  const QStringList l_device_id_list = l_control->availableOutputs();
-  for (const QString &i_device_id : l_device_id_list)
-  {
-    if (l_control->outputDescription(i_device_id) == l_new_device_name)
-    {
-      qDebug() << "media player changed audio device;" << l_new_device_name;
-      l_device_changed = true;
-      l_control->setActiveOutput(i_device_id);
-      break;
-    }
-  }
 
-  if (!l_device_changed)
-    qWarning() << "error: audio device not found;" << l_new_device_name;
+  if (l_control->outputDescription(l_control->activeOutput()) != l_new_device_name)
+  {
+    bool l_device_changed = false;
+    const QStringList l_device_id_list = l_control->availableOutputs();
+    for (const QString &i_device_id : l_device_id_list)
+    {
+      if (l_control->outputDescription(i_device_id) == l_new_device_name)
+      {
+        qDebug() << "media player changed audio device;" << l_new_device_name;
+        l_device_changed = true;
+        l_control->setActiveOutput(i_device_id);
+        break;
+      }
+    }
+    if (!l_device_changed)
+      qWarning() << "audio device not found;" << l_new_device_name;
+  }
   l_service->releaseControl(l_control);
 }
 

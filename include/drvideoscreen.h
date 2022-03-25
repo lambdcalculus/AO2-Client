@@ -35,6 +35,7 @@ private:
   AOConfig *m_config;
   AOApplication *ao_app;
   DRAudioEngine *m_engine;
+  DRAudioDevice m_device;
   DRAudioStreamFamily::ptr m_family;
 
   QString m_file_name;
@@ -47,6 +48,7 @@ private:
 
 private slots:
   void update_device(DRAudioDevice);
+  void update_audio_output();
   void update_volume();
   void check_media_status(QMediaPlayer::MediaStatus);
   void check_video_availability(bool);
