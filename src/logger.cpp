@@ -83,7 +83,7 @@ void task()
       l_system_lock.release();
     }
 
-    QThread::msleep(100);
+    QThread::msleep(10);
   }
 }
 
