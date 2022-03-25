@@ -28,7 +28,6 @@
 #include "theme.h"
 
 #include <QCheckBox>
-#include <QCompleter>
 #include <QComboBox>
 #include <QDebug>
 #include <QFile>
@@ -110,17 +109,11 @@ void Courtroom::create_widgets()
   ui_vp_chat_arrow = new DRStickerMovie(this);
   ui_vp_chat_arrow->set_play_once(false);
 
-  QListView* view = new QListView(ui_iniswap_dropdown);
-  view->setTextElideMode(Qt::TextElideMode::ElideNone);
-  view->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
   ui_iniswap_dropdown = new QComboBox(this);
-  ui_iniswap_dropdown->setView(view);
-  ui_iniswap_dropdown->setEditable(true);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::NoInsert);
-  ui_iniswap_dropdown->completer()->setCompletionMode(QCompleter::PopupCompletion);
-  ui_iniswap_dropdown->completer()->setFilterMode(Qt::MatchContains);
-  ui_iniswap_dropdown->completer()->popup()->setTextElideMode(Qt::TextElideMode::ElideNone);
-  ui_iniswap_dropdown->completer()->popup()->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+  QAbstractItemView *l_view = ui_iniswap_dropdown->view();
+  l_view->setTextElideMode(Qt::TextElideMode::ElideNone);
+  l_view->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
@@ -272,6 +265,7 @@ void Courtroom::connect_widgets()
 
   connect(m_flash_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
+  connect(ao_config, SIGNAL(searchable_iniswap_changed(bool)), this, SLOT(set_iniswap_dropdown_searchable(bool)));
   connect(ao_config, SIGNAL(emote_preview_changed(bool)), this, SLOT(on_emote_preview_toggled(bool)));
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
@@ -742,8 +736,7 @@ void Courtroom::set_widgets()
   set_stylesheet(ui_emote_dropdown, "[EMOTE DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown", COURTROOM_DESIGN_INI, ao_app);
-  set_stylesheet(ui_iniswap_dropdown, "[INISWAP DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
-  set_stylesheet(ui_iniswap_dropdown->completer()->popup(), "[INISWAP DROPDOWN POPUP]", COURTROOM_STYLESHEETS_CSS, ao_app);
+  set_iniswap_dropdown_searchable(ao_config->searchable_iniswap_enabled());
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown", COURTROOM_DESIGN_INI, ao_app);
   set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
