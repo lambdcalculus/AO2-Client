@@ -28,6 +28,7 @@
 #include "theme.h"
 
 #include <QCheckBox>
+#include <QCompleter>
 #include <QComboBox>
 #include <QDebug>
 #include <QFile>
@@ -110,6 +111,10 @@ void Courtroom::create_widgets()
   ui_vp_chat_arrow->set_play_once(false);
 
   ui_iniswap_dropdown = new QComboBox(this);
+  ui_iniswap_dropdown->setEditable(true);
+  ui_iniswap_dropdown->setInsertPolicy(QComboBox::NoInsert);
+  ui_iniswap_dropdown->completer()->setCompletionMode(QCompleter::PopupCompletion);
+  ui_iniswap_dropdown->completer()->setFilterMode(Qt::MatchContains);
 
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
@@ -732,6 +737,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown", COURTROOM_DESIGN_INI, ao_app);
   set_stylesheet(ui_iniswap_dropdown, "[INISWAP DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
+  set_stylesheet(ui_iniswap_dropdown->completer()->popup(), "[INISWAP DROPDOWN POPUP]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown", COURTROOM_DESIGN_INI, ao_app);
   set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
