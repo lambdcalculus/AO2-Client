@@ -73,7 +73,7 @@ void task()
           in << i_msg
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
              << Qt::endl;
-#elif Q_WINDOWS
+#else
              << "\n";
 #endif
         }
