@@ -62,25 +62,27 @@ void task()
       QStringList l_msg_list(std::move(s_msg_list));
       s_msg_list_lock.unlock();
 
-      l_system_lock.acquire();
-      check_file_size_and_rename();
-      QFile l_log(C_FILE_NAME);
-      if (l_log.open(QFile::WriteOnly | QFile::Append))
+      if (!l_msg_list.isEmpty())
       {
-        QTextStream in(&l_log);
-        for (const QString &i_msg : l_msg_list)
+        l_system_lock.acquire();
+        check_file_size_and_rename();
+        QFile l_log(C_FILE_NAME);
+        if (l_log.open(QFile::WriteOnly | QFile::Append))
         {
-          in << i_msg
+          QTextStream in(&l_log);
+          for (const QString &i_msg : l_msg_list)
+          {
+            in << i_msg
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-             << Qt::endl;
+               << Qt::endl;
 #else
-             << "\n";
+               << "\n";
 #endif
+          }
         }
+        l_log.close();
+        l_system_lock.release();
       }
-      l_log.close();
-
-      l_system_lock.release();
     }
 
     QThread::msleep(10);
