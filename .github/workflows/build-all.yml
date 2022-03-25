@@ -336,6 +336,10 @@ jobs:
         sudo apt-get install build-essential
         sudo apt-get install qt5-default qttools5-dev
         sudo apt-get install libqt5designer5
+        sudo apt-get install libqt5multimedia5
+        sudo apt-get install libqt5multimedia5-plugins
+        sudo apt-get install libqt5multimediawidgets5
+        sudo apt-get install qtmultimedia5-dev
         sudo apt-get install git
         
     - name: Build QtApng external library

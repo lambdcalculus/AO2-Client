@@ -9,6 +9,7 @@ enum class Family
   FSystem,
   FEffect,
   FMusic,
+  FVideo,
   FBlip,
 };
 

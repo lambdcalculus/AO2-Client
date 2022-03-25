@@ -90,6 +90,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_music = AO_GUI_WIDGET(QSlider, "music");
   ui_music_ignore_suppression = AO_GUI_WIDGET(QCheckBox, "music_ignore_suppression");
   ui_music_value = AO_GUI_WIDGET(QLabel, "music_value");
+  ui_video = AO_GUI_WIDGET(QSlider, "video");
+  ui_video_ignore_suppression = AO_GUI_WIDGET(QCheckBox, "video_ignore_suppression");
+  ui_video_value = AO_GUI_WIDGET(QLabel, "video_value");
   ui_blip = AO_GUI_WIDGET(QSlider, "blip");
   ui_blip_ignore_suppression = AO_GUI_WIDGET(QCheckBox, "blip_ignore_suppression");
   ui_blip_value = AO_GUI_WIDGET(QLabel, "blip_value");
@@ -159,6 +162,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(music_volume_changed(int)), ui_music, SLOT(setValue(int)));
   connect(m_config, SIGNAL(music_ignore_suppression_changed(bool)), ui_music_ignore_suppression,
           SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(video_volume_changed(int)), ui_video, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(video_ignore_suppression_changed(bool)), ui_video_ignore_suppression,
+          SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_volume_changed(int)), ui_blip, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blip_ignore_suppression_changed(bool)), ui_blip_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_rate_changed(int)), ui_blip_rate, SLOT(setValue(int)));
@@ -223,6 +229,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_music, SIGNAL(valueChanged(int)), m_config, SLOT(set_music_volume(int)));
   connect(ui_music, SIGNAL(valueChanged(int)), this, SLOT(on_music_value_changed(int)));
   connect(ui_music_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_music_ignore_suppression(bool)));
+  connect(ui_video, SIGNAL(valueChanged(int)), m_config, SLOT(set_video_volume(int)));
+  connect(ui_video, SIGNAL(valueChanged(int)), this, SLOT(on_video_value_changed(int)));
+  connect(ui_video_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_video_ignore_suppression(bool)));
   connect(ui_blip, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_volume(int)));
   connect(ui_blip, SIGNAL(valueChanged(int)), this, SLOT(on_blip_value_changed(int)));
   connect(ui_blip_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_blip_ignore_suppression(bool)));
@@ -283,6 +292,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_effect_ignore_suppression->setChecked(m_config->effect_ignore_suppression());
   ui_music->setValue(m_config->music_volume());
   ui_music_ignore_suppression->setChecked(m_config->music_ignore_suppression());
+  ui_video->setValue(m_config->video_volume());
+  ui_video_ignore_suppression->setChecked(m_config->video_ignore_suppression());
   ui_blip->setValue(m_config->blip_volume());
   ui_blip_ignore_suppression->setChecked(m_config->blip_ignore_suppression());
   ui_blip_rate->setValue(m_config->blip_rate());
@@ -551,6 +562,11 @@ void AOConfigPanel::on_effect_value_changed(int p_num)
 void AOConfigPanel::on_music_value_changed(int p_num)
 {
   ui_music_value->setText(QString::number(p_num) + "%");
+}
+
+void AOConfigPanel::on_video_value_changed(int p_num)
+{
+  ui_video_value->setText(QString::number(p_num) + "%");
 }
 
 void AOConfigPanel::on_blip_value_changed(int p_num)

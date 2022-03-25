@@ -53,6 +53,7 @@ public:
   bool has_showname_declaration_feature() const;
   bool has_chat_speed_feature() const;
   bool has_character_availability_request_feature() const;
+  bool has_playable_video_feature() const;
 
   ///////////////////////////////////////////
 
@@ -76,7 +77,6 @@ public:
   QString format_background_path(QString p_identifier);
   QStringList get_available_background_identifier_list();
   QString get_current_background_path();
-  QString get_evidence_path(QString p_file);
 
   bool is_safe_path(QString p_file);
 
@@ -235,6 +235,7 @@ private:
   bool feature_chrini = false;
   bool feature_chat_speed = false;
   bool feature_charscheck = false;
+  bool feature_playable_video = false;
 
   ///////////////loading info///////////////////
   // player number, it's hardly used but might be needed for some old servers

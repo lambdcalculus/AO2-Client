@@ -62,6 +62,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     feature_chrini = false;
     feature_chat_speed = false;
     feature_charscheck = false;
+    feature_playable_video = false;
 
     send_server_packet(DRPacket("HI", {get_hdid()}));
   }
@@ -92,6 +93,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     feature_chrini = l_content.contains("chrini", Qt::CaseInsensitive);
     feature_chat_speed = l_content.contains("chat_speed", Qt::CaseInsensitive);
     feature_charscheck = l_content.contains("charscheck", Qt::CaseInsensitive);
+    feature_playable_video = l_content.contains("playable_video", Qt::CaseInsensitive);
   }
   else if (l_header == "PN")
   {
@@ -300,30 +302,6 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   {
     if (is_courtroom_constructed && l_content.size() > 1)
       m_courtroom->set_hp_bar(l_content.at(0).toInt(), l_content.at(1).toInt());
-  }
-  else if (l_header == "LE")
-  {
-    if (is_courtroom_constructed)
-    {
-      QVector<evi_type> f_evi_list;
-
-      for (const QString &f_string : l_content)
-      {
-        QStringList sub_contents = f_string.split("&");
-
-        if (sub_contents.size() < 3)
-          continue;
-
-        evi_type f_evi;
-        f_evi.name = sub_contents.at(0);
-        f_evi.description = sub_contents.at(1);
-        f_evi.image = sub_contents.at(2);
-
-        f_evi_list.append(f_evi);
-      }
-
-      m_courtroom->set_evidence_list(f_evi_list);
-    }
   }
   else if (l_header == "KK")
   {
