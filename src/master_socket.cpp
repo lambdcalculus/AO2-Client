@@ -25,6 +25,7 @@ void AOApplication::send_master_packet(DRPacket p_packet)
     qDebug() << "Failed to send packet: not connected to master";
     return;
   }
+
   qDebug().noquote() << "M/S:" << p_packet.to_string();
   m_master_socket->send_packet(p_packet);
 }
