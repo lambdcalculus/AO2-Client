@@ -1,0 +1,158 @@
+#ifndef AOCONFIGPANEL_H
+#define AOCONFIGPANEL_H
+
+#include "draudioengine.h"
+
+class AOApplication;
+class AOConfig;
+
+#include <QWidget>
+
+class QCheckBox;
+class QComboBox;
+class QGroupBox;
+class QLabel;
+class QLineEdit;
+class QPushButton;
+class QRadioButton;
+class QSlider;
+class QSpinBox;
+
+class AOConfigPanel : public QWidget
+{
+  Q_OBJECT
+
+public:
+  AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent = nullptr);
+
+public slots:
+  void on_config_reload_theme_requested();
+
+signals:
+  void reload_theme();
+  void reload_character();
+  void reload_audiotracks();
+
+protected:
+  void showEvent(QShowEvent *event) override;
+
+private:
+  void refresh_theme_list();
+  void refresh_gamemode_list();
+  void refresh_timeofday_list();
+  void update_audio_device_list();
+
+private slots:
+  void on_reload_theme_clicked();
+  void on_reload_character_clicked();
+  void on_reload_audiotracks_clicked();
+  void on_theme_changed(QString);
+  void on_gamemode_changed(QString);
+  void on_manual_gamemode_selection_changed(bool);
+  void on_manual_gamemode_changed(QString);
+  void on_manual_gamemode_index_changed(QString p_text);
+  void on_timeofday_changed(QString);
+  void on_manual_timeofday_selection_changed(bool);
+  void on_manual_timeofday_changed(QString);
+  void on_manual_timeofday_index_changed(QString p_text);
+  void on_showname_placeholder_changed(QString p_text);
+  void on_log_is_topdown_changed(bool p_enabled);
+  void on_device_current_index_changed(int p_index);
+  void on_audio_device_changed(DRAudioDevice p_device);
+  void on_favorite_audio_device_changed(DRAudioDevice p_device);
+  void on_audio_device_list_changed(QVector<DRAudioDevice> p_device_list);
+  void on_master_value_changed(int p_num);
+  void on_system_value_changed(int p_num);
+  void on_effect_value_changed(int p_num);
+  void on_music_value_changed(int p_num);
+  void on_video_value_changed(int p_num);
+  void on_blip_value_changed(int p_num);
+
+private:
+  // FIXME This dependency shouldn't have come to exist.
+  AOApplication *ao_app = nullptr;
+  // driver
+  AOConfig *m_config = nullptr;
+  DRAudioEngine *m_engine = nullptr;
+
+  // behaviour
+  QPushButton *ui_save = nullptr;
+  QPushButton *ui_close = nullptr;
+  QCheckBox *ui_autosave = nullptr;
+
+  // general
+  QLineEdit *ui_username = nullptr;
+  QLineEdit *ui_callwords = nullptr;
+  QCheckBox *ui_server_alerts = nullptr;
+  QGroupBox *ui_discord_presence = nullptr;
+  QCheckBox *ui_discord_hide_server = nullptr;
+  QCheckBox *ui_discord_hide_character = nullptr;
+
+  // character
+  QLineEdit *ui_showname = nullptr;
+  QPushButton *ui_reload_character = nullptr;
+  QCheckBox *ui_searchable_iniswap = nullptr;
+
+  // emotes
+  QCheckBox *ui_emote_preview = nullptr;
+  QCheckBox *ui_always_pre = nullptr;
+  QCheckBox *ui_sticky_sfx = nullptr;
+
+  // dialog
+  QSpinBox *ui_chat_tick_interval = nullptr;
+  QSpinBox *ui_blip_rate = nullptr;
+  QCheckBox *ui_blank_blips = nullptr;
+
+  // game
+  QComboBox *ui_theme = nullptr;
+  QPushButton *ui_reload_theme = nullptr;
+  QLineEdit *ui_gamemode = nullptr;
+  QComboBox *ui_manual_gamemode = nullptr;
+  QCheckBox *ui_manual_gamemode_selection = nullptr;
+  QLineEdit *ui_timeofday = nullptr;
+  QComboBox *ui_manual_timeofday = nullptr;
+  QCheckBox *ui_manual_timeofday_selection = nullptr;
+
+  // chatlog
+  QSpinBox *ui_log_max_lines = nullptr;
+  QCheckBox *ui_log_display_timestamp = nullptr;
+  QCheckBox *ui_log_display_self_highlight = nullptr;
+  QCheckBox *ui_log_format_use_newline = nullptr;
+  QCheckBox *ui_log_display_empty_messages = nullptr;
+  QCheckBox *ui_log_display_music_switch = nullptr;
+  QRadioButton *ui_log_orientation_top_down = nullptr;
+  QRadioButton *ui_log_orientation_bottom_up = nullptr;
+  QCheckBox *ui_log_is_recording = nullptr;
+
+  // audio
+  QComboBox *ui_device = nullptr;
+  QCheckBox *ui_favorite_device = nullptr;
+  QSlider *ui_master = nullptr;
+  QLabel *ui_master_value = nullptr;
+  QGroupBox *ui_suppress_background_audio = nullptr;
+  QSlider *ui_system = nullptr;
+  QLabel *ui_system_value = nullptr;
+  QSlider *ui_effect = nullptr;
+  QCheckBox *ui_effect_ignore_suppression = nullptr;
+  QLabel *ui_effect_value = nullptr;
+  QSlider *ui_music = nullptr;
+  QCheckBox *ui_music_ignore_suppression = nullptr;
+  QLabel *ui_music_value = nullptr;
+  QSlider *ui_video = nullptr;
+  QCheckBox *ui_video_ignore_suppression = nullptr;
+  QLabel *ui_video_value = nullptr;
+  QSlider *ui_blip = nullptr;
+  QCheckBox *ui_blip_ignore_suppression = nullptr;
+  QLabel *ui_blip_value = nullptr;
+  QPushButton *ui_reload_audiotracks = nullptr;
+
+  // about
+  QLabel *ui_about = nullptr;
+
+private slots:
+  void username_editing_finished();
+  void showname_editing_finished();
+  void callwords_editing_finished();
+};
+
+#endif // AOCONFIGPANEL_H
