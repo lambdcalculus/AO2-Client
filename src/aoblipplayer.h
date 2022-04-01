@@ -4,7 +4,7 @@
 #include "draudioengine.h"
 
 // 3rd
-#include <bass.h>
+#include <bass/bass.h>
 
 // std
 #include <optional>

@@ -4,7 +4,7 @@
 #include "draudiodevice.h"
 #include "draudioerror.h"
 
-#include <bass.h>
+#include <bass/bass.h>
 
 #include <QObject>
 #include <QStack>

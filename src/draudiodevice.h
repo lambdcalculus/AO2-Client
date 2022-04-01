@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include <bass.h>
+#include <bass/bass.h>
 
 class DRAudioDevice
 {

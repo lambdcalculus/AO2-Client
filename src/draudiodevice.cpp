@@ -2,7 +2,7 @@
 
 #include <QMap>
 
-#include <bass.h>
+#include <bass/bass.h>
 
 QVector<DRAudioDevice> DRAudioDevice::get_device_list()
 {

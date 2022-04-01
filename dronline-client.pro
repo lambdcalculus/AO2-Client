@@ -8,8 +8,8 @@ TARGET = dro-client
 
 RC_ICONS = icon.ico
 
-INCLUDEPATH += $$PWD/include $$PWD/3rd $$PWD/3rd/include
-DEPENDPATH += $$PWD/include
+INCLUDEPATH += $$PWD/include $$PWD/3rd
+DEPENDPATH += $$PWD/include $$PWD/3rd
 
 DEFINES += DRO_ACKMS
 CONFIG(debug, debug|release):DEFINES += DR_DEV
@@ -145,7 +145,7 @@ SOURCES += \
 # 2. You need to compile the Discord Rich Presence SDK separately and add the lib/headers
 #    in the same way as BASS. Discord RPC uses CMake, which does not play nicely with
 #    QMake, so this step must be manual.
-LIBS += -L$$PWD/3rd/$${QMAKE_HOST.arch} -lbass -lbassopus -ldiscord-rpc
+LIBS += -L$$PWD/3rd -lbass -lbassopus -ldiscord-rpc
 
 RESOURCES += \
   res.qrc

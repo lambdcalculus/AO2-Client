@@ -1,6 +1,6 @@
 #include "version.h"
 
-#include <bass.h>
+#include <bass/bass.h>
 
 #include <QFile>
 #include <QImageReader>
