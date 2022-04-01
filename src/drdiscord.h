@@ -1,6 +1,6 @@
 #pragma once
 
-#include <discord_rpc.h>
+#include <discord-rpc/discord_rpc.h>
 
 #include <QObject>
 #include <QPointer>

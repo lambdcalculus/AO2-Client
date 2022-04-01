@@ -4,8 +4,8 @@
 #include <QFileInfo>
 #include <QtMath>
 
-#include <bass.h>
-#include <bassopus.h>
+#include <bass/bass.h>
+#include <bass/bassopus.h>
 
 #include "draudioengine.h"
 #include "draudiostreamfamily.h"

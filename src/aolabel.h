@@ -1,5 +1,5 @@
-#ifndef AOLABEL_HPP
-#define AOLABEL_HPP
+#ifndef AOLABEL_H
+#define AOLABEL_H
 
 class AOApplication;
 
@@ -16,4 +16,4 @@ private:
   AOApplication *ao_app = nullptr;
 };
 
-#endif // AOLABEL_HPP
+#endif // AOLABEL_H

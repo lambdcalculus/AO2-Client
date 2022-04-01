@@ -25,8 +25,8 @@ jobs:
       run: |
         echo "parentworkspace=D:\\a\\DRO-Client\\" >> $GITHUB_ENV
         mkdir "3rd"
-        mkdir "3rd/include"
-        mkdir "3rd/x86"
+        mkdir "3rd/bass"
+        mkdir "3rd/discord-rpc"
         
     - name: Fetch Discord external library
       shell: bash
@@ -34,10 +34,10 @@ jobs:
       run: |
         curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc_win.zip
         unzip discord_rpc_win.zip
-        cp ./discord-rpc/win32-dynamic/include/discord_register.h ./DRO-Client/3rd/include
-        cp ./discord-rpc/win32-dynamic/include/discord_rpc.h ./DRO-Client/3rd/include
-        cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./DRO-Client/3rd/x86
-        cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./DRO-Client/3rd/x86
+        cp ./discord-rpc/win32-dynamic/include/discord_register.h ./DRO-Client/3rd/discord-rpc
+        cp ./discord-rpc/win32-dynamic/include/discord_rpc.h ./DRO-Client/3rd/discord-rpc
+        cp ./discord-rpc/win32-dynamic/bin/discord-rpc.dll ./DRO-Client/3rd
+        cp ./discord-rpc/win32-dynamic/lib/discord-rpc.lib ./DRO-Client/3rd
       
     - name: Fetch Bass external library
       shell: bash
@@ -45,9 +45,9 @@ jobs:
       run: |
         curl http://www.un4seen.com/files/bass24.zip -o bass.zip
         unzip bass.zip
-        cp ./c/bass.h ./DRO-Client/3rd/include
-        cp ./bass.dll ./DRO-Client/3rd/x86
-        cp ./c/bass.lib ./DRO-Client/3rd/x86
+        cp ./c/bass.h ./DRO-Client/3rd/bass
+        cp ./bass.dll ./DRO-Client/3rd
+        cp ./c/bass.lib ./DRO-Client/3rd
       
     - name: Fetch BassOpus external library
       shell: bash
@@ -55,9 +55,9 @@ jobs:
       run: |
         curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
         unzip bassopus.zip
-        cp ./c/bassopus.h ./DRO-Client/3rd/include
-        cp ./bassopus.dll ./DRO-Client/3rd/x86
-        cp ./c/bassopus.lib ./DRO-Client/3rd/x86
+        cp ./c/bassopus.h ./DRO-Client/3rd/bass
+        cp ./bassopus.dll ./DRO-Client/3rd
+        cp ./c/bassopus.lib ./DRO-Client/3rd
         
     - name: Fetch QtApng external library
       shell: bash
@@ -171,8 +171,8 @@ jobs:
       run: |
         echo "parentworkspace=/Users/runner/work/DRO-Client/" >> $GITHUB_ENV
         mkdir "3rd"
-        mkdir "3rd/include"
-        mkdir "3rd/x86_64"
+        mkdir "3rd/bass"
+        mkdir "3rd/discord-rpc"
         
     - name: Fetch Discord external library
       shell: bash
@@ -180,9 +180,9 @@ jobs:
       run: |
         curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc_osx.zip
         unzip discord_rpc_osx.zip
-        cp ./discord-rpc/osx-dynamic/include/discord_register.h ./DRO-Client/3rd/include
-        cp ./discord-rpc/osx-dynamic/include/discord_rpc.h ./DRO-Client/3rd/include
-        cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./DRO-Client/3rd/x86_64
+        cp ./discord-rpc/osx-dynamic/include/discord_register.h ./DRO-Client/3rd/discord-rpc
+        cp ./discord-rpc/osx-dynamic/include/discord_rpc.h ./DRO-Client/3rd/discord-rpc
+        cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./DRO-Client/3rd
       
     - name: Fetch Bass external library
       shell: bash
@@ -190,8 +190,8 @@ jobs:
       run: |
         curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
         unzip bass.zip
-        cp ./bass.h ./DRO-Client/3rd/include
-        cp ./libbass.dylib ./DRO-Client/3rd/x86_64
+        cp ./bass.h ./DRO-Client/3rd/bass
+        cp ./libbass.dylib ./DRO-Client/3rd
       
     - name: Fetch BassOpus external library
       shell: bash
@@ -199,8 +199,8 @@ jobs:
       run: |
         curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
         unzip bassopus.zip
-        cp ./bassopus.h ./DRO-Client/3rd/include
-        cp ./libbassopus.dylib ./DRO-Client/3rd/x86_64
+        cp ./bassopus.h ./DRO-Client/3rd/bass
+        cp ./libbassopus.dylib ./DRO-Client/3rd
         
     - name: Fetch QtApng external library
       shell: bash
@@ -298,8 +298,8 @@ jobs:
       run: |
         echo "parentworkspace=/home/runner/work/DRO-Client/" >> $GITHUB_ENV
         mkdir "3rd"
-        mkdir "3rd/include"
-        mkdir "3rd/x86_64"
+        mkdir "3rd/bass"
+        mkdir "3rd/discord-rpc"
         
     - name: Fetch Discord external library
       shell: bash
@@ -307,9 +307,9 @@ jobs:
       run: |
         curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc_linux.zip
         unzip discord_rpc_linux.zip
-        cp ./discord-rpc/linux-dynamic/include/discord_register.h ./DRO-Client/3rd/include/discord_register.h
-        cp ./discord-rpc/linux-dynamic/include/discord_rpc.h ./DRO-Client/3rd/include/discord_rpc.h
-        cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./DRO-Client/3rd/x86_64/libdiscord-rpc.so
+        cp ./discord-rpc/linux-dynamic/include/discord_register.h ./DRO-Client/3rd/discord-rpc/discord_register.h
+        cp ./discord-rpc/linux-dynamic/include/discord_rpc.h ./DRO-Client/3rd/discord-rpc/discord_rpc.h
+        cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./DRO-Client/3rd/libdiscord-rpc.so
         
     - name: Fetch Bass external library
       shell: bash
@@ -317,8 +317,8 @@ jobs:
       run: |
         curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
         unzip bass.zip
-        cp ./bass.h ./DRO-Client/3rd/include/bass.h
-        cp ./x64/libbass.so ./DRO-Client/3rd/x86_64/libbass.so
+        cp ./bass.h ./DRO-Client/3rd/bass/bass.h
+        cp ./x64/libbass.so ./DRO-Client/3rd/libbass.so
         
     - name: Fetch BassOpus external library
       shell: bash
@@ -326,8 +326,8 @@ jobs:
       run: |
         curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
         unzip bassopus.zip
-        cp ./bassopus.h ./DRO-Client/3rd/include/bassopus.h
-        cp ./x64/libbassopus.so ./DRO-Client/3rd/x86_64/libbassopus.so
+        cp ./bassopus.h ./DRO-Client/3rd/bass/bassopus.h
+        cp ./x64/libbassopus.so ./DRO-Client/3rd/libbassopus.so
         
     - name: Install Qt
       shell: bash
