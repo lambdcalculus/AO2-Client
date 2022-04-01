@@ -68,7 +68,7 @@ jobs:
       run: |
         curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
         unzip bassopus.zip
-        cp ./c/bassopus.h ./DRO-Client/3rd/discord-rpc
+        cp ./c/bassopus.h ./DRO-Client/3rd/bass
         cp ./bassopus.dll ./DRO-Client/3rd
         cp ./c/bassopus.lib ./DRO-Client/3rd
         
