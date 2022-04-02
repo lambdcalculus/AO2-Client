@@ -89,8 +89,7 @@ void AOEmoteButton::paintEvent(QPaintEvent *event)
   }
 
   QPainter l_painter(this);
-  l_painter.drawImage(event->rect(),
-                      m_texture.scaled(event->rect().size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+  l_painter.drawImage(rect(), m_texture.scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
   l_painter.end();
 }
 
