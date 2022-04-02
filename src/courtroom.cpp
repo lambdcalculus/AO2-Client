@@ -736,8 +736,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   QString f_showname;
   qDebug() << "handle_chatmessage";
 
-  // We actually DO wanna fail here if the showname is empty but the system is
-  // speaking.
+  // We actually DO wanna fail here if the showname is empty but the system is speaking.
   // Having an empty showname for system is actually what we expect.
   if (m_chatmessage[CMShowName].isEmpty() && !is_system_speaking)
   {
@@ -889,7 +888,6 @@ void Courtroom::handle_chatmessage_3()
   qDebug() << "handle_chatmessage_3";
 
   setup_chat();
-  const QString f_side = m_chatmessage[CMPosition];
 
   int f_anim_state = 0;
   // BLUE is from an enum in datatypes.h
@@ -962,28 +960,28 @@ void Courtroom::handle_chatmessage_3()
   }
 
   int effect = m_chatmessage[CMEffectState].toInt();
-  QStringList offset = ao_app->get_effect_offset(f_char, effect);
-  ui_vp_effect->move(ui_viewport->x() + offset.at(0).toInt(), ui_viewport->y() + offset.at(1).toInt());
-
-  QStringList overlay = ao_app->get_overlay(f_char, effect);
-  QString overlay_name = overlay.at(0);
-  QString overlay_sfx = overlay.at(1);
 
   if (effect > 0 && effect <= ui_effects.size() && effect_names.size() > 0) // check to prevent crashing
   {
+    QStringList offset = ao_app->get_effect_offset(f_char, effect);
+    ui_vp_effect->move(ui_viewport->x() + offset.at(0).toInt(), ui_viewport->y() + offset.at(1).toInt());
+
     QString s_eff = effect_names.at(effect - 1);
     QStringList f_eff = ao_app->get_effect(effect);
 
-    //    QString s_eff = f_eff.at(0).trimmed();
     bool once = f_eff.at(1).trimmed().toInt();
+
+    QStringList overlay = ao_app->get_overlay(f_char, effect);
+    QString overlay_name = overlay.at(0);
+    QString overlay_sfx = overlay.at(1);
 
     if (overlay_sfx == "")
       overlay_sfx = ao_app->get_sfx(s_eff);
-    //    qDebug() << overlay_sfx << ao_app->get_sfx(s_eff);
     m_effects_player->play_effect(overlay_sfx);
-    ui_vp_effect->set_play_once(once);
+
     if (overlay_name == "")
       overlay_name = s_eff;
+    ui_vp_effect->set_play_once(once);
     ui_vp_effect->play(overlay_name, f_char);
   }
 
@@ -1282,7 +1280,6 @@ void Courtroom::setup_chat()
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CMChrName]);
 
-  //  m_blip_player->set_file(f_gender);
   m_blips_player->set_blips("sfx-blip" + f_gender + ".wav");
 
   // means text is currently ticking
