@@ -12,13 +12,8 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
-#include <QtMath>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-#include <QDesktopWidget>
-#else
 #include <QScreen>
-#endif
+#include <QtMath>
 
 void Courtroom::construct_emotes()
 {

@@ -9,8 +9,6 @@ int main(int argc, char *argv[])
   qInstallMessageHandler(logger::log);
 
   qInfo() << "Starting Danganronpa Online...";
-  // High-DPI support is for Qt version >=5.6.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
   bool l_dpi_scaling = true;
 
   for (int i = 0; i < argc; ++i)
@@ -36,7 +34,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, false);
   }
-#endif
 
 #ifdef Q_OS_MACOS
   { // MacOS

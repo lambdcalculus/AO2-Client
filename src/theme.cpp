@@ -6,12 +6,7 @@
 // qt
 #include <QDebug>
 #include <QFontDatabase>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-#include <QDesktopWidget>
-#else
 #include <QScreen>
-#endif
 
 // src
 #include "aoapplication.h"
@@ -123,14 +118,10 @@ void center_widget_to_screen(QWidget *p_widget)
   if (!p_widget || p_widget->parentWidget())
     return;
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-  QRect screen_geometry = QApplication::desktop()->screenGeometry();
-#else
   QScreen *screen = QApplication::screenAt(p_widget->pos());
   if (screen == nullptr)
     return;
   QRect screen_geometry = screen->geometry();
-#endif
   int x = (screen_geometry.width() - p_widget->width()) / 2;
   int y = (screen_geometry.height() - p_widget->height()) / 2;
   p_widget->move(x, y);
