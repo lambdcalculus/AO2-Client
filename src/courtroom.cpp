@@ -909,7 +909,6 @@ void Courtroom::handle_chatmessage_3()
   ui_vp_player_char->stop();
   const QString f_char = m_chatmessage[CMChrName];
   const QString f_emote = m_chatmessage[CMEmote];
-  const bool l_hide_emote = (f_emote == "../../misc/blank");
 
   QString path;
   if (!chatmessage_is_empty && ao_app->read_theme_ini_bool("enable_showname_image", COURTROOM_CONFIG_INI))
@@ -941,7 +940,7 @@ void Courtroom::handle_chatmessage_3()
     ui_vp_showname_image->hide();
   }
 
-  ui_vp_player_char->setHidden(l_hide_emote);
+  ui_vp_player_char->show();
   switch (f_anim_state)
   {
   case 2:

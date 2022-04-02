@@ -12,7 +12,8 @@ public:
   explicit DRCharacterMovie(QWidget *parent = nullptr);
   ~DRCharacterMovie();
 
-  void play(QString character, QString emote, QString prefix, bool play_once);
+  bool is_playing_empty(QString p_character, QString p_emote);
+  void play(QString character, QString emote, QString prefix, bool play_once, bool p_hide_if_empty);
   void play_pre(QString character, QString emote);
   void play_talk(QString character, QString emote);
   void play_idle(QString character, QString emote);
