@@ -676,7 +676,6 @@ void Courtroom::handle_acknowledged_ms()
 
   reset_shout_buttons();
   reset_effect_buttons();
-  reset_wtce_buttons();
   clear_sfx_selection();
 }
 
