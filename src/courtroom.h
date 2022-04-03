@@ -453,7 +453,7 @@ private:
 
   QCheckBox *ui_pre = nullptr;
   QCheckBox *ui_flip = nullptr;
-  QCheckBox *ui_hidden = nullptr;
+  QCheckBox *ui_hide_character = nullptr;
 
   QVector<QCheckBox *> ui_checks; // 0 = pre, 1 = flip, 2 = hidden
   QVector<AOLabel *> ui_labels;   // 0 = music, 1 = sfx, 2 = blip

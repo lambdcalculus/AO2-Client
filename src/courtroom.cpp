@@ -586,7 +586,7 @@ void Courtroom::on_ic_message_return_pressed()
 
   packet_contents.append(get_character_ini());
 
-  if (ui_hidden->isChecked())
+  if (ui_hide_character->isChecked())
     packet_contents.append("../../misc/blank");
   else
     packet_contents.append(l_emote.dialog);
@@ -648,8 +648,8 @@ void Courtroom::on_ic_message_return_pressed()
   if (ao_app->has_playable_video_feature())
     packet_contents.append(!l_emote.video_file.isEmpty() ? l_emote.video_file : "0");
 
-  // show emote
-  packet_contents.append("0");
+  // hide character
+  packet_contents.append(QString::number(ui_hide_character->isChecked()));
 
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 }

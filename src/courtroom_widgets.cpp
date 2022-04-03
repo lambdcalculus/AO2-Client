@@ -207,13 +207,13 @@ void Courtroom::create_widgets()
   ui_flip = new QCheckBox(this);
   ui_flip->setText("Flip");
   ui_flip->hide();
-  ui_hidden = new QCheckBox(this);
-  ui_hidden->setText("Hidden");
+  ui_hide_character = new QCheckBox(this);
+  ui_hide_character->setText("Hidden");
 
   // filling vectors with existing label/checkbox pointers
   ui_checks.push_back(ui_pre);
   ui_checks.push_back(ui_flip);
-  ui_checks.push_back(ui_hidden);
+  ui_checks.push_back(ui_hide_character);
 
   ui_defense_plus = new AOButton(this, ao_app);
   ui_defense_minus = new AOButton(this, ao_app);
@@ -328,7 +328,7 @@ void Courtroom::connect_widgets()
 
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
-  connect(ui_hidden, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
+  connect(ui_hide_character, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
   connect(ui_sfx_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this,
           SLOT(_p_sfxCurrentItemChanged(QListWidgetItem *, QListWidgetItem *)));
@@ -406,7 +406,7 @@ void Courtroom::reset_widget_names()
       // Each ui_label_images[i]
       {"pre", ui_pre},
       {"flip", ui_flip},
-      {"hidden", ui_hidden},
+      {"hidden", ui_hide_character},
       {"defense_plus", ui_defense_plus},
       {"defense_minus", ui_defense_minus},
       {"prosecution_plus", ui_prosecution_plus},
@@ -883,7 +883,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_flip, "flip", COURTROOM_DESIGN_INI, ao_app);
 
-  set_size_and_pos(ui_hidden, "hidden", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_hide_character, "hidden", COURTROOM_DESIGN_INI, ao_app);
 
   for (int i = 0; i < ui_label_images.size(); ++i)
   {
