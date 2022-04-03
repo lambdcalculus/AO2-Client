@@ -686,7 +686,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   default:
     break;
   case PreEmoteMod:
-    m_play_zoom = true;
+    m_play_pre = true;
     break;
   case ZoomEmoteMod:
     m_play_zoom = true;
