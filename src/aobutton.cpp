@@ -25,25 +25,19 @@ void AOButton::set_image(QString p_image)
 {
   m_image_stem = p_image;
   m_image = ao_app->find_theme_asset_path(p_image);
+
   // Get the path of the found image without the extension
   const QString l_image_name = p_image.left(p_image.lastIndexOf(QChar('.')));
-  const QString l_hover_image = ao_app->find_theme_asset_path(l_image_name + "_hover.png");
+  QString l_hover_image = ao_app->find_theme_asset_path(l_image_name + "_hover.png");
+  if (l_hover_image.isEmpty())
+  {
+    l_hover_image = m_image;
+  }
 
-  if (file_exists(m_image))
-  {
-    if (file_exists(l_hover_image))
-      this->setStyleSheet("QPushButton {border-image:url(\"" + m_image +
-                          "\");}"
-                          "QPushButton:hover {border-image:url(\"" +
-                          l_hover_image + "\");}");
-    else
-      this->setStyleSheet("border-image:url(\"" + m_image + "\")");
-  }
-  else
-  {
-    m_image = "";
-    this->setStyleSheet("border-image:url(\"" + m_image + "\")");
-  }
+  this->setStyleSheet("QPushButton {border-image:url(\"" + m_image +
+                      "\");}"
+                      "QPushButton:hover {border-image:url(\"" +
+                      l_hover_image + "\");}");
 }
 
 void AOButton::refresh_image()

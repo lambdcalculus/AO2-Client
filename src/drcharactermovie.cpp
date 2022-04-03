@@ -58,11 +58,6 @@ void DRCharacterMovie::play(QString p_character, QString p_emote, QString p_pref
   set_file_name(l_file);
   set_play_once(p_play_once);
   start();
-
-  if (p_character == "<NOCHAR>")
-  {
-    hide();
-  }
 }
 
 void DRCharacterMovie::play_pre(QString p_character, QString p_emote)

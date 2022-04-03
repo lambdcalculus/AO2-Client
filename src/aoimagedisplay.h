@@ -12,7 +12,8 @@ public:
 
   QString get_image();
   void set_image(QString p_image);
-  void set_image_from_path(QString p_path);
+  void set_theme_image(QString p_image);
+  void set_chatbox_image(QString p_image);
 
 private:
   AOApplication *ao_app = nullptr;

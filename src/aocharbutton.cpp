@@ -21,7 +21,7 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, 
 
   ui_taken = new AOImageDisplay(this, ao_app);
   ui_taken->resize(60, 60);
-  ui_taken->set_image("char_taken.png");
+  ui_taken->set_theme_image("char_taken.png");
   ui_taken->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_taken->hide();
 }

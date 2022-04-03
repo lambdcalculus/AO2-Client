@@ -12,13 +12,8 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
-#include <QtMath>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-#include <QDesktopWidget>
-#else
 #include <QScreen>
-#endif
+#include <QtMath>
 
 void Courtroom::construct_emotes()
 {
@@ -222,14 +217,10 @@ void Courtroom::show_emote_tooltip(int p_id, QPoint p_global_pos)
   ui_emote_preview_character->set_mirrored(ui_flip->isChecked());
   ui_emote_preview_character->play_idle(l_emote.character, l_emote.dialog);
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-  QRect l_screen_geometry = QApplication::desktop()->screenGeometry();
-#else
   QScreen *screen = QApplication::screenAt(p_global_pos);
   if (screen == nullptr)
     return;
   QRect l_screen_geometry = screen->geometry();
-#endif
 
   // position below cursor
   const int l_vertical_spacing = 8;

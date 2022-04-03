@@ -20,34 +20,22 @@ QString AOImageDisplay::get_image()
 
 void AOImageDisplay::set_image(QString p_image)
 {
-  const QString l_path = ao_app->find_theme_asset_path(p_image);
-  AOPixmap f_pixmap(l_path);
-  this->setPixmap(f_pixmap.scale(size()));
-
-  // Store final path if the path exists
-  if (file_exists(l_path))
-    m_image = l_path;
-  else
-    m_image = "";
+  m_image = p_image;
+  AOPixmap l_pixmap(p_image);
+  setPixmap(l_pixmap.scale(size()));
 }
 
-void AOImageDisplay::set_image_from_path(QString p_path)
+void AOImageDisplay::set_theme_image(QString p_image)
 {
-  QString default_path = ao_app->find_theme_asset_path("chatmed.png");
+  set_image(ao_app->find_theme_asset_path(p_image));
+}
 
-  QString final_path;
-
-  if (file_exists(p_path))
-    final_path = p_path;
-  else
-    final_path = default_path;
-
-  AOPixmap f_pixmap(final_path);
-  this->setPixmap(f_pixmap.scale(size()));
-
-  // Store final path if the path exists
-  if (file_exists(final_path))
-    m_image = final_path;
-  else
-    m_image = "";
+void AOImageDisplay::set_chatbox_image(QString p_image)
+{
+  QString l_target_path = ao_app->find_asset_path(ao_app->get_base_path() + "misc/" + p_image + ".png");
+  if (!l_target_path.isEmpty())
+  {
+    l_target_path = ao_app->find_theme_asset_path("chatmed.png");
+  }
+  set_image(l_target_path);
 }
