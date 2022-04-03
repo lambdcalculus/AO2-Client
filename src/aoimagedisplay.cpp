@@ -33,7 +33,7 @@ void AOImageDisplay::set_theme_image(QString p_image)
 void AOImageDisplay::set_chatbox_image(QString p_image)
 {
   QString l_target_path = ao_app->find_asset_path(ao_app->get_base_path() + "misc/" + p_image + ".png");
-  if (!file_exists(l_target_path))
+  if (!l_target_path.isEmpty())
   {
     l_target_path = ao_app->find_theme_asset_path("chatmed.png");
   }
