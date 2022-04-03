@@ -1458,7 +1458,7 @@ void Courtroom::post_chat()
   anim_state = 3;
   stop_chat_timer();
 
-  if (m_msg_is_first_person == false)
+  if (!m_hide_character && !m_msg_is_first_person)
   {
     ui_vp_player_char->play_idle(m_chatmessage[CMChrName], m_chatmessage[CMEmote]);
   }
