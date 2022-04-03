@@ -7,10 +7,9 @@
 int main(int argc, char *argv[])
 {
   qInstallMessageHandler(logger::log);
-
   qInfo() << "Starting Danganronpa Online...";
-  bool l_dpi_scaling = true;
 
+  bool l_dpi_scaling = true;
   for (int i = 0; i < argc; ++i)
   {
     const QString l_arg(argv[i]);

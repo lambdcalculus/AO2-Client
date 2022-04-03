@@ -3,14 +3,19 @@
 #include <QDir>
 #include <QFileInfo>
 
-QStringList animated_or_static_extensions()
-{
-  return QStringList{".webp", ".apng", ".gif", ".png"};
-}
-
 QStringList animated_extensions()
 {
   return QStringList{".webp", ".apng", ".gif"};
+}
+
+QStringList static_extensions()
+{
+  return QStringList{".png"};
+}
+
+QStringList animated_or_static_extensions()
+{
+  return animated_extensions() + static_extensions();
 }
 
 QStringList audio_extensions(bool no_suffix)

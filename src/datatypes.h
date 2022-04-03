@@ -140,7 +140,16 @@ enum ChatMessage : int32_t
   CMEffectState,
   CMTextColor,
   CMVideoName,
+  CMShowCharacter,
   CMShowName,
+};
+
+enum EmoteMod
+{
+  IdleEmoteMod = 0,
+  PreEmoteMod = 1,
+  ZoomEmoteMod = 5,
+  PreZoomEmoteMod = 6,
 };
 
 namespace DR

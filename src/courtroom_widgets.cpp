@@ -573,7 +573,7 @@ void Courtroom::set_widgets()
 
   ui_background->move(0, 0);
   ui_background->resize(m_default_size);
-  ui_background->set_image("courtroombackground.png");
+  ui_background->set_theme_image("courtroombackground.png");
 
   set_size_and_pos(ui_viewport, "viewport", COURTROOM_DESIGN_INI, ao_app);
 
@@ -591,7 +591,7 @@ void Courtroom::set_widgets()
   ui_vp_desk->resize(ui_viewport->size());
 
   set_size_and_pos(ui_vp_notepad_image, "notepad_image", COURTROOM_DESIGN_INI, ao_app);
-  ui_vp_notepad_image->set_image("notepad_image.png");
+  ui_vp_notepad_image->set_theme_image("notepad_image.png");
   ui_vp_notepad_image->hide();
 
   set_size_and_pos(ui_vp_notepad, "notepad", COURTROOM_DESIGN_INI, ao_app);
@@ -651,22 +651,22 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_vp_music_name, "music_name", COURTROOM_DESIGN_INI, ao_app);
 
   set_size_and_pos(ui_vp_music_display_a, "music_display_a", COURTROOM_DESIGN_INI, ao_app);
-  ui_vp_music_display_a->set_image("music_display_a.png");
+  ui_vp_music_display_a->set_theme_image("music_display_a.png");
   ui_vp_music_display_a->show();
 
   set_size_and_pos(ui_vp_music_display_b, "music_display_b", COURTROOM_DESIGN_INI, ao_app);
-  ui_vp_music_display_b->set_image("music_display_b.png");
+  ui_vp_music_display_b->set_theme_image("music_display_b.png");
   ui_vp_music_display_b->show();
 
   set_size_and_pos(ui_vp_clock, "clock", COURTROOM_DESIGN_INI, ao_app);
   if (m_current_clock == -1)
     ui_vp_clock->hide();
 
-  ui_vp_chatbox->set_image("chatmed.png");
+  ui_vp_chatbox->set_theme_image("chatmed.png");
   ui_vp_chatbox->hide();
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
-  ui_muted->set_image("muted.png");
+  ui_muted->set_theme_image("muted.png");
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_FONTS_INI, ao_app);
@@ -721,7 +721,7 @@ void Courtroom::set_widgets()
       l_emote_preview_size.height = 192;
     }
     ui_emote_preview->resize(l_emote_preview_size.width, l_emote_preview_size.height);
-    ui_emote_preview->set_image("emote_preview.png");
+    ui_emote_preview->set_theme_image("emote_preview.png");
     ui_emote_preview_character->resize(l_emote_preview_size.width, l_emote_preview_size.height);
   }
 
@@ -735,10 +735,10 @@ void Courtroom::set_widgets()
   set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
   set_size_and_pos(ui_defense_bar, "defense_bar", COURTROOM_DESIGN_INI, ao_app);
-  ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state) + ".png");
+  ui_defense_bar->set_theme_image("defensebar" + QString::number(defense_bar_state) + ".png");
 
   set_size_and_pos(ui_prosecution_bar, "prosecution_bar", COURTROOM_DESIGN_INI, ao_app);
-  ui_prosecution_bar->set_image("prosecutionbar" + QString::number(prosecution_bar_state) + ".png");
+  ui_prosecution_bar->set_theme_image("prosecutionbar" + QString::number(prosecution_bar_state) + ".png");
 
   for (int i = 0; i < shout_names.size(); ++i)
   {
@@ -895,7 +895,7 @@ void Courtroom::set_widgets()
     for (int i = 0; i < ui_checks.size(); ++i) // loop through checks
     {
       QString image = label_images[i].toLower() + ".png";
-      ui_label_images[i]->set_image(image);
+      ui_label_images[i]->set_theme_image(image);
 
       if (!ui_label_images[i]->get_image().isEmpty())
         ui_checks[i]->setText("");
@@ -907,7 +907,7 @@ void Courtroom::set_widgets()
     {
       int j = i + ui_checks.size();
       QString image = label_images[j].toLower() + ".png";
-      ui_label_images[j]->set_image(image);
+      ui_label_images[j]->set_theme_image(image);
 
       if (!ui_label_images[j]->get_image().isEmpty())
         ui_labels[i]->setText("");
@@ -920,14 +920,14 @@ void Courtroom::set_widgets()
     for (int i = 0; i < ui_checks.size(); ++i) // same thing
     {
       ui_checks[i]->setText(label_images[i]);
-      ui_label_images[i]->set_image("");
+      ui_label_images[i]->set_theme_image("");
     }
 
     for (int i = 0; i < ui_labels.size(); ++i) // same thing
     {
       int j = i + ui_checks.size();
       ui_labels[i]->setText(label_images[j]);
-      ui_label_images[j]->set_image("");
+      ui_label_images[j]->set_theme_image("");
     }
   }
 
@@ -946,7 +946,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_text_color, "text_color", COURTROOM_DESIGN_INI, ao_app);
   set_stylesheet(ui_text_color, "[TEXT COLOR]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
-  ui_char_button_selector->set_image("char_selector.png");
+  ui_char_button_selector->set_theme_image("char_selector.png");
   ui_char_button_selector->hide();
 
   set_size_and_pos(ui_back_to_lobby, "back_to_lobby", COURTROOM_DESIGN_INI, ao_app);
@@ -971,7 +971,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_note_scroll_area, "note_area", COURTROOM_DESIGN_INI, ao_app);
   ui_note_scroll_area->setWidget(ui_note_area);
 
-  ui_note_area->set_image("note_area.png");
+  ui_note_area->set_theme_image("note_area.png");
   ui_note_area->add_button->set_image("add_button.png");
   ui_note_area->add_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   ui_note_area->setLayout(ui_note_area->m_layout);

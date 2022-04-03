@@ -264,8 +264,11 @@ private:
   // Generate a File Name based on the time you launched the client
   QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
 
-  static const int MESSAGE_SIZE = 17;
+  static const int MESSAGE_SIZE = 18;
   QString m_chatmessage[MESSAGE_SIZE];
+  bool m_hide_character = false;
+  bool m_play_pre = false;
+  bool m_play_zoom = false;
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message;

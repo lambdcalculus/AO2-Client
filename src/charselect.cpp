@@ -111,7 +111,7 @@ void Courtroom::set_char_select()
     qWarning() << "warning: char_select not found or invalid within courtroom_design.ini";
 
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
-  ui_char_select_background->set_image("charselect_background.png");
+  ui_char_select_background->set_theme_image("charselect_background.png");
 }
 
 void Courtroom::set_char_select_page()

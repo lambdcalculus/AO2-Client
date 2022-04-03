@@ -114,7 +114,7 @@ void Lobby::set_widgets()
   center_widget_to_screen(this);
 
   set_size_and_pos(ui_background, "lobby", LOBBY_DESIGN_INI, ao_app);
-  ui_background->set_image("lobbybackground.png");
+  ui_background->set_theme_image("lobbybackground.png");
 
   set_size_and_pos(ui_public_servers, "public_servers", LOBBY_DESIGN_INI, ao_app);
   ui_public_servers->set_image("publicservers_selected.png");
@@ -165,7 +165,7 @@ void Lobby::set_widgets()
                                 "selection-background-color: rgba(0, 0, 0, 0);");
 
   ui_loading_background->resize(this->width(), this->height());
-  ui_loading_background->set_image("loadingbackground.png");
+  ui_loading_background->set_theme_image("loadingbackground.png");
 
   set_size_and_pos(ui_loading_text, "loading_label", LOBBY_DESIGN_INI, ao_app);
   ui_loading_text->setFont(QFont("Arial", 20, QFont::Bold));
