@@ -351,7 +351,7 @@ void Courtroom::handle_music_anim()
 void Courtroom::handle_clock(QString time)
 {
   m_current_clock = time.toInt();
-  if (m_current_clock < 0 || m_current_clock > 23)
+  if (m_current_clock < 0)
     m_current_clock = -1;
   qInfo() << QString("Clock time changed to %1").arg(m_current_clock);
 
