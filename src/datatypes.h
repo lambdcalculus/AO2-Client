@@ -139,9 +139,9 @@ enum ChatMessage : int32_t
   CMFlipState,
   CMEffectState,
   CMTextColor,
+  CMShowName,
   CMVideoName,
   CMShowCharacter,
-  CMShowName,
 };
 
 enum EmoteMod

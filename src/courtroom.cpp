@@ -645,8 +645,9 @@ void Courtroom::on_ic_message_return_pressed()
     f_text_color = QString::number(m_text_color);
   packet_contents.append(f_text_color);
 
-  if (ao_app->has_playable_video_feature())
-    packet_contents.append(!l_emote.video_file.isEmpty() ? l_emote.video_file : "0");
+  packet_contents.append(ao_config->showname());
+
+  packet_contents.append(!l_emote.video_file.isEmpty() ? l_emote.video_file : "0");
 
   // hide character
   packet_contents.append(QString::number(ui_hide_character->isChecked()));
