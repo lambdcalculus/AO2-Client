@@ -651,6 +651,8 @@ void Courtroom::on_ic_message_return_pressed()
   // hide character
   packet_contents.append(QString::number(ui_hide_character->isChecked()));
 
+  packet_contents.append(ao_config->showname());
+
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 }
 
