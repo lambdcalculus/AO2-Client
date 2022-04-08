@@ -80,6 +80,9 @@ private:
   QPushButton *ui_close = nullptr;
   QCheckBox *ui_autosave = nullptr;
 
+  // notifications
+  QPushButton *ui_clear_notifications = nullptr;
+
   // general
   QLineEdit *ui_username = nullptr;
   QLineEdit *ui_callwords = nullptr;

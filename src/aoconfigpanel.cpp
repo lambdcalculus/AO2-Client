@@ -41,6 +41,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_close = AO_GUI_WIDGET(QPushButton, "close");
   ui_autosave = AO_GUI_WIDGET(QCheckBox, "autosave");
 
+  // notifications
+  ui_clear_notifications = AO_GUI_WIDGET(QPushButton, "clear_notifications");
+
   // general
   ui_username = AO_GUI_WIDGET(QLineEdit, "username");
   ui_callwords = AO_GUI_WIDGET(QLineEdit, "callwords");
@@ -112,6 +115,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // input
   // meta
   connect(m_config, SIGNAL(autosave_changed(bool)), ui_autosave, SLOT(setChecked(bool)));
+
+  // notifications
+  connect(ui_clear_notifications, SIGNAL(clicked()), m_config, SLOT(clear_notification_filter()));
 
   // general
   connect(m_config, SIGNAL(username_changed(QString)), ui_username, SLOT(setText(QString)));

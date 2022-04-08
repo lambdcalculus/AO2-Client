@@ -7,6 +7,7 @@
 // qt
 #include <QApplication>
 #include <QDebug>
+#include <QMap>
 #include <QPointer>
 #include <QSettings>
 #include <QSharedPointer>
@@ -46,6 +47,7 @@ private:
 
   // data
   bool autosave;
+  QStringList notification_filter;
   QString username;
   QString callwords;
   bool server_alerts;
@@ -118,6 +120,20 @@ AOConfigPrivate::~AOConfigPrivate()
 void AOConfigPrivate::read_file()
 {
   autosave = cfg.value("autosave", true).toBool();
+
+  { // notifications
+    notification_filter.clear();
+    cfg.beginGroup("notifications");
+    for (const QString &i_key : cfg.childKeys())
+    {
+      const QString l_message = cfg.value(i_key).toString();
+      if (l_message.isEmpty())
+        continue;
+      notification_filter.append(l_message);
+    }
+    cfg.endGroup();
+  }
+
   username = cfg.value("username").toString();
   showname = cfg.value("showname").toString();
   callwords = cfg.value("callwords").toString();
@@ -200,6 +216,15 @@ void AOConfigPrivate::read_file()
 void AOConfigPrivate::save_file()
 {
   cfg.setValue("autosave", autosave);
+
+  { // notifications
+    cfg.remove("notifications");
+    cfg.beginGroup("notifications");
+    for (int i = 0; i < notification_filter.length(); ++i)
+      cfg.setValue(QString::number(i), notification_filter[i]);
+    cfg.endGroup();
+  }
+
   cfg.setValue("username", username);
   cfg.setValue("showname", showname);
   cfg.setValue("callwords", callwords);
@@ -326,6 +351,11 @@ int AOConfig::get_number(QString p_name, int p_default) const
 bool AOConfig::autosave() const
 {
   return d->autosave;
+}
+
+bool AOConfig::display_notification(QString p_message) const
+{
+  return !d->notification_filter.contains(p_message, Qt::CaseInsensitive);
 }
 
 QString AOConfig::username() const
@@ -591,6 +621,16 @@ void AOConfig::set_autosave(bool p_enabled)
     return;
   d->autosave = p_enabled;
   d->invoke_signal("autosave_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::clear_notification_filter()
+{
+  d->notification_filter.clear();
+}
+
+void AOConfig::filter_notification(QString p_message)
+{
+  d->notification_filter.append(p_message);
 }
 
 void AOConfig::set_username(QString p_value)
