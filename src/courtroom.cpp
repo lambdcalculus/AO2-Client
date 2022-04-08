@@ -179,11 +179,9 @@ void Courtroom::enter_courtroom(int p_cid)
     ao_app->get_discord()->set_character_name(l_final_showname);
     ao_config->set_showname_placeholder(l_final_showname);
 
-    if (ao_app->has_character_declaration_feature())
-    {
-      QStringList l_content{l_chr_name, l_final_showname};
-      ao_app->send_server_packet(DRPacket("chrini", l_content));
-    }
+    // send the character declaration
+    QStringList l_content{l_chr_name, l_final_showname};
+    ao_app->send_server_packet(DRPacket("chrini", l_content));
   }
   const bool l_changed_chr = l_chr_name != l_prev_chr_name;
   if (l_changed_chr)
@@ -514,14 +512,7 @@ void Courtroom::send_showname_packet(QString p_showname)
 
   is_first_showname_sent = true;
 
-  if (ao_app->has_showname_declaration_feature())
-  {
-    ao_app->send_server_packet(DRPacket("SN", {p_showname}));
-  }
-  else
-  {
-    send_ooc_packet(QString("/showname %1").arg(p_showname));
-  }
+  ao_app->send_server_packet(DRPacket("SN", {p_showname}));
 }
 
 void Courtroom::on_showname_changed(QString p_showname)
@@ -645,12 +636,17 @@ void Courtroom::on_ic_message_return_pressed()
     f_text_color = QString::number(m_text_color);
   packet_contents.append(f_text_color);
 
-  packet_contents.append(ao_config->showname());
+  if (ao_app->is_server_compatible())
+  {
+    // showname
+    packet_contents.append(ao_config->showname());
 
-  packet_contents.append(!l_emote.video_file.isEmpty() ? l_emote.video_file : "0");
+    // video name
+    packet_contents.append(!l_emote.video_file.isEmpty() ? l_emote.video_file : "0");
 
-  // hide character
-  packet_contents.append(QString::number(ui_hide_character->isChecked()));
+    // hide character
+    packet_contents.append(QString::number(ui_hide_character->isChecked()));
+  }
 
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 }
@@ -721,23 +717,6 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   // reset our ui state if client just spoke
   if (m_chr_id == f_char_id && is_system_speaking == false)
   {
-#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    // If the server does not have the feature of acknowledging our MS
-    // messages, assume in this if that the message is proof the server
-    // acknowledged our message. It is not quite the same, as it is
-    // possible the server crafted a message with the same char_id
-    // as the client, but the client did not send that message, but it is
-    // the best we can do.
-    if (!ao_app->has_message_acknowledgement_feature())
-    {
-      handle_acknowledged_ms();
-    }
-
-    // If the server does have the feature of acknowledging our MS messages,
-    // it will have sent an ackMS packet prior to the MS one, so chat would
-    // have been cleared and thus we need not do anything else.
-#endif
-
     // update first person mode status
     m_msg_is_first_person = ao_app->get_first_person_enabled();
   }
@@ -2114,8 +2093,7 @@ void Courtroom::on_change_character_clicked()
 
   ui_spectator->show();
 
-  if (ao_app->has_character_availability_request_feature())
-    ao_app->send_server_packet(DRPacket("CharsCheck"));
+  ao_app->send_server_packet(DRPacket("CharsCheck"));
 }
 
 void Courtroom::load_theme()

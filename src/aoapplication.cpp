@@ -154,34 +154,9 @@ DRDiscord *AOApplication::get_discord() const
   return dr_discord;
 }
 
-bool AOApplication::has_message_acknowledgement_feature() const
+bool AOApplication::is_server_compatible() const
 {
-  return feature_ackMS;
-}
-
-bool AOApplication::has_character_declaration_feature() const
-{
-  return feature_chrini;
-}
-
-bool AOApplication::has_showname_declaration_feature() const
-{
-  return feature_showname;
-}
-
-bool AOApplication::has_chat_speed_feature() const
-{
-  return feature_chat_speed;
-}
-
-bool AOApplication::has_character_availability_request_feature() const
-{
-  return feature_charscheck;
-}
-
-bool AOApplication::has_playable_video_feature() const
-{
-  return feature_playable_video;
+  return feature_version_compatible;
 }
 
 void AOApplication::handle_theme_modification()

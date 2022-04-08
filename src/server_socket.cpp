@@ -55,14 +55,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     if (l_content.size() == 0)
       return;
 
-#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    feature_ackMS = false;
-#endif
-    feature_showname = false;
-    feature_chrini = false;
-    feature_chat_speed = false;
-    feature_charscheck = false;
-    feature_playable_video = false;
+    feature_version_compatible = false;
 
     send_server_packet(DRPacket("HI", {get_hdid()}));
   }
@@ -86,14 +79,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   }
   else if (l_header == "FL")
   {
-#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-    feature_ackMS = l_content.contains("ackMS", Qt::CaseInsensitive);
-#endif
-    feature_showname = l_content.contains("showname", Qt::CaseInsensitive);
-    feature_chrini = l_content.contains("chrini", Qt::CaseInsensitive);
-    feature_chat_speed = l_content.contains("chat_speed", Qt::CaseInsensitive);
-    feature_charscheck = l_content.contains("charscheck", Qt::CaseInsensitive);
-    feature_playable_video = l_content.contains("playable_video", Qt::CaseInsensitive);
+    feature_version_compatible = l_content.contains("v110", Qt::CaseInsensitive);
   }
   else if (l_header == "PN")
   {

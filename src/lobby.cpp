@@ -301,6 +301,12 @@ void Lobby::on_connect_pressed()
 
 void Lobby::on_connect_released()
 {
+  if (!ao_app->is_server_compatible())
+  {
+    call_warning("You are connecting to an <b>incompatible</b> DRO server.<br />"
+                 "The client may not work properly, if at all.");
+  }
+
   ui_connect->set_image("connect.png");
   ao_app->send_server_packet(DRPacket("askchaa"));
 }
