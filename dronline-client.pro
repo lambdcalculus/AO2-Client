@@ -11,9 +11,6 @@ RC_ICONS = icon.ico
 INCLUDEPATH += $$PWD/include $$PWD/3rd
 DEPENDPATH += $$PWD/include $$PWD/3rd
 
-DEFINES += DRO_ACKMS
-CONFIG(debug, debug|release):DEFINES += DR_DEV
-
 HEADERS += \
   src/aoapplication.h \
   src/aoblipplayer.h \

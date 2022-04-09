@@ -3,7 +3,7 @@
 
 class QString;
 
-void call_error(QString message);
 void call_notice(QString message);
+void call_warning(QString message);
 
 #endif // DEBUG_FUNCTIONS_H

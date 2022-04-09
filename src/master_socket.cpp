@@ -114,35 +114,5 @@ void AOApplication::_p_handle_master_packet(DRPacket p_packet)
   {
     send_master_packet(DRPacket("ID", {"DRO", get_version_string()}));
     send_master_packet(DRPacket("HI", {get_hdid()}));
-
-    if (l_content.size() < 1)
-      return;
-
-    QStringList version_contents = l_content.at(0).split(".");
-
-    if (version_contents.size() < 3)
-      return;
-
-    int f_release = version_contents.at(0).toInt();
-    int f_major = version_contents.at(1).toInt();
-    int f_minor = version_contents.at(2).toInt();
-
-    if (get_release_version() > f_release)
-      return;
-    else if (get_release_version() == f_release)
-    {
-      if (get_major_version() > f_major)
-        return;
-      else if (get_major_version() == f_major)
-      {
-        if (get_minor_version() >= f_minor)
-          return;
-      }
-    }
-
-    call_notice("Outdated version! Your version: " + get_version_string() +
-                "\nPlease go to aceattorneyonline.com to update.");
-    destruct_courtroom();
-    destruct_lobby();
   }
 }

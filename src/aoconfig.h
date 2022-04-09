@@ -22,6 +22,7 @@ public:
 
   // getters
   bool autosave() const;
+  bool display_notification(QString message) const;
   QString username() const;
   QString showname() const;
   QString showname_placeholder() const;
@@ -75,6 +76,8 @@ public slots:
   // setters
 public slots:
   void set_autosave(bool p_enabled);
+  void clear_notification_filter();
+  void filter_notification(QString message);
   void set_username(QString p_string);
   void set_showname(QString p_string);
   void set_showname_placeholder(QString p_string);

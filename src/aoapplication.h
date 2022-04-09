@@ -48,12 +48,7 @@ public:
 
   DRDiscord *get_discord() const;
 
-  bool has_message_acknowledgement_feature() const;
-  bool has_character_declaration_feature() const;
-  bool has_showname_declaration_feature() const;
-  bool has_chat_speed_feature() const;
-  bool has_character_availability_request_feature() const;
-  bool has_playable_video_feature() const;
+  bool is_server_compatible() const;
 
   ///////////////////////////////////////////
 
@@ -228,14 +223,7 @@ private:
   bool is_courtroom_loaded = false;
 
   ///////////////server metadata////////////////
-#ifdef DRO_ACKMS // TODO WARNING remove entire block on 1.0.0 release
-  bool feature_ackMS = false;
-#endif
-  bool feature_showname = false;
-  bool feature_chrini = false;
-  bool feature_chat_speed = false;
-  bool feature_charscheck = false;
-  bool feature_playable_video = false;
+  bool feature_version_compatible = false;
 
   ///////////////loading info///////////////////
   // player number, it's hardly used but might be needed for some old servers
