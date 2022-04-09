@@ -9,7 +9,7 @@
 void drMessageBox(QString p_message, bool p_is_warning)
 {
   AOConfig config;
-  if (p_is_warning && !config.display_notification(p_message))
+  if (!config.display_notification(p_message))
     return;
 
   QMessageBox message;
