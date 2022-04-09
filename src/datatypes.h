@@ -141,7 +141,7 @@ enum ChatMessage : int32_t
   CMTextColor,
   CMShowName,
   CMVideoName,
-  CMShowCharacter,
+  CMHideCharacter,
 };
 
 enum EmoteMod
