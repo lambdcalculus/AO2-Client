@@ -141,7 +141,15 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       return;
 
     QVector<char_type> l_chr_list = m_courtroom->get_character_list();
-    for (int i = 0; i < qMin(l_chr_list.length(), l_content.length()); ++i)
+    if (l_content.length() != l_chr_list.length())
+    {
+      qWarning() << "Server sent a character list of length " << l_content.length()
+                 << "which is different from the expected length " << l_chr_list.length()
+                 << "so ignoring it.";
+      return;
+    }
+
+    for (int i = 0; i < l_chr_list.length(); ++i)
       l_chr_list[i].taken = l_content.at(i) == "-1";
     m_courtroom->set_character_list(l_chr_list);
   }
@@ -192,8 +200,8 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
 
       if (!l_found_music)
         continue;
-      l_area_list = l_content.mid(0, qMax(0, i - 1));
-      l_music_list = l_content.mid(qMax(0, i - 1));
+      l_area_list = l_content.mid(0, i - 1);
+      l_music_list = l_content.mid(i - 1);
       break;
     }
     m_courtroom->set_area_list(l_area_list);
