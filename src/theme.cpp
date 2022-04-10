@@ -76,6 +76,10 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
   int bold = ao_app->get_font_property(p_identifier + "_bold", ini_file);
   QString is_bold = (bold == 1 ? "bold" : "");
 
+  QFont font = p_widget->font();
+  font.setBold(bold);
+  p_widget->setFont(font);
+
   QString style_sheet_string = class_name + " { " + "background-color: rgba(0, 0, 0, 0);\n" +
                                "color: " + l_font_color.name(QColor::HexArgb) + ";\n" + "font: " + is_bold + ";" + " }";
   p_widget->setStyleSheet(style_sheet_string);
