@@ -47,7 +47,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_version->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_version->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_version->setReadOnly(true);
-  ui_about = new AOButton(this, ao_app);
   ui_config_panel = new AOButton(this, ao_app);
   ui_server_list = new QListWidget(this);
   ui_player_count = new DRTextEdit(this);
@@ -84,7 +83,6 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_toggle_favorite, SIGNAL(released()), this, SLOT(on_add_to_fav_released()));
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
-  connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
   connect(ui_config_panel, SIGNAL(pressed()), this, SLOT(on_config_pressed()));
   connect(ui_config_panel, SIGNAL(released()), this, SLOT(on_config_released()));
   connect(ui_server_list, SIGNAL(currentRowChanged(int)), this, SLOT(connect_to_server(int)));
@@ -155,9 +153,6 @@ void Lobby::update_widgets()
 
   set_size_and_pos(ui_version, "version", LOBBY_DESIGN_INI, ao_app);
   ui_version->setText("Version: " + get_version_string());
-
-  set_size_and_pos(ui_about, "about", LOBBY_DESIGN_INI, ao_app);
-  ui_about->set_image("about.png");
 
   set_size_and_pos(ui_config_panel, "config_panel", LOBBY_DESIGN_INI, ao_app);
   ui_config_panel->set_image("lobby_config_panel.png");
@@ -534,11 +529,6 @@ void Lobby::on_config_released()
 {
   ui_config_panel->set_image("lobby_config_panel.png");
   ao_app->toggle_config_panel();
-}
-
-void Lobby::on_about_clicked()
-{
-  QMessageBox::about(this, tr("About"), get_about_message());
 }
 
 void Lobby::connect_to_server(int p_row)

@@ -66,7 +66,6 @@ private:
   AOButton *ui_toggle_favorite = nullptr;
   AOButton *ui_connect = nullptr;
   DRTextEdit *ui_version = nullptr;
-  AOButton *ui_about = nullptr;
   AOButton *ui_config_panel = nullptr;
   QListWidget *ui_server_list = nullptr;
   DRTextEdit *ui_player_count = nullptr;
@@ -108,7 +107,6 @@ private slots:
   void on_connect_released();
   void on_config_pressed();
   void on_config_released();
-  void on_about_clicked();
   void connect_to_server(int row);
 };
 
