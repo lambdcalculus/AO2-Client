@@ -28,6 +28,13 @@ jobs:
         mkdir "3rd/bass"
         mkdir "3rd/discord-rpc"
         
+    - name: Fetch OpenSSL (user)
+      shell: bash
+      working-directory: ${{env.parentworkspace}}
+      run: |
+        curl -L https://cdn.discordapp.com/attachments/457180869229019159/962746488616792145/openssl-1.1.1n.zip -o openssl.zip
+        unzip openssl.zip
+        
     - name: Fetch Discord external library
       shell: bash
       working-directory: ${{env.parentworkspace}}
@@ -135,6 +142,8 @@ jobs:
       shell: bash
       run: |
         windeployqt.exe --quick --compiler-runtime .
+        cp ../libssl-1_1.dll .
+        cp ../libcryptor-1_1.dll .
         cp ../discord-rpc/win32-dynamic/bin/discord-rpc.dll .
         cp ../bass.dll .
         cp ../bassopus.dll .
