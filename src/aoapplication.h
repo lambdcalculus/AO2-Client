@@ -41,7 +41,8 @@ public:
 
   DRDiscord *get_discord() const;
 
-  bool is_server_compatible() const;
+  VersionNumber get_server_client_version() const;
+  VersionStatus get_server_client_version_status() const;
 
   ///////////////////////////////////////////
 
@@ -198,7 +199,9 @@ private:
   bool is_courtroom_loaded = false;
 
   ///////////////server metadata////////////////
-  bool feature_version_compatible = false;
+
+  VersionNumber m_server_client_version;
+  VersionStatus m_server_client_version_status = VersionStatus::NotCompatible;
 
   ///////////////loading info///////////////////
   // player number, it's hardly used but might be needed for some old servers

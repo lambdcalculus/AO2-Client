@@ -1,5 +1,7 @@
 #include "aoapplication.h"
 
+#include <QDebug>
+
 #include "aoconfig.h"
 #include "courtroom.h"
 #include "debug_functions.h"
@@ -10,8 +12,6 @@
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "version.h"
-
-#include <QDebug>
 
 void AOApplication::connect_to_server(DRServerInfo p_server)
 {
@@ -55,8 +55,8 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     if (l_content.size() == 0)
       return;
 
-    feature_version_compatible = false;
-
+    m_server_client_version = VersionNumber();
+    m_server_client_version_status = VersionStatus::NotCompatible;
     send_server_packet(DRPacket("HI", {get_hdid()}));
   }
   else if (l_header == "ID")
@@ -77,9 +77,25 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     if (is_courtroom_constructed)
       m_courtroom->append_server_chatmessage(l_content.at(0), l_content.at(1));
   }
-  else if (l_header == "FL")
+  else if (l_header == "client_version")
   {
-    feature_version_compatible = l_content.contains("v110", Qt::CaseInsensitive);
+    if (l_content.size() < 3)
+      return;
+
+    m_server_client_version = VersionNumber(l_content.at(0).toInt(), l_content.at(1).toInt(), l_content.at(2).toInt());
+    const VersionNumber l_client_version = get_version_number();
+    if (l_client_version == m_server_client_version)
+    {
+      m_server_client_version_status = VersionStatus::Ok;
+    }
+    else if (l_client_version < m_server_client_version)
+    {
+      m_server_client_version_status = VersionStatus::ClientOutdated;
+    }
+    else if (l_client_version > m_server_client_version)
+    {
+      m_server_client_version_status = VersionStatus::ServerOutdated;
+    }
   }
   else if (l_header == "PN")
   {

@@ -100,6 +100,31 @@ public:
 };
 using DRServerInfoList = QVector<DRServerInfo>;
 
+class VersionNumber
+{
+public:
+  int release = 0;
+  int major = 0;
+  int minor = 0;
+
+  VersionNumber();
+  VersionNumber(int release, int major, int minor);
+
+  QString to_string() const;
+
+  bool operator==(const VersionNumber &other) const;
+  bool operator>(const VersionNumber &other) const;
+  bool operator<(const VersionNumber &other) const;
+};
+
+enum class VersionStatus
+{
+  Ok,
+  NotCompatible,
+  ClientOutdated,
+  ServerOutdated,
+};
+
 struct char_type
 {
   QString name;

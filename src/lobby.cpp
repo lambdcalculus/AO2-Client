@@ -5,6 +5,7 @@
 #include "aoconfig.h"
 #include "aoimagedisplay.h"
 #include "commondefs.h"
+#include "datatypes.h"
 #include "debug_functions.h"
 #include "drchatlog.h"
 #include "drmasterclient.h"
@@ -487,9 +488,29 @@ void Lobby::on_connect_pressed()
 
 void Lobby::on_connect_released()
 {
-  if (!ao_app->is_server_compatible())
+  const VersionStatus l_status = ao_app->get_server_client_version_status();
+  if (l_status != VersionStatus::Ok)
   {
-    call_warning("You are connecting to an <b>incompatible</b> DRO server.<br />"
+    QString l_reason;
+    switch (l_status)
+    {
+    case VersionStatus::NotCompatible:
+      l_reason = "The server did not report any client version.";
+      break;
+    case VersionStatus::ServerOutdated:
+      l_reason = QString("The server is outdated.<br />(Server version: <b>%1</b>, expected version: <b>%2</b>)")
+                     .arg(ao_app->get_server_client_version().to_string(), get_version_number().to_string());
+      break;
+    case VersionStatus::ClientOutdated:
+      l_reason = QString("Your client is outdated.<br />(Client version: <b>%1</b>, expected version: <b>%2</b>)")
+                     .arg(get_version_number().to_string(), ao_app->get_server_client_version().to_string());
+      break;
+    default:
+      break;
+    }
+
+    call_warning("You are connecting to an <b>incompatible</b> DRO server.<br /><br />Reason: " + l_reason +
+                 "<br /><br />"
                  "The client may not work properly, if at all.");
   }
 

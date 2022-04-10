@@ -141,9 +141,14 @@ DRDiscord *AOApplication::get_discord() const
   return dr_discord;
 }
 
-bool AOApplication::is_server_compatible() const
+VersionNumber AOApplication::get_server_client_version() const
 {
-  return feature_version_compatible;
+  return m_server_client_version;
+}
+
+VersionStatus AOApplication::get_server_client_version_status() const
+{
+  return m_server_client_version_status;
 }
 
 void AOApplication::handle_theme_modification()
