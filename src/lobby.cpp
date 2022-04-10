@@ -160,7 +160,7 @@ void Lobby::update_widgets()
   ui_about->set_image("about.png");
 
   set_size_and_pos(ui_config_panel, "config_panel", LOBBY_DESIGN_INI, ao_app);
-  ui_config_panel->set_image("lobby_config.png");
+  ui_config_panel->set_image("lobby_config_panel.png");
 
   set_size_and_pos(ui_server_list, "server_list", LOBBY_DESIGN_INI, ao_app);
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -527,12 +527,12 @@ void Lobby::on_connect_released()
 
 void Lobby::on_config_pressed()
 {
-  ui_config_panel->set_image("lobby_config_pressed.png");
+  ui_config_panel->set_image("lobby_config_panel_pressed.png");
 }
 
 void Lobby::on_config_released()
 {
-  ui_config_panel->set_image("lobby_config.png");
+  ui_config_panel->set_image("lobby_config_panel.png");
   ao_app->toggle_config_panel();
 }
 
