@@ -32,7 +32,7 @@ jobs:
       shell: bash
       working-directory: ${{env.parentworkspace}}
       run: |
-        curl -L https://cdn.discordapp.com/attachments/457180869229019159/962746488616792145/openssl-1.1.1n.zip -o openssl.zip
+        curl -L https://cdn.discordapp.com/attachments/457180869229019159/962750500632150168/openssl-1.1.1n.zip -o openssl.zip
         unzip openssl.zip
         
     - name: Fetch Discord external library
