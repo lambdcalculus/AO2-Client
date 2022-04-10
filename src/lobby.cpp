@@ -157,6 +157,13 @@ void Lobby::update_widgets()
 
   set_size_and_pos(ui_config_panel, "config_panel", LOBBY_DESIGN_INI, ao_app);
   ui_config_panel->set_image("lobby_config_panel.png");
+  ui_config_panel->setText("Config");
+  if (ui_config_panel->isHidden() || ui_config_panel->size().isEmpty())
+  {
+    ui_config_panel->resize(64, 64);
+    ui_config_panel->move(0, 0);
+    ui_config_panel->show();
+  }
 
   set_size_and_pos(ui_server_list, "server_list", LOBBY_DESIGN_INI, ao_app);
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
