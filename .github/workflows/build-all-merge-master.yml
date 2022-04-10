@@ -156,7 +156,7 @@ jobs:
       run: |
         windeployqt.exe --quick --compiler-runtime .
         cp ../libssl-1_1.dll .
-        cp ../libcryptor-1_1.dll .
+        cp ../libcrypto-1_1.dll .
         cp ../discord-rpc/win32-dynamic/bin/discord-rpc.dll .
         cp ../bass.dll .
         cp ../bassopus.dll .
