@@ -139,10 +139,10 @@ void Lobby::update_widgets()
   ui_background->set_theme_image("lobbybackground.png");
 
   set_size_and_pos(ui_hide_public_servers, "public_servers", LOBBY_DESIGN_INI, ao_app);
-  ui_hide_public_servers->set_image("publicservers.png");
+  ui_hide_public_servers->set_image(m_hide_public_servers ? "publicservers_selected.png" : "publicservers.png");
 
   set_size_and_pos(ui_hide_favorite_servers, "favorites", LOBBY_DESIGN_INI, ao_app);
-  ui_hide_favorite_servers->set_image("favorites.png");
+  ui_hide_favorite_servers->set_image(m_hide_favorite_servers ? "favorites_selected.png" : "favorites.png");
 
   set_size_and_pos(ui_refresh, "refresh", LOBBY_DESIGN_INI, ao_app);
   ui_refresh->set_image("refresh.png");
