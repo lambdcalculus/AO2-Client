@@ -156,8 +156,7 @@ void Lobby::update_widgets()
   ui_version->setText("Version: " + get_version_string());
 
   set_size_and_pos(ui_config_panel, "config_panel", LOBBY_DESIGN_INI, ao_app);
-  ui_config_panel->set_image("lobby_config_panel.png");
-  ui_config_panel->setText("Config");
+  ui_config_panel->set_image_and_text("lobby_config_panel.png", "Config");
   if (ui_config_panel->isHidden() || ui_config_panel->size().isEmpty())
   {
     ui_config_panel->resize(64, 64);
