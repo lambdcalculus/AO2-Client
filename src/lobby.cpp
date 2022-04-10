@@ -17,10 +17,12 @@
 #include <QDebug>
 #include <QFile>
 #include <QFontDatabase>
+#include <QIcon>
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMessageBox>
+#include <QPixmap>
 #include <QProgressBar>
 #include <QScopedPointer>
 #include <QSettings>
@@ -370,16 +372,16 @@ void Lobby::update_combined_server_list()
 void Lobby::update_server_listing()
 {
   ui_server_list->clear();
+  const QIcon l_favorite_icon = QPixmap(ao_app->find_theme_asset_path("favorite_server.png"));
   const QBrush l_favorite_color = ao_app->get_color("favorite_server_color", LOBBY_DESIGN_INI);
-  for (int i = 0; i < m_combined_server_list.length(); ++i)
+  for (const DRServerInfo &l_server : qAsConst(m_combined_server_list))
   {
-    const DRServerInfo &l_server = m_combined_server_list[i];
     QListWidgetItem *l_server_item = new QListWidgetItem;
     ui_server_list->addItem(l_server_item);
     l_server_item->setText(l_server.name);
-    l_server_item->setData(Qt::UserRole, i);
     if (l_server.favorite)
     {
+      l_server_item->setIcon(l_favorite_icon);
       l_server_item->setBackground(l_favorite_color);
     }
   }
