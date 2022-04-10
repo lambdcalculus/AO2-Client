@@ -17,3 +17,34 @@ QMap<DR::Color, DR::ColorInfo> DR::get_default_color_map()
 
   return default_color_map;
 }
+
+QString DRServerInfo::to_info() const
+{
+  QString r_info = "Unnamed Server";
+
+  if (!name.isEmpty())
+  {
+    r_info = name;
+  }
+  else if (!address.isEmpty())
+  {
+    r_info = to_address();
+  }
+
+  return r_info;
+}
+
+QString DRServerInfo::to_address() const
+{
+  return address + ":" + QString::number(port);
+}
+
+bool DRServerInfo::operator==(const DRServerInfo &o) const
+{
+  return address == o.address && port == o.port;
+}
+
+bool DRServerInfo::operator!=(const DRServerInfo &other) const
+{
+  return !operator==(other);
+}

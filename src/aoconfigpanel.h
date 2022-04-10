@@ -86,6 +86,7 @@ private:
   // general
   QLineEdit *ui_username = nullptr;
   QLineEdit *ui_callwords = nullptr;
+  QLineEdit *ui_advertiser = nullptr;
   QCheckBox *ui_server_alerts = nullptr;
   QGroupBox *ui_discord_presence = nullptr;
   QCheckBox *ui_discord_hide_server = nullptr;
@@ -155,6 +156,7 @@ private:
 private slots:
   void username_editing_finished();
   void showname_editing_finished();
+  void advertiser_editing_finished();
   void callwords_editing_finished();
 };
 

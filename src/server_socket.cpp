@@ -13,7 +13,7 @@
 
 #include <QDebug>
 
-void AOApplication::connect_to_server(server_type p_server)
+void AOApplication::connect_to_server(DRServerInfo p_server)
 {
   m_server_socket->connect_to_server(p_server, false);
 }
@@ -108,11 +108,12 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
 
     is_courtroom_loaded = false;
 
-    server_type l_current_server = m_lobby->get_selected_server();
-    if (l_current_server.is_favorite)
+    DRServerInfo l_current_server = m_lobby->get_selected_server();
+    if (l_current_server.favorite)
     {
       const QString l_current_server_address = l_current_server.to_address();
-      for (const server_type &i_server : qAsConst(m_server_list))
+      const DRServerInfoList l_server_list = m_lobby->get_combined_server_list();
+      for (const DRServerInfo &i_server : qAsConst(l_server_list))
       {
         if (l_current_server_address != i_server.to_address())
           continue;

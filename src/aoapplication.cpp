@@ -5,6 +5,7 @@
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
+#include "drmasterclient.h"
 #include "drpacket.h"
 #include "drserversocket.h"
 #include "lobby.h"
@@ -15,17 +16,11 @@
 #include <QFontDatabase>
 #include <QRegularExpression>
 
-const QString AOApplication::MASTER_NAME = "Master";
-const QString AOApplication::MASTER_HOST = "master.aceattorneyonline.com";
-const int AOApplication::MASTER_PORT = 27016;
-const int AOApplication::MASTER_RECONNECT_DELAY = 5000;
-
 AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
 {
   ao_config = new AOConfig(this);
   ao_config_panel = new AOConfigPanel(this);
   dr_discord = new DRDiscord(this);
-  m_master_socket = new DRServerSocket(this);
   m_server_socket = new DRServerSocket(this);
 
   connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(handle_theme_modification()));
@@ -47,23 +42,15 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   connect(ao_config, SIGNAL(discord_hide_server_changed(bool)), dr_discord, SLOT(set_hide_server(bool)));
   connect(ao_config, SIGNAL(discord_hide_character_changed(bool)), dr_discord, SLOT(set_hide_character(bool)));
 
-  connect(m_master_socket, SIGNAL(connected_to_server()), this, SLOT(_p_send_master_handshake()));
-  connect(m_master_socket, SIGNAL(socket_error(QString)), this, SLOT(_p_handle_master_error(QString)));
-  connect(m_master_socket, SIGNAL(packet_received(DRPacket)), this, SLOT(_p_handle_master_packet(DRPacket)));
-
   connect(m_server_socket, SIGNAL(disconnected_from_server()), this, SLOT(_p_handle_server_disconnection()));
   connect(m_server_socket, SIGNAL(packet_received(DRPacket)), this, SLOT(_p_handle_server_packet(DRPacket)));
-
-#ifndef QT_DEBUG
-  connect_to_master();
-#endif
 }
 
 AOApplication::~AOApplication()
 {
+  qInfo() << "Closing Danganronpa Online...";
   destruct_lobby();
   destruct_courtroom();
-  qInfo() << "Closing Danganronpa Online...";
 }
 
 int AOApplication::get_client_id() const
@@ -175,16 +162,6 @@ void AOApplication::handle_audiotracks_reloading()
   emit reload_audiotracks();
 }
 
-void AOApplication::set_favorite_list()
-{
-  m_favorite_server_list = read_serverlist_txt();
-}
-
-QVector<server_type> &AOApplication::get_favorite_list()
-{
-  return m_favorite_server_list;
-}
-
 QString AOApplication::get_current_char()
 {
   if (!is_courtroom_constructed)
@@ -226,25 +203,6 @@ void AOApplication::toggle_config_panel()
 bool AOApplication::get_first_person_enabled()
 {
   return ao_config->get_bool("first_person", false);
-}
-
-void AOApplication::add_favorite_server(int p_server)
-{
-  if (p_server < 0 || p_server >= m_server_list.size())
-    return;
-
-  server_type fav_server = m_server_list.at(p_server);
-
-  QString str_port = QString::number(fav_server.port);
-
-  QString server_line = fav_server.ip + ":" + str_port + ":" + fav_server.name;
-
-  write_to_serverlist_txt(server_line);
-}
-
-QVector<server_type> &AOApplication::get_server_list()
-{
-  return m_server_list;
 }
 
 void AOApplication::load_fonts()

@@ -50,6 +50,7 @@ private:
   QStringList notification_filter;
   QString username;
   QString callwords;
+  QString server_advertiser;
   bool server_alerts;
   bool discord_presence = false;
   bool discord_hide_server = false;
@@ -137,6 +138,7 @@ void AOConfigPrivate::read_file()
   username = cfg.value("username").toString();
   showname = cfg.value("showname").toString();
   callwords = cfg.value("callwords").toString();
+  server_advertiser = cfg.value("server_advertiser", "https://servers.aceattorneyonline.com").toString();
   server_alerts = cfg.value("server_alerts", true).toBool();
 
   discord_presence = cfg.value("discord_presence", true).toBool();
@@ -228,6 +230,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("username", username);
   cfg.setValue("showname", showname);
   cfg.setValue("callwords", callwords);
+  cfg.setValue("server_advertiser", server_advertiser);
   cfg.setValue("server_alerts", server_alerts);
 
   cfg.setValue("discord_presence", discord_presence);
@@ -383,6 +386,11 @@ QString AOConfig::character_ini(QString p_base_chr) const
 QString AOConfig::callwords() const
 {
   return d->callwords;
+}
+
+QString AOConfig::server_advertiser() const
+{
+  return d->server_advertiser;
 }
 
 bool AOConfig::server_alerts_enabled() const
@@ -686,6 +694,14 @@ void AOConfig::set_callwords(QString p_string)
     return;
   d->callwords = p_string;
   d->invoke_signal("callwords_changed", Q_ARG(QString, p_string));
+}
+
+void AOConfig::set_server_advertiser(QString p_address)
+{
+  if (d->server_advertiser == p_address)
+    return;
+  d->server_advertiser = p_address;
+  d->invoke_signal("server_advertiser_changed", Q_ARG(QString, p_address));
 }
 
 void AOConfig::set_server_alerts(bool p_enabled)

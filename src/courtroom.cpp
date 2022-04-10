@@ -2126,7 +2126,6 @@ void Courtroom::on_back_to_lobby_clicked()
   hide();
 
   ao_app->construct_lobby();
-  ao_app->get_lobby()->list_servers();
   ao_app->get_lobby()->set_choose_a_server();
   ao_app->destruct_courtroom();
 }

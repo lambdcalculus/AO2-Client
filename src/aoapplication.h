@@ -8,6 +8,7 @@ class AOConfig;
 class AOConfigPanel;
 class Courtroom;
 class DRDiscord;
+class DRMasterClient;
 class DRServerSocket;
 class Lobby;
 
@@ -21,21 +22,13 @@ class AOApplication : public QApplication
   Q_OBJECT
 
 public:
-  static const QString MASTER_NAME;
-  static const QString MASTER_HOST;
-  static const int MASTER_PORT;
-  static const int MASTER_RECONNECT_DELAY;
-
   AOApplication(int &argc, char **argv);
   ~AOApplication();
 
   int get_client_id() const;
   void set_client_id(int id);
 
-  void connect_to_master();
-  void send_master_packet(DRPacket packet);
-  void request_server_list();
-  void connect_to_server(server_type server);
+  void connect_to_server(DRServerInfo server);
   void send_server_packet(DRPacket packet);
 
   Lobby *get_lobby() const;
@@ -52,17 +45,12 @@ public:
 
   ///////////////////////////////////////////
 
-  void set_favorite_list();
-  QVector<server_type> &get_favorite_list();
-  void add_favorite_server(int p_server);
-
-  QVector<server_type> &get_server_list();
-
   // Returns the character the player has currently selected
   QString get_current_char();
 
   // implementation in path_functions.cpp
   QString get_base_path();
+  QString get_base_file_path(QString file);
   QString get_character_folder_path(QString character);
   QString get_character_path(QString p_character, QString p_file);
   // QString get_demothings_path();
@@ -102,17 +90,11 @@ public:
   // TODO document what this does
   QStringList get_sfx_list();
 
-  // Appends the argument string to serverlist.txt
-  void write_to_serverlist_txt(QString p_line);
-
   // Writes to note file
   void write_note(QString p_text, QString filename);
 
   // appends to note file
   void append_note(QString p_line, QString filename);
-
-  // Returns the contents of serverlist.txt
-  QVector<server_type> read_serverlist_txt();
 
   QString read_ini(QString p_identifier, QString p_path);
 
@@ -163,17 +145,11 @@ public:
   // Returns effect on cc_config according to index
   QStringList get_effect(int index);
 
-  // Returns wtce on cc_config according to index
-  QStringList get_wtce(int index);
-
   // Returns the side of the p_char character from that characters ini file
   QString get_char_side(QString p_char);
 
   // Returns the showname from the ini of p_char
   QString get_showname(QString p_char);
-
-  // Returns showname from showname.ini
-  QString read_showname(QString p_char);
 
   // Returns the value of chat from the specific p_char's ini file
   QString get_chat(QString p_char);
@@ -212,7 +188,6 @@ private:
   AOConfigPanel *ao_config_panel = nullptr;
   DRDiscord *dr_discord = nullptr;
 
-  DRServerSocket *m_master_socket = nullptr;
   DRServerSocket *m_server_socket = nullptr;
 
   Lobby *m_lobby = nullptr;
@@ -238,13 +213,7 @@ private:
   int m_music_count = 0;
   int m_loaded_music = 0;
 
-  QVector<server_type> m_server_list;
-  QVector<server_type> m_favorite_server_list;
-
 private slots:
-  void _p_send_master_handshake();
-  void _p_handle_master_error(QString);
-  void _p_handle_master_packet(DRPacket);
   void _p_handle_server_disconnection();
   void _p_handle_server_packet(DRPacket);
   void on_courtroom_closing();

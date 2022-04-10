@@ -49,6 +49,7 @@ HEADERS += \
   src/drchatlog.h \
   src/drdiscord.h \
   src/dreffectmovie.h \
+  src/drmasterclient.h \
   src/drmovie.h \
   src/drpacket.h \
   src/drpather.h \
@@ -110,6 +111,7 @@ SOURCES += \
   src/drcharactermovie.cpp \
   src/drchatlog.cpp \
   src/dreffectmovie.cpp \
+  src/drmasterclient.cpp \
   src/drmovie.cpp \
   src/drpacket.cpp \
   src/drpather.cpp \
@@ -127,7 +129,6 @@ SOURCES += \
   src/lobby.cpp \
   src/logger.cpp \
   src/main.cpp \
-  src/master_socket.cpp \
   src/misc_functions.cpp \
   src/path_functions.cpp \
   src/server_socket.cpp \
