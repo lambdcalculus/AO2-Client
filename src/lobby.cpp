@@ -48,7 +48,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_version->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_version->setReadOnly(true);
   ui_about = new AOButton(this, ao_app);
-  ui_config = new AOButton(this, ao_app);
+  ui_config_panel = new AOButton(this, ao_app);
   ui_server_list = new QListWidget(this);
   ui_player_count = new DRTextEdit(this);
   ui_player_count->setFrameStyle(QFrame::NoFrame);
@@ -85,8 +85,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
-  connect(ui_config, SIGNAL(pressed()), this, SLOT(on_config_pressed()));
-  connect(ui_config, SIGNAL(released()), this, SLOT(on_config_released()));
+  connect(ui_config_panel, SIGNAL(pressed()), this, SLOT(on_config_pressed()));
+  connect(ui_config_panel, SIGNAL(released()), this, SLOT(on_config_released()));
   connect(ui_server_list, SIGNAL(currentRowChanged(int)), this, SLOT(connect_to_server(int)));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
@@ -159,8 +159,8 @@ void Lobby::update_widgets()
   set_size_and_pos(ui_about, "about", LOBBY_DESIGN_INI, ao_app);
   ui_about->set_image("about.png");
 
-  set_size_and_pos(ui_config, "config", LOBBY_DESIGN_INI, ao_app);
-  ui_config->set_image("lobby_config.png");
+  set_size_and_pos(ui_config_panel, "config_panel", LOBBY_DESIGN_INI, ao_app);
+  ui_config_panel->set_image("lobby_config.png");
 
   set_size_and_pos(ui_server_list, "server_list", LOBBY_DESIGN_INI, ao_app);
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -527,12 +527,12 @@ void Lobby::on_connect_released()
 
 void Lobby::on_config_pressed()
 {
-  ui_config->set_image("lobby_config_pressed.png");
+  ui_config_panel->set_image("lobby_config_pressed.png");
 }
 
 void Lobby::on_config_released()
 {
-  ui_config->set_image("lobby_config.png");
+  ui_config_panel->set_image("lobby_config.png");
   ao_app->toggle_config_panel();
 }
 

@@ -67,7 +67,7 @@ private:
   AOButton *ui_connect = nullptr;
   DRTextEdit *ui_version = nullptr;
   AOButton *ui_about = nullptr;
-  AOButton *ui_config = nullptr;
+  AOButton *ui_config_panel = nullptr;
   QListWidget *ui_server_list = nullptr;
   DRTextEdit *ui_player_count = nullptr;
   QTextBrowser *ui_description = nullptr;
