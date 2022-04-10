@@ -175,7 +175,7 @@ std::optional<QColor> AOApplication::maybe_color(QString p_identifier, QString p
 
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
-  return maybe_color(p_identifier, p_file).value_or(QColor(0, 0, 0, 127));
+  return maybe_color(p_identifier, p_file).value_or(QColor(127, 127, 127, 127));
 }
 
 QString AOApplication::get_font_name(QString p_identifier, QString p_file)

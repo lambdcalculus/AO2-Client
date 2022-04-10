@@ -92,6 +92,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   load_settings();
   load_favorite_server_list();
   m_master_client->set_address(ao_config->server_advertiser());
+  set_choose_a_server();
 }
 
 Lobby::~Lobby()
@@ -194,7 +195,7 @@ void Lobby::update_widgets()
 
   set_fonts();
   set_stylesheets();
-  set_choose_a_server();
+  update_server_listing();
 }
 
 void Lobby::set_fonts()
