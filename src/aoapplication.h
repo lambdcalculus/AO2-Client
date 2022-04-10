@@ -201,7 +201,7 @@ private:
   ///////////////server metadata////////////////
 
   VersionNumber m_server_client_version;
-  VersionStatus m_server_client_version_status = VersionStatus::NotCompatible;
+  VersionStatus m_server_client_version_status = VersionStatus::Ok;
 
   ///////////////loading info///////////////////
   // player number, it's hardly used but might be needed for some old servers
