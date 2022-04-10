@@ -673,7 +673,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   for (int i = 0; i < MESSAGE_SIZE; ++i)
     m_chatmessage[i] = p_contents[i];
 
-  m_hide_character = m_chatmessage[CMShowCharacter].toInt();
+  m_hide_character = m_chatmessage[CMHideCharacter].toInt();
   m_play_pre = false;
   m_play_zoom = false;
   const int l_emote_mod = m_chatmessage[CMEmoteModifier].toInt();

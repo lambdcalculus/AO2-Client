@@ -141,6 +141,14 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       return;
 
     QVector<char_type> l_chr_list = m_courtroom->get_character_list();
+    if (l_content.length() != l_chr_list.length())
+    {
+      qWarning() << "Server sent a character list of length " << l_content.length()
+                 << "which is different from the expected length " << l_chr_list.length()
+                 << "so ignoring it.";
+      return;
+    }
+
     for (int i = 0; i < l_chr_list.length(); ++i)
       l_chr_list[i].taken = l_content.at(i) == "-1";
     m_courtroom->set_character_list(l_chr_list);
@@ -320,8 +328,8 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   }
   else if (l_header == "CL")
   {
-    qDebug() << l_content;
-    m_courtroom->handle_clock(l_content.at(1));
+    if (is_courtroom_constructed && l_content.size() > 0)
+      m_courtroom->handle_clock(l_content.at(1));
   }
   else if (l_header == "GM")
   {
