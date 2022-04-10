@@ -29,7 +29,6 @@ public:
 
   DRServerInfoList get_combined_server_list();
 
-  void set_widgets();
   void set_choose_a_server();
   void set_player_count(int players_online, int max_players);
   void set_loading_text(QString p_text);
@@ -68,6 +67,7 @@ private:
   AOButton *ui_connect = nullptr;
   DRTextEdit *ui_version = nullptr;
   AOButton *ui_about = nullptr;
+  AOButton *ui_config = nullptr;
   QListWidget *ui_server_list = nullptr;
   DRTextEdit *ui_player_count = nullptr;
   QTextBrowser *ui_description = nullptr;
@@ -85,6 +85,8 @@ private:
   void save_favorite_server_list();
 
 private slots:
+  void update_widgets();
+
   void request_advertiser_update();
   void update_motd();
   void update_server_list();
@@ -104,6 +106,8 @@ private slots:
   void on_add_to_fav_released();
   void on_connect_pressed();
   void on_connect_released();
+  void on_config_pressed();
+  void on_config_released();
   void on_about_clicked();
   void connect_to_server(int row);
 };

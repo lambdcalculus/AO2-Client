@@ -48,6 +48,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_version->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_version->setReadOnly(true);
   ui_about = new AOButton(this, ao_app);
+  ui_config = new AOButton(this, ao_app);
   ui_server_list = new QListWidget(this);
   ui_player_count = new DRTextEdit(this);
   ui_player_count->setFrameStyle(QFrame::NoFrame);
@@ -69,6 +70,7 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   ui_progress_bar->setStyleSheet("QProgressBar{ color: white; }");
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
+  connect(ao_app, SIGNAL(reload_theme()), this, SLOT(update_widgets()));
   connect(ao_config, SIGNAL(server_advertiser_changed(QString)), m_master_client, SLOT(set_address(QString)));
   connect(m_master_client, SIGNAL(address_changed()), this, SLOT(request_advertiser_update()));
   connect(m_master_client, SIGNAL(motd_changed()), this, SLOT(update_motd()));
@@ -83,10 +85,12 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
   connect(ui_about, SIGNAL(clicked()), this, SLOT(on_about_clicked()));
+  connect(ui_config, SIGNAL(pressed()), this, SLOT(on_config_pressed()));
+  connect(ui_config, SIGNAL(released()), this, SLOT(on_config_released()));
   connect(ui_server_list, SIGNAL(currentRowChanged(int)), this, SLOT(connect_to_server(int)));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
-  set_widgets();
+  update_widgets();
   load_settings();
   load_favorite_server_list();
   m_master_client->set_address(ao_config->server_advertiser());
@@ -103,7 +107,7 @@ DRServerInfoList Lobby::get_combined_server_list()
 }
 
 // sets images, position and size
-void Lobby::set_widgets()
+void Lobby::update_widgets()
 {
   pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", LOBBY_DESIGN_INI);
 
@@ -154,6 +158,9 @@ void Lobby::set_widgets()
 
   set_size_and_pos(ui_about, "about", LOBBY_DESIGN_INI, ao_app);
   ui_about->set_image("about.png");
+
+  set_size_and_pos(ui_config, "config", LOBBY_DESIGN_INI, ao_app);
+  ui_config->set_image("lobby_config.png");
 
   set_size_and_pos(ui_server_list, "server_list", LOBBY_DESIGN_INI, ao_app);
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -516,6 +523,17 @@ void Lobby::on_connect_released()
 
   ui_connect->set_image("connect.png");
   ao_app->send_server_packet(DRPacket("askchaa"));
+}
+
+void Lobby::on_config_pressed()
+{
+  ui_config->set_image("lobby_config_pressed.png");
+}
+
+void Lobby::on_config_released()
+{
+  ui_config->set_image("lobby_config.png");
+  ao_app->toggle_config_panel();
 }
 
 void Lobby::on_about_clicked()
