@@ -34,10 +34,17 @@ void AOButton::set_image(QString p_image)
     l_hover_image = m_image;
   }
 
-  this->setStyleSheet("QPushButton {border-image:url(\"" + m_image +
-                      "\");}"
-                      "QPushButton:hover {border-image:url(\"" +
-                      l_hover_image + "\");}");
+  setStyleSheet("QPushButton {border-image:url(\"" + m_image +
+                "\");}"
+                "QPushButton:hover {border-image:url(\"" +
+                l_hover_image + "\");}");
+  setText(m_image.isEmpty() ? m_text : nullptr);
+}
+
+void AOButton::set_image_and_text(QString p_image, QString p_text)
+{
+  m_text = p_text;
+  set_image(p_image);
 }
 
 void AOButton::refresh_image()

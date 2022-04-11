@@ -60,61 +60,6 @@ void AOApplication::append_note(QString p_line, QString p_file)
   }
 }
 
-void AOApplication::write_to_serverlist_txt(QString p_line)
-{
-  QFile serverlist_txt;
-  QString serverlist_txt_path = get_base_path() + "serverlist.txt";
-
-  serverlist_txt.setFileName(serverlist_txt_path);
-
-  if (!serverlist_txt.open(QIODevice::WriteOnly | QIODevice::Append))
-  {
-    return;
-  }
-
-  QTextStream out(&serverlist_txt);
-
-  out << "\r\n" << p_line;
-
-  serverlist_txt.close();
-}
-
-QVector<server_type> AOApplication::read_serverlist_txt()
-{
-  QVector<server_type> f_server_list;
-
-  QFile serverlist_txt;
-  QString serverlist_txt_path = get_base_path() + "serverlist.txt";
-
-  serverlist_txt.setFileName(serverlist_txt_path);
-
-  if (!serverlist_txt.open(QIODevice::ReadOnly))
-  {
-    return f_server_list;
-  }
-
-  QTextStream in(&serverlist_txt);
-
-  while (!in.atEnd())
-  {
-    QString line = in.readLine();
-    server_type f_server;
-    QStringList line_contents = line.split(":");
-
-    if (line_contents.size() < 3)
-      continue;
-
-    f_server.ip = line_contents.at(0);
-    f_server.port = line_contents.at(1).toInt();
-    f_server.name = line_contents.at(2);
-    f_server.desc = "";
-
-    f_server_list.append(f_server);
-  }
-
-  return f_server_list;
-}
-
 /**
  * @brief Reads p_path and returns the value associated with key
  * p_identifier. If the file or key do not exist, return empty.
@@ -230,7 +175,7 @@ std::optional<QColor> AOApplication::maybe_color(QString p_identifier, QString p
 
 QColor AOApplication::get_color(QString p_identifier, QString p_file)
 {
-  return maybe_color(p_identifier, p_file).value_or(QColor(255, 255, 255));
+  return maybe_color(p_identifier, p_file).value_or(QColor(127, 127, 127, 127));
 }
 
 QString AOApplication::get_font_name(QString p_identifier, QString p_file)

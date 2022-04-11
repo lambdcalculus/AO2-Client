@@ -17,7 +17,7 @@ public:
   DRServerSocket(QObject *parent = nullptr);
 
   bool is_connected() const;
-  void connect_to_server(server_type server, bool is_reconnectable);
+  void connect_to_server(DRServerInfo server, bool is_reconnectable);
   void disconnect_from_server();
 
 public slots:
@@ -33,7 +33,7 @@ signals:
 private:
   static const int RECONNECT_DELAY;
 
-  server_type m_server;
+  DRServerInfo m_server;
   QTcpSocket *m_socket = nullptr;
   bool m_is_connected = false;
   QTimer *m_reconnect_timer = nullptr;

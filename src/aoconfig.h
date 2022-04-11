@@ -28,6 +28,7 @@ public:
   QString showname_placeholder() const;
   QString character_ini(QString base_character) const;
   QString callwords() const;
+  QString server_advertiser() const;
   bool server_alerts_enabled() const;
   bool discord_presence() const;
   bool discord_hide_server() const;
@@ -84,6 +85,7 @@ public slots:
   void clear_showname_placeholder();
   void set_character_ini(QString base_character, QString target_character);
   void set_callwords(QString p_string);
+  void set_server_advertiser(QString address);
   void set_server_alerts(bool p_enabled);
   void set_discord_presence(const bool p_enabled);
   void set_discord_hide_server(const bool p_enabled);
@@ -133,6 +135,7 @@ signals:
   // general
   void username_changed(QString);
   void callwords_changed(QString);
+  void server_advertiser_changed(QString);
   void server_alerts_changed(bool);
   void discord_presence_changed(bool);
   void discord_hide_server_changed(bool);

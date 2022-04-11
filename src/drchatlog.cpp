@@ -15,12 +15,17 @@ DRChatLog::DRChatLog(QWidget *parent) : QTextBrowser(parent), dr_config(new AOCo
 
 void DRChatLog::append_chatmessage(QString p_name, QString p_text)
 {
-  queue_message(p_name.trimmed().isEmpty() ? "Anonymous" : p_name, p_text);
+  queue_message(p_name.trimmed().isEmpty() ? "Anonymous" : p_name, p_text, false);
 }
 
-void DRChatLog::append_error(QString p_text)
+void DRChatLog::append_information(QString p_text)
 {
-  queue_message(nullptr, p_text);
+  queue_message(nullptr, p_text, false);
+}
+
+void DRChatLog::append_html(QString p_text)
+{
+  queue_message(nullptr, p_text, true);
 }
 
 void DRChatLog::reset_message_format()
@@ -28,12 +33,13 @@ void DRChatLog::reset_message_format()
   _p_reset_log();
 }
 
-void DRChatLog::queue_message(QString p_name, QString p_text)
+void DRChatLog::queue_message(QString p_name, QString p_text, bool p_is_html)
 {
   Message l_message;
   l_message.timestamp = QDateTime::currentDateTime();
   l_message.name = p_name;
   l_message.text = p_text;
+  l_message.is_html = p_is_html;
   m_message_queue.append(std::move(l_message));
   Q_EMIT message_queued();
 }
@@ -73,53 +79,58 @@ void DRChatLog::_p_write_message_queue()
       l_cursor.insertText(": ", l_normal_format);
     }
 
-    const QString l_text = l_message.text;
-
-    class TextPiece
+    if (l_message.is_html)
     {
-    public:
-      QString text;
-      bool is_href = false;
-
-      TextPiece()
-      {}
-      TextPiece(QString p_text, bool p_is_href = false) : text(p_text), is_href(p_is_href)
-      {}
-    };
-    QVector<TextPiece> l_piece_list;
-
-    const QRegularExpression l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
-    QRegularExpressionMatchIterator l_iterator = l_regex.globalMatch(l_text);
-    { // capture all text pieces
-      int l_index = 0;
-
-      while (l_iterator.hasNext())
-      {
-        QRegularExpressionMatch l_match = l_iterator.next();
-
-        const int l_captureIndex = l_match.capturedStart();
-        if (l_index < l_captureIndex)
-          l_piece_list.append(l_text.mid(l_index, l_captureIndex - l_index));
-        l_piece_list.append(TextPiece(l_match.captured(), true));
-        l_index = l_match.capturedEnd();
-      }
-
-      l_piece_list.append(l_text.mid(l_index));
+      insertHtml(l_message.text);
     }
-
-    for (const TextPiece &i_piece : qAsConst(l_piece_list))
+    else
     {
-      if (i_piece.text.isEmpty())
-        continue;
+      const QString l_text = l_message.text;
 
-      QTextCharFormat l_piece_format = l_normal_format;
-      if (i_piece.is_href)
+      class TextPiece
       {
-        l_piece_format = l_href_format;
-        l_piece_format.setAnchorHref(i_piece.text);
+      public:
+        QString text;
+        bool is_href = false;
+
+        TextPiece() {}
+        TextPiece(QString p_text, bool p_is_href = false) : text(p_text), is_href(p_is_href) {}
+      };
+      QVector<TextPiece> l_piece_list;
+
+      const QRegularExpression l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
+      QRegularExpressionMatchIterator l_iterator = l_regex.globalMatch(l_text);
+      { // capture all text pieces
+        int l_index = 0;
+
+        while (l_iterator.hasNext())
+        {
+          QRegularExpressionMatch l_match = l_iterator.next();
+
+          const int l_captureIndex = l_match.capturedStart();
+          if (l_index < l_captureIndex)
+            l_piece_list.append(l_text.mid(l_index, l_captureIndex - l_index));
+          l_piece_list.append(TextPiece(l_match.captured(), true));
+          l_index = l_match.capturedEnd();
+        }
+
+        l_piece_list.append(l_text.mid(l_index));
       }
 
-      l_cursor.insertText(i_piece.is_href ? QUrl(i_piece.text).toString() : i_piece.text, l_piece_format);
+      for (const TextPiece &i_piece : qAsConst(l_piece_list))
+      {
+        if (i_piece.text.isEmpty())
+          continue;
+
+        QTextCharFormat l_piece_format = l_normal_format;
+        if (i_piece.is_href)
+        {
+          l_piece_format = l_href_format;
+          l_piece_format.setAnchorHref(i_piece.text);
+        }
+
+        l_cursor.insertText(i_piece.is_href ? QUrl(i_piece.text).toString() : i_piece.text, l_piece_format);
+      }
     }
   }
 

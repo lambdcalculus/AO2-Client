@@ -14,8 +14,9 @@ class DRChatLog : public QTextBrowser
 public:
   DRChatLog(QWidget *parent = nullptr);
 
-  void append_chatmessage(QString name, QString text);
-  void append_error(QString text);
+  void append_chatmessage(QString name, QString message);
+  void append_information(QString message);
+  void append_html(QString html);
   void reset_message_format();
 
 signals:
@@ -30,11 +31,12 @@ private:
     QDateTime timestamp;
     QString name;
     QString text;
+    bool is_html = false;
   };
   QList<Message> m_message_list;
   QQueue<Message> m_message_queue;
 
-  void queue_message(QString name, QString text);
+  void queue_message(QString name, QString text, bool is_html);
 
 private slots:
   void _p_write_message_queue();

@@ -636,7 +636,7 @@ void Courtroom::on_ic_message_return_pressed()
     f_text_color = QString::number(m_text_color);
   packet_contents.append(f_text_color);
 
-  if (ao_app->is_server_compatible())
+  if (ao_app->get_server_client_version_status() == VersionStatus::Ok)
   {
     // showname
     packet_contents.append(ao_config->showname());
@@ -2126,7 +2126,6 @@ void Courtroom::on_back_to_lobby_clicked()
   hide();
 
   ao_app->construct_lobby();
-  ao_app->get_lobby()->list_servers();
   ao_app->get_lobby()->set_choose_a_server();
   ao_app->destruct_courtroom();
 }

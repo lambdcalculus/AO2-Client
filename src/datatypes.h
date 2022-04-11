@@ -3,6 +3,7 @@
 
 #include <QDateTime>
 #include <QMap>
+#include <QVector>
 
 class DREmote
 {
@@ -82,30 +83,46 @@ public:
   bool is_found;
 };
 
-struct server_type
+class DRServerInfo
 {
+public:
   QString name;
-  QString desc;
-  QString ip;
+  QString description;
+  QString address;
   int port;
-  bool is_favorite = false;
+  bool favorite = false;
 
-  QString to_info() const
-  {
-    QString r_info;
+  QString to_info() const;
+  QString to_address() const;
 
-    if (!name.isEmpty())
-    {
-      r_info = name;
-    }
-    else if (!ip.isEmpty())
-    {
-      r_info = to_address();
-    }
+  bool operator==(const DRServerInfo &other) const;
+  bool operator!=(const DRServerInfo &other) const;
+};
+using DRServerInfoList = QVector<DRServerInfo>;
 
-    return r_info;
-  }
-  QString to_address() const { return ip + ":" + QString::number(port); }
+class VersionNumber
+{
+public:
+  int release = 0;
+  int major = 0;
+  int minor = 0;
+
+  VersionNumber();
+  VersionNumber(int release, int major, int minor);
+
+  QString to_string() const;
+
+  bool operator==(const VersionNumber &other) const;
+  bool operator>(const VersionNumber &other) const;
+  bool operator<(const VersionNumber &other) const;
+};
+
+enum class VersionStatus
+{
+  Ok,
+  NotCompatible,
+  ClientOutdated,
+  ServerOutdated,
 };
 
 struct char_type

@@ -5,6 +5,9 @@
 const QString BACKGROUND_DEFAULT_NAME = "gs4";
 
 const QString BASE_CONFIG_INI = "/base/config.ini";
+const QString BASE_SERVER_BROWSER_INI = "server_browser.ini";
+const QString BASE_FAVORITE_SERVERS_INI = "favorite_servers.ini";
+const QString BASE_SERVERLIST_TXT = "serverlist.txt";
 
 const QString CHARACTER_CHAR_INI = "char.ini";
 const QString CHARACTER_SOUNDS_INI = "sounds.ini";

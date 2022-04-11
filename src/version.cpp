@@ -1,10 +1,12 @@
 #include "version.h"
 
-#include <bass/bass.h>
-
 #include <QFile>
 #include <QImageReader>
 #include <QString>
+
+#include <bass/bass.h>
+
+#include "datatypes.h"
 
 int get_release_version()
 {
@@ -21,6 +23,11 @@ int get_minor_version()
   return 0;
 }
 
+VersionNumber get_version_number()
+{
+  return VersionNumber(get_release_version(), get_major_version(), get_minor_version());
+}
+
 QString get_post_version()
 {
   return "b1";
@@ -28,7 +35,7 @@ QString get_post_version()
 
 QString get_version_string()
 {
-  QString l_version = QString("%1.%2.%3").arg(get_release_version()).arg(get_major_version()).arg(get_minor_version());
+  QString l_version = get_version_number().to_string();
 
   const QString l_post = get_post_version();
   if (!l_post.isEmpty())

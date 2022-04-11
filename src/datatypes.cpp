@@ -17,3 +17,61 @@ QMap<DR::Color, DR::ColorInfo> DR::get_default_color_map()
 
   return default_color_map;
 }
+
+QString DRServerInfo::to_info() const
+{
+  QString r_info = "Unnamed Server";
+
+  if (!name.isEmpty())
+  {
+    r_info = name;
+  }
+  else if (!address.isEmpty())
+  {
+    r_info = to_address();
+  }
+
+  return r_info;
+}
+
+QString DRServerInfo::to_address() const
+{
+  return address + ":" + QString::number(port);
+}
+
+bool DRServerInfo::operator==(const DRServerInfo &o) const
+{
+  return address == o.address && port == o.port;
+}
+
+bool DRServerInfo::operator!=(const DRServerInfo &other) const
+{
+  return !operator==(other);
+}
+
+VersionNumber::VersionNumber()
+{}
+
+VersionNumber::VersionNumber(int p_release, int p_major, int p_minor)
+    : release(p_release), major(p_major), minor(p_minor)
+{}
+
+QString VersionNumber::to_string() const
+{
+  return QString("%1.%2.%3").arg(release).arg(major).arg(minor);
+}
+
+bool VersionNumber::operator==(const VersionNumber &other) const
+{
+  return release == other.release && major == other.major;
+}
+
+bool VersionNumber::operator<(const VersionNumber &other) const
+{
+  return release < other.release || (release == other.release && major < other.major);
+}
+
+bool VersionNumber::operator>(const VersionNumber &other) const
+{
+  return release > other.release || (release == other.release && major > other.major);
+}

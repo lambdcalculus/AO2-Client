@@ -5,6 +5,9 @@ class QString;
 extern const QString BACKGROUND_DEFAULT_NAME;
 
 extern const QString BASE_CONFIG_INI;
+extern const QString BASE_SERVER_BROWSER_INI;
+extern const QString BASE_FAVORITE_SERVERS_INI;
+extern const QString BASE_SERVERLIST_TXT;
 
 extern const QString CHARACTER_CHAR_INI;
 extern const QString CHARACTER_SOUNDS_INI;

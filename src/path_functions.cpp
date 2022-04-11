@@ -25,6 +25,11 @@ QString AOApplication::get_base_path()
   return DRPather::get_application_path() + "/base/";
 }
 
+QString AOApplication::get_base_file_path(QString p_file)
+{
+  return get_base_path() + p_file;
+}
+
 QString AOApplication::get_character_folder_path(QString p_chr)
 {
   QString r_path = get_base_path() + "characters/" + p_chr;

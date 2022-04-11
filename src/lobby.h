@@ -8,6 +8,7 @@ class AOButton;
 class AOConfig;
 class AOImageDisplay;
 class DRChatLog;
+class DRMasterClient;
 class DRTextEdit;
 
 #include <QMainWindow>
@@ -24,14 +25,10 @@ class Lobby : public QMainWindow
 
 public:
   Lobby(AOApplication *p_ao_app);
+  ~Lobby();
 
-  bool is_public_server() const;
+  DRServerInfoList get_combined_server_list();
 
-  void set_widgets();
-  void list_servers();
-  void list_favorites();
-  void append_chatmessage(QString f_name, QString f_message);
-  void append_error(QString f_message);
   void set_choose_a_server();
   void set_player_count(int players_online, int max_players);
   void set_loading_text(QString p_text);
@@ -40,39 +37,67 @@ public:
   void set_fonts();
   void show_loading_overlay();
   void hide_loading_overlay();
-  server_type get_selected_server();
+  DRServerInfo get_selected_server();
   void set_loading_value(int p_value);
+
+signals:
+  void server_list_changed();
+  void favorite_server_list_changed();
+  void combined_server_list_changed();
 
 private:
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
-  server_type m_last_server;
+  DRMasterClient *m_master_client = nullptr;
+  DRServerInfoList m_server_list;
+  DRServerInfoList m_favorite_server_list;
+  DRServerInfoList m_combined_server_list;
+  DRServerInfo m_current_server;
   bool is_public_server_selected = true;
 
   // ui
   AOImageDisplay *ui_background = nullptr;
-  AOButton *ui_public_servers = nullptr;
-  AOButton *ui_favorites = nullptr;
+  AOButton *ui_hide_public_servers = nullptr;
+  bool m_hide_public_servers = false;
+  AOButton *ui_hide_favorite_servers = nullptr;
+  bool m_hide_favorite_servers = false;
   AOButton *ui_refresh = nullptr;
-  AOButton *ui_add_to_fav = nullptr;
+  AOButton *ui_toggle_favorite = nullptr;
   AOButton *ui_connect = nullptr;
   DRTextEdit *ui_version = nullptr;
-  AOButton *ui_about = nullptr;
+  AOButton *ui_config_panel = nullptr;
   QListWidget *ui_server_list = nullptr;
   DRTextEdit *ui_player_count = nullptr;
   QTextBrowser *ui_description = nullptr;
   DRChatLog *ui_chatbox = nullptr;
-  QLineEdit *ui_chatname = nullptr;
-  QLineEdit *ui_chatmessage = nullptr;
   AOImageDisplay *ui_loading_background = nullptr;
   DRTextEdit *ui_loading_text = nullptr;
   QProgressBar *ui_progress_bar = nullptr;
   AOButton *ui_cancel = nullptr;
 
+  void load_settings();
+  void save_settings();
+
+  void load_favorite_server_list();
+  void load_legacy_favorite_server_list();
+  void save_favorite_server_list();
+
 private slots:
-  void on_public_servers_clicked();
-  void on_favorites_clicked();
+  void update_widgets();
+
+  void request_advertiser_update();
+  void update_motd();
+  void update_server_list();
+  void set_favorite_server_list(DRServerInfoList server_list);
+  void update_combined_server_list();
+  void hide_public_servers(bool on);
+  void toggle_hide_public_servers();
+  void hide_favorite_servers(bool on);
+  void toggle_hide_favorite_servers();
+  void update_server_listing();
+  void filter_server_listing();
+  void select_current_server();
 
   void on_refresh_pressed();
   void on_refresh_released();
@@ -80,9 +105,9 @@ private slots:
   void on_add_to_fav_released();
   void on_connect_pressed();
   void on_connect_released();
-  void on_about_clicked();
-  void on_server_list_clicked(QModelIndex p_model);
-  void on_chatfield_return_pressed();
+  void on_config_pressed();
+  void on_config_released();
+  void connect_to_server(int row);
 };
 
 #endif // LOBBY_H

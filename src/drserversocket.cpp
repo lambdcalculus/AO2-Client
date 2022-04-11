@@ -7,7 +7,7 @@ const int DRServerSocket::RECONNECT_DELAY = 5000;
 
 namespace
 {
-QString drFormatServerInfo(const server_type &server)
+QString drFormatServerInfo(const DRServerInfo &server)
 {
   const QString l_server_info = server.to_info();
   return !l_server_info.isEmpty() ? QString("<%1>").arg(l_server_info) : nullptr;
@@ -35,14 +35,14 @@ bool DRServerSocket::is_connected() const
   return m_socket->state() == QTcpSocket::ConnectedState;
 }
 
-void DRServerSocket::connect_to_server(server_type p_server, bool p_is_reconnectable)
+void DRServerSocket::connect_to_server(DRServerInfo p_server, bool p_is_reconnectable)
 {
   disconnect_from_server();
   m_server = p_server;
   is_reconnectable = p_is_reconnectable;
   if (is_reconnectable)
     m_reconnect_timer->start();
-  m_socket->connectToHost(p_server.ip, p_server.port);
+  m_socket->connectToHost(p_server.address, p_server.port);
 }
 
 void DRServerSocket::disconnect_from_server()
