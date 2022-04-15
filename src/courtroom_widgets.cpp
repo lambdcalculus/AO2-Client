@@ -146,12 +146,14 @@ void Courtroom::create_widgets()
 
   ui_ic_chat_message = new QLineEdit(this);
   ui_ic_chat_message->setFrame(false);
+  ui_ic_chat_message->setPlaceholderText(tr("Type and send your message to the game chat here."));
 
   ui_muted = new AOImageDisplay(ui_ic_chat_message, ao_app);
   ui_muted->hide();
 
   ui_ooc_chat_message = new QLineEdit(this);
   ui_ooc_chat_message->setFrame(false);
+  ui_ooc_chat_message->setPlaceholderText(tr("Type and send your message to the public chat here."));
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
