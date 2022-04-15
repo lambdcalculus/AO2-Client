@@ -4,5 +4,6 @@
         <file>res/ui/config_panel.ui</file>
         <file>res/git/git_branch.txt</file>
         <file>res/git/git_hash.txt</file>
+        <file>res/tests/mp4_media_test.mp4</file>
     </qresource>
 </RCC>
