@@ -1,8 +1,9 @@
+#include <QDebug>
+
 #include "aoapplication.h"
+#include "drmediatester.h"
 #include "lobby.h"
 #include "logger.h"
-
-#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -41,6 +42,7 @@ int main(int argc, char *argv[])
 #endif
 
   AOApplication app(argc, argv);
+  DRMediaTester tester;
 
   app.load_fonts();
   app.construct_lobby();

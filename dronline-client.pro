@@ -50,6 +50,7 @@ HEADERS += \
   src/drdiscord.h \
   src/dreffectmovie.h \
   src/drmasterclient.h \
+  src/drmediatester.h \
   src/drmovie.h \
   src/drpacket.h \
   src/drpather.h \
@@ -112,6 +113,7 @@ SOURCES += \
   src/drchatlog.cpp \
   src/dreffectmovie.cpp \
   src/drmasterclient.cpp \
+  src/drmediatester.cpp \
   src/drmovie.cpp \
   src/drpacket.cpp \
   src/drpather.cpp \
