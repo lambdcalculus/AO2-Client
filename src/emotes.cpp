@@ -104,7 +104,6 @@ void Courtroom::refresh_emote_page(const bool p_scroll_to_current_emote)
   ui_emote_left->hide();
   ui_emote_right->hide();
 
-  const int l_emote_count = m_emote_list.length();
   for (AOEmoteButton *i_button : qAsConst(ui_emote_list))
     i_button->hide();
   hide_emote_tooltip(m_emote_preview_id);
@@ -112,6 +111,7 @@ void Courtroom::refresh_emote_page(const bool p_scroll_to_current_emote)
   if (is_spectating())
     return;
 
+  const int l_emote_count = m_emote_list.length();
   const int l_page_count =
       qFloor(l_emote_count / m_page_max_emote_count) + bool(l_emote_count % m_page_max_emote_count);
 
