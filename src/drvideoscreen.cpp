@@ -190,6 +190,11 @@ void DRVideoWidget::update_audio_output()
   const QString l_new_device_name = m_device.get_name();
   QMediaService *l_service = m_player->service();
   QAudioOutputSelectorControl *l_control = l_service->requestControl<QAudioOutputSelectorControl *>();
+  if (!l_control)
+  {
+    qWarning() << "error: missing audio output control, device unchanged";
+    return;
+  }
 
   if (l_control->outputDescription(l_control->activeOutput()) != l_new_device_name)
   {
