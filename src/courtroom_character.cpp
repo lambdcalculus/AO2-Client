@@ -22,7 +22,7 @@ int Courtroom::get_character_id()
 
 void Courtroom::set_character_id(const int p_chr_id)
 {
-  if (m_chr_id == p_chr_id)
+  if (p_chr_id != SpectatorId && m_chr_id == p_chr_id)
     return;
   m_chr_id = p_chr_id;
   load_character();
