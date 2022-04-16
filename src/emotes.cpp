@@ -62,8 +62,7 @@ void Courtroom::construct_emote_page_layout()
   emote_columns = ((ui_emotes->width() - button_width) / (x_spacing + button_width)) + 1;
   emote_rows = ((ui_emotes->height() - button_height) / (y_spacing + button_height)) + 1;
 
-  m_page_max_emote_count = emote_columns * emote_rows;
-
+  m_page_max_emote_count = qMax(1, emote_columns * emote_rows);
   for (int n = 0; n < m_page_max_emote_count; ++n)
   {
     int x_pos = (button_width + x_spacing) * x_mod_count;

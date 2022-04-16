@@ -67,8 +67,7 @@ void Courtroom::reconstruct_char_select()
   char_columns = ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
   char_rows = ((ui_char_buttons->height() - button_height) / (y_spacing + button_height)) + 1;
 
-  m_page_max_chr_count = char_columns * char_rows;
-
+  m_page_max_chr_count = qMax(1, char_columns * char_rows);
   for (int n = 0; n < m_page_max_chr_count; ++n)
   {
     int x_pos = (button_width + x_spacing) * x_mod_count;
