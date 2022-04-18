@@ -173,7 +173,7 @@ public:
   // selected
   // or the user isn't already scrolled to the top
   void update_ic_log(bool p_reset_log);
-  void append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, bool p_self);
+  void append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, int p_client_id, bool p_self);
 
   void append_system_text(QString p_showname, QString p_line);
 
@@ -264,7 +264,7 @@ private:
   // Generate a File Name based on the time you launched the client
   QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
 
-  static const int MESSAGE_SIZE = 18;
+  static const int MESSAGE_SIZE = 19;
   QString m_chatmessage[MESSAGE_SIZE];
   bool m_hide_character = false;
   bool m_play_pre = false;

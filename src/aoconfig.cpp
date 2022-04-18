@@ -72,6 +72,7 @@ private:
   bool sticky_sfx;
   int log_max_lines;
   bool log_display_timestamp;
+  bool log_display_client_id;
   bool log_display_self_highlight;
   bool log_display_empty_messages;
   bool log_is_topdown;
@@ -161,6 +162,7 @@ void AOConfigPrivate::read_file()
   log_max_lines = cfg.value("chatlog_limit", 100).toInt();
   log_is_topdown = cfg.value("chatlog_scrolldown", true).toBool();
   log_display_timestamp = cfg.value("chatlog_display_timestamp", true).toBool();
+  log_display_client_id = cfg.value("chatlog_display_client_id", false).toBool();
   log_display_self_highlight = cfg.value("chatlog_display_self_highlight", true).toBool();
   log_display_empty_messages = cfg.value("chatlog_display_empty_messages", false).toBool();
   log_format_use_newline = cfg.value("chatlog_newline", false).toBool();
@@ -249,6 +251,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("sticky_sfx", sticky_sfx);
   cfg.setValue("chatlog_limit", log_max_lines);
   cfg.setValue("chatlog_display_timestamp", log_display_timestamp);
+  cfg.setValue("chatlog_display_client_id", log_display_client_id);
   cfg.setValue("chatlog_display_self_highlight", log_display_self_highlight);
   cfg.setValue("chatlog_newline", log_format_use_newline);
   cfg.setValue("chatlog_display_empty_messages", log_display_empty_messages);
@@ -517,6 +520,11 @@ int AOConfig::log_max_lines() const
 bool AOConfig::log_display_timestamp_enabled() const
 {
   return d->log_display_timestamp;
+}
+
+bool AOConfig::log_display_client_id_enabled() const
+{
+  return d->log_display_client_id;
 }
 
 bool AOConfig::log_display_self_highlight_enabled() const
@@ -849,6 +857,14 @@ void AOConfig::set_log_display_timestamp(bool p_enabled)
     return;
   d->log_display_timestamp = p_enabled;
   d->invoke_signal("log_display_timestamp_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_log_display_client_id(bool p_enabled)
+{
+  if (d->log_display_client_id == p_enabled)
+    return;
+  d->log_display_client_id = p_enabled;
+  d->invoke_signal("log_display_client_id_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_log_display_self_highlight(bool p_enabled)

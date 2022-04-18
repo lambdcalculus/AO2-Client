@@ -73,6 +73,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // IC Chatlog
   ui_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
   ui_log_display_timestamp = AO_GUI_WIDGET(QCheckBox, "log_display_timestamp");
+  ui_log_display_client_id = AO_GUI_WIDGET(QCheckBox, "log_display_client_id");
   ui_log_display_self_highlight = AO_GUI_WIDGET(QCheckBox, "log_display_self_highlight");
   ui_log_format_use_newline = AO_GUI_WIDGET(QCheckBox, "log_format_use_newline");
   ui_log_display_empty_messages = AO_GUI_WIDGET(QCheckBox, "log_display_empty_messages");
@@ -151,6 +152,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // log
   connect(m_config, SIGNAL(log_max_lines_changed(int)), ui_log_max_lines, SLOT(setValue(int)));
   connect(m_config, SIGNAL(log_display_timestamp_changed(bool)), ui_log_display_timestamp, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_display_client_id_changed(bool)), ui_log_display_client_id, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_display_self_highlight_changed(bool)), ui_log_display_self_highlight,
           SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_format_use_newline_changed(bool)), ui_log_format_use_newline, SLOT(setChecked(bool)));
@@ -223,6 +225,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // out, log
   connect(ui_log_max_lines, SIGNAL(valueChanged(int)), m_config, SLOT(set_log_max_lines(int)));
   connect(ui_log_display_timestamp, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_timestamp(bool)));
+  connect(ui_log_display_client_id, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_client_id(bool)));
   connect(ui_log_display_self_highlight, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_self_highlight(bool)));
   connect(ui_log_format_use_newline, SIGNAL(toggled(bool)), m_config, SLOT(set_log_format_use_newline(bool)));
   connect(ui_log_display_empty_messages, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_empty_messages(bool)));
@@ -287,6 +290,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   }
 
   ui_log_display_timestamp->setChecked(m_config->log_display_timestamp_enabled());
+  ui_log_display_client_id->setChecked(m_config->log_display_client_id_enabled());
   ui_log_display_self_highlight->setChecked(m_config->log_display_self_highlight_enabled());
   ui_log_format_use_newline->setChecked(m_config->log_format_use_newline_enabled());
   ui_log_display_empty_messages->setChecked(m_config->log_display_empty_messages_enabled());

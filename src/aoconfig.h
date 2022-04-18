@@ -47,6 +47,7 @@ public:
   bool sticky_sfx_enabled() const;
   int log_max_lines() const;
   bool log_display_timestamp_enabled() const;
+  bool log_display_client_id_enabled() const;
   bool log_display_self_highlight_enabled() const;
   bool log_display_empty_messages_enabled() const;
   bool log_is_topdown_enabled() const;
@@ -104,6 +105,7 @@ public slots:
   void set_sticky_sfx(bool p_enabled);
   void set_log_max_lines(int p_number);
   void set_log_display_timestamp(bool p_enabled);
+  void set_log_display_client_id(bool p_enabled);
   void set_log_display_self_highlight(bool p_enabled);
   void set_log_display_empty_messages(bool p_enabled);
   void set_log_is_topdown(bool p_enabled);
@@ -163,6 +165,7 @@ signals:
   // log
   void log_max_lines_changed(int);
   void log_display_timestamp_changed(bool);
+  void log_display_client_id_changed(bool);
   void log_display_self_highlight_changed(bool);
   void log_display_empty_messages_changed(bool);
   void log_is_topdown_changed(bool);

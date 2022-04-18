@@ -29,6 +29,7 @@
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
+#include "src/datatypes.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -752,7 +753,10 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   if (is_system_speaking)
     append_system_text(f_showname, l_message);
   else
-    append_ic_text(f_showname, l_message, false, false, f_char_id == m_chr_id);
+  {
+    const int l_client_id = m_chatmessage[CMClientId].toInt();
+    append_ic_text(f_showname, l_message, false, false, l_client_id, f_char_id == m_chr_id);
+  }
 
   if (ao_config->log_is_recording_enabled() && (!chatmessage_is_empty || !is_system_speaking))
   {
@@ -1090,6 +1094,11 @@ void Courtroom::update_ic_log(bool p_reset_log)
         l_separator = ": ";
       else
         l_separator = " ";
+
+      const int l_client_id = l_record.get_client_id();
+      if (l_client_id != NoClientId && ao_config->log_display_client_id_enabled())
+        l_cursor.insertText(QString::number(l_record.get_client_id()) + " | ", l_target_name_format);
+
       l_cursor.insertText(l_record.get_name() + l_separator, l_target_name_format);
       l_cursor.insertText(l_record.get_message(), l_message_format);
     }
@@ -1152,7 +1161,8 @@ void Courtroom::on_ic_chatlog_scroll_bottomup_clicked()
   l_scrollbar->setValue(l_scrollbar->minimum());
 }
 
-void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, bool p_self)
+void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, int p_client_id,
+                               bool p_self)
 {
   if (p_name.trimmed().isEmpty())
     p_name = "Anonymous";
@@ -1163,7 +1173,8 @@ void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bo
   DRChatRecord new_record(p_name, p_line);
   new_record.set_music(p_music);
   new_record.set_system(p_system);
-  new_record.set_self(p_self);
+  new_record.set_client_id(p_client_id);
+  new_record.set_self(ao_app->get_client_id() == p_client_id);
   m_ic_record_queue.append(new_record);
   update_ic_log(false);
 }
@@ -1179,7 +1190,7 @@ void Courtroom::append_system_text(QString p_showname, QString p_line)
   if (chatmessage_is_empty)
     return;
 
-  append_ic_text(p_showname, p_line, true, false, false);
+  append_ic_text(p_showname, p_line, true, false, NoClientId, false);
 }
 
 void Courtroom::play_preanim()
@@ -1553,7 +1564,7 @@ void Courtroom::handle_song(QStringList p_contents)
       str_char = f_showname;
     }
 
-    append_ic_text(str_char, "has played a song: " + f_song, false, true, l_chr_id == m_chr_id);
+    append_ic_text(str_char, "has played a song: " + f_song, false, true, NoClientId, l_chr_id == m_chr_id);
     if (ao_config->log_is_recording_enabled())
       save_textlog(str_char + " has played a song: " + f_song);
     m_music_player->play(f_song);
