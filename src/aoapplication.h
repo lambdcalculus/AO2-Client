@@ -43,6 +43,7 @@ public:
 
   VersionNumber get_server_client_version() const;
   VersionStatus get_server_client_version_status() const;
+  bool is_server_client_version_compatible() const;
 
   ///////////////////////////////////////////
 

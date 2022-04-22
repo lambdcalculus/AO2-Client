@@ -674,9 +674,15 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   for (int i = 0; i < MESSAGE_SIZE; ++i)
     m_chatmessage[i] = p_contents[i];
 
-  const int l_player_id = m_chatmessage[CMClientId].toInt();
-  if (l_player_id == ao_app->get_client_id())
-    handle_acknowledged_ms();
+  if (ao_app->is_server_client_version_compatible())
+  {
+    bool l_ok;
+    const int l_client_id = m_chatmessage[CMClientId].toInt(&l_ok);
+    if (l_ok && l_client_id == ao_app->get_client_id())
+    {
+      handle_acknowledged_ms();
+    }
+  }
 
   m_hide_character = m_chatmessage[CMHideCharacter].toInt();
   m_play_pre = false;
