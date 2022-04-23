@@ -229,6 +229,7 @@ private:
   QVector<char_type> m_chr_list;
   QStringList m_area_list;
   QStringList m_music_list;
+  QString m_current_song;
 
   QSignalMapper *char_button_mapper = nullptr;
 
