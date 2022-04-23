@@ -732,19 +732,17 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     m_msg_is_first_person = ao_app->get_first_person_enabled();
   }
 
-  QString f_showname;
   qDebug() << "handle_chatmessage";
 
   // We actually DO wanna fail here if the showname is empty but the system is speaking.
   // Having an empty showname for system is actually what we expect.
-  if (m_chatmessage[CMShowName].isEmpty() && !is_system_speaking)
+
+  QString f_showname = m_chatmessage[CMShowName];
+  if (f_showname.isEmpty() && !is_system_speaking)
   {
     f_showname = ao_app->get_showname(m_chr_list.at(f_char_id).name);
   }
-  else
-  {
-    f_showname = m_chatmessage[CMShowName];
-  }
+  m_speaker_showname = f_showname;
 
   ui_vp_chat_arrow->hide();
   m_effects_player->stop_all();
@@ -761,16 +759,16 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   ui_vp_effect->stop();
 
   if (is_system_speaking)
-    append_system_text(f_showname, l_message);
+    append_system_text(m_speaker_showname, l_message);
   else
   {
     const int l_client_id = m_chatmessage[CMClientId].toInt();
-    append_ic_text(f_showname, l_message, false, false, l_client_id, f_char_id == m_chr_id);
+    append_ic_text(m_speaker_showname, l_message, false, false, l_client_id, f_char_id == m_chr_id);
   }
 
   if (ao_config->log_is_recording_enabled() && (!chatmessage_is_empty || !is_system_speaking))
   {
-    save_textlog(f_showname + ": " + l_message);
+    save_textlog(m_speaker_showname + ": " + l_message);
   }
 
   ui_video->play_character_video(m_chatmessage[CMChrName], m_chatmessage[CMVideoName]);
@@ -809,24 +807,11 @@ void Courtroom::handle_chatmessage_2() // handles IC
     load_theme();
   }
 
-  QString real_name = m_chr_list.at(m_chatmessage[CMChrId].toInt()).name;
-
-  QString f_showname;
-
   ui_vp_message->clear();
   ui_vp_chatbox->hide();
   ui_vp_showname->hide();
   ui_vp_showname_image->hide();
-
-  if (m_chatmessage[CMShowName].isEmpty())
-  {
-    f_showname = ao_app->get_showname(real_name);
-  }
-  else
-  {
-    f_showname = m_chatmessage[CMShowName];
-  }
-  ui_vp_showname->setText(f_showname);
+  ui_vp_showname->setText(m_speaker_showname);
 
   QString l_chatbox_name = ao_app->get_chat(m_chatmessage[CMChrName]);
 

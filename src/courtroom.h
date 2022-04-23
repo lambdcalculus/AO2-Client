@@ -266,6 +266,7 @@ private:
 
   static const int MESSAGE_SIZE = 19;
   QString m_chatmessage[MESSAGE_SIZE];
+  QString m_speaker_showname;
   bool m_hide_character = false;
   bool m_play_pre = false;
   bool m_play_zoom = false;
