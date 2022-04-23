@@ -151,6 +151,11 @@ VersionStatus AOApplication::get_server_client_version_status() const
   return m_server_client_version_status;
 }
 
+bool AOApplication::is_server_client_version_compatible() const
+{
+  return m_server_client_version_status == VersionStatus::Ok;
+}
+
 void AOApplication::handle_theme_modification()
 {
   load_fonts();

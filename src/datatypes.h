@@ -27,44 +27,35 @@ public:
   QMap<QString, QString> background_tod_map;
 };
 
+enum ClientId
+{
+  NoClientId = -1,
+};
+
 class DRChatRecord
 {
 public:
-  using list = QVector<DRChatRecord>;
-
   DRChatRecord(QString p_name, QString p_message) : name(p_name), message(p_message) {}
 
   QDateTime get_timestamp() const { return timestamp; }
   QString get_name() const { return name; }
   QString get_message() const { return message; }
+  int get_client_id() const { return client_id; }
   bool is_self() const { return self; }
   bool is_system() const { return system; }
   bool is_music() const { return music; }
 
   // set
-  void set_self(const bool p_enabled)
-  {
-    if (self == p_enabled)
-      return;
-    self = p_enabled;
-  }
-  void set_system(bool p_enabled)
-  {
-    if (system == p_enabled)
-      return;
-    system = p_enabled;
-  }
-  void set_music(bool p_enabled)
-  {
-    if (music == p_enabled)
-      return;
-    music = p_enabled;
-  }
+  void set_client_id(const int p_client_id) { client_id = p_client_id; }
+  void set_self(const bool p_enabled) { self = p_enabled; }
+  void set_system(bool p_enabled) { system = p_enabled; }
+  void set_music(bool p_enabled) { music = p_enabled; }
 
 private:
   QDateTime timestamp = QDateTime::currentDateTime();
   QString name;
   QString message;
+  int client_id = NoClientId;
   bool self = false;
   bool system = false;
   bool music = false;
@@ -159,6 +150,7 @@ enum ChatMessage : int32_t
   CMShowName,
   CMVideoName,
   CMHideCharacter,
+  CMClientId,
 };
 
 enum EmoteMod

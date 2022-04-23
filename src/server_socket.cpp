@@ -161,8 +161,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     if (l_content.length() != l_chr_list.length())
     {
       qWarning() << "Server sent a character list of length " << l_content.length()
-                 << "which is different from the expected length " << l_chr_list.length()
-                 << "so ignoring it.";
+                 << "which is different from the expected length " << l_chr_list.length() << "so ignoring it.";
       return;
     }
 
@@ -294,7 +293,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   }
   else if (l_header == "ackMS")
   {
-    if (is_courtroom_constructed && is_courtroom_loaded)
+    if (is_courtroom_constructed && is_courtroom_loaded && !is_server_client_version_compatible())
       m_courtroom->handle_acknowledged_ms();
   }
   else if (l_header == "MC")

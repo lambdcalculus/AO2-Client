@@ -120,6 +120,7 @@ private:
   // chatlog
   QSpinBox *ui_log_max_lines = nullptr;
   QCheckBox *ui_log_display_timestamp = nullptr;
+  QCheckBox *ui_log_display_client_id = nullptr;
   QCheckBox *ui_log_display_self_highlight = nullptr;
   QCheckBox *ui_log_format_use_newline = nullptr;
   QCheckBox *ui_log_display_empty_messages = nullptr;
