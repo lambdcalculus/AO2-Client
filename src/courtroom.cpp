@@ -705,18 +705,10 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
     break;
   }
 
-  int f_char_id = m_chatmessage[CMChrId].toInt();
+  m_speaker_chr_id = m_chatmessage[CMChrId].toInt();
+  is_system_speaking = (m_speaker_chr_id == SpectatorId);
 
-  if (f_char_id == SpectatorId)
-  {
-    is_system_speaking = true;
-    m_chatmessage[CMChrId] = "0";
-    f_char_id = 0;
-  }
-  else
-    is_system_speaking = false;
-
-  if (f_char_id < 0 || f_char_id >= m_chr_list.size())
+  if (m_speaker_chr_id != SpectatorId && (m_speaker_chr_id < 0 || m_speaker_chr_id >= m_chr_list.length()))
     return;
 
   const QString l_message = QString(m_chatmessage[CMMessage])
@@ -726,7 +718,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   m_msg_is_first_person = false;
 
   // reset our ui state if client just spoke
-  if (m_chr_id == f_char_id && is_system_speaking == false)
+  if (m_chr_id == m_speaker_chr_id && is_system_speaking == false)
   {
     // update first person mode status
     m_msg_is_first_person = ao_app->get_first_person_enabled();
@@ -740,7 +732,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   QString f_showname = m_chatmessage[CMShowName];
   if (f_showname.isEmpty() && !is_system_speaking)
   {
-    f_showname = ao_app->get_showname(m_chr_list.at(f_char_id).name);
+    f_showname = ao_app->get_showname(m_chr_list.at(m_speaker_chr_id).name);
   }
   m_speaker_showname = f_showname;
 
@@ -763,7 +755,7 @@ void Courtroom::handle_chatmessage(QStringList p_contents)
   else
   {
     const int l_client_id = m_chatmessage[CMClientId].toInt();
-    append_ic_text(m_speaker_showname, l_message, false, false, l_client_id, f_char_id == m_chr_id);
+    append_ic_text(m_speaker_showname, l_message, false, false, l_client_id, m_speaker_chr_id == m_chr_id);
   }
 
   if (ao_config->log_is_recording_enabled() && (!chatmessage_is_empty || !is_system_speaking))
@@ -819,7 +811,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   {
     l_chatbox_name = "chatmed.png";
 
-    if (ao_config->log_display_self_highlight_enabled() && m_chatmessage[CMChrId].toInt() == m_chr_id)
+    if (ao_config->log_display_self_highlight_enabled() && m_speaker_chr_id == m_chr_id)
     {
       const QString l_chatbox_self_name = "chatmed_self.png";
       if (!ao_app->find_theme_asset_path(l_chatbox_self_name).isEmpty())
