@@ -168,18 +168,17 @@ public:
   IcLogTextFormat m_ic_log_format;
   void load_ic_text_format();
 
-  // adds text to the IC chatlog. p_name first as bold then p_text then a newlin
-  // this function keeps the chatlog scrolled to the top unless there's text
-  // selected
-  // or the user isn't already scrolled to the top
+  // adds text to the IC chatlog. p_name first as bold then p_text then a
+  // newlin this function keeps the chatlog scrolled to the top unless there's
+  // text selected or the user isn't already scrolled to the top
   void update_ic_log(bool p_reset_log);
   void append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, int p_client_id, bool p_self);
 
   void append_system_text(QString p_showname, QString p_line);
 
-  // prints who played the song to IC chat and plays said song(if found on local
-  // filesystem) takes in a list where the first element is the song name and
-  // the second is the char id of who played it
+  // prints who played the song to IC chat and plays said song(if found on
+  // local filesystem) takes in a list where the first element is the song
+  // name and the second is the char id of who played it
   void handle_song(QStringList p_contents);
 
   // animates music text
@@ -257,8 +256,8 @@ private:
   // delay before sfx plays
   QTimer *m_sound_timer = nullptr;
 
-  // keeps track of how long realization is visible(it's just a white square and
-  // should be visible less than a second)
+  // keeps track of how long realization is visible(it's just a white square
+  // and should be visible less than a second)
   QTimer *m_flash_timer = nullptr;
 
   // Generate a File Name based on the time you launched the client
@@ -266,6 +265,8 @@ private:
 
   static const int MESSAGE_SIZE = 19;
   QString m_chatmessage[MESSAGE_SIZE];
+  int m_speaker_chr_id = SpectatorId;
+  QString m_speaker_showname;
   bool m_hide_character = false;
   bool m_play_pre = false;
   bool m_play_zoom = false;
