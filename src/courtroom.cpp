@@ -1502,11 +1502,19 @@ void Courtroom::set_ban(int p_cid)
 
 void Courtroom::handle_song(QStringList p_contents)
 {
-  if (p_contents.size() < 2)
+  const bool l_server_compatible = ao_app->is_server_client_version_compatible();
+  if (p_contents.size() < (l_server_compatible ? 3 : 2))
     return;
 
   QString f_song = p_contents.at(0);
-  int l_chr_id = p_contents.at(1).toInt();
+  const int l_chr_id = p_contents.at(1).toInt();
+  if (l_server_compatible)
+  {
+    const bool l_restart = p_contents.at(2).toInt();
+    if (m_current_song == f_song && !l_restart)
+      return;
+  }
+  m_current_song = f_song;
 
   for (auto &ext : audio_extensions())
   {
