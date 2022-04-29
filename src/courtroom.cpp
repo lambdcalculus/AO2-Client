@@ -1157,10 +1157,10 @@ void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bo
     p_line = p_line.trimmed();
 
   DRChatRecord new_record(p_name, p_line);
-  new_record.set_music(p_music);
   new_record.set_system(p_system);
   new_record.set_client_id(p_client_id);
-  new_record.set_self(ao_app->get_client_id() == p_client_id);
+  new_record.set_self(p_self);
+  new_record.set_music(p_music);
   m_ic_record_queue.append(new_record);
   update_ic_log(false);
 }
