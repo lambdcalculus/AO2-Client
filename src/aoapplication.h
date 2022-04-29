@@ -216,6 +216,8 @@ private:
   int m_loaded_evidence = 0;
   int m_music_count = 0;
   int m_loaded_music = 0;
+  bool m_loaded_music_list = false;
+  bool m_loaded_area_list = false;
 
 private slots:
   void _p_handle_server_disconnection();

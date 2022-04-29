@@ -591,7 +591,6 @@ void Courtroom::on_ic_message_return_pressed()
   // sfx file
   const QString l_sound_file = current_sfx_file();
   packet_contents.append(l_sound_file.isEmpty() ? "0" : l_sound_file);
-  // TODO remove empty string workaround for pre-DRO 1.0.0
 
   int l_emote_mod = l_emote.modifier;
   if (!ui_pre->isChecked())
