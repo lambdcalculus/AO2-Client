@@ -119,6 +119,8 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     m_loaded_characters = 0;
     m_loaded_evidence = 0;
     m_loaded_music = 0;
+    m_loaded_music_list = false;
+    m_loaded_area_list = false;
 
     construct_courtroom();
 
@@ -191,7 +193,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
 
     send_server_packet(DRPacket("RM"));
   }
-  else if (l_header == "SM" || l_header == "FM")
+  else if (l_header == "SM") // TODO remove block for 1.2.0+
   {
     if (!is_courtroom_constructed)
       return;
@@ -223,17 +225,39 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     m_courtroom->set_area_list(l_area_list);
     m_courtroom->set_music_list(l_music_list);
 
-    if (l_header == "SM")
+    m_loaded_music = m_music_count;
+    m_lobby->set_loading_text("Loading music:\n" + QString::number(m_loaded_music) + "/" +
+                              QString::number(m_music_count));
+    int total_loading_size = m_character_count + m_evidence_count + m_music_count;
+    int loading_value =
+        ((m_loaded_characters + m_loaded_evidence + m_loaded_music) / static_cast<double>(total_loading_size)) * 100;
+    m_lobby->set_loading_value(loading_value);
+    send_server_packet(DRPacket("RD"));
+  }
+  else if (l_header == "FA")
+  {
+    if (!is_courtroom_constructed)
+      return;
+    m_courtroom->set_area_list(l_content);
+
+    if (!m_loaded_area_list && is_lobby_constructed)
     {
-      m_loaded_music = m_music_count;
-      m_lobby->set_loading_text("Loading music:\n" + QString::number(m_loaded_music) + "/" +
-                                QString::number(m_music_count));
-      int total_loading_size = m_character_count + m_evidence_count + m_music_count;
-      int loading_value =
-          ((m_loaded_characters + m_loaded_evidence + m_loaded_music) / static_cast<double>(total_loading_size)) * 100;
-      m_lobby->set_loading_value(loading_value);
+      m_lobby->set_loading_text("Loading areas...");
+    }
+    m_loaded_area_list = true;
+  }
+  else if (l_header == "FM")
+  {
+    if (!is_courtroom_constructed)
+      return;
+    m_courtroom->set_music_list(l_content);
+
+    if (!m_loaded_area_list && is_lobby_constructed)
+    {
+      m_lobby->set_loading_text("Loading music...");
       send_server_packet(DRPacket("RD"));
     }
+    m_loaded_music_list = true;
   }
   else if (l_header == "DONE")
   {

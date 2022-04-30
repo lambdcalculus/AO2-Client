@@ -591,7 +591,6 @@ void Courtroom::on_ic_message_return_pressed()
   // sfx file
   const QString l_sound_file = current_sfx_file();
   packet_contents.append(l_sound_file.isEmpty() ? "0" : l_sound_file);
-  // TODO remove empty string workaround for pre-DRO 1.0.0
 
   int l_emote_mod = l_emote.modifier;
   if (!ui_pre->isChecked())
@@ -1158,10 +1157,10 @@ void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bo
     p_line = p_line.trimmed();
 
   DRChatRecord new_record(p_name, p_line);
-  new_record.set_music(p_music);
   new_record.set_system(p_system);
   new_record.set_client_id(p_client_id);
-  new_record.set_self(ao_app->get_client_id() == p_client_id);
+  new_record.set_self(p_self);
+  new_record.set_music(p_music);
   m_ic_record_queue.append(new_record);
   update_ic_log(false);
 }
