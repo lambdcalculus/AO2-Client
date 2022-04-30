@@ -234,7 +234,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     m_lobby->set_loading_value(loading_value);
     send_server_packet(DRPacket("RD"));
   }
-  else if (l_header == "AL")
+  else if (l_header == "FA")
   {
     if (!is_courtroom_constructed)
       return;
@@ -246,7 +246,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     }
     m_loaded_area_list = true;
   }
-  else if (l_header == "ML")
+  else if (l_header == "FM")
   {
     if (!is_courtroom_constructed)
       return;
