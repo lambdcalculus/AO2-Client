@@ -6,27 +6,27 @@
 const QMap<QString, DRPosition> DRPositionReader::READONLY_POSITIONS{
     {
         "wit",
-        DRPosition("witnessempty", "stand"),
+        DRPosition("witnessempty.png", "stand.png"),
     },
     {
         "def",
-        DRPosition("defenseempty", "defensedesk"),
+        DRPosition("defenseempty.png", "defensedesk.png"),
     },
     {
         "pro",
-        DRPosition("prosecutorempty", "prosecutiondesk"),
+        DRPosition("prosecutorempty.png", "prosecutiondesk.png"),
     },
     {
         "jud",
-        DRPosition("judgestand", "judgedesk"),
+        DRPosition("judgestand.png", "judgedesk.png"),
     },
     {
         "hld",
-        DRPosition("helperstand", "helperdesk"),
+        DRPosition("helperstand.png", "helperdesk.png"),
     },
     {
         "hlp",
-        DRPosition("prohelperstand", "prohelperdesk"),
+        DRPosition("prohelperstand.png", "prohelperdesk.png"),
     },
 };
 
