@@ -6,6 +6,7 @@
 #include "drpather.h"
 #include "file_functions.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -60,7 +61,7 @@ QString AOApplication::get_music_path(QString p_song)
   return get_case_sensitive_path(l_path);
 }
 
-QString AOApplication::format_background_path(QString p_identifier)
+QString AOApplication::get_background_path(QString p_identifier)
 {
   return get_base_path() + "background/" + p_identifier;
 }
@@ -94,26 +95,23 @@ QStringList AOApplication::get_available_background_identifier_list()
   return l_bg_list;
 }
 
-#include <QDebug>
-
-QString AOApplication::get_current_background_path()
+QString AOApplication::get_current_background()
 {
-  QString l_bg_path;
+  QString l_background_name;
 
   if (is_courtroom_constructed)
   {
-    QStringList l_bg_list = get_available_background_identifier_list();
-    for (QString &i_bg : l_bg_list)
+    const QStringList l_background_name_list = get_available_background_identifier_list();
+    for (const QString &i_background_name : l_background_name_list)
     {
-      i_bg = get_case_sensitive_path(format_background_path(i_bg));
-      if (!dir_exists(i_bg))
+      if (!dir_exists(get_case_sensitive_path(get_background_path(i_background_name))))
         continue;
-      l_bg_path = i_bg;
+      l_background_name = i_background_name;
       break;
     }
   }
 
-  return l_bg_path;
+  return l_background_name;
 }
 
 /**

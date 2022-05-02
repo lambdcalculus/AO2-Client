@@ -59,9 +59,10 @@ public:
   QString get_sounds_path(QString p_file);
   QString get_music_folder_path();
   QString get_music_path(QString p_song);
-  QString format_background_path(QString p_identifier);
+
+  QString get_background_path(QString p_background_name);
   QStringList get_available_background_identifier_list();
-  QString get_current_background_path();
+  QString get_current_background();
 
   bool is_safe_path(QString p_file);
 

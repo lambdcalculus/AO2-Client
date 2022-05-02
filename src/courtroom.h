@@ -21,14 +21,15 @@ class AOShoutPlayer;
 class AOSystemPlayer;
 class AOTimer;
 class DRCharacterMovie;
-class DRVideoWidget;
 class DRChatLog;
 class DREffectMovie;
+class DRPositionReader;
 class DRSceneMovie;
 class DRShoutMovie;
 class DRSplashMovie;
 class DRStickerMovie;
 class DRTextEdit;
+class DRVideoWidget;
 
 #include <QMainWindow>
 #include <QMap>
@@ -332,6 +333,8 @@ private:
   int m_current_clock = -1;
 
   DRAreaBackground m_background;
+  QString m_current_background_name;
+  DRPositionReader *m_position_reader = nullptr;
 
   AOImageDisplay *ui_background = nullptr;
 

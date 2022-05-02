@@ -54,6 +54,7 @@ HEADERS += \
   src/drmovie.h \
   src/drpacket.h \
   src/drpather.h \
+  src/drposition.h \
   src/drscenemovie.h \
   src/drserversocket.h \
   src/drshoutmovie.h \
@@ -117,6 +118,7 @@ SOURCES += \
   src/drmovie.cpp \
   src/drpacket.cpp \
   src/drpather.cpp \
+  src/drposition.cpp \
   src/drscenemovie.cpp \
   src/drserversocket.cpp \
   src/drshoutmovie.cpp \

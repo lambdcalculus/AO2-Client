@@ -12,14 +12,14 @@ DRSceneMovie::DRSceneMovie(QWidget *parent) : DRMovie(parent), ao_app(dynamic_ca
 DRSceneMovie::~DRSceneMovie()
 {}
 
-void DRSceneMovie::set_image(QString p_image)
+void DRSceneMovie::set_background_image(QString p_background_name, QString p_image)
 {
-  const QString l_file_path =
-      ao_app->find_asset_path(ao_app->get_current_background_path() + "/" + p_image, animated_or_static_extensions());
-
-  if (file_name() == l_file_path)
+  const QString l_filename = file_name();
+  const QString l_target_filename =
+      ao_app->find_asset_path(ao_app->get_background_path(p_background_name) + "/" + p_image);
+  if (l_filename == l_target_filename)
     return;
 
-  set_file_name(l_file_path);
+  set_file_name(l_target_filename);
   start();
 }

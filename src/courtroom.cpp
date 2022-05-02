@@ -21,6 +21,7 @@
 #include "drdiscord.h"
 #include "dreffectmovie.h"
 #include "drpacket.h"
+#include "drposition.h"
 #include "drscenemovie.h"
 #include "drshoutmovie.h"
 #include "drsplashmovie.h"
@@ -52,6 +53,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
+
+  m_position_reader = new DRPositionReader(this);
 
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(load_theme()));
   connect(ao_app, SIGNAL(reload_character()), this, SLOT(load_character()));
@@ -248,60 +251,33 @@ void Courtroom::set_window_title(QString p_title)
 
 void Courtroom::update_background_scene()
 {
-  // witness is default if pos is invalid
-  const QString L_DEFAULT_BACK = "witnessempty";
-  const QString L_DEFAULT_FRONT = "stand";
-  const QString f_desk_mod = m_chatmessage[CMDeskModifier];
-  const QString f_side = m_chatmessage[CMPosition];
-  QString f_background = L_DEFAULT_BACK;
-  QString f_desk_image = L_DEFAULT_FRONT;
+  const QString l_new_background_name = ao_app->get_current_background();
 
-  if (f_side == "def")
+  // see TOD background list for why this method is called here
+  if (m_current_background_name.isEmpty() || m_current_background_name != l_new_background_name)
   {
-    f_background = "defenseempty";
-    f_desk_image = "defensedesk";
-  }
-  else if (f_side == "pro")
-  {
-    f_background = "prosecutorempty";
-    f_desk_image = "prosecutiondesk";
-  }
-  else if (f_side == "jud")
-  {
-    f_background = "judgestand";
-    f_desk_image = "judgedesk";
-  }
-  else if (f_side == "hld")
-  {
-    f_background = "helperstand";
-    f_desk_image = "helperdesk";
-  }
-  else if (f_side == "hlp")
-  {
-    f_background = "prohelperstand";
-    f_desk_image = "prohelperdesk";
+    m_current_background_name = l_new_background_name;
+    const QString l_positions_ini =
+        ao_app->find_asset_path(ao_app->get_background_path(m_current_background_name) + "/" + "positions.ini");
+    m_position_reader->load_file(l_positions_ini);
   }
 
-  if (f_desk_mod == "0")
-  {
-    ui_vp_desk->hide();
-  }
-  else
-  {
-    ui_vp_desk->show();
-    ui_vp_desk->set_image(f_desk_image);
-    if (!ui_vp_desk->is_valid())
-    {
-      qWarning() << "warning: background missing file (" << m_background.background << f_side << f_desk_image << ")";
-      ui_vp_desk->set_image(L_DEFAULT_FRONT);
-    }
-  }
+  const QString l_position_id = m_chatmessage[CMPosition];
+  DRPosition l_position = m_position_reader->get_position(l_position_id);
 
-  ui_vp_background->set_image(f_background);
+  ui_vp_background->show();
+  ui_vp_background->set_background_image(m_current_background_name, l_position.get_back());
   if (!ui_vp_background->is_valid())
   {
-    qWarning() << "warning: background missing file (" << m_background.background << f_side << f_background << ")";
-    ui_vp_background->set_image(L_DEFAULT_BACK);
+    ui_vp_background->hide();
+  }
+
+  ui_vp_desk->show();
+  ui_vp_desk->set_background_image(m_current_background_name, l_position.get_front());
+  const QString l_desk_mode = m_chatmessage[CMDeskModifier];
+  if (!ui_vp_desk->is_valid() || l_desk_mode == "0")
+  {
+    ui_vp_desk->hide();
   }
 }
 
