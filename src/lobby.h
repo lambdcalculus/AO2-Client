@@ -54,14 +54,18 @@ private:
   DRServerInfoList m_favorite_server_list;
   DRServerInfoList m_combined_server_list;
   DRServerInfo m_current_server;
-  bool is_public_server_selected = true;
 
   // ui
   AOImageDisplay *ui_background = nullptr;
-  AOButton *ui_hide_public_servers = nullptr;
-  bool m_hide_public_servers = false;
-  AOButton *ui_hide_favorite_servers = nullptr;
-  bool m_hide_favorite_servers = false;
+  AOButton *ui_public_server_filter = nullptr;
+  AOButton *ui_favorite_server_filter = nullptr;
+  enum ServerFilter
+  {
+    NoFilter,
+    PublicOnly,
+    FavoriteOnly,
+  };
+  ServerFilter m_server_filter = NoFilter;
   AOButton *ui_refresh = nullptr;
   AOButton *ui_toggle_favorite = nullptr;
   AOButton *ui_connect = nullptr;
@@ -91,10 +95,9 @@ private slots:
   void update_server_list();
   void set_favorite_server_list(DRServerInfoList server_list);
   void update_combined_server_list();
-  void hide_public_servers(bool on);
-  void toggle_hide_public_servers();
-  void hide_favorite_servers(bool on);
-  void toggle_hide_favorite_servers();
+  void toggle_public_server_filter();
+  void toggle_favorite_server_filter();
+  void update_server_filter_buttons();
   void update_server_listing();
   void filter_server_listing();
   void select_current_server();
