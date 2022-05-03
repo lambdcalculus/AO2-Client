@@ -55,6 +55,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ao_config = new AOConfig(this);
 
   m_position_reader = new DRPositionReader(this);
+  m_chatmessage[CMPosition] = "wit";
 
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(load_theme()));
   connect(ao_app, SIGNAL(reload_character()), this, SLOT(load_character()));
