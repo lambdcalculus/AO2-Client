@@ -88,8 +88,6 @@ QStringList AOApplication::get_available_background_identifier_list()
 
     if (!l_area_bg.background.isEmpty())
       l_bg_list.append(l_area_bg.background);
-
-    l_bg_list.append(BACKGROUND_DEFAULT_NAME);
   }
 
   return l_bg_list;
