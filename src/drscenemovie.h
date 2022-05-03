@@ -12,7 +12,7 @@ public:
   explicit DRSceneMovie(QWidget *parent = nullptr);
   ~DRSceneMovie();
 
-  void set_image(QString p_image);
+  void set_background_image(QString p_background_name, QString p_image);
 
 private:
   AOApplication *ao_app;
