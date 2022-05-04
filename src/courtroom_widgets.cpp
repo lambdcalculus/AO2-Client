@@ -111,6 +111,7 @@ void Courtroom::create_widgets()
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::NoInsert);
+  set_iniswap_dropdown_searchable(ao_config->searchable_iniswap_enabled());
 
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
