@@ -37,8 +37,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   this->setWindowTitle("Danganronpa Online");
 
   ui_background = new AOImageDisplay(this, ao_app);
-  ui_hide_public_servers = new AOButton(this, ao_app);
-  ui_hide_favorite_servers = new AOButton(this, ao_app);
+  ui_public_server_filter = new AOButton(this, ao_app);
+  ui_favorite_server_filter = new AOButton(this, ao_app);
   ui_refresh = new AOButton(this, ao_app);
   ui_toggle_favorite = new AOButton(this, ao_app);
   ui_connect = new AOButton(this, ao_app);
@@ -75,8 +75,8 @@ Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
   connect(m_master_client, SIGNAL(motd_changed()), this, SLOT(update_motd()));
   connect(m_master_client, SIGNAL(server_list_changed()), this, SLOT(update_server_list()));
 
-  connect(ui_hide_public_servers, SIGNAL(clicked()), this, SLOT(toggle_hide_public_servers()));
-  connect(ui_hide_favorite_servers, SIGNAL(clicked()), this, SLOT(toggle_hide_favorite_servers()));
+  connect(ui_public_server_filter, SIGNAL(clicked()), this, SLOT(toggle_public_server_filter()));
+  connect(ui_favorite_server_filter, SIGNAL(clicked()), this, SLOT(toggle_favorite_server_filter()));
   connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
   connect(ui_refresh, SIGNAL(released()), this, SLOT(on_refresh_released()));
   connect(ui_toggle_favorite, SIGNAL(pressed()), this, SLOT(on_add_to_fav_pressed()));
@@ -137,11 +137,12 @@ void Lobby::update_widgets()
   set_size_and_pos(ui_background, "lobby", LOBBY_DESIGN_INI, ao_app);
   ui_background->set_theme_image("lobbybackground.png");
 
-  set_size_and_pos(ui_hide_public_servers, "public_servers", LOBBY_DESIGN_INI, ao_app);
-  ui_hide_public_servers->set_image(m_hide_public_servers ? "publicservers_selected.png" : "publicservers.png");
+  set_size_and_pos(ui_public_server_filter, "public_servers", LOBBY_DESIGN_INI, ao_app);
+  ui_public_server_filter->set_image(m_server_filter == PublicOnly ? "publicservers_selected.png"
+                                                                   : "publicservers.png");
 
-  set_size_and_pos(ui_hide_favorite_servers, "favorites", LOBBY_DESIGN_INI, ao_app);
-  ui_hide_favorite_servers->set_image(m_hide_favorite_servers ? "favorites_selected.png" : "favorites.png");
+  set_size_and_pos(ui_favorite_server_filter, "favorites", LOBBY_DESIGN_INI, ao_app);
+  ui_favorite_server_filter->set_image(m_server_filter == FavoriteOnly ? "favorites_selected.png" : "favorites.png");
 
   set_size_and_pos(ui_refresh, "refresh", LOBBY_DESIGN_INI, ao_app);
   ui_refresh->set_image("refresh.png");
@@ -263,8 +264,7 @@ void Lobby::load_settings()
   l_ini.setIniCodec("UTF-8");
 
   l_ini.beginGroup("filters");
-  hide_public_servers(l_ini.value("hide_public", false).toBool());
-  hide_favorite_servers(l_ini.value("hide_favorites", false).toBool());
+  m_server_filter = ServerFilter(l_ini.value("server_filter", NoFilter).toInt());
   l_ini.endGroup();
 }
 
@@ -274,8 +274,7 @@ void Lobby::save_settings()
   l_ini.setIniCodec("UTF-8");
 
   l_ini.beginGroup("filters");
-  l_ini.setValue("hide_public", m_hide_public_servers);
-  l_ini.setValue("hide_favorites", m_hide_favorite_servers);
+  l_ini.setValue("server_filter", int(m_server_filter));
   l_ini.endGroup();
   l_ini.sync();
 }
@@ -403,7 +402,7 @@ void Lobby::filter_server_listing()
   for (int i = 0; i < ui_server_list->count(); ++i)
   {
     QListWidgetItem *l_server_item = ui_server_list->item(i);
-    l_server_item->setHidden(m_combined_server_list.at(i).favorite ? m_hide_favorite_servers : m_hide_public_servers);
+    l_server_item->setHidden(m_server_filter == (m_combined_server_list.at(i).favorite ? PublicOnly : FavoriteOnly));
   }
   select_current_server();
 }
@@ -423,32 +422,24 @@ void Lobby::select_current_server()
   }
 }
 
-void Lobby::hide_public_servers(bool p_on)
+void Lobby::toggle_public_server_filter()
 {
-  if (m_hide_public_servers == p_on)
-    return;
-  m_hide_public_servers = p_on;
-  ui_hide_public_servers->set_image(m_hide_public_servers ? "publicservers_selected.png" : "publicservers.png");
+  m_server_filter = m_server_filter == PublicOnly ? NoFilter : PublicOnly;
+  update_server_filter_buttons();
+}
+
+void Lobby::toggle_favorite_server_filter()
+{
+  m_server_filter = m_server_filter == FavoriteOnly ? NoFilter : FavoriteOnly;
+  update_server_filter_buttons();
+}
+
+void Lobby::update_server_filter_buttons()
+{
+  ui_public_server_filter->set_image(m_server_filter == PublicOnly ? "publicservers_selected.png"
+                                                                   : "publicservers.png");
+  ui_favorite_server_filter->set_image(m_server_filter == FavoriteOnly ? "favorites_selected.png" : "favorites.png");
   filter_server_listing();
-}
-
-void Lobby::toggle_hide_public_servers()
-{
-  hide_public_servers(!m_hide_public_servers);
-}
-
-void Lobby::hide_favorite_servers(bool p_on)
-{
-  if (m_hide_favorite_servers == p_on)
-    return;
-  m_hide_favorite_servers = p_on;
-  ui_hide_favorite_servers->set_image(m_hide_favorite_servers ? "favorites_selected.png" : "favorites.png");
-  filter_server_listing();
-}
-
-void Lobby::toggle_hide_favorite_servers()
-{
-  hide_favorite_servers(!m_hide_favorite_servers);
 }
 
 void Lobby::on_refresh_pressed()
