@@ -31,6 +31,7 @@
 #include <QComboBox>
 #include <QDebug>
 #include <QFile>
+#include <QListView>
 #include <QListWidget>
 #include <QPropertyAnimation>
 #include <QScrollArea>
@@ -111,6 +112,10 @@ void Courtroom::create_widgets()
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::NoInsert);
+  QListView *l_view = new QListView(ui_iniswap_dropdown);
+  l_view->setTextElideMode(Qt::TextElideMode::ElideNone);
+  l_view->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+  ui_iniswap_dropdown->setView(l_view);
 
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);

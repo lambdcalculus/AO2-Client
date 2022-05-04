@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QListView>
 #include <QPixmap>
 #include <QUrl>
 
@@ -130,15 +131,15 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
 void Courtroom::set_iniswap_dropdown_searchable(bool p_enabled)
 {
   ui_iniswap_dropdown->setEditable(p_enabled);
-  QAbstractItemView *l_view = ui_iniswap_dropdown->view();
   if (p_enabled)
   {
     QCompleter *l_completer = ui_iniswap_dropdown->completer();
     l_completer->setCompletionMode(QCompleter::PopupCompletion);
     l_completer->setFilterMode(Qt::MatchContains);
-    l_view = l_completer->popup();
+    QListView *l_view = new QListView(ui_iniswap_dropdown);
+    l_view->setTextElideMode(Qt::TextElideMode::ElideNone);
+    l_view->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+    l_completer->setPopup(l_view);
   }
-  l_view->setTextElideMode(Qt::TextElideMode::ElideMiddle);
-  l_view->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
   set_stylesheet(ui_iniswap_dropdown, "[INISWAP DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 }
