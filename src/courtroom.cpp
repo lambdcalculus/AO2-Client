@@ -1516,8 +1516,7 @@ void Courtroom::handle_song(QStringList p_contents)
   }
   m_current_song = l_song;
 
-  const QString l_song_filename = ao_app->find_asset_path(ao_app->get_music_path(l_song), audio_extensions());
-  m_music_player->play(l_song_filename);
+  m_music_player->play(l_song);
 
   DRAudiotrackMetadata l_song_meta(l_song);
   if (l_chr_id >= 0 || l_chr_id < m_chr_list.length())

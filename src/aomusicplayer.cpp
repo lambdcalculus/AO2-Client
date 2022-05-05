@@ -16,7 +16,7 @@ void AOMusicPlayer::play(QString p_song)
   stop();
 
   m_filename = p_song;
-  auto l_maybe_stream = m_family->create_stream(p_song);
+  auto l_maybe_stream = m_family->create_stream(ao_app->get_music_path(p_song));
   if (l_maybe_stream)
   {
     auto l_stream = l_maybe_stream.value();
