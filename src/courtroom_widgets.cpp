@@ -75,12 +75,12 @@ void Courtroom::create_widgets()
   ui_vp_music_display_b = new AOImageDisplay(this, ao_app);
   ui_vp_music_area = new QWidget(ui_vp_music_display_a);
   ui_vp_music_name = new DRTextEdit(ui_vp_music_area);
-  ui_vp_music_name->setText("DANGANRONPA ONLINE");
   ui_vp_music_name->setFrameStyle(QFrame::NoFrame);
   ui_vp_music_name->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_music_name->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_vp_music_name->setReadOnly(true);
   music_anim = new QPropertyAnimation(ui_vp_music_name, "geometry", this);
+  set_music_text("DANGANRONPA ONLINE");
 
   ui_vp_clock = new DRStickerMovie(this);
   ui_vp_clock->set_play_once(true);
@@ -968,7 +968,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_spectator, "spectator", COURTROOM_DESIGN_INI, ao_app);
 
-  handle_music_anim();
+  update_music_text_anim();
 
   set_size_and_pos(ui_set_notes, "set_notes_button", COURTROOM_DESIGN_INI, ao_app);
   ui_set_notes->set_image("set_notes.png");

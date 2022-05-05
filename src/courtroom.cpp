@@ -303,7 +303,13 @@ void Courtroom::set_tick_rate(const int p_tick_rate)
   m_server_tick_rate = p_tick_rate;
 }
 
-void Courtroom::handle_music_anim()
+void Courtroom::set_music_text(QString p_text)
+{
+  ui_vp_music_name->setText(p_text);
+  update_music_text_anim();
+}
+
+void Courtroom::update_music_text_anim()
 {
   pos_size_type res_a = ao_app->get_element_dimensions("music_name", COURTROOM_DESIGN_INI);
   pos_size_type res_b = ao_app->get_element_dimensions("music_area", COURTROOM_DESIGN_INI);
@@ -1479,74 +1485,53 @@ void Courtroom::set_ban(int p_cid)
 void Courtroom::handle_song(QStringList p_contents)
 {
   const bool l_server_compatible = ao_app->is_server_client_version_compatible();
-  if (p_contents.size() < (l_server_compatible ? 3 : 2))
+  if (p_contents.size() < (l_server_compatible ? 4 : 3))
     return;
 
-  QString f_song = p_contents.at(0);
-  const int l_chr_id = p_contents.at(1).toInt();
-  if (l_server_compatible)
+  QString l_song = p_contents.at(0);
+  for (auto &i_extension : audio_extensions())
   {
-    const bool l_restart = p_contents.at(2).toInt();
-    if (m_current_song == f_song && !l_restart)
-      return;
-  }
-  m_current_song = f_song;
-
-  for (auto &ext : audio_extensions())
-  {
-    QString r_song = f_song + ext;
-    QString song_path = ao_app->get_music_path(r_song);
-    if (file_exists(song_path))
+    const QString l_fetched_song = l_song + i_extension;
+    const QString l_path = ao_app->get_music_path(l_fetched_song);
+    if (file_exists(l_path))
     {
-      f_song = r_song;
+      l_song = l_fetched_song;
       break;
     }
   }
 
-  if (l_chr_id < 0 || l_chr_id >= m_chr_list.size())
+  const int l_chr_id = p_contents.at(1).toInt();
+
+  QString l_showname = p_contents.at(2);
+
+  if (l_server_compatible)
   {
-    m_music_player->play(f_song);
+    const bool l_restart = p_contents.at(3).toInt();
+    if (m_current_song == l_song && !l_restart)
+      return;
   }
-  else
+  m_current_song = l_song;
+
+  m_music_player->play(l_song);
+
+  DRAudiotrackMetadata l_song_meta(l_song);
+  if (l_chr_id >= 0 && l_chr_id < m_chr_list.length())
   {
-    // This last argument corresponds to the showname to use when displaying the
-    // music change message in IC
-    // Backwards compatibility is explicitly kept for older versions of
-    // tsuserver that do not send such an argument by assuming an empty showname
-    // If there is an empty showname, the client will use instead the default
-    // showname of the character.
-    QString f_showname;
-    if (p_contents.size() == (l_server_compatible ? 4 : 3))
+    if (l_showname.isEmpty())
     {
-      f_showname = p_contents.at(p_contents.size() - 1);
-    }
-    else
-    {
-      f_showname = "";
+      l_showname = ao_app->get_showname(m_chr_list.at(l_chr_id).name);
     }
 
-    QString str_char;
-    if (f_showname.isEmpty())
-    {
-      str_char = ao_app->get_showname(m_chr_list.at(l_chr_id).name);
-    }
-    else
-    {
-      str_char = f_showname;
-    }
+    append_ic_text(l_showname, "has played a song: " + l_song_meta.title(), false, true, NoClientId,
+                   l_chr_id == m_chr_id);
 
-    append_ic_text(str_char, "has played a song: " + f_song, false, true, NoClientId, l_chr_id == m_chr_id);
     if (ao_config->log_is_recording_enabled())
-      save_textlog(str_char + " has played a song: " + f_song);
-    m_music_player->play(f_song);
+    {
+      save_textlog(l_showname + " has played a song: " + l_song_meta.file_name());
+    }
   }
 
-  int pos = f_song.lastIndexOf(QChar('.'));
-  QString r_song = f_song.left(pos);
-
-  ui_vp_music_name->setText(r_song);
-
-  handle_music_anim();
+  set_music_text(l_song_meta.title());
 }
 
 void Courtroom::handle_wtce(QString p_wtce)

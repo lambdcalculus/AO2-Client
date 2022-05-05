@@ -183,7 +183,8 @@ public:
   void handle_song(QStringList p_contents);
 
   // animates music text
-  void handle_music_anim();
+  void set_music_text(QString p_text);
+  void update_music_text_anim();
 
   // handle server-side clock animation and display
   void handle_clock(QString time);
