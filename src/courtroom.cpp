@@ -1509,16 +1509,16 @@ void Courtroom::handle_song(QStringList p_contents)
   }
   else
   {
-    // This 2th argument corresponds to the showname to use when displaying the
+    // This last argument corresponds to the showname to use when displaying the
     // music change message in IC
     // Backwards compatibility is explicitly kept for older versions of
     // tsuserver that do not send such an argument by assuming an empty showname
     // If there is an empty showname, the client will use instead the default
     // showname of the character.
     QString f_showname;
-    if (p_contents.size() == 3)
+    if (p_contents.size() == (l_server_compatible ? 4 : 3))
     {
-      f_showname = p_contents.at(2);
+      f_showname = p_contents.at(p_contents.size() - 1);
     }
     else
     {
