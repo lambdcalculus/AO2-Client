@@ -1503,10 +1503,6 @@ void Courtroom::handle_song(QStringList p_contents)
   const int l_chr_id = p_contents.at(1).toInt();
 
   QString l_showname = p_contents.at(2);
-  if (l_showname.isEmpty())
-  {
-    l_showname = ao_app->get_showname(m_chr_list.at(l_chr_id).name);
-  }
 
   if (l_server_compatible)
   {
@@ -1521,6 +1517,11 @@ void Courtroom::handle_song(QStringList p_contents)
   DRAudiotrackMetadata l_song_meta(l_song);
   if (l_chr_id >= 0 || l_chr_id < m_chr_list.length())
   {
+    if (l_showname.isEmpty())
+    {
+      l_showname = ao_app->get_showname(m_chr_list.at(l_chr_id).name);
+    }
+
     append_ic_text(l_showname, "has played a song: " + l_song_meta.title(), false, true, NoClientId,
                    l_chr_id == m_chr_id);
 
