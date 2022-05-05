@@ -37,10 +37,10 @@ void DRAudioEnginePrivate::update_current_device()
 {
   update_device_list();
 
-  DRAudioDevice l_new_device;
+  DRAudioDevice l_target_device;
   for (const DRAudioDevice &i_device : qAsConst(device_list))
   {
-    if (i_device.get_driver() == favorite_device_driver)
+    if (!favorite_device_driver.isEmpty() && i_device.get_driver() == favorite_device_driver)
     {
       if (!favorite_device.has_value() || favorite_device.value() != i_device)
       {
@@ -50,21 +50,21 @@ void DRAudioEnginePrivate::update_current_device()
 
       if (i_device.is_enabled())
       {
-        l_new_device = i_device;
+        l_target_device = i_device;
         break;
       }
     }
 
     if (i_device.is_default())
     {
-      l_new_device = i_device;
+      l_target_device = i_device;
     }
   }
 
-  if (device.has_value() && device.value() == l_new_device)
+  if (device.has_value() && device.value() == l_target_device)
     return;
   const std::optional<DRAudioDevice> l_prev_device = device;
-  device = l_new_device;
+  device = l_target_device;
 
   if (l_prev_device.has_value() && l_prev_device->get_id() == device->get_id())
     return;
