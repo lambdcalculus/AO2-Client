@@ -1515,7 +1515,7 @@ void Courtroom::handle_song(QStringList p_contents)
   m_music_player->play(l_song);
 
   DRAudiotrackMetadata l_song_meta(l_song);
-  if (l_chr_id >= 0 || l_chr_id < m_chr_list.length())
+  if (l_chr_id >= 0 && l_chr_id < m_chr_list.length())
   {
     if (l_showname.isEmpty())
     {
