@@ -90,8 +90,11 @@ public:
   // called when a DONE#% from the server was received
   void done_received();
 
-  // sets desk and bg based on pos in chatmessage
+  // updates background and front based on the position given from the chatmessage
   void update_background_scene();
+
+  // updates background and front based on legacy background
+  void update_legacy_background_scene();
 
   // sets text color based on text color in chatmessage
   void set_text_color();
@@ -335,6 +338,7 @@ private:
 
   DRAreaBackground m_background;
   QString m_current_background_name;
+  bool m_is_legacy_background = false;
   DRPositionReader *m_position_reader = nullptr;
 
   AOImageDisplay *ui_background = nullptr;

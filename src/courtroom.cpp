@@ -254,13 +254,28 @@ void Courtroom::update_background_scene()
 {
   const QString l_new_background_name = ao_app->get_current_background();
 
+  m_is_legacy_background = false;
   // see TOD background list for why this method is called here
   if (m_current_background_name.isEmpty() || m_current_background_name != l_new_background_name)
   {
     m_current_background_name = l_new_background_name;
+
     const QString l_positions_ini =
         ao_app->find_asset_path(ao_app->get_background_path(m_current_background_name) + "/" + "positions.ini");
-    m_position_reader->load_file(l_positions_ini);
+    if (!l_positions_ini.isEmpty())
+    {
+      m_position_reader->load_file(l_positions_ini);
+    }
+    else
+    {
+      m_is_legacy_background = true;
+    }
+  }
+
+  if (m_is_legacy_background)
+  {
+    update_legacy_background_scene();
+    return;
   }
 
   const QString l_position_id = m_chatmessage[CMPosition];
@@ -279,6 +294,64 @@ void Courtroom::update_background_scene()
   if (!ui_vp_desk->is_valid() || l_desk_mode == "0")
   {
     ui_vp_desk->hide();
+  }
+}
+
+void Courtroom::update_legacy_background_scene()
+{
+  QString l_back_image = "witnessempty";
+  QString l_front_image = "stand";
+
+  const QString l_position_id = m_chatmessage[CMPosition];
+  if (l_position_id == "def")
+  {
+    l_back_image = "defenseempty";
+    l_front_image = "defensedesk";
+  }
+  else if (l_position_id == "pro")
+  {
+    l_back_image = "prosecutorempty";
+    l_front_image = "prosecutiondesk";
+  }
+  else if (l_position_id == "jud")
+  {
+    l_back_image = "judgestand";
+    l_front_image = "judgedesk";
+  }
+  else if (l_position_id == "hld")
+  {
+    l_back_image = "helperstand";
+    l_front_image = "helperdesk";
+  }
+  else if (l_position_id == "hlp")
+  {
+    l_back_image = "prohelperstand";
+    l_front_image = "prohelperdesk";
+  }
+  else
+  {
+    l_back_image = "witnessempty";
+    l_front_image = "stand";
+  }
+
+  l_back_image = ao_app->find_asset_path(ao_app->get_background_path(m_current_background_name) + "/" + l_back_image,
+                                         animated_or_static_extensions());
+  l_front_image = ao_app->find_asset_path(ao_app->get_background_path(m_current_background_name) + "/" + l_front_image,
+                                          animated_or_static_extensions());
+
+  ui_vp_background->show();
+  ui_vp_background->set_file_name(l_back_image);
+  ui_vp_background->start();
+
+  if (m_chatmessage[CMDeskModifier] == "0")
+  {
+    ui_vp_desk->hide();
+  }
+  else
+  {
+    ui_vp_desk->show();
+    ui_vp_desk->set_file_name(l_front_image);
+    ui_vp_desk->start();
   }
 }
 
