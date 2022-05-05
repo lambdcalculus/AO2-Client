@@ -576,7 +576,15 @@ void Courtroom::on_ic_message_return_pressed()
   packet_contents.append(l_sound_file.isEmpty() ? "0" : l_sound_file);
 
   int l_emote_mod = l_emote.modifier;
-  if (!ui_pre->isChecked())
+
+  if (ui_pre->isChecked())
+  {
+    if (l_emote_mod == ZoomEmoteMod)
+      l_emote_mod = PreZoomEmoteMod;
+    else
+      l_emote_mod = PreEmoteMod;
+  }
+  else
   {
     if (l_emote_mod == PreZoomEmoteMod)
       l_emote_mod = ZoomEmoteMod;
