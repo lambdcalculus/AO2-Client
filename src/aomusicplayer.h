@@ -16,5 +16,5 @@ public slots:
 
 private:
   DRAudioStreamFamily::ptr m_family;
-  QString m_file_name;
+  QString m_filename;
 };
