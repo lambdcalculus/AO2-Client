@@ -145,8 +145,10 @@ void DRMovie::paint_frame()
   ScalingMode l_mode = m_scaling_mode;
   if (l_mode == DynamicScaling)
   {
-    const qreal l_width_factor = (qreal)m_current_pixmap.width() / qMax(width(), 1);
-    const qreal l_height_factor = (qreal)m_current_pixmap.height() / qMax(height(), 1);
+    const qreal l_width_factor =
+        (qreal)qMax(m_current_pixmap.width(), width()) / qMax(qMin(m_current_pixmap.width(), width()), 1);
+    const qreal l_height_factor =
+        (qreal)qMax(m_current_pixmap.height(), height()) / qMax(qMin(m_current_pixmap.height(), height()), 1);
 
     if (l_width_factor < l_height_factor)
     {
