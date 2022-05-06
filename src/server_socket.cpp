@@ -140,7 +140,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       }
     }
 
-    QString l_window_title = "Danganronpa Online";
+    QString l_window_title = "Danganronpa Online (" + get_version_string() + ")";
     if (!l_current_server.name.isEmpty())
       l_window_title = l_window_title + ": " + l_current_server.to_info();
     m_courtroom->set_window_title(l_window_title);
