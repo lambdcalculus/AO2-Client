@@ -8,7 +8,7 @@
 DRCharacterMovie::DRCharacterMovie(QWidget *parent) : DRMovie(parent), ao_app(dynamic_cast<AOApplication *>(qApp))
 {
   Q_ASSERT(ao_app);
-  set_scale_to_height(true);
+  set_scale_mode(DRMovie::HeightScaling);
 }
 
 DRCharacterMovie::~DRCharacterMovie()

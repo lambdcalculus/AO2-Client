@@ -87,9 +87,9 @@ void DRMovie::set_mirrored(bool p_on)
  *
  * By default, scale_to_height is off.
  */
-void DRMovie::set_scale_to_height(bool p_on)
+void DRMovie::set_scale_mode(DRMovie::ScalingMode p_mode)
 {
-  m_scale_to_height = p_on;
+  m_scaling_mode = p_mode;
 }
 
 /**
@@ -142,17 +142,55 @@ void DRMovie::resizeEvent(QResizeEvent *event)
 
 void DRMovie::paint_frame()
 {
-  QPixmap l_frame = m_current_pixmap;
+  ScalingMode l_mode = m_scaling_mode;
+  if (l_mode == DynamicScaling)
+  {
+    const qreal l_width_factor = (qreal)m_current_pixmap.width() / qMax(width(), 1);
+    const qreal l_height_factor = (qreal)m_current_pixmap.height() / qMax(height(), 1);
 
-  const bool l_is_larger = l_frame.width() > width() || l_frame.height() > height();
-  const Qt::TransformationMode l_transform = l_is_larger ? Qt::SmoothTransformation : Qt::FastTransformation;
-  if (m_scale_to_height)
-  {
-    l_frame = l_frame.scaledToHeight(height(), l_transform);
+    if (l_width_factor < l_height_factor)
+    {
+      l_mode = WidthScaling;
+    }
+    else if (l_height_factor < l_width_factor)
+    {
+      l_mode = HeightScaling;
+    }
+    else
+    {
+      l_mode = NoScaling;
+    }
   }
-  else
+
+  QPixmap l_frame = m_current_pixmap;
+  Qt::TransformationMode l_transformation = Qt::FastTransformation;
+  switch (l_mode)
   {
-    l_frame = l_frame.scaled(size(), Qt::IgnoreAspectRatio, l_transform);
+  case NoScaling:
+    [[fallthrough]];
+  default:
+    l_frame = l_frame.scaled(size(), Qt::IgnoreAspectRatio, l_transformation);
+    if (m_current_pixmap.width() > width() || m_current_pixmap.height() > height())
+    {
+      l_transformation = Qt::SmoothTransformation;
+    }
+    break;
+
+  case WidthScaling:
+    l_frame = l_frame.scaledToWidth(width(), l_transformation);
+    if (m_current_pixmap.width() > width())
+    {
+      l_transformation = Qt::SmoothTransformation;
+    }
+    break;
+
+  case HeightScaling:
+    l_frame = l_frame.scaledToHeight(height(), l_transformation);
+    if (m_current_pixmap.height() > height())
+    {
+      l_transformation = Qt::SmoothTransformation;
+    }
+    break;
   }
 
   setPixmap(l_frame);

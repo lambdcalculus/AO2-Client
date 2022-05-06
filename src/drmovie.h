@@ -9,6 +9,14 @@ class DRMovie : public QLabel
   Q_OBJECT
 
 public:
+  enum ScalingMode
+  {
+    NoScaling,
+    WidthScaling,
+    HeightScaling,
+    DynamicScaling,
+  };
+
   explicit DRMovie(QWidget *parent = nullptr);
   ~DRMovie();
 
@@ -17,7 +25,7 @@ public:
 
   void set_play_once(bool);
   void set_mirrored(bool);
-  void set_scale_to_height(bool);
+  void set_scale_mode(ScalingMode);
   void set_hide_on_done(bool);
 
   bool is_running();
@@ -34,7 +42,7 @@ protected:
 private:
   bool m_play_once = false;
   bool m_mirrored = false;
-  bool m_scale_to_height = false;
+  ScalingMode m_scaling_mode = NoScaling;
   bool m_hide_when_done = false;
 
   QString m_file_name;
