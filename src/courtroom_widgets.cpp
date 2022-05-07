@@ -83,7 +83,6 @@ void Courtroom::create_widgets()
   set_music_text("DANGANRONPA ONLINE");
 
   ui_vp_clock = new DRStickerMovie(this);
-  ui_vp_clock->set_play_once(true);
 
   ui_vp_chatbox = new AOImageDisplay(this, ao_app);
   ui_vp_showname = new DRTextEdit(ui_vp_chatbox);
@@ -107,7 +106,6 @@ void Courtroom::create_widgets()
   ui_vp_objection->set_hide_on_done(true);
 
   ui_vp_chat_arrow = new DRStickerMovie(this);
-  ui_vp_chat_arrow->set_play_once(false);
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::NoInsert);
@@ -615,7 +613,10 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_vp_chat_arrow, "chat_arrow", COURTROOM_DESIGN_INI, ao_app);
   if (!ao_app->find_theme_asset_path("chat_arrow", animated_or_static_extensions()).isEmpty())
+  {
     ui_vp_chat_arrow->play("chat_arrow");
+  }
+  set_sticker_play_once(ui_vp_chat_arrow, "chat_arrow", COURTROOM_CONFIG_INI, ao_app);
   ui_vp_chat_arrow->hide();
 
   ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
@@ -667,6 +668,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_vp_clock, "clock", COURTROOM_DESIGN_INI, ao_app);
   if (m_current_clock == -1)
     ui_vp_clock->hide();
+  set_sticker_play_once(ui_vp_clock, "clock", COURTROOM_CONFIG_INI, ao_app);
 
   ui_vp_chatbox->set_theme_image("chatmed.png");
   ui_vp_chatbox->hide();
@@ -1399,8 +1401,10 @@ void Courtroom::set_free_blocks()
 {
   for (int i = 0; i < ui_free_blocks.size(); i++)
   {
-    DRStickerMovie *free_block = ui_free_blocks[i];
-    free_block->play(free_block_names[i]);
+    DRStickerMovie *l_block = ui_free_blocks[i];
+    const QString l_block_name = free_block_names[i];
+    l_block->play(l_block_name);
+    set_sticker_play_once(l_block, l_block_name, COURTROOM_CONFIG_INI, ao_app);
   }
 }
 
