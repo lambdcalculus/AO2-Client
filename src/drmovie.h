@@ -11,11 +11,12 @@ class DRMovie : public QLabel
 public:
   enum ScalingMode
   {
-    NoScaling,
+    StretchScaling,
     WidthScaling,
     HeightScaling,
     DynamicScaling,
   };
+  Q_ENUM(ScalingMode)
 
   explicit DRMovie(QWidget *parent = nullptr);
   ~DRMovie();
@@ -42,7 +43,7 @@ protected:
 private:
   bool m_play_once = false;
   bool m_mirrored = false;
-  ScalingMode m_scaling_mode = NoScaling;
+  ScalingMode m_scaling_mode = StretchScaling;
   bool m_hide_when_done = false;
 
   QString m_file_name;

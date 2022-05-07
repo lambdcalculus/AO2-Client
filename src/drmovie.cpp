@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QTransform>
 
 DRMovie::DRMovie(QWidget *parent) : QLabel(parent)
 {
@@ -142,60 +143,62 @@ void DRMovie::resizeEvent(QResizeEvent *event)
 
 void DRMovie::paint_frame()
 {
-  ScalingMode l_mode = m_scaling_mode;
-  if (l_mode == DynamicScaling)
+  ScalingMode l_target_mode = m_scaling_mode;
+  QSize l_target_size = size();
+  if (l_target_mode == DynamicScaling)
   {
-    const qreal l_width_factor =
-        (qreal)qMax(m_current_pixmap.width(), width()) / qMax(qMin(m_current_pixmap.width(), width()), 1);
-    const qreal l_height_factor =
-        (qreal)qMax(m_current_pixmap.height(), height()) / qMax(qMin(m_current_pixmap.height(), height()), 1);
+    const qreal l_width_factor = (qreal)qMax(m_current_pixmap.width(), 1) / qMax(width(), 1);
+    const qreal l_height_factor = (qreal)qMax(m_current_pixmap.height(), 1) / qMax(height(), 1);
 
-    if (l_width_factor < l_height_factor)
+    const QSize l_by_width_size{
+        int((qreal)m_current_pixmap.width() / l_width_factor),
+        int((qreal)m_current_pixmap.height() / l_width_factor),
+    };
+    const QSize l_by_height_size{
+        int((qreal)m_current_pixmap.width() / l_height_factor),
+        int((qreal)m_current_pixmap.height() / l_height_factor),
+    };
+
+    if (l_by_width_size.height() >= height())
     {
-      l_mode = WidthScaling;
+      l_target_mode = WidthScaling;
+      l_target_size = l_by_width_size;
     }
-    else if (l_height_factor < l_width_factor)
+    else if (l_by_height_size.width() >= width())
     {
-      l_mode = HeightScaling;
+      l_target_mode = HeightScaling;
+      l_target_size = l_by_height_size;
     }
     else
     {
-      l_mode = NoScaling;
+      l_target_mode = StretchScaling;
     }
   }
 
-  QPixmap l_frame = m_current_pixmap;
-  Qt::TransformationMode l_transformation = Qt::FastTransformation;
-  switch (l_mode)
+  QPixmap l_scaled_image = m_current_pixmap;
+  Qt::TransformationMode l_transformation = Qt::SmoothTransformation;
+  if (m_current_pixmap.width() < width() || m_current_pixmap.height() < height())
   {
-  case NoScaling:
+    l_transformation = Qt::FastTransformation;
+  }
+  switch (l_target_mode)
+  {
+  case StretchScaling:
     [[fallthrough]];
   default:
-    l_frame = l_frame.scaled(size(), Qt::IgnoreAspectRatio, l_transformation);
-    if (m_current_pixmap.width() > width() || m_current_pixmap.height() > height())
-    {
-      l_transformation = Qt::SmoothTransformation;
-    }
+    l_scaled_image = l_scaled_image.scaled(size(), Qt::IgnoreAspectRatio, l_transformation);
     break;
 
   case WidthScaling:
-    l_frame = l_frame.scaledToWidth(width(), l_transformation);
-    if (m_current_pixmap.width() > width())
-    {
-      l_transformation = Qt::SmoothTransformation;
-    }
+    l_scaled_image = l_scaled_image.scaledToWidth(width(), l_transformation);
     break;
 
   case HeightScaling:
-    l_frame = l_frame.scaledToHeight(height(), l_transformation);
-    if (m_current_pixmap.height() > height())
-    {
-      l_transformation = Qt::SmoothTransformation;
-    }
+    l_scaled_image = l_scaled_image.scaledToHeight(height(), l_transformation);
     break;
   }
 
-  setPixmap(l_frame);
+  setPixmap(l_scaled_image);
 }
 
 void DRMovie::update_frame(int p_frame_number)
