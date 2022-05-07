@@ -252,14 +252,13 @@ void Courtroom::set_window_title(QString p_title)
 
 void Courtroom::update_background_scene()
 {
-  const QString l_new_background_name = ao_app->get_current_background();
+  const QString l_prev_background_name = m_current_background_name;
+  m_current_background_name = ao_app->get_current_background();
 
-  m_is_legacy_background = false;
   // see TOD background list for why this method is called here
-  if (m_current_background_name.isEmpty() || m_current_background_name != l_new_background_name)
+  if (l_prev_background_name.isEmpty() || l_prev_background_name != m_current_background_name)
   {
-    m_current_background_name = l_new_background_name;
-
+    m_is_legacy_background = false;
     const QString l_positions_ini =
         ao_app->find_asset_path(ao_app->get_background_path(m_current_background_name) + "/" + "positions.ini");
     if (!l_positions_ini.isEmpty())
@@ -341,7 +340,12 @@ void Courtroom::update_legacy_background_scene()
 
   ui_vp_background->show();
   ui_vp_background->set_file_name(l_back_image);
+  ui_vp_background->set_play_once(false);
   ui_vp_background->start();
+  if (!ui_vp_background->is_valid())
+  {
+    ui_vp_background->hide();
+  }
 
   if (m_chatmessage[CMDeskModifier] == "0")
   {
@@ -351,7 +355,12 @@ void Courtroom::update_legacy_background_scene()
   {
     ui_vp_desk->show();
     ui_vp_desk->set_file_name(l_front_image);
+    ui_vp_desk->set_play_once(false);
     ui_vp_desk->start();
+    if (!ui_vp_desk->is_valid())
+    {
+      ui_vp_desk->hide();
+    }
   }
 }
 
