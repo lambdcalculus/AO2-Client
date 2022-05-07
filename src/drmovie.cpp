@@ -2,7 +2,6 @@
 
 #include <QDebug>
 #include <QFile>
-#include <QTransform>
 
 DRMovie::DRMovie(QWidget *parent) : QLabel(parent)
 {
