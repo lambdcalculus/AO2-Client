@@ -21,7 +21,9 @@
 #include <QTabWidget>
 
 AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
-    : QWidget(p_parent), m_config(new AOConfig(this)), m_engine(new DRAudioEngine(this))
+    : QWidget(p_parent),
+      m_config(new AOConfig(this)),
+      m_engine(new DRAudioEngine(this))
 {
   ao_app = p_ao_app;
 
@@ -537,11 +539,13 @@ void AOConfigPanel::on_device_current_index_changed(int p_index)
 
   const QString target_device_driver = ui_device->itemData(p_index).toString();
   for (DRAudioDevice &i_device : m_engine->get_device_list())
+  {
     if (target_device_driver == i_device.get_driver())
     {
       m_config->set_favorite_device_driver(i_device.get_driver());
       break;
     }
+  }
 }
 
 void AOConfigPanel::on_audio_device_changed(DRAudioDevice p_device)

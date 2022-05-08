@@ -23,7 +23,7 @@ void DRShoutMovie::play_interjection(QString p_character, QString p_shout)
   }
 
   QString l_file_name =
-      ao_app->find_asset_path({ao_app->get_character_path(p_character, p_shout)}, animated_extensions());
+      ao_app->find_asset_path(ao_app->get_character_path(p_character, p_shout), animated_extensions());
 
   if (l_file_name.isEmpty())
   {

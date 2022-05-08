@@ -40,7 +40,7 @@ QString DRAudioDevice::get_name() const
 
 QString DRAudioDevice::get_driver() const
 {
-  return m_driver;
+  return m_driver.isEmpty() ? "NOSOUND" : m_driver;
 }
 
 DRAudioDevice::States DRAudioDevice::get_states() const
