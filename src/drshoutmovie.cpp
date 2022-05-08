@@ -17,13 +17,9 @@ DRShoutMovie::~DRShoutMovie()
 
 void DRShoutMovie::play_interjection(QString p_character, QString p_shout)
 {
-  if (p_shout.toLower() == "custom")
-  {
-    p_shout.append("_bubble");
-  }
-
-  QString l_file_name =
-      ao_app->find_asset_path(ao_app->get_character_path(p_character, p_shout), animated_extensions());
+  QString l_file_name = ao_app->find_asset_path(
+      {ao_app->get_character_path(p_character, p_shout), ao_app->get_character_path(p_character, p_shout + "_bubble")},
+      animated_extensions());
 
   if (l_file_name.isEmpty())
   {
