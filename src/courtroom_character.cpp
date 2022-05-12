@@ -70,31 +70,36 @@ void drSetItemIcon(QComboBox *p_widget, const int p_index, const QString &p_chr_
 
 void Courtroom::update_iniswap_list()
 {
-  QSignalBlocker b_ini_list(ui_iniswap_dropdown);
-  ui_iniswap_dropdown->clear();
+  ui_iniswap_dropdown->setEditable(false);
 
-  QStringList l_name_list{"Default"};
-  const QString l_path = ao_app->get_base_path() + "/characters";
-  const QFileInfoList l_info_list = QDir(l_path).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
-  for (const QFileInfo &i_info : l_info_list)
   {
-    const QString l_name = i_info.fileName();
-    if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)))
-      continue;
-    l_name_list.append(l_name);
+    QSignalBlocker b_ini_list(ui_iniswap_dropdown);
+    ui_iniswap_dropdown->clear();
+
+    QStringList l_name_list{"Default"};
+    const QString l_path = ao_app->get_base_path() + "/characters";
+    const QFileInfoList l_info_list = QDir(l_path).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    for (const QFileInfo &i_info : l_info_list)
+    {
+      const QString l_name = i_info.fileName();
+      if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)))
+        continue;
+      l_name_list.append(l_name);
+    }
+
+    for (int i = 0; i < l_name_list.length(); ++i)
+    {
+      const QString &i_name = l_name_list.at(i);
+      ui_iniswap_dropdown->addItem(i_name);
+      if (i == 0)
+        continue;
+      drSetItemIcon(ui_iniswap_dropdown, i, i_name, ao_app);
+    }
+    update_default_iniswap_item();
+    select_base_character_iniswap();
   }
 
-  for (int i = 0; i < l_name_list.length(); ++i)
-  {
-    const QString &i_name = l_name_list.at(i);
-    ui_iniswap_dropdown->addItem(i_name);
-    if (i == 0)
-      continue;
-    drSetItemIcon(ui_iniswap_dropdown, i, i_name, ao_app);
-  }
-  update_default_iniswap_item();
-  select_base_character_iniswap();
-  set_iniswap_dropdown_searchable(ao_config->searchable_iniswap_enabled());
+  update_iniswap_dropdown_searchable();
 }
 
 void Courtroom::update_default_iniswap_item()
@@ -128,18 +133,18 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
                                p_index == 0 ? get_character() : ui_iniswap_dropdown->itemText(p_index));
 }
 
-void Courtroom::set_iniswap_dropdown_searchable(bool p_enabled)
+void Courtroom::update_iniswap_dropdown_searchable()
 {
-  ui_iniswap_dropdown->setEditable(p_enabled);
-  if (p_enabled)
+  const bool l_enabled = ao_config->searchable_iniswap_enabled();
+  ui_iniswap_dropdown->setEditable(l_enabled);
+  if (l_enabled)
   {
     QCompleter *l_completer = ui_iniswap_dropdown->completer();
     l_completer->setCompletionMode(QCompleter::PopupCompletion);
     l_completer->setFilterMode(Qt::MatchContains);
-    QListView *l_view = new QListView(ui_iniswap_dropdown);
-    l_completer->setPopup(l_view);
-    l_view->setTextElideMode(Qt::TextElideMode::ElideNone);
-    l_view->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
+    QAbstractItemView *l_list = l_completer->popup();
+    l_list->setTextElideMode(Qt::TextElideMode::ElideNone);
+    l_list->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
   }
   set_stylesheet(ui_iniswap_dropdown, "[INISWAP DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 }

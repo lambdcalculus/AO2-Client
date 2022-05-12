@@ -261,7 +261,7 @@ void Courtroom::connect_widgets()
 
   connect(m_flash_timer, SIGNAL(timeout()), this, SLOT(realization_done()));
 
-  connect(ao_config, SIGNAL(searchable_iniswap_changed(bool)), this, SLOT(set_iniswap_dropdown_searchable(bool)));
+  connect(ao_config, SIGNAL(searchable_iniswap_changed(bool)), this, SLOT(update_iniswap_dropdown_searchable()));
   connect(ao_config, SIGNAL(emote_preview_changed(bool)), this, SLOT(on_emote_preview_toggled(bool)));
   connect(ui_emote_left, SIGNAL(clicked()), this, SLOT(on_emote_left_clicked()));
   connect(ui_emote_right, SIGNAL(clicked()), this, SLOT(on_emote_right_clicked()));
@@ -737,7 +737,7 @@ void Courtroom::set_widgets()
   set_stylesheet(ui_emote_dropdown, "[EMOTE DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown", COURTROOM_DESIGN_INI, ao_app);
-  set_iniswap_dropdown_searchable(ao_config->searchable_iniswap_enabled());
+  update_iniswap_dropdown_searchable();
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown", COURTROOM_DESIGN_INI, ao_app);
   set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);

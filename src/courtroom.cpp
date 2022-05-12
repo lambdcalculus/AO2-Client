@@ -116,8 +116,6 @@ void Courtroom::setup_courtroom()
   set_widgets();
   ui_char_select_background->setVisible(l_chr_select_visible);
 
-  update_iniswap_list();
-
   m_shout_state = 0;
   m_shout_current = 0;
   check_shouts();
