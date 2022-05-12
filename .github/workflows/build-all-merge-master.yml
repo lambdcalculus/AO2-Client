@@ -437,7 +437,7 @@ jobs:
         echo "LD_LIBRARY_PATH=.:./depends:$LD_LIBRARY_PATH ./dro-client" > "dro-client.sh"
         echo "Installation instructions
         1. On your terminal, run
-        sudo apt install qt5-default
+        sudo apt-get install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
         2. Change directory to this folder, and run
         chmod +x dro-client.sh
         chmod +x dro-client
