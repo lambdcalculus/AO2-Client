@@ -889,10 +889,20 @@ void Courtroom::handle_chatmessage_2() // handles IC
   else
     ui_vp_player_char->set_mirrored(false);
 
-  if (m_play_pre && !m_hide_character)
-    play_preanim();
+  if (m_play_pre)
+  {
+    int sfx_delay = m_chatmessage[CMSoundDelay].toInt();
+    m_sound_timer->start(sfx_delay);
+
+    if (!m_hide_character)
+    {
+      play_preanim();
+    }
+  }
   else
+  {
     handle_chatmessage_3();
+  }
 }
 
 void Courtroom::handle_chatmessage_3()
@@ -1235,11 +1245,6 @@ void Courtroom::append_system_text(QString p_showname, QString p_line)
 
 void Courtroom::play_preanim()
 {
-  // all time values in char.inis are multiplied by a constant(time_mod) to get
-  // the actual time
-  int sfx_delay = m_chatmessage[CMSoundDelay].toInt() * 60;
-  m_sound_timer->start(sfx_delay);
-
   // set state
   anim_state = 1;
   ui_vp_player_char->show();

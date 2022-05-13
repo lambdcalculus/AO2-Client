@@ -625,9 +625,19 @@ QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
       l_emote.sound_file = l_chrini.value(i_key).toString();
       l_chrini.endGroup();
 
-      l_chrini.beginGroup(l_fetcher.lookup_group("soundt"));
-      l_emote.sound_delay = qMax(l_chrini.value(i_key).toInt(), 0);
+      l_chrini.beginGroup(l_fetcher.lookup_group("soundd"));
+      if (l_chrini.contains(i_key))
+      {
+        l_emote.sound_delay = l_chrini.value(i_key).toInt();
+      }
+      else
+      {
+        l_chrini.endGroup();
+        l_chrini.beginGroup(l_fetcher.lookup_group("soundt"));
+        l_emote.sound_delay = l_chrini.value(i_key).toInt() * 60;
+      }
       l_chrini.endGroup();
+      l_emote.sound_delay = qMax(0, l_emote.sound_delay);
 
       l_chrini.beginGroup(l_fetcher.lookup_group("videos"));
       l_emote.video_file = l_chrini.value(i_key).toString();
