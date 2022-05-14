@@ -493,6 +493,7 @@ private:
   QVector<AOCharButton *> ui_char_button_list;
 
   AOButton *ui_back_to_lobby = nullptr;
+  bool m_back_to_lobby_clicked = false;
 
   AOButton *ui_chr_select_left = nullptr;
   AOButton *ui_chr_select_right = nullptr;

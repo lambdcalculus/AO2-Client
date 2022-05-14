@@ -2165,11 +2165,13 @@ void Courtroom::load_audiotracks()
 
 void Courtroom::on_back_to_lobby_clicked()
 {
+  if (m_back_to_lobby_clicked)
+    return;
+  m_back_to_lobby_clicked = true;
+
   // hide so we don't get the 'disconnected from server' prompt
   hide();
-
   ao_app->construct_lobby();
-  ao_app->get_lobby()->set_choose_a_server();
   ao_app->destruct_courtroom();
 }
 

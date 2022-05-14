@@ -20,7 +20,7 @@ void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_ini_fil
 
   if (design_ini_result.width < 0 || design_ini_result.height < 0)
   {
-    qDebug() << "W: could not find \"" << p_identifier << "\" in " << p_ini_file;
+    qDebug() << "W: could not find" << p_identifier << "in " << p_ini_file;
     // Don't hide, as some widgets don't have a built-in way of reappearing again.
     p_widget->move(0, 0);
     p_widget->resize(0, 0);
@@ -59,8 +59,7 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
 {
   QString class_name = p_widget->metaObject()->className();
 
-  int f_weight = ao_app->get_font_property(p_identifier, ini_file);
-
+  QFont l_font;
   // Font priority
   // 1. "font_" + p_identifier
   // 2. "font_default"
@@ -71,18 +70,23 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
   {
     font_name = ao_app->get_font_name("font_default", ini_file);
   }
-  p_widget->setFont(QFont(font_name, f_weight));
+  if (!font_name.isEmpty())
+  {
+    l_font.setFamily(font_name);
+  }
+
+  int f_weight = ao_app->get_font_property(p_identifier, ini_file);
+  l_font.setPointSize(f_weight);
+
+  bool is_bold = ao_app->get_font_property(p_identifier + "_bold", ini_file) == 1;
+  l_font.setBold(is_bold);
+
+  p_widget->setFont(l_font);
 
   const QColor l_font_color = ao_app->get_color(p_identifier + "_color", ini_file);
-  int bold = ao_app->get_font_property(p_identifier + "_bold", ini_file);
-  QString is_bold = (bold == 1 ? "bold" : "");
-
-  QFont font = p_widget->font();
-  font.setBold(bold);
-  p_widget->setFont(font);
-
   QString style_sheet_string = class_name + " { " + "background-color: rgba(0, 0, 0, 0);\n" +
-                               "color: " + l_font_color.name(QColor::HexArgb) + ";\n" + "font: " + is_bold + ";" + " }";
+                               "color: " + l_font_color.name(QColor::HexArgb) + ";\n" + (is_bold ? "font: bold;" : "") +
+                               "}";
   p_widget->setStyleSheet(style_sheet_string);
 }
 
