@@ -10,14 +10,14 @@ int main(int argc, char *argv[])
   qInstallMessageHandler(logger::log);
   qInfo() << "Starting Danganronpa Online...";
 
-  bool l_dpi_scaling = true;
+  bool l_dpi_scaling = false;
   for (int i = 0; i < argc; ++i)
   {
     const QString l_arg(argv[i]);
 
-    if (l_arg == "-noscaling")
+    if (l_arg == "-dpiscaling")
     {
-      l_dpi_scaling = false;
+      l_dpi_scaling = true;
     }
   }
 
