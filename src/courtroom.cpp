@@ -897,12 +897,11 @@ void Courtroom::handle_chatmessage_2() // handles IC
     if (!m_hide_character)
     {
       play_preanim();
+      return;
     }
   }
-  else
-  {
-    handle_chatmessage_3();
-  }
+
+  handle_chatmessage_3();
 }
 
 void Courtroom::handle_chatmessage_3()
