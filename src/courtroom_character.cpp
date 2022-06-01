@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "aoconfig.h"
 #include "commondefs.h"
+#include "drpacket.h"
 #include "file_functions.h"
 #include "theme.h"
 
@@ -124,7 +125,14 @@ void Courtroom::refresh_character_content_url()
   if (m_character_content_url == l_new_content_url)
     return;
   m_character_content_url = l_new_content_url;
-  send_ooc_packet("/files_set " + m_character_content_url);
+  if (ao_app->is_server_client_version_compatible())
+  {
+    ao_app->send_server_packet(DRPacket("FS", {m_character_content_url}));
+  }
+  else
+  {
+    send_ooc_packet("/files_set " + m_character_content_url);
+  }
 }
 
 void Courtroom::on_iniswap_dropdown_changed(int p_index)
