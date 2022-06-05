@@ -38,11 +38,13 @@ class DRVideoWidget;
 #include <QStack>
 #include <QTextCharFormat>
 
+class QAction;
 class QCheckBox;
 class QComboBox;
 class QLineEdit;
 class QListWidget;
 class QListWidgetItem;
+class QMenu;
 class QPropertyAnimation;
 class QScrollArea;
 class QSignalMapper;
@@ -387,6 +389,9 @@ private:
   QLineEdit *ui_area_search = nullptr;
   QListWidget *ui_music_list = nullptr;
   QLineEdit *ui_music_search = nullptr;
+  QMenu *ui_music_menu = nullptr;
+  QAction *ui_music_menu_play = nullptr;
+  QAction *ui_music_menu_insert_ooc = nullptr;
 
   QListWidget *ui_sfx_list = nullptr;
   QVector<DRSfx> m_sfx_list;
@@ -571,8 +576,12 @@ private slots:
 
   void on_music_list_clicked();
   void on_music_list_double_clicked(QModelIndex p_model);
+  void on_music_list_context_menu_requested(QPoint p_point);
+  void on_music_menu_play_triggered();
+  void on_music_menu_insert_ooc_triggered();
   void on_music_search_edited(QString);
   void on_music_search_edited();
+  void send_mc_packet(QString p_song);
 
   void select_emote(int p_id);
 
@@ -659,6 +668,7 @@ private slots:
 
   // character
   // ===========================================================================
+
 public:
   using CharacterId = int;
   enum : CharacterId
@@ -677,6 +687,7 @@ private:
   CharacterId m_chr_id = SpectatorId;
 
   // sfx
+
 public:
   std::optional<DRSfx> current_sfx();
   QString current_sfx_file();
@@ -717,6 +728,7 @@ private:
   bool is_audio_muted = false;
 
   // QWidget interface
+
 protected:
   void changeEvent(QEvent *) override;
   void closeEvent(QCloseEvent *event) override;

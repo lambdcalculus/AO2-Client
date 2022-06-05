@@ -39,6 +39,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPropertyAnimation>
 #include <QScrollArea>
@@ -1854,11 +1855,37 @@ void Courtroom::on_music_list_clicked()
 
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 {
-  if (is_client_muted)
-    return;
   const QString l_song_name = ui_music_list->item(p_model.row())->data(Qt::UserRole).toString();
-  ao_app->send_server_packet(DRPacket("MC", {l_song_name, QString::number(m_chr_id)}));
+  send_mc_packet(l_song_name);
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_music_list_context_menu_requested(QPoint p_point)
+{
+  const QPoint l_global_pos = ui_music_list->viewport()->mapToGlobal(p_point);
+  ui_music_menu->popup(l_global_pos);
+}
+
+void Courtroom::on_music_menu_play_triggered()
+{
+  QListWidgetItem *l_item = ui_music_list->currentItem();
+  if (l_item)
+  {
+    const QString l_song = l_item->data(Qt::UserRole).toString();
+    send_mc_packet(l_song);
+  }
+  ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_music_menu_insert_ooc_triggered()
+{
+  QListWidgetItem *l_item = ui_music_list->currentItem();
+  if (l_item)
+  {
+    const QString l_song = l_item->data(Qt::UserRole).toString();
+    ui_ooc_chat_message->insert(l_song);
+  }
+  ui_ooc_chat_message->setFocus();
 }
 
 void Courtroom::on_music_search_edited(QString p_filter)
@@ -1869,6 +1896,13 @@ void Courtroom::on_music_search_edited(QString p_filter)
 void Courtroom::on_music_search_edited()
 {
   on_music_search_edited(ui_music_search->text());
+}
+
+void Courtroom::send_mc_packet(QString p_song)
+{
+  if (is_client_muted)
+    return;
+  ao_app->send_server_packet(DRPacket("MC", {p_song, QString::number(m_chr_id)}));
 }
 
 /**

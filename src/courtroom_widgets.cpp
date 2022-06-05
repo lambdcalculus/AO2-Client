@@ -27,11 +27,13 @@
 #include "file_functions.h"
 #include "theme.h"
 
+#include <QAction>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDebug>
 #include <QFile>
 #include <QListWidget>
+#include <QMenu>
 #include <QPropertyAnimation>
 #include <QScrollArea>
 #include <QScrollBar>
@@ -132,9 +134,13 @@ void Courtroom::create_widgets()
   ui_area_search->setPlaceholderText("Area filter");
 
   ui_music_list = new QListWidget(this);
+  ui_music_list->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_music_search = new QLineEdit(this);
   ui_music_search->setFrame(false);
   ui_music_search->setPlaceholderText("Music filter");
+  ui_music_menu = new QMenu(this);
+  ui_music_menu_play = ui_music_menu->addAction(tr("Play"));
+  ui_music_menu_insert_ooc = ui_music_menu->addAction(tr("Insert to OOC"));
 
   ui_sfx_list = new QListWidget(this);
   ui_sfx_search = new QLineEdit(this);
@@ -284,8 +290,14 @@ void Courtroom::connect_widgets()
   connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
 
   connect(ui_music_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_music_list_clicked()));
-  connect(ui_area_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_area_list_clicked()));
   connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
+  connect(ui_music_list, SIGNAL(customContextMenuRequested(QPoint)), this,
+          SLOT(on_music_list_context_menu_requested(QPoint)));
+
+  connect(ui_music_menu_play, SIGNAL(triggered()), this, SLOT(on_music_menu_play_triggered()));
+  connect(ui_music_menu_insert_ooc, SIGNAL(triggered()), this, SLOT(on_music_menu_insert_ooc_triggered()));
+
+  connect(ui_area_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_area_list_clicked()));
   connect(ui_area_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_area_list_double_clicked(QModelIndex)));
 
   // connect events for shout/effect/wtce buttons happen in load_shouts(),
