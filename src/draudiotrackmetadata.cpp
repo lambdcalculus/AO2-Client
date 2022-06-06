@@ -49,11 +49,21 @@ void DRAudiotrackMetadata::update_cache()
     utils::QSettingsKeyFetcher l_fetcher(l_settings);
 
     const QStringList l_audiotrack_name_list = l_settings.childGroups();
-    for (const QString &i_track_name : l_audiotrack_name_list)
+    for (const QString &i_section_name : l_audiotrack_name_list)
     {
+      l_settings.beginGroup(i_section_name);
+
+      QString i_track_name = l_settings.value(l_fetcher.lookup_value("file_name")).toString();
+      if (i_track_name.isEmpty())
+      {
+        qWarning() << "error: empty file name in section" << i_section_name;
+        l_settings.endGroup();
+        continue;
+      }
       if (!QFileInfo::exists(ao_app->get_music_path(i_track_name)))
       {
         qWarning() << "error: audiotrack not found" << i_track_name;
+        l_settings.endGroup();
         continue;
       }
 
@@ -65,7 +75,6 @@ void DRAudiotrackMetadata::update_cache()
       }
       l_new_audiotrack_origin.insert(l_lower_track_name, l_ini_path);
 
-      l_settings.beginGroup(i_track_name);
       DRAudiotrackMetadata l_audiotrack;
       l_audiotrack.m_file_name = i_track_name;
       l_audiotrack.m_title = l_settings.value(l_fetcher.lookup_value("title")).toString();
