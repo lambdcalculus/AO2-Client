@@ -462,9 +462,9 @@ void Courtroom::list_music()
   {
     DRAudiotrackMetadata l_track(i_song);
     QListWidgetItem *l_item = new QListWidgetItem(l_track.title(), ui_music_list);
-    l_item->setData(Qt::UserRole, l_track.file_name());
-    if (l_track.title() != l_track.file_name())
-      l_item->setToolTip(l_track.file_name());
+    l_item->setData(Qt::UserRole, l_track.filename());
+    if (l_track.title() != l_track.filename())
+      l_item->setToolTip(l_track.filename());
     const QString l_song_path = ao_app->find_asset_path({ao_app->get_music_path(i_song)}, audio_extensions());
     l_item->setBackground(l_song_path.isEmpty() ? l_missing_song_brush : l_song_brush);
   }
@@ -1603,7 +1603,7 @@ void Courtroom::handle_song(QStringList p_contents)
 
     if (ao_config->log_is_recording_enabled())
     {
-      save_textlog(l_showname + " has played a song: " + l_song_meta.file_name());
+      save_textlog(l_showname + " has played a song: " + l_song_meta.filename());
     }
   }
 

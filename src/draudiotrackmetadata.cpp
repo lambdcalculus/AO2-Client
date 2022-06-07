@@ -54,13 +54,13 @@ void DRAudiotrackMetadata::update_cache()
       l_settings.beginGroup(i_group);
       DRAudiotrackMetadata l_audiotrack;
       l_audiotrack.m_title = l_settings.value(l_fetcher.lookup_value("title")).toString();
-      l_audiotrack.m_file_name = l_settings.value(l_fetcher.lookup_value("file_name")).toString();
+      l_audiotrack.m_filename = l_settings.value(l_fetcher.lookup_value("filename")).toString();
       l_audiotrack.m_play_once = l_settings.value(l_fetcher.lookup_value("play_once")).toBool();
       l_audiotrack.m_loop_start = l_settings.value(l_fetcher.lookup_value("loop_start")).toULongLong();
       l_audiotrack.m_loop_end = l_settings.value(l_fetcher.lookup_value("loop_end")).toULongLong();
       l_settings.endGroup();
 
-      const QString l_track_name = l_audiotrack.m_file_name;
+      const QString l_track_name = l_audiotrack.m_filename;
       if (l_track_name.isEmpty())
       {
         qWarning() << "error: empty file name in section" << i_group;
@@ -88,7 +88,7 @@ void DRAudiotrackMetadata::update_cache()
 DRAudiotrackMetadata::DRAudiotrackMetadata()
 {}
 
-DRAudiotrackMetadata::DRAudiotrackMetadata(QString p_file_name) : m_file_name(p_file_name)
+DRAudiotrackMetadata::DRAudiotrackMetadata(QString p_file_name) : m_filename(p_file_name)
 {
   const QString l_lower_file_name = p_file_name.toLower();
   if (s_audiotrack_cache.contains(l_lower_file_name))
@@ -100,14 +100,14 @@ DRAudiotrackMetadata::DRAudiotrackMetadata(QString p_file_name) : m_file_name(p_
 DRAudiotrackMetadata::~DRAudiotrackMetadata()
 {}
 
-QString DRAudiotrackMetadata::file_name()
+QString DRAudiotrackMetadata::filename()
 {
-  return m_file_name;
+  return m_filename;
 }
 
 QString DRAudiotrackMetadata::title()
 {
-  return m_title.isEmpty() ? m_file_name : m_title;
+  return m_title.isEmpty() ? m_filename : m_title;
 }
 
 bool DRAudiotrackMetadata::play_once()
