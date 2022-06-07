@@ -1603,7 +1603,7 @@ void Courtroom::handle_song(QStringList p_contents)
 
     if (ao_config->log_is_recording_enabled())
     {
-      save_textlog(l_showname + " has played a song: " + l_song_meta.title());
+      save_textlog(l_showname + " has played a song: " + l_song_meta.filename());
     }
   }
 
