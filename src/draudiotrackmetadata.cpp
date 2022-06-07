@@ -48,41 +48,38 @@ void DRAudiotrackMetadata::update_cache()
     qDebug() << "reading audiotrack metadata" << l_ini_path;
     utils::QSettingsKeyFetcher l_fetcher(l_settings);
 
-    const QStringList l_audiotrack_name_list = l_settings.childGroups();
-    for (const QString &i_section_name : l_audiotrack_name_list)
+    const QStringList l_group_list = l_settings.childGroups();
+    for (const QString &i_group : l_group_list)
     {
-      l_settings.beginGroup(i_section_name);
-
-      QString i_track_name = l_settings.value(l_fetcher.lookup_value("file_name")).toString();
-      if (i_track_name.isEmpty())
-      {
-        qWarning() << "error: empty file name in section" << i_section_name;
-        l_settings.endGroup();
-        continue;
-      }
-      if (!QFileInfo::exists(ao_app->get_music_path(i_track_name)))
-      {
-        qWarning() << "error: audiotrack not found" << i_track_name;
-        l_settings.endGroup();
-        continue;
-      }
-
-      const QString l_lower_track_name = i_track_name.toLower();
-      if (l_new_audiotrack_origin.contains(l_lower_track_name))
-      {
-        qWarning() << "warning: replacing track" << i_track_name << "; previously defined in"
-                   << l_new_audiotrack_origin[l_lower_track_name];
-      }
-      l_new_audiotrack_origin.insert(l_lower_track_name, l_ini_path);
-
+      l_settings.beginGroup(i_group);
       DRAudiotrackMetadata l_audiotrack;
-      l_audiotrack.m_file_name = i_track_name;
       l_audiotrack.m_title = l_settings.value(l_fetcher.lookup_value("title")).toString();
+      l_audiotrack.m_file_name = l_settings.value(l_fetcher.lookup_value("file_name")).toString();
       l_audiotrack.m_play_once = l_settings.value(l_fetcher.lookup_value("play_once")).toBool();
       l_audiotrack.m_loop_start = l_settings.value(l_fetcher.lookup_value("loop_start")).toULongLong();
       l_audiotrack.m_loop_end = l_settings.value(l_fetcher.lookup_value("loop_end")).toULongLong();
-      l_new_audiotrack_cache.insert(l_lower_track_name, std::move(l_audiotrack));
       l_settings.endGroup();
+
+      const QString l_track_name = l_audiotrack.m_file_name;
+      if (l_track_name.isEmpty())
+      {
+        qWarning() << "error: empty file name in section" << i_group;
+        continue;
+      }
+      else if (!QFileInfo::exists(ao_app->get_music_path(l_track_name)))
+      {
+        qWarning() << "error: audiotrack not found" << l_track_name;
+        continue;
+      }
+
+      const QString l_lower_track_name = l_track_name.toLower();
+      if (l_new_audiotrack_origin.contains(l_lower_track_name))
+      {
+        qWarning() << "warning: replacing track" << l_track_name << "; previously defined in"
+                   << l_new_audiotrack_origin[l_lower_track_name];
+      }
+      l_new_audiotrack_origin.insert(l_lower_track_name, l_ini_path);
+      l_new_audiotrack_cache.insert(l_lower_track_name, std::move(l_audiotrack));
     }
   }
   s_audiotrack_cache = std::move(l_new_audiotrack_cache);
