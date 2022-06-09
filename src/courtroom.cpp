@@ -894,12 +894,8 @@ void Courtroom::handle_chatmessage_2() // handles IC
   {
     int sfx_delay = m_chatmessage[CMSoundDelay].toInt();
     m_sound_timer->start(sfx_delay);
-
-    if (!m_hide_character)
-    {
-      play_preanim();
-      return;
-    }
+    play_preanim();
+    return;
   }
 
   handle_chatmessage_3();
