@@ -1,9 +1,9 @@
-#include <QDebug>
-
 #include "aoapplication.h"
 #include "drmediatester.h"
 #include "lobby.h"
 #include "logger.h"
+
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -35,10 +35,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, false);
   }
 
-#ifdef Q_OS_MACOS
-  { // MacOS
-    qputenv("QT_MAC_WANTS_LAYER", "1");
-  }
+#if defined(Q_OS_WINDOWS)
+  qputenv("QT_MULTIMEDIA_PREFERRED_PLUGINS", "windowsmediafoundation");
+#elif defined(Q_OS_MACOS)
+  qputenv("QT_MAC_WANTS_LAYER", "1");
 #endif
 
   AOApplication app(argc, argv);
