@@ -7,6 +7,12 @@
 
 int main(int argc, char *argv[])
 {
+#if defined(Q_OS_WINDOWS)
+  qputenv("QT_MULTIMEDIA_PREFERRED_PLUGINS", "windowsmediafoundation");
+#elif defined(Q_OS_MACOS)
+  qputenv("QT_MAC_WANTS_LAYER", "1");
+#endif
+
   qInstallMessageHandler(logger::log);
   qInfo() << "Starting Danganronpa Online...";
 
@@ -34,12 +40,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, false);
   }
-
-#if defined(Q_OS_WINDOWS)
-  qputenv("QT_MULTIMEDIA_PREFERRED_PLUGINS", "windowsmediafoundation");
-#elif defined(Q_OS_MACOS)
-  qputenv("QT_MAC_WANTS_LAYER", "1");
-#endif
 
   AOApplication app(argc, argv);
   DRMediaTester tester;
