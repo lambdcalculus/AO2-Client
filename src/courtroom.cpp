@@ -1656,9 +1656,19 @@ void Courtroom::send_ooc_packet(QString ooc_message)
 {
   while (ao_config->username().isEmpty())
   {
-    ao_config->set_username(QInputDialog::getText(this, "Enter a name", "You must have a username to talk in OOC chat.",
-                                                  QLineEdit::Normal, nullptr));
+    QInputDialog l_dialog;
+    l_dialog.setWindowTitle(tr("Enter a name"));
+    l_dialog.setLabelText(tr("You must have a username to talk in OOC chat."));
+    if (l_dialog.exec())
+    {
+      ao_config->set_username(l_dialog.textValue());
+    }
+    else
+    {
+      return;
+    }
   }
+
   if (ooc_message.trimmed().isEmpty())
   {
     append_server_chatmessage("CLIENT", "You cannot send empty messages.");
