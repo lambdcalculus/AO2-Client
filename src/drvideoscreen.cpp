@@ -196,22 +196,17 @@ void DRVideoWidget::update_audio_output()
     return;
   }
 
-  if (l_control->outputDescription(l_control->activeOutput()) != l_new_device_name)
+  bool l_device_changed = false;
+  const QStringList l_device_id_list = l_control->availableOutputs();
+  for (const QString &i_device_id : l_device_id_list)
   {
-    bool l_device_changed = false;
-    const QStringList l_device_id_list = l_control->availableOutputs();
-    for (const QString &i_device_id : l_device_id_list)
+    if (l_control->outputDescription(i_device_id) == l_new_device_name)
     {
-      if (l_control->outputDescription(i_device_id) == l_new_device_name)
-      {
-        qDebug() << "media player changed audio device;" << l_new_device_name;
-        l_device_changed = true;
-        l_control->setActiveOutput(i_device_id);
-        break;
-      }
+      qDebug() << "Media player changed audio device;" << l_new_device_name;
+      l_device_changed = true;
+      l_control->setActiveOutput(i_device_id);
+      break;
     }
-    if (!l_device_changed)
-      qWarning() << "audio device not found;" << l_new_device_name;
   }
   l_service->releaseControl(l_control);
 }
