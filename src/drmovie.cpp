@@ -142,62 +142,68 @@ void DRMovie::resizeEvent(QResizeEvent *event)
 
 void DRMovie::paint_frame()
 {
-  ScalingMode l_target_mode = m_scaling_mode;
-  QSize l_target_size = size();
-  if (l_target_mode == DynamicScaling)
+  QPixmap l_image = m_current_pixmap;
+
   {
-    const qreal l_width_factor = (qreal)qMax(m_current_pixmap.width(), 1) / qMax(width(), 1);
-    const qreal l_height_factor = (qreal)qMax(m_current_pixmap.height(), 1) / qMax(height(), 1);
+    const QSize l_image_size = m_current_pixmap.size();
+    const QSize l_widget_size = size();
 
-    const QSize l_by_width_size{
-        int((qreal)m_current_pixmap.width() / l_width_factor),
-        int((qreal)m_current_pixmap.height() / l_width_factor),
-    };
-    const QSize l_by_height_size{
-        int((qreal)m_current_pixmap.width() / l_height_factor),
-        int((qreal)m_current_pixmap.height() / l_height_factor),
-    };
+    if (l_image_size != l_widget_size)
+    {
+      ScalingMode l_target_scaling_mode = m_scaling_mode;
+      if (l_target_scaling_mode == DynamicScaling)
+      {
+        const qreal l_width_factor = (qreal)qMax(l_image_size.width(), 1) / qMax(l_widget_size.width(), 1);
+        const qreal l_height_factor = (qreal)qMax(l_image_size.height(), 1) / qMax(l_widget_size.height(), 1);
 
-    if (l_by_width_size.height() >= height())
-    {
-      l_target_mode = WidthScaling;
-      l_target_size = l_by_width_size;
-    }
-    else if (l_by_height_size.width() >= width())
-    {
-      l_target_mode = HeightScaling;
-      l_target_size = l_by_height_size;
-    }
-    else
-    {
-      l_target_mode = StretchScaling;
+        const QSize l_by_width_size{
+            int((qreal)l_image_size.width() / l_width_factor),
+            int((qreal)l_image_size.height() / l_width_factor),
+        };
+        const QSize l_by_height_size{
+            int((qreal)l_image_size.width() / l_height_factor),
+            int((qreal)l_image_size.height() / l_height_factor),
+        };
+
+        if (l_by_width_size.height() >= l_widget_size.height())
+        {
+          l_target_scaling_mode = WidthScaling;
+        }
+        else if (l_by_height_size.width() >= l_widget_size.width())
+        {
+          l_target_scaling_mode = HeightScaling;
+        }
+        else
+        {
+          l_target_scaling_mode = StretchScaling;
+        }
+      }
+
+      Qt::TransformationMode l_transformation = Qt::SmoothTransformation;
+      if (l_image_size.width() < l_widget_size.width() || l_image_size.height() < l_widget_size.height())
+      {
+        l_transformation = Qt::FastTransformation;
+      }
+      switch (l_target_scaling_mode)
+      {
+        case StretchScaling:
+          [[fallthrough]];
+        default:
+          l_image = l_image.scaled(l_widget_size, Qt::IgnoreAspectRatio, l_transformation);
+          break;
+
+        case WidthScaling:
+          l_image = l_image.scaledToWidth(l_widget_size.width(), l_transformation);
+          break;
+
+        case HeightScaling:
+          l_image = l_image.scaledToHeight(l_widget_size.height(), l_transformation);
+          break;
+      }
     }
   }
 
-  QPixmap l_scaled_image = m_current_pixmap;
-  Qt::TransformationMode l_transformation = Qt::SmoothTransformation;
-  if (m_current_pixmap.width() < width() || m_current_pixmap.height() < height())
-  {
-    l_transformation = Qt::FastTransformation;
-  }
-  switch (l_target_mode)
-  {
-  case StretchScaling:
-    [[fallthrough]];
-  default:
-    l_scaled_image = l_scaled_image.scaled(size(), Qt::IgnoreAspectRatio, l_transformation);
-    break;
-
-  case WidthScaling:
-    l_scaled_image = l_scaled_image.scaledToWidth(width(), l_transformation);
-    break;
-
-  case HeightScaling:
-    l_scaled_image = l_scaled_image.scaledToHeight(height(), l_transformation);
-    break;
-  }
-
-  setPixmap(l_scaled_image);
+  setPixmap(l_image);
 }
 
 void DRMovie::update_frame(int p_frame_number)
