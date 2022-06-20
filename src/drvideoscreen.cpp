@@ -1,15 +1,15 @@
 #include "drvideoscreen.h"
 
-#include <QAudioDeviceInfo>
-#include <QAudioOutputSelectorControl>
-#include <QMediaService>
-#include <QUrl>
-
 #include "aoapplication.h"
 #include "aoconfig.h"
 #include "draudiodevice.h"
 #include "draudioengine.h"
 #include "draudiostreamfamily.h"
+
+#include <QAudioDeviceInfo>
+#include <QAudioOutputSelectorControl>
+#include <QMediaService>
+#include <QUrl>
 
 DRVideoWidget::DRVideoWidget(QWidget *parent) : QVideoWidget(parent), ao_app(dynamic_cast<AOApplication *>(qApp))
 {
@@ -196,14 +196,12 @@ void DRVideoWidget::update_audio_output()
     return;
   }
 
-  bool l_device_changed = false;
   const QStringList l_device_id_list = l_control->availableOutputs();
   for (const QString &i_device_id : l_device_id_list)
   {
     if (l_control->outputDescription(i_device_id) == l_new_device_name)
     {
       qDebug() << "Media player changed audio device;" << l_new_device_name;
-      l_device_changed = true;
       l_control->setActiveOutput(i_device_id);
       break;
     }
