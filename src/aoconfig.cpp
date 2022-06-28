@@ -101,8 +101,7 @@ private:
 };
 
 AOConfigPrivate::AOConfigPrivate()
-    : QObject(nullptr), cfg(DRPather::get_application_path() + BASE_CONFIG_INI, QSettings::IniFormat),
-      audio_engine(new DRAudioEngine(this))
+    : QObject(nullptr), cfg(DRPather::get_application_path() + BASE_CONFIG_INI, QSettings::IniFormat), audio_engine(new DRAudioEngine(this))
 {
   Q_ASSERT_X(qApp, "initialization", "QGuiApplication is required");
   connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), this,
@@ -320,7 +319,8 @@ namespace
 static QSharedPointer<AOConfigPrivate> d;
 }
 
-AOConfig::AOConfig(QObject *p_parent) : QObject(p_parent)
+AOConfig::AOConfig(QObject *p_parent)
+    : QObject(p_parent)
 {
   // init if not created yet
   if (d == nullptr)
@@ -661,7 +661,7 @@ void AOConfig::set_username(QString p_value)
 void AOConfig::set_showname(QString p_value)
 {
   const QString l_simplified_value = p_value.simplified();
-  if (d->showname == l_simplified_value)
+  if (d->showname == l_simplified_value && !l_simplified_value.isEmpty())
     return;
   d->showname = l_simplified_value;
   d->invoke_signal("showname_changed", Q_ARG(QString, d->showname));
