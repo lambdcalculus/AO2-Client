@@ -15,6 +15,7 @@
 #include "theme.h"
 #include "version.h"
 
+#include <QCollator>
 #include <QDebug>
 #include <QFile>
 #include <QFontDatabase>
@@ -28,7 +29,8 @@
 #include <QScopedPointer>
 #include <QSettings>
 
-Lobby::Lobby(AOApplication *p_ao_app) : QMainWindow()
+Lobby::Lobby(AOApplication *p_ao_app)
+    : QMainWindow()
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -292,7 +294,15 @@ void Lobby::load_favorite_server_list()
   QSettings l_ini(l_file_path, QSettings::IniFormat);
   l_ini.setIniCodec("UTF-8");
   l_server_list.clear();
-  for (const QString &i_group : l_ini.childGroups())
+  QStringList l_group_list = l_ini.childGroups();
+
+  {
+    QCollator l_sorter;
+    l_sorter.setNumericMode(true);
+    std::sort(l_group_list.begin(), l_group_list.end(), l_sorter);
+  }
+
+  for (const QString &i_group : qAsConst(l_group_list))
   {
     l_ini.beginGroup(i_group);
     DRServerInfo l_server;
@@ -451,6 +461,7 @@ void Lobby::on_refresh_released()
 {
   ui_refresh->set_image("refresh.png");
   m_master_client->request_server_list();
+  load_favorite_server_list();
 }
 
 void Lobby::on_add_to_fav_pressed()
@@ -494,19 +505,19 @@ void Lobby::on_connect_released()
     QString l_reason;
     switch (l_status)
     {
-    case VersionStatus::NotCompatible:
-      l_reason = "The server did not report any client version.";
-      break;
-    case VersionStatus::ServerOutdated:
-      l_reason = QString("The server is outdated.<br />(Server version: <b>%1</b>, expected version: <b>%2</b>)")
-                     .arg(ao_app->get_server_client_version().to_string(), get_version_number().to_string());
-      break;
-    case VersionStatus::ClientOutdated:
-      l_reason = QString("Your client is outdated.<br />(Client version: <b>%1</b>, expected version: <b>%2</b>)")
-                     .arg(get_version_number().to_string(), ao_app->get_server_client_version().to_string());
-      break;
-    default:
-      break;
+      case VersionStatus::NotCompatible:
+        l_reason = "The server did not report any client version.";
+        break;
+      case VersionStatus::ServerOutdated:
+        l_reason = QString("The server is outdated.<br />(Server version: <b>%1</b>, expected version: <b>%2</b>)")
+                       .arg(ao_app->get_server_client_version().to_string(), get_version_number().to_string());
+        break;
+      case VersionStatus::ClientOutdated:
+        l_reason = QString("Your client is outdated.<br />(Client version: <b>%1</b>, expected version: <b>%2</b>)")
+                       .arg(get_version_number().to_string(), ao_app->get_server_client_version().to_string());
+        break;
+      default:
+        break;
     }
 
     call_warning("You are connecting to an <b>incompatible</b> DRO server.<br /><br />Reason: " + l_reason +
