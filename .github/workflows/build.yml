@@ -1,0 +1,197 @@
+name: Build
+
+on: [workflow_dispatch, push]
+    
+jobs:
+  Build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        version: [5.15.2]
+        include:
+        - os: windows-latest
+          os-caption: Windows
+          arch: win64_mingw81
+          compiler: mingw81_64
+        - os: ubuntu-latest
+          os-caption: Ubuntu
+        - os: macos-latest
+          os-caption: MacOS
+
+    runs-on: ${{matrix.os}}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.4.2
+
+    - name: Fetch Git Info
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        git_hash=$(git rev-parse --short "$GITHUB_SHA")
+        git_branch=${GITHUB_REF##*/}
+        echo "$git_hash" >> ./res/git/git_hash.txt
+        echo "$git_branch" >> ./res/git/git_branch.txt
+      
+    - name: Setup externals
+      run: |
+        mkdir ./3rd
+        mkdir ./3rd/bass
+        mkdir ./3rd/discord-rpc
+        mkdir ./3rd/openssl
+        
+    - name: Install OpenSSL (Windows)
+      if: contains(matrix.os, 'windows')
+      run: |
+        curl -L https://mirror.firedaemon.com/OpenSSL/openssl-1.1.1q.zip -o openssl.zip
+        unzip -d ./openssl -o ./openssl.zip
+        cp ./openssl/openssl-1.1/x64/bin/*.dll ./3rd
+
+    - name: Install BASS (Windows)
+      if: contains(matrix.os, 'windows')
+      run: |
+        curl http://www.un4seen.com/files/bass24.zip -o ./bass.zip
+        unzip -d ./bass -o ./bass.zip
+        cp ./bass/c/bass.h ./3rd/bass
+        cp ./bass/c/x64/bass.lib ./3rd
+        cp ./bass/x64/bass.dll ./3rd
+
+        curl http://www.un4seen.com/files/bassopus24.zip -o ./bassopus.zip
+        unzip -d ./bass -o ./bassopus.zip
+        cp ./bass/c/bassopus.h ./3rd/bass
+        cp ./bass/c/x64/bassopus.lib ./3rd
+        cp ./bass/x64/bassopus.dll ./3rd
+
+    - name: Install BASS (Ubuntu)
+      if: contains(matrix.os, 'ubuntu')
+      run: |
+        curl http://www.un4seen.com/files/bass24-linux.zip -o ./bass.zip
+        unzip -d ./bass -o ./bass.zip
+        cp ./bass/bass.h ./3rd/bass/bass.h
+        cp ./bass/x64/libbass.so ./3rd/libbass.so
+
+        curl http://www.un4seen.com/files/bassopus24-linux.zip -o ./bassopus.zip
+        unzip -d ./bass -o ./bassopus.zip
+        cp ./bass/bassopus.h ./3rd/bass/bassopus.h
+        cp ./bass/x64/libbassopus.so ./3rd/libbassopus.so
+
+    - name: Install BASS (MacOS)
+      if: contains(matrix.os, 'macos')
+      run: |
+        curl http://www.un4seen.com/files/bass24-osx.zip -o ./bass.zip
+        unzip -d ./bass -o ./bass.zip
+        cp ./bass/bass.h ./3rd/bass
+        cp ./bass/libbass.dylib ./3rd
+
+        curl http://www.un4seen.com/files/bassopus24-osx.zip -o ./bassopus.zip
+        unzip -d ./bass -o ./bassopus.zip
+        cp ./bass/bassopus.h ./3rd/bass
+        cp ./bass/libbassopus.dylib ./3rd
+
+    - name: Install Discord-RPC (Windows)
+      if: contains(matrix.os, 'windows')
+      run: |
+        curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o ./discord-rpc.zip
+        unzip ./discord-rpc.zip
+        cp ./discord-rpc/win64-dynamic/include/discord_register.h ./3rd/discord-rpc
+        cp ./discord-rpc/win64-dynamic/include/discord_rpc.h ./3rd/discord-rpc
+        cp ./discord-rpc/win64-dynamic/bin/discord-rpc.dll ./3rd
+        cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./3rd
+
+    - name: Install Discord-RPC (Ubuntu)
+      if: contains(matrix.os, 'ubuntu')
+      run: |
+        curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o ./discord-rpc.zip
+        unzip ./discord-rpc.zip
+        cp ./discord-rpc/linux-dynamic/include/discord_register.h ./3rd/discord-rpc/discord_register.h
+        cp ./discord-rpc/linux-dynamic/include/discord_rpc.h ./3rd/discord-rpc/discord_rpc.h
+        cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./3rd/libdiscord-rpc.so
+
+    - name: Install Discord-RPC (MacOS)
+      if: contains(matrix.os, 'macos')
+      run: |
+        curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o ./discord-rpc.zip
+        unzip ./discord-rpc.zip
+        cp ./discord-rpc/osx-dynamic/include/discord_register.h ./3rd/discord-rpc
+        cp ./discord-rpc/osx-dynamic/include/discord_rpc.h ./3rd/discord-rpc
+        cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./3rd
+
+    - name: Update Ubuntu
+      if: contains(matrix.os, 'ubuntu')
+      run: |
+        sudo apt-get update
+        sudo apt-get upgrade
+        
+    - name: Install Qt (Windows)
+      if: contains(matrix.os, 'windows')
+      uses: jurplel/install-qt-action@v2.14.0
+      with:
+        version: ${{matrix.version}}
+        arch: ${{matrix.arch}}
+
+    - name: Install Qt (Other)
+      if: contains(matrix.os, 'windows') != true
+      uses: jurplel/install-qt-action@v2.14.0
+      with:
+        version: ${{matrix.version}}
+      
+    - name: Pull QtApng
+      uses: actions/checkout@v2
+      with:
+        repository: Skycoder42/QtApng
+        path: ./qtapng
+        
+    - name: Build QtApng
+      run: |
+        cd ./qtapng
+        qmake
+        make -j3
+        ls -R
+        cd ..
+
+    - name: Build
+      run: |
+        qmake
+        make -j3
+    
+    - name: Packing (Windows)
+      if: contains(matrix.os, 'windows')
+      run: |
+        cd ./bin
+        windeployqt dro-client.exe --compiler-runtime --no-quick-import --no-translations
+        cp ../qtapng/plugins/imageformats/qapng.dll ./imageformats
+        cp ../3rd/*.dll .
+        cp ../../Qt/${{matrix.version}}/${{matrix.compiler}}/bin/libgcc_s_seh-1.dll .
+        cp ../../Qt/${{matrix.version}}/${{matrix.compiler}}/bin/libwinpthread-1.dll .
+        cp ../../Qt/${{matrix.version}}/${{matrix.compiler}}/bin/libstdc++-6.dll .
+        cd ..
+    
+    - name: Packing (Ubuntu)
+      if: contains(matrix.os, 'ubuntu')
+      run: |
+        cd ./bin
+        mkdir ./depends
+        cp ../3rd/*.so ./depends
+        mkdir ./imageformats
+        cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
+        cp ../data/dro-client.sh .
+        cp ../data/README-LINUX.md ./README.md
+        cd ..
+    
+    - name: Packing (MacOS)
+      if: contains(matrix.os, 'macos')
+      run: |
+        cd ./bin
+        mv ./dro-client.app "./Danganronpa Online.app"
+        macdeployqt "./Danganronpa Online.app"
+        cp ../qtapng/plugins/imageformats/libqapng.dylib "./Danganronpa Online.app/Contents/PlugIns/imageformats"
+        cp ../3rd/*.dylib "./Danganronpa Online.app/Contents/Frameworks"
+        hdiutil create -volname "Danganronpa Online" -srcfolder "./Danganronpa Online.app" -ov -format UDZO "Danganronpa Online.dmg"
+        rm -rf "./Danganronpa Online.app"
+        cd ..
+        
+    - name: Create Artifact
+      uses: actions/upload-artifact@v2
+      with:
+         name: "Danganronpa Online (${{matrix.os-caption}})"
+         path: ./bin
