@@ -158,6 +158,7 @@ jobs:
       if: contains(matrix.os, 'windows')
       run: |
         cd ./bin
+        cp ../release/dro-client.exe .
         windeployqt dro-client.exe --compiler-runtime --no-quick-import --no-translations
         cp ../qtapng/plugins/imageformats/qapng.dll ./imageformats
         cp ../3rd/*.dll .
@@ -170,6 +171,7 @@ jobs:
       if: contains(matrix.os, 'ubuntu')
       run: |
         cd ./bin
+        cp ../dro-client .
         mkdir ./depends
         cp ../3rd/*.so ./depends
         mkdir ./imageformats
@@ -182,7 +184,7 @@ jobs:
       if: contains(matrix.os, 'macos')
       run: |
         cd ./bin
-        mv ./dro-client.app "./Danganronpa Online.app"
+        mv ../dro-client.app "./Danganronpa Online.app"
         macdeployqt "./Danganronpa Online.app"
         cp ../qtapng/plugins/imageformats/libqapng.dylib "./Danganronpa Online.app/Contents/PlugIns/imageformats"
         cp ../3rd/*.dylib "./Danganronpa Online.app/Contents/Frameworks"
