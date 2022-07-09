@@ -10,7 +10,6 @@ RC_ICONS = icon.ico
 
 INCLUDEPATH += $$PWD/include $$PWD/src $$PWD/3rd
 DEPENDPATH += $$PWD/include $$PWD/src $$PWD/3rd
-DESTDIR += $$PWD/bin
 
 HEADERS += \
   src/aoapplication.h \
