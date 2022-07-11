@@ -334,7 +334,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   }
   else if (l_header == "ackMS")
   {
-    if (is_courtroom_constructed && is_courtroom_loaded && !is_server_client_version_compatible())
+    if (is_courtroom_constructed && is_courtroom_loaded &&)
       m_courtroom->handle_acknowledged_ms();
   }
   else if (l_header == "MC")

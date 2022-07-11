@@ -943,7 +943,6 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
   m_loading_timer->stop();
   m_pre_chatmessage = p_contents;
 
-  if (ao_app->is_server_client_version_compatible())
   {
     bool l_ok;
     const int l_client_id = m_pre_chatmessage[CMClientId].toInt(&l_ok);
@@ -1853,8 +1852,7 @@ void Courtroom::set_ban(int p_cid)
 
 void Courtroom::handle_song(QStringList p_contents)
 {
-  const bool l_server_compatible = ao_app->is_server_client_version_compatible();
-  if (p_contents.size() < (l_server_compatible ? 4 : 3)) return;
+  if (p_contents.size() < 4) return;
 
   QString l_song = p_contents.at(0);
   for (auto &i_extension : audio_extensions())
