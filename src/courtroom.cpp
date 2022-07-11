@@ -1870,7 +1870,6 @@ void Courtroom::handle_song(QStringList p_contents)
 
   QString l_showname = p_contents.at(2);
 
-  if (l_server_compatible)
   {
     const bool l_restart = p_contents.at(3).toInt();
     if (m_current_song == l_song && !l_restart) return;
