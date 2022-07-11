@@ -16,7 +16,7 @@ void AOBlipPlayer::set_blips(QString p_blip)
     return;
 
   m_name = p_blip;
-  m_file = ao_app->get_sounds_path(m_name.value());
+  m_file = ao_app->get_sfx_noext_path(m_name.value());
 }
 
 void AOBlipPlayer::blip_tick()

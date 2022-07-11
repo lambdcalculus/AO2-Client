@@ -29,7 +29,17 @@ class DRAudioStream : public QObject
   DRAudioStream(DRAudio::Family p_family);
 
 public:
+  enum Fade
+  {
+    NoFade,
+    FadeIn,
+    FadeOut,
+  };
+  Q_ENUM(Fade)
+
   using ptr = QSharedPointer<DRAudioStream>;
+
+  static void registerMetatypes();
 
   ~DRAudioStream();
 
@@ -37,24 +47,41 @@ public:
   QString get_file_name() const;
   bool is_repeatable() const;
   bool is_playing() const;
+  DRAudioStream::Fade get_fade() const;
 
 public slots:
-  std::optional<DRAudioError> set_file_name(QString m_file);
-  void set_volume(float p_volume);
+  std::optional<DRAudioError> set_file_name(QString file);
+  void set_volume(float volume);
   void set_repeatable(bool);
   void set_loop(quint64 start, quint64 end);
+
+  /**
+   * @brief Fades in or out the channel predicated by the duration.
+   *
+   * @param type The type of fade.
+   *
+   * @param duration The duration of the fade in milliseconds.
+   */
+  void fade(DRAudioStream::Fade type, int duration);
+  void fadeIn(int duration);
+  void fadeOut(int duration);
 
   void play();
   void stop();
 
 signals:
-  void file_name_changed(QString p_file);
-  void finished();
+  void file_name_changed(QString file);
+
+  void faded(DRAudioStream::Fade type);
+
   void looped();
+
+  void finished();
 
 public:
   static void CALLBACK end_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata);
   static void CALLBACK loop_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata);
+  static void CALLBACK fade_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata);
 
 private:
   friend class DRAudioStreamFamily;
@@ -68,8 +95,9 @@ private:
 
   DRAudioEngine *m_engine = nullptr;
   DRAudio::Family m_family;
-  QString m_file_name;
-  InitState m_init_state = InitNotDone;
+  QString m_filename;
+  DRAudioStream::InitState m_init_state = InitNotDone;
+  DRAudioStream::Fade m_fade;
   HSTREAM m_hstream = 0;
   float m_volume = 0.0f;
   bool m_repeatable = false;
@@ -84,6 +112,9 @@ private:
   void update_device(DRAudioDevice);
   void init_loop();
   void seek_loop_start();
+
+private slots:
+  void update_volume();
 
 signals:
   void device_error(QPrivateSignal);

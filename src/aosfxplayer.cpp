@@ -2,21 +2,29 @@
 
 #include "aoapplication.h"
 #include "draudioengine.h"
+#include "draudiostream.h"
 #include "file_functions.h"
 
 #include <QDebug>
+#include <cstddef>
 
-AOSfxPlayer::AOSfxPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObject(p_ao_app, p_parent)
+AOSfxPlayer::AOSfxPlayer(AOApplication *p_ao_app, QObject *p_parent)
+    : AOObject(p_ao_app, p_parent), m_player(DRAudioEngine::get_family(DRAudio::Family::FEffect))
 {}
 
-void AOSfxPlayer::play(QString p_file)
+void AOSfxPlayer::play(QString p_filename)
 {
-  DRAudioEngine::get_family(DRAudio::Family::FEffect)->play_stream(p_file);
+  auto l_stream = m_player->play_stream(p_filename);
+  if (l_stream)
+  {
+    qWarning() << "Playing effect" << p_filename;
+    m_stream_list.append(l_stream);
+  }
 }
 
 void AOSfxPlayer::play_effect(QString p_effect)
 {
-  play(ao_app->find_asset_path({ao_app->get_sounds_path(p_effect)}, audio_extensions()));
+  play(ao_app->find_asset_path({ao_app->get_sfx_noext_path(p_effect)}, audio_extensions()));
 }
 
 void AOSfxPlayer::play_character_effect(QString p_chr, QString p_effect)
@@ -37,6 +45,105 @@ void AOSfxPlayer::play_character_effect(QString p_chr, QString p_effect)
 
 void AOSfxPlayer::stop_all()
 {
-  for (DRAudioStream::ptr &i_stream : DRAudioEngine::get_family(DRAudio::Family::FEffect)->get_stream_list())
+  for (const DRAudioStream::ptr &i_stream : qAsConst(m_stream_list))
+  {
     i_stream->stop();
+  }
+  m_stream_list.clear();
+}
+
+void AOSfxPlayer::play_ambient(QString p_filename)
+{
+  if (m_current_ambient)
+  {
+    if (m_current_ambient->get_file_name() == p_filename)
+    {
+      return;
+    }
+
+    m_current_ambient->fadeOut(DEFAULT_FADE_DURATION);
+    m_current_ambient.clear();
+  }
+
+  DRAudioStream::ptr l_ambient;
+  if (!m_ambient_map.contains(p_filename))
+  {
+    l_ambient = m_player->create_stream(p_filename);
+
+    if (l_ambient)
+    {
+      qInfo() << "Playing ambient" << p_filename;
+      m_ambient_map.insert(p_filename, l_ambient);
+
+      connect(l_ambient.data(), SIGNAL(faded(DRAudioStream::Fade)), this, SLOT(handle_ambient_fade(DRAudioStream::Fade)));
+      connect(l_ambient.data(), SIGNAL(finished()), this, SLOT(remove_ambient()));
+
+      l_ambient->set_repeatable(true);
+    }
+  }
+  else
+  {
+    qInfo() << "Restoring ambient" << p_filename;
+    l_ambient = m_ambient_map[p_filename];
+  }
+  m_current_ambient = l_ambient;
+
+  if (m_current_ambient.isNull())
+  {
+    return;
+  }
+
+  m_current_ambient->fadeIn(DEFAULT_FADE_DURATION);
+
+  if (!m_current_ambient->is_playing())
+  {
+    m_current_ambient->play();
+  }
+}
+
+DRAudioStream::ptr AOSfxPlayer::get_stream_by_qobject(QObject *p_object)
+{
+  auto *l_stream_ptr = dynamic_cast<DRAudioStream *>(p_object);
+  if (!l_stream_ptr)
+  {
+    qCritical() << "error: object was not an audio stream" << p_object;
+    return nullptr;
+  }
+
+  for (auto it = m_ambient_map.cbegin(); it != m_ambient_map.cend(); ++it)
+  {
+    const auto &i_stream = it.value();
+    if (l_stream_ptr == i_stream)
+    {
+      return i_stream;
+    }
+  }
+
+  return nullptr;
+}
+
+void AOSfxPlayer::remove_ambient()
+{
+  auto l_stream = get_stream_by_qobject(sender());
+  if (l_stream.isNull())
+  {
+    return;
+  }
+
+  qDebug() << "Removing ambient" << l_stream->get_file_name();
+  m_ambient_map.remove(l_stream->get_file_name());
+}
+
+void AOSfxPlayer::handle_ambient_fade(DRAudioStream::Fade p_fade)
+{
+  const auto l_stream = get_stream_by_qobject(sender());
+  if (l_stream.isNull())
+  {
+    return;
+  }
+
+  if (p_fade == DRAudioStream::FadeOut)
+  {
+    l_stream->stop();
+  }
 }

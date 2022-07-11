@@ -56,7 +56,6 @@ public:
   QString get_character_folder_path(QString character);
   QString get_character_path(QString p_character, QString p_file);
   // QString get_demothings_path();
-  QString get_sounds_path(QString p_file);
   QString get_music_folder_path();
   QString get_music_path(QString p_song);
 
@@ -186,6 +185,10 @@ signals:
   void reload_character();
   void reload_audiotracks();
 
+  void connecting_to_server();
+  void connected_to_server();
+  void disconnected_from_server();
+
 private:
   AOConfig *ao_config = nullptr;
   AOConfigPanel *ao_config_panel = nullptr;
@@ -228,6 +231,21 @@ private slots:
   void handle_theme_modification();
   void handle_character_reloading();
   void handle_audiotracks_reloading();
+
+public:
+  QString get_sfx_dir_path();
+  QString get_sfx_path(QString sfx);
+  QString get_sfx_noext_path(QString p_file);
+  QString get_character_sprite_path(QString character, QString emote, QString prefix, bool use_placeholder);
+  QString get_character_sprite_pre_path(QString character, QString emote);
+  QString get_character_sprite_idle_path(QString character, QString emote);
+  QString get_character_sprite_talk_path(QString character, QString emote);
+  QString get_background_sprite_path(QString background, QString image);
+  QString get_background_sprite_noext_path(QString background, QString image);
+  QString get_background_sfx_path(QString background, QString ambient);
+  QString get_shout_sprite_path(QString character, QString shout);
+  QString get_theme_sprite_path(QString file_name, QString character);
+  QString get_theme_sprite_path(QString file_name);
 };
 
 #endif // AOAPPLICATION_H

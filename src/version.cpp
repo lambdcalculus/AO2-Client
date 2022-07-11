@@ -15,12 +15,12 @@ int get_release_version()
 
 int get_major_version()
 {
-  return 1;
+  return 2;
 }
 
 int get_minor_version()
 {
-  return 1;
+  return 0;
 }
 
 VersionNumber get_version_number()
@@ -40,7 +40,7 @@ QString get_version_string()
   const QString l_post = get_post_version();
   if (!l_post.isEmpty())
   {
-    l_version += QString("-" + l_post);
+    l_version += QString("+" + l_post);
   }
 
   return l_version;

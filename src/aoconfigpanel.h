@@ -6,6 +6,7 @@
 class AOApplication;
 class AOConfig;
 
+#include <QMap>
 #include <QWidget>
 
 class QCheckBox;
@@ -32,6 +33,8 @@ signals:
   void reload_theme();
   void reload_character();
   void reload_audiotracks();
+
+  void emit_sprite_caching_toggled(int type, bool enabled);
 
 protected:
   void showEvent(QShowEvent *event) override;
@@ -67,6 +70,13 @@ private slots:
   void on_music_value_changed(int p_num);
   void on_video_value_changed(int p_num);
   void on_blip_value_changed(int p_num);
+
+  // performance
+  void set_sprite_caching_toggled(int type, bool enabled);
+  void handle_sprite_caching_toggled(bool enabled);
+  void set_system_memory_threshold(int megabytes);
+  void set_loading_bar_delay(int percent);
+  void set_caching_threshold(int msecs);
 
 private:
   // FIXME This dependency shouldn't have come to exist.
@@ -128,6 +138,22 @@ private:
   QRadioButton *ui_log_orientation_top_down = nullptr;
   QRadioButton *ui_log_orientation_bottom_up = nullptr;
   QCheckBox *ui_log_is_recording = nullptr;
+
+  // performance
+  QCheckBox *ui_cache_backgrounds;
+  QCheckBox *ui_cache_characters;
+  QCheckBox *ui_cache_effects;
+  QCheckBox *ui_cache_shouts;
+  QCheckBox *ui_cache_gui;
+  QCheckBox *ui_cache_stickers;
+  QMap<int, QCheckBox *> m_cache_checkbox_map;
+
+  QSlider *ui_system_memory_threshold;
+  QLabel *ui_system_memory_threshold_label;
+  QSlider *ui_loading_bar_delay;
+  QLabel *ui_loading_bar_delay_label;
+  QSlider *ui_caching_threshold;
+  QLabel *ui_caching_threshold_label;
 
   // audio
   QComboBox *ui_device = nullptr;

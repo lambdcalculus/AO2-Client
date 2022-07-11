@@ -67,6 +67,12 @@ HEADERS += \
   src/lobby.h \
   src/logger.h \
   src/misc_functions.h \
+  src/mk2/spritecachingreader.h \
+  src/mk2/spritedynamicreader.h \
+  src/mk2/spritereader.h \
+  src/mk2/spritereadersynchronizer.h \
+  src/mk2/spriteseekingreader.h \
+  src/mk2/spriteviewer.h \
   src/theme.h \
   src/utils.h \
   src/version.h
@@ -134,8 +140,14 @@ SOURCES += \
   src/logger.cpp \
   src/main.cpp \
   src/misc_functions.cpp \
+  src/mk2/spritecachingreader.cpp \
+  src/mk2/spritedynamicreader.cpp \
+  src/mk2/spriteseekingreader.cpp \
   src/path_functions.cpp \
   src/server_socket.cpp \
+  src/mk2/spritereader.cpp \
+  src/mk2/spritereadersynchronizer.cpp \
+  src/mk2/spriteviewer.cpp \
   src/text_file_functions.cpp \
   src/theme.cpp \
   src/utils.cpp \

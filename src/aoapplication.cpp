@@ -8,6 +8,7 @@
 #include "drmasterclient.h"
 #include "drpacket.h"
 #include "drserversocket.h"
+#include "file_functions.h"
 #include "lobby.h"
 #include "theme.h"
 #include "version.h"
@@ -16,7 +17,8 @@
 #include <QFontDatabase>
 #include <QRegularExpression>
 
-AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
+AOApplication::AOApplication(int &argc, char **argv)
+    : QApplication(argc, argv)
 {
   ao_config = new AOConfig(this);
   ao_config_panel = new AOConfigPanel(this);
@@ -42,7 +44,10 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   connect(ao_config, SIGNAL(discord_hide_server_changed(bool)), dr_discord, SLOT(set_hide_server(bool)));
   connect(ao_config, SIGNAL(discord_hide_character_changed(bool)), dr_discord, SLOT(set_hide_character(bool)));
 
+  connect(m_server_socket, SIGNAL(connecting_to_server()), this, SIGNAL(connecting_to_server()));
+  connect(m_server_socket, SIGNAL(connected_to_server()), this, SIGNAL(connected_to_server()));
   connect(m_server_socket, SIGNAL(disconnected_from_server()), this, SLOT(_p_handle_server_disconnection()));
+  connect(m_server_socket, SIGNAL(disconnected_from_server()), this, SIGNAL(disconnected_from_server()));
   connect(m_server_socket, SIGNAL(packet_received(DRPacket)), this, SLOT(_p_handle_server_packet(DRPacket)));
 }
 
@@ -170,6 +175,156 @@ void AOApplication::handle_character_reloading()
 void AOApplication::handle_audiotracks_reloading()
 {
   emit reload_audiotracks();
+}
+
+QString AOApplication::get_sfx_dir_path()
+{
+  return get_base_path() + "sounds/general";
+}
+
+QString AOApplication::get_sfx_path(QString p_sfx)
+{
+  return find_asset_path(get_sfx_dir_path() + "/" + p_sfx);
+}
+
+QString AOApplication::get_sfx_noext_path(QString p_file)
+{
+  return find_asset_path(get_sfx_dir_path() + "/" + p_file, audio_extensions());
+}
+
+QString AOApplication::get_character_sprite_path(QString p_character, QString p_emote, QString p_prefix, bool p_use_placeholder)
+{
+  QStringList l_filelist;
+  QStringList l_blacklist;
+  for (const QString &i_character_name : get_char_include_tree(p_character))
+  {
+    l_blacklist.append({
+        get_character_path(i_character_name, "char_icon.png"),
+        get_character_path(i_character_name, "showname.png"),
+        get_character_path(i_character_name, "emotions"),
+    });
+
+    if (!p_prefix.isEmpty())
+    {
+      l_filelist.append(get_character_path(i_character_name, QString("%1%2").arg(p_prefix, p_emote)));
+    }
+    l_filelist.append(get_character_path(i_character_name, p_emote));
+  }
+
+  QString l_file = find_asset_path(l_filelist, animated_or_static_extensions());
+  if (l_file.isEmpty() && p_use_placeholder)
+  {
+    l_file = find_theme_asset_path("placeholder", animated_extensions());
+  }
+
+  for (const QString &i_blackened : qAsConst(l_blacklist))
+  {
+    if (l_file == i_blackened)
+    {
+      l_file.clear();
+      break;
+    }
+  }
+
+  if (l_file.isEmpty())
+  {
+    qWarning() << "error: character animation not found"
+               << "character:" << p_character << "emote:" << p_emote << "prefix:" << p_prefix;
+  }
+
+  return l_file;
+}
+
+QString AOApplication::get_character_sprite_pre_path(QString character, QString emote)
+{
+  return get_character_sprite_path(character, emote, QString{}, false);
+}
+
+QString AOApplication::get_character_sprite_idle_path(QString character, QString emote)
+{
+  return get_character_sprite_path(character, emote, "(a)", true);
+}
+
+QString AOApplication::get_character_sprite_talk_path(QString character, QString emote)
+{
+  return get_character_sprite_path(character, emote, "(b)", true);
+}
+
+QString AOApplication::get_background_sprite_path(QString p_background_name, QString p_image)
+{
+  const QString l_target_filename =
+      find_asset_path(get_background_path(p_background_name) + "/" + p_image);
+  return l_target_filename;
+}
+
+QString AOApplication::get_background_sprite_noext_path(QString background, QString image)
+{
+  return find_asset_path(get_background_path(background) + "/" + image, animated_or_static_extensions());
+}
+
+QString AOApplication::get_background_sfx_path(QString p_background, QString p_ambient)
+{
+  const QStringList l_filelist{
+      get_background_path(p_background) + "/" + p_ambient,
+      get_sfx_path(p_ambient),
+  };
+
+  return find_asset_path(l_filelist);
+}
+
+QString AOApplication::get_shout_sprite_path(QString p_character, QString p_shout)
+{
+  QString l_file_name = find_asset_path(
+      {get_character_path(p_character, p_shout), get_character_path(p_character, p_shout + "_bubble")},
+      animated_extensions());
+
+  if (l_file_name.isEmpty())
+  {
+    l_file_name = find_theme_asset_path(p_shout, animated_extensions());
+  }
+
+  if (l_file_name.isEmpty())
+  {
+    qWarning() << "error: shout not found"
+               << "character:" << p_character << "shout:" << p_shout;
+  }
+
+  return l_file_name;
+}
+
+QString AOApplication::get_theme_sprite_path(QString p_file_name, QString p_character)
+{
+  QString l_file_path;
+  if (!p_character.isEmpty())
+  {
+    QString l_character_file_name = p_file_name;
+    if (l_character_file_name == "custom")
+    {
+      l_character_file_name.append("_bubble");
+    }
+
+    QStringList l_path_list{
+        get_character_path(p_character, l_character_file_name),
+        get_character_path(p_character, "overlay/" + l_character_file_name),
+    };
+    l_file_path = find_asset_path(l_path_list, animated_or_static_extensions());
+  }
+
+  if (l_file_path.isEmpty())
+  {
+    l_file_path = find_theme_asset_path(p_file_name, animated_or_static_extensions());
+    if (l_file_path.isEmpty())
+    {
+      l_file_path = find_theme_asset_path("placeholder", animated_or_static_extensions());
+    }
+  }
+
+  return l_file_path;
+}
+
+QString AOApplication::get_theme_sprite_path(QString file_name)
+{
+  return get_theme_sprite_path(file_name, QString{});
 }
 
 QString AOApplication::get_current_char()

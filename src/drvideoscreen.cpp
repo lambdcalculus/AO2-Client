@@ -11,7 +11,8 @@
 #include <QMediaService>
 #include <QUrl>
 
-DRVideoWidget::DRVideoWidget(QWidget *parent) : QVideoWidget(parent), ao_app(dynamic_cast<AOApplication *>(qApp))
+DRVideoWidget::DRVideoWidget(QWidget *parent)
+    : QVideoWidget(parent), ao_app(dynamic_cast<AOApplication *>(qApp))
 {
   Q_ASSERT(ao_app);
 

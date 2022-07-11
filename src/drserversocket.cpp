@@ -1,9 +1,10 @@
 #include "drserversocket.h"
+#include "qabstractsocket.h"
 
 #include <QTcpSocket>
 #include <QTimer>
 
-const int DRServerSocket::RECONNECT_DELAY = 5000;
+const int DRServerSocket::CONNECTING_DELAY = 5000;
 
 namespace
 {
@@ -14,20 +15,22 @@ QString drFormatServerInfo(const DRServerInfo &server)
 }
 } // namespace
 
-DRServerSocket::DRServerSocket(QObject *p_parent) : QObject(p_parent)
+DRServerSocket::DRServerSocket(QObject *p_parent)
+    : QObject(p_parent)
 {
   m_socket = new QTcpSocket(this);
-  m_reconnect_timer = new QTimer(this);
+  m_connecting_timer = new QTimer(this);
 
-  m_reconnect_timer->setSingleShot(false);
-  m_reconnect_timer->setInterval(RECONNECT_DELAY);
+  m_connecting_timer->setSingleShot(true);
+  m_connecting_timer->setInterval(CONNECTING_DELAY);
 
   connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_p_check_socket_error()));
   connect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this,
           SLOT(_p_update_state(QAbstractSocket::SocketState)));
   connect(m_socket, SIGNAL(readyRead()), this, SLOT(_p_read_socket()));
 
-  connect(m_reconnect_timer, SIGNAL(timeout()), this, SLOT(_p_reconnect_to_server()));
+  connect(m_connecting_timer, SIGNAL(timeout()), this, SLOT(disconnect_from_server()));
+  m_socket->close();
 }
 
 bool DRServerSocket::is_connected() const
@@ -35,13 +38,10 @@ bool DRServerSocket::is_connected() const
   return m_socket->state() == QTcpSocket::ConnectedState;
 }
 
-void DRServerSocket::connect_to_server(DRServerInfo p_server, bool p_is_reconnectable)
+void DRServerSocket::connect_to_server(DRServerInfo p_server)
 {
   disconnect_from_server();
   m_server = p_server;
-  is_reconnectable = p_is_reconnectable;
-  if (is_reconnectable)
-    m_reconnect_timer->start();
   m_socket->connectToHost(p_server.address, p_server.port);
 }
 
@@ -68,31 +68,26 @@ void DRServerSocket::_p_update_state(QAbstractSocket::SocketState p_state)
 {
   switch (p_state)
   {
-  case QAbstractSocket::ConnectedState:
-    m_is_connected = true;
-    m_reconnect_timer->stop();
-    Q_EMIT connected_to_server();
-    break;
+    case QAbstractSocket::ConnectingState:
+      m_connecting_timer->start();
+      Q_EMIT connecting_to_server();
+      break;
 
-  case QAbstractSocket::UnconnectedState:
-    if (m_is_connected)
-    {
-      m_is_connected = false;
-      if (is_reconnectable)
-        m_reconnect_timer->start();
+    case QAbstractSocket::ConnectedState:
+      m_connecting_timer->stop();
+      m_connected = true;
+      Q_EMIT connected_to_server();
+      break;
+
+    case QAbstractSocket::UnconnectedState:
+      m_connecting_timer->stop();
+      m_connected = false;
       Q_EMIT disconnected_from_server();
-    }
-    break;
+      break;
 
-  default:
-    break;
+    default:
+      break;
   }
-}
-
-void DRServerSocket::_p_reconnect_to_server()
-{
-  Q_EMIT reconnecting_to_server();
-  connect_to_server(m_server, is_reconnectable);
 }
 
 void DRServerSocket::_p_check_socket_error()

@@ -1,14 +1,15 @@
 #include "aoconfig.h"
+
 #include "commondefs.h"
 #include "datatypes.h"
 #include "draudioengine.h"
 #include "drpather.h"
+#include "mk2/spritedynamicreader.h"
 
 // qt
 #include <QApplication>
 #include <QDebug>
 #include <QMap>
-#include <QPointer>
 #include <QSettings>
 #include <QSharedPointer>
 #include <QVector>
@@ -32,7 +33,7 @@ public slots:
   void save_file();
 
 private:
-  void invoke_signal(QString p_method_name, QGenericArgument p_arg1 = QGenericArgument(nullptr));
+  void invoke_signal(QString p_method_name, QGenericArgument p_arg1 = QGenericArgument(nullptr), QGenericArgument p_arg2 = QGenericArgument());
   void update_favorite_device();
 
 private slots:
@@ -79,6 +80,12 @@ private:
   bool log_format_use_newline;
   bool log_display_music_switch;
   bool log_is_recording;
+
+  // performance
+  int system_memory_threshold;
+  QMap<int, bool> sprite_caching;
+  int loading_bar_delay;
+  int caching_threshold;
 
   // audio
   std::optional<QString> favorite_device_driver;
@@ -168,6 +175,24 @@ void AOConfigPrivate::read_file()
   log_display_music_switch = cfg.value("music_change_log", true).toBool();
   log_is_recording = cfg.value("enable_logging", true).toBool();
 
+  // performance
+  {
+    sprite_caching.clear();
+    cfg.beginGroup("sprite_caching");
+    const QStringList l_key_list = sprite_category_string_list();
+    for (const QString &i_key : l_key_list)
+    {
+      const SpriteCategory l_category = string_to_sprite_category(i_key);
+      sprite_caching.insert(l_category, cfg.value(i_key, true).toBool());
+    }
+    cfg.endGroup();
+  }
+  system_memory_threshold = qBound(10, cfg.value("system_memory_threshold", 50).toInt(), 80);
+  loading_bar_delay = qBound(0, cfg.value("loading_bar_delay", 500).toInt(), 2000);
+  caching_threshold = qBound(0, cfg.value("caching_threshold", 50).toInt(), 100);
+  mk2::SpriteDynamicReader::set_system_memory_threshold(system_memory_threshold);
+
+  // audio
   if (cfg.contains("favorite_device_driver"))
     favorite_device_driver = cfg.value("favorite_device_driver").toString();
 
@@ -258,6 +283,21 @@ void AOConfigPrivate::save_file()
   cfg.setValue("chatlog_scrolldown", log_is_topdown);
   cfg.setValue("enable_logging", log_is_recording);
 
+  // performance
+  {
+    cfg.remove("sprite_caching");
+    cfg.beginGroup("sprite_caching");
+    for (auto it = sprite_caching.cbegin(); it != sprite_caching.cend(); ++it)
+    {
+      const QString l_category_str = sprite_category_to_string(SpriteCategory(it.key()));
+      cfg.setValue(l_category_str, it.value());
+    }
+    cfg.endGroup();
+  }
+  cfg.setValue("system_memory_threshold", system_memory_threshold);
+  cfg.setValue("loading_bar_delay", loading_bar_delay);
+  cfg.setValue("caching_threshold", caching_threshold);
+
   // audio
   if (favorite_device_driver.has_value())
     cfg.setValue("favorite_device_driver", favorite_device_driver.value());
@@ -289,11 +329,11 @@ void AOConfigPrivate::save_file()
   cfg.sync();
 }
 
-void AOConfigPrivate::invoke_signal(QString p_method_name, QGenericArgument p_arg1)
+void AOConfigPrivate::invoke_signal(QString p_method_name, QGenericArgument p_arg1, QGenericArgument p_arg2)
 {
   for (QObject *i_child : qAsConst(children))
   {
-    QMetaObject::invokeMethod(i_child, p_method_name.toStdString().c_str(), p_arg1);
+    QMetaObject::invokeMethod(i_child, p_method_name.toStdString().c_str(), p_arg1, p_arg2);
   }
 }
 
@@ -555,6 +595,26 @@ bool AOConfig::log_display_music_switch_enabled() const
 bool AOConfig::log_is_recording_enabled() const
 {
   return d->log_is_recording;
+}
+
+int AOConfig::system_memory_threshold() const
+{
+  return d->system_memory_threshold;
+}
+
+bool AOConfig::sprite_caching_enabled(int type) const
+{
+  return d->sprite_caching[type];
+}
+
+int AOConfig::loading_bar_delay() const
+{
+  return d->loading_bar_delay;
+}
+
+int AOConfig::caching_threshold() const
+{
+  return d->caching_threshold;
 }
 
 std::optional<QString> AOConfig::favorite_device_driver() const
@@ -930,6 +990,42 @@ void AOConfig::set_suppress_background_audio(bool p_enabled)
     return;
   d->suppress_background_audio = p_enabled;
   d->invoke_signal("suppress_background_audio_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_system_memory_threshold(int p_percent)
+{
+  p_percent = qBound(10, p_percent, 80);
+  if (d->system_memory_threshold == p_percent)
+    return;
+  d->system_memory_threshold = p_percent;
+  mk2::SpriteDynamicReader::set_system_memory_threshold(p_percent);
+  d->invoke_signal("system_memory_threshold_changed", Q_ARG(int, p_percent));
+}
+
+void AOConfig::set_sprite_caching(int p_type, bool p_on)
+{
+  if (d->sprite_caching[p_type] == p_on)
+    return;
+  d->sprite_caching[p_type] = p_on;
+  d->invoke_signal("sprite_caching_toggled", Q_ARG(int, p_type), Q_ARG(bool, p_on));
+}
+
+void AOConfig::set_loading_bar_delay(int p_delay)
+{
+  p_delay = qBound(0, p_delay, 2000);
+  if (d->loading_bar_delay == p_delay)
+    return;
+  d->loading_bar_delay = p_delay;
+  d->invoke_signal("loading_bar_delay_changed", Q_ARG(int, p_delay));
+}
+
+void AOConfig::set_caching_threshold(int p_percent)
+{
+  p_percent = qBound(0, p_percent, 100);
+  if (d->caching_threshold == p_percent)
+    return;
+  d->caching_threshold = p_percent;
+  d->invoke_signal("caching_threshold_changed", Q_ARG(int, p_percent));
 }
 
 void AOConfig::set_favorite_device_driver(QString p_device_driver)

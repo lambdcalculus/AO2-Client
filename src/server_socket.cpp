@@ -15,7 +15,7 @@
 
 void AOApplication::connect_to_server(DRServerInfo p_server)
 {
-  m_server_socket->connect_to_server(p_server, false);
+  m_server_socket->connect_to_server(p_server);
 }
 
 void AOApplication::send_server_packet(DRPacket p_packet)
@@ -270,6 +270,13 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
 
     destruct_lobby();
   }
+  else if (l_header == "joined_area")
+  {
+    if (!is_courtroom_constructed)
+      return;
+
+    m_courtroom->reset_viewport();
+  }
   else if (l_header == "BN")
   {
     if (l_content.size() < 1)
@@ -293,6 +300,16 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
 
     m_courtroom->set_background(l_area_bg);
   }
+  else if (l_header == "area_ambient")
+  {
+    if (l_content.size() < 1)
+      return;
+
+    if (!is_courtroom_constructed)
+      return;
+
+    m_courtroom->set_ambient(l_content.at(0));
+  }
   else if (l_header == "chat_tick_rate")
   {
     if (l_content.size() < 1)
@@ -313,7 +330,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   else if (l_header == "MS")
   {
     if (is_courtroom_constructed && is_courtroom_loaded)
-      m_courtroom->handle_chatmessage(l_content);
+      m_courtroom->next_chatmessage(l_content);
   }
   else if (l_header == "ackMS")
   {

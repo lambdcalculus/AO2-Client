@@ -75,3 +75,41 @@ bool VersionNumber::operator>(const VersionNumber &other) const
 {
   return release > other.release || (release == other.release && major > other.major);
 }
+
+const QMap<SpriteCategory, QString> s_sprite_category_string_map{
+    {SpriteGUI, "gui"},
+    {SpriteStage, "background"},
+    {SpriteCharacter, "character"},
+    {SpriteEffect, "effect"},
+    {SpriteShout, "shout"},
+    {SpriteSticker, "sticker"},
+};
+
+SpriteCategory string_to_sprite_category(QString p_category)
+{
+  return s_sprite_category_string_map.key(p_category, SpriteGUI);
+}
+
+QString sprite_category_to_string(SpriteCategory p_category)
+{
+  return s_sprite_category_string_map.value(p_category, "gui");
+}
+
+QStringList sprite_category_string_list()
+{
+  return s_sprite_category_string_map.values();
+}
+
+SpriteCategory viewport_sprite_to_sprite_category(ViewportSprite p_type)
+{
+  return QMap<ViewportSprite, SpriteCategory>{
+      {ViewportStageBack, SpriteStage},
+      {ViewportStageFront, SpriteStage},
+      {ViewportCharacterPre, SpriteCharacter},
+      {ViewportCharacterIdle, SpriteCharacter},
+      {ViewportCharacterTalk, SpriteCharacter},
+      {ViewportEffect, SpriteEffect},
+      {ViewportShout, SpriteShout},
+  }
+      .value(p_type, SpriteGUI);
+}

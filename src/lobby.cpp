@@ -31,6 +31,7 @@
 
 Lobby::Lobby(AOApplication *p_ao_app)
     : QMainWindow()
+    , m_connection_state(NotConnectedState)
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -77,6 +78,10 @@ Lobby::Lobby(AOApplication *p_ao_app)
   connect(m_master_client, SIGNAL(motd_changed()), this, SLOT(update_motd()));
   connect(m_master_client, SIGNAL(server_list_changed()), this, SLOT(update_server_list()));
 
+  connect(ao_app, SIGNAL(connecting_to_server()), this, SLOT(_p_on_connecting_to_server()));
+  connect(ao_app, SIGNAL(connected_to_server()), this, SLOT(_p_on_connected_to_server()));
+  connect(ao_app, SIGNAL(disconnected_from_server()), this, SLOT(_p_on_disconnected_from_server()));
+
   connect(ui_public_server_filter, SIGNAL(clicked()), this, SLOT(toggle_public_server_filter()));
   connect(ui_favorite_server_filter, SIGNAL(clicked()), this, SLOT(toggle_favorite_server_filter()));
   connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
@@ -90,9 +95,9 @@ Lobby::Lobby(AOApplication *p_ao_app)
   connect(ui_server_list, SIGNAL(currentRowChanged(int)), this, SLOT(connect_to_server(int)));
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
-  update_widgets();
   load_settings();
   load_favorite_server_list();
+  update_widgets();
   m_master_client->set_address(ao_config->server_advertiser());
   set_choose_a_server();
 }
@@ -205,6 +210,8 @@ void Lobby::update_widgets()
   set_fonts();
   set_stylesheets();
   update_server_listing();
+
+  update_server_filter_buttons();
 }
 
 void Lobby::set_fonts()
@@ -355,6 +362,12 @@ void Lobby::save_favorite_server_list()
     l_ini.endGroup();
   }
   l_ini.sync();
+}
+
+void Lobby::set_connection_state(ConnectionState p_connection_state)
+{
+  m_connection_state = p_connection_state;
+  _p_update_description();
 }
 
 void Lobby::request_advertiser_update()
@@ -549,10 +562,60 @@ void Lobby::connect_to_server(int p_row)
   m_current_server = m_combined_server_list.at(p_row);
   if (l_prev_server != m_current_server)
   {
-    ui_player_count->setText("Connecting...");
-    ui_description->setHtml("Connecting to " + m_current_server.name + "...");
+    ui_player_count->setText(nullptr);
     ao_app->connect_to_server(m_current_server);
   }
+}
+
+void Lobby::_p_on_connecting_to_server()
+{
+  set_connection_state(ConnectingState);
+}
+
+void Lobby::_p_on_connected_to_server()
+{
+  set_connection_state(ConnectedState);
+}
+
+void Lobby::_p_on_disconnected_from_server()
+{
+  set_connection_state(NotConnectedState);
+}
+
+void Lobby::_p_update_description()
+{
+  QString l_message;
+  {
+    const QString l_format = QMap<ConnectionState, QString>{
+        {
+            NotConnectedState,
+            tr("Failed to connect to server (%1)"),
+        },
+        {
+            ConnectingState,
+            tr("Connecting to server (%1)"),
+        },
+        {
+            ConnectedState,
+            tr("Connected to server (%1)"),
+        },
+    }[m_connection_state];
+    l_message = QString(l_format).arg(m_current_server.name.toHtmlEscaped());
+  }
+
+  if (m_connection_state == ConnectedState)
+  {
+    l_message += "\n\n" + m_current_server.description.toHtmlEscaped();
+
+    const QRegExp l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
+    if (l_message.contains(l_regex))
+    {
+      l_message.replace(l_regex, "<a href=\"\\1\">\\1</a>");
+    }
+
+    l_message.replace("\n", "<br />");
+  }
+  ui_description->setHtml(l_message);
 }
 
 void Lobby::set_choose_a_server()
@@ -566,10 +629,4 @@ void Lobby::set_player_count(int players_online, int max_players)
   const QString f_string = "Connected: " + QString::number(players_online) + "/" + QString::number(max_players);
   ui_player_count->setText(f_string);
   ui_player_count->setAlignment(Qt::AlignHCenter);
-
-  QString l_text = m_current_server.description.toHtmlEscaped();
-  const QRegExp l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
-  if (l_text.contains(l_regex))
-    l_text.replace(l_regex, "<a href=\"\\1\">\\1</a>");
-  ui_description->setHtml(l_text.replace("\n", "<br />"));
 }

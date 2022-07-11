@@ -241,6 +241,7 @@ void Courtroom::hide_emote_tooltip(int p_id)
     return;
   m_emote_preview_id = -1;
   ui_emote_preview->hide();
+  ui_emote_preview_character->set_file_name(nullptr);
   ui_emote_preview_character->stop();
 }
 

@@ -9,6 +9,6 @@ AOSystemPlayer::AOSystemPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOO
 
 void AOSystemPlayer::play(QString p_name)
 {
-  const QString file = ao_app->find_asset_path({ao_app->get_sounds_path(p_name)}, audio_extensions());
+  const QString file = ao_app->find_asset_path({ao_app->get_sfx_noext_path(p_name)}, audio_extensions());
   DRAudioEngine::get_family(DRAudio::Family::FSystem)->play_stream(file);
 }

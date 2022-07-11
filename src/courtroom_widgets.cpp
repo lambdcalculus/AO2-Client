@@ -47,8 +47,8 @@ void Courtroom::create_widgets()
   m_keepalive_timer->start(60000);
 
   m_tick_timer = new QTimer(this);
-  m_tick_timer->setSingleShot(false);
-  m_tick_timer->setTimerType(Qt::PreciseTimer); // Prevents drift
+  m_tick_timer->setSingleShot(true);
+  m_tick_timer->setTimerType(Qt::PreciseTimer);
 
   m_sound_timer = new QTimer(this);
   m_sound_timer->setSingleShot(true);
@@ -101,13 +101,16 @@ void Courtroom::create_widgets()
   ui_vp_showname_image = new AOImageDisplay(this, ao_app);
 
   ui_vp_effect = new DREffectMovie(this);
-  ui_vp_effect->set_hide_on_done(true);
   ui_vp_wtce = new DRSplashMovie(this);
-  ui_vp_wtce->set_hide_on_done(true);
   ui_vp_objection = new DRShoutMovie(this);
-  ui_vp_objection->set_hide_on_done(true);
 
   ui_vp_chat_arrow = new DRStickerMovie(this);
+  ui_vp_loading = new DRStickerMovie(this);
+  ui_vp_loading->hide();
+
+  m_loading_timer = new QTimer(this);
+  m_loading_timer->setSingleShot(true);
+  m_loading_timer->setInterval(ao_config->loading_bar_delay());
 
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::NoInsert);
@@ -143,8 +146,12 @@ void Courtroom::create_widgets()
   ui_music_menu_insert_ooc = ui_music_menu->addAction(tr("Insert to OOC"));
 
   ui_sfx_list = new QListWidget(this);
+  ui_sfx_list->setContextMenuPolicy(Qt::CustomContextMenu);
   ui_sfx_search = new QLineEdit(this);
   ui_sfx_search->setFrame(false);
+  ui_sfx_menu = new QMenu(this);
+  ui_sfx_menu_preview = ui_sfx_menu->addAction(tr("Preview"));
+  ui_sfx_menu_insert_ooc = ui_sfx_menu->addAction(tr("Insert to OOC"));
 
   ui_ic_chat_showname = new QLineEdit(this);
   ui_ic_chat_showname->setFrame(false);
@@ -347,10 +354,22 @@ void Courtroom::connect_widgets()
   connect(ui_hide_character, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
   connect(ui_sfx_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this,
-          SLOT(_p_sfxCurrentItemChanged(QListWidgetItem *, QListWidgetItem *)));
+          SLOT(on_sfx_list_current_item_changed(QListWidgetItem *, QListWidgetItem *)));
+  connect(ui_sfx_list, SIGNAL(customContextMenuRequested(QPoint)), this,
+          SLOT(on_sfx_list_context_menu_requested(QPoint)));
+
+  connect(ui_sfx_menu_preview, SIGNAL(triggered()), this, SLOT(on_sfx_menu_preview_triggered()));
+  connect(ui_sfx_menu_insert_ooc, SIGNAL(triggered()), this, SLOT(on_sfx_menu_insert_ooc_triggered()));
 
   connect(ui_note_area->add_button, SIGNAL(clicked(bool)), this, SLOT(on_add_button_clicked()));
   connect(ui_set_notes, SIGNAL(clicked(bool)), this, SLOT(on_set_notes_clicked()));
+
+  // performance
+  connect(ao_config, SIGNAL(sprite_caching_toggled(int, bool)), this, SLOT(assign_readers_for_viewers(int, bool)));
+  connect(ao_config, SIGNAL(caching_threshold_changed(int)), m_preloader_sync, SLOT(set_threshold(int)));
+  connect(m_preloader_sync, SIGNAL(finished()), this, SLOT(start_chatmessage()));
+  connect(ao_config, SIGNAL(loading_bar_delay_changed(int)), this, SLOT(on_loading_bar_delay_changed(int)));
+  connect(m_loading_timer, SIGNAL(timeout()), ui_vp_loading, SLOT(show()));
 }
 
 void Courtroom::reset_widget_names()
@@ -377,6 +396,7 @@ void Courtroom::reset_widget_names()
       {"vp_wtce", ui_vp_wtce},
       {"vp_objection", ui_vp_objection},
       {"chat_arrow", ui_vp_chat_arrow},
+      {"loading", ui_vp_loading},
       {"ic_chatlog", ui_ic_chatlog},
       {"ic_chatlog_scroll_topdown", ui_ic_chatlog_scroll_topdown},
       {"ic_chatlog_scroll_bottomup", ui_ic_chatlog_scroll_bottomup},
@@ -450,8 +470,7 @@ void Courtroom::insert_widget_name(QString p_widget_name, QWidget *p_widget)
 
 void Courtroom::insert_widget_names(QVector<QString> &p_name_list, QVector<QWidget *> &p_widget_list)
 {
-  if (p_name_list.length() != p_widget_list.length())
-    qFatal("[WARNING] Length of names and widgets differs!");
+  if (p_name_list.length() != p_widget_list.length()) qFatal("[WARNING] Length of names and widgets differs!");
   for (int i = 0; i < p_widget_list.length(); ++i)
     insert_widget_name(p_name_list[i], p_widget_list[i]);
 }
@@ -504,8 +523,7 @@ void Courtroom::set_widget_layers()
       QString line = in.readLine().trimmed();
 
       // skip if line is empty
-      if (line.isEmpty())
-        continue;
+      if (line.isEmpty()) continue;
 
       // revert to default parent if we encounter an end scope
       if (line.startsWith("[\\"))
@@ -522,21 +540,18 @@ void Courtroom::set_widget_layers()
       else
       {
         // if the child is already known, skip
-        if (recorded_widgets.contains(line))
-          continue;
+        if (recorded_widgets.contains(line)) continue;
         // make the child known
         recorded_widgets.append(line);
 
         // attach the children to the parents'
         QWidget *child = widget_names[line];
         // if child is null, then it does not exist
-        if (!child)
-          continue;
+        if (!child) continue;
 
         QWidget *parent = widget_names[parent_name];
         // if parent is null, attach main parent
-        if (!parent)
-          parent = widget_names["courtroom"];
+        if (!parent) parent = widget_names["courtroom"];
 
         // set child to parent
         bool was_visible = child->isVisible();
@@ -547,8 +562,7 @@ void Courtroom::set_widget_layers()
         // parent I don't know why, I don't want to know why, I shouldn't have
         // to wonder why, but for whatever reason these stupid panels aren't
         // laying out correctly unless we do this terribleness
-        if (child->isVisible() != was_visible)
-          child->setVisible(was_visible);
+        if (child->isVisible() != was_visible) child->setVisible(was_visible);
       }
     }
   }
@@ -631,6 +645,13 @@ void Courtroom::set_widgets()
   set_sticker_play_once(ui_vp_chat_arrow, "chat_arrow", COURTROOM_CONFIG_INI, ao_app);
   ui_vp_chat_arrow->hide();
 
+  {
+    const bool l_visible = ui_vp_loading->isVisible();
+    set_size_and_pos(ui_vp_loading, "loading", COURTROOM_DESIGN_INI, ao_app);
+    ui_vp_loading->play("loading");
+    ui_vp_loading->setVisible(l_visible);
+  }
+
   ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
   ui_vp_effect->resize(ui_viewport->width(), ui_viewport->height());
   ui_vp_effect->hide();
@@ -678,8 +699,7 @@ void Courtroom::set_widgets()
   ui_vp_music_display_b->show();
 
   set_size_and_pos(ui_vp_clock, "clock", COURTROOM_DESIGN_INI, ao_app);
-  if (m_current_clock == -1)
-    ui_vp_clock->hide();
+  if (m_current_clock == -1) ui_vp_clock->hide();
   set_sticker_play_once(ui_vp_clock, "clock", COURTROOM_CONFIG_INI, ao_app);
 
   ui_vp_chatbox->set_theme_image("chatmed.png");
@@ -863,24 +883,19 @@ void Courtroom::set_widgets()
     // set_image first tries the gamemode-timeofday folder, then the theme
     // folder, then falls back to the default theme
     ui_change_character->set_image("changecharacter.png");
-    if (ui_change_character->get_image().isEmpty())
-      ui_change_character->setText("Change Character");
+    if (ui_change_character->get_image().isEmpty()) ui_change_character->setText("Change Character");
 
     ui_call_mod->set_image("callmod.png");
-    if (ui_call_mod->get_image().isEmpty())
-      ui_call_mod->setText("Call Mod");
+    if (ui_call_mod->get_image().isEmpty()) ui_call_mod->setText("Call Mod");
 
     ui_switch_area_music->set_image("switch_area_music.png");
-    if (ui_switch_area_music->get_image().isEmpty())
-      ui_switch_area_music->setText("A/M");
+    if (ui_switch_area_music->get_image().isEmpty()) ui_switch_area_music->setText("A/M");
 
     ui_config_panel->set_image("config_panel.png");
-    if (ui_config_panel->get_image().isEmpty())
-      ui_config_panel->setText("Config");
+    if (ui_config_panel->get_image().isEmpty()) ui_config_panel->setText("Config");
 
     ui_note_button->set_image("notebutton.png");
-    if (ui_note_button->get_image().isEmpty())
-      ui_note_button->setText("Notes");
+    if (ui_note_button->get_image().isEmpty()) ui_note_button->setText("Notes");
   }
 
   // The config panel has a special property. If it is displayed beyond the right or lower limit of the window, it will
@@ -894,8 +909,7 @@ void Courtroom::set_widgets()
     ui_config_panel->move(0, 0);
     // Moreover, if the width or height is invalid, change it to some fixed
     // values
-    if (ui_config_panel->width() <= 0 || ui_config_panel->height() <= 0)
-      ui_config_panel->resize(64, 64);
+    if (ui_config_panel->width() <= 0 || ui_config_panel->height() <= 0) ui_config_panel->resize(64, 64);
   }
 
   set_size_and_pos(ui_pre, "pre", COURTROOM_DESIGN_INI, ao_app);
@@ -1104,8 +1118,7 @@ void Courtroom::check_effects()
   {
     QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), effect_names.at(i))},
                                            animated_extensions());
-    if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(effect_names.at(i), animated_extensions());
+    if (path.isEmpty()) path = ao_app->find_theme_asset_path(effect_names.at(i), animated_extensions());
     effects_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1123,8 +1136,7 @@ void Courtroom::check_free_blocks()
   {
     QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), free_block_names.at(i))},
                                            animated_extensions());
-    if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(free_block_names.at(i), animated_extensions());
+    if (path.isEmpty()) path = ao_app->find_theme_asset_path(free_block_names.at(i), animated_extensions());
     free_blocks_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1143,8 +1155,7 @@ void Courtroom::check_shouts()
     QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), shout_names.at(i))},
                                            animated_extensions());
 
-    if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(shout_names.at(i), animated_extensions());
+    if (path.isEmpty()) path = ao_app->find_theme_asset_path(shout_names.at(i), animated_extensions());
 
     shouts_enabled[i] = (!path.isEmpty());
   }
@@ -1163,8 +1174,7 @@ void Courtroom::check_wtce()
   {
     QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), wtce_names.at(i))},
                                            animated_extensions());
-    if (path.isEmpty())
-      path = ao_app->find_theme_asset_path(wtce_names.at(i), animated_extensions());
+    if (path.isEmpty()) path = ao_app->find_theme_asset_path(wtce_names.at(i), animated_extensions());
     wtce_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1177,8 +1187,7 @@ void Courtroom::delete_widget(QWidget *p_widget)
   // transfer the children to our grandparent since our parent is about to be deleted
   QWidget *grand_parent = p_widget->parentWidget();
   // if we don't have a grand parent, attach ourselves to courtroom
-  if (!grand_parent)
-    grand_parent = this;
+  if (!grand_parent) grand_parent = this;
 
   // set new parent
   for (QWidget *child : p_widget->findChildren<QWidget *>(nullptr, Qt::FindDirectChildrenOnly))
@@ -1342,8 +1351,7 @@ void Courtroom::set_shouts()
 {
   for (auto &shout : ui_shouts)
     shout->hide();
-  if (ui_shouts.size() > 0)
-    ui_shouts[m_shout_current]->show(); // check to prevent crashing
+  if (ui_shouts.size() > 0) ui_shouts[m_shout_current]->show(); // check to prevent crashing
 }
 
 /**
@@ -1356,8 +1364,7 @@ void Courtroom::set_effects()
     effect->hide();
 
   // check to prevent crashing
-  if (ui_effects.size() > 0)
-    ui_effects[m_effect_current]->show();
+  if (ui_effects.size() > 0) ui_effects[m_effect_current]->show();
 }
 
 void Courtroom::set_judge_enabled(bool p_enabled)
@@ -1391,8 +1398,7 @@ void Courtroom::set_judge_wtce()
   ui_wtce_down->setVisible(is_judge && is_single_wtce);
 
   // prevent going ahead if we have no wtce
-  if (!is_judge || ui_wtce.length() == 0)
-    return;
+  if (!is_judge || ui_wtce.length() == 0) return;
 
   // set visibility based off parameter
   if (is_single_wtce == true)

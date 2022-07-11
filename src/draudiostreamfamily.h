@@ -6,8 +6,6 @@
 #include <QSharedPointer>
 #include <QVector>
 
-#include <optional>
-
 class DRAudioEngine;
 class DRAudioEngineData;
 
@@ -19,8 +17,8 @@ public:
   using ptr = QSharedPointer<DRAudioStreamFamily>;
   using stream_list = QVector<DRAudioStream::ptr>;
 
-  std::optional<DRAudioStream::ptr> create_stream(QString p_file);
-  std::optional<DRAudioStream::ptr> play_stream(QString p_file);
+  DRAudioStream::ptr create_stream(QString p_file);
+  DRAudioStream::ptr play_stream(QString p_file);
 
   // get
   stream_list get_stream_list() const;

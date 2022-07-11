@@ -1,3 +1,4 @@
+#include "draudiostream.h"
 #define NOMINMAX
 
 #include "draudiostreamfamily.h"
@@ -6,7 +7,8 @@
 
 #include <QDebug>
 
-DRAudioStreamFamily::DRAudioStreamFamily(DRAudio::Family p_family) : m_family(p_family)
+DRAudioStreamFamily::DRAudioStreamFamily(DRAudio::Family p_family)
+    : m_family(p_family)
 {}
 
 int32_t DRAudioStreamFamily::get_capacity() const
@@ -31,7 +33,7 @@ bool DRAudioStreamFamily::is_ignore_suppression() const
 
 void DRAudioStreamFamily::set_capacity(int32_t p_capacity)
 {
-  p_capacity = std::max(p_capacity, 0);
+  p_capacity = qMax(0, p_capacity);
 
   if (m_capacity == p_capacity)
     return;
@@ -77,34 +79,36 @@ void DRAudioStreamFamily::set_ignore_suppression(bool p_enabled)
   set_options(options);
 }
 
-std::optional<DRAudioStream::ptr> DRAudioStreamFamily::create_stream(QString p_file)
+DRAudioStream::ptr DRAudioStreamFamily::create_stream(QString p_filename)
 {
-  DRAudioStream::ptr stream(new DRAudioStream(m_family));
-
-  if (auto err = stream->set_file_name(p_file); err)
+  DRAudioStream::ptr l_stream(new DRAudioStream(m_family));
+  if (auto err = l_stream->set_file_name(p_filename); err)
   {
     qWarning() << err->what();
-    return std::nullopt;
+    return nullptr;
   }
 
-  m_stream_list.append(stream);
-  update_capacity();
-  stream->set_volume(calculate_volume());
-  connect(stream.get(), SIGNAL(finished()), this, SLOT(on_stream_finished()));
+  m_stream_list.append(l_stream);
 
-  return stream;
+  connect(l_stream.get(), SIGNAL(finished()), this, SLOT(on_stream_finished()));
+
+  update_capacity();
+
+  l_stream->set_volume(calculate_volume());
+
+  return l_stream;
 }
 
-std::optional<DRAudioStream::ptr> DRAudioStreamFamily::play_stream(QString p_file)
+DRAudioStream::ptr DRAudioStreamFamily::play_stream(QString p_filename)
 {
-  std::optional<DRAudioStream::ptr> r_stream = create_stream(p_file);
-  if (r_stream.has_value())
+  DRAudioStream::ptr l_stream = create_stream(p_filename);
+  if (!l_stream.isNull())
   {
-    auto stream = r_stream.value();
-    qInfo() << "Playing" << stream->get_file_name();
-    stream->play();
+    qInfo() << "Playing" << l_stream->get_file_name();
+    l_stream->play();
   }
-  return r_stream;
+
+  return l_stream;
 }
 
 DRAudioStreamFamily::stream_list DRAudioStreamFamily::get_stream_list() const

@@ -1,16 +1,37 @@
 #pragma once
 
 #include "aoobject.h"
+#include "draudiostream.h"
+#include "draudiostreamfamily.h"
+
+#include <QMap>
+#include <QSharedPointer>
 
 class AOSfxPlayer : public AOObject
 {
   Q_OBJECT
 
 public:
-  AOSfxPlayer(AOApplication *p_ao_app, QObject *p_parent = nullptr);
+  static const int DEFAULT_FADE_DURATION = 5000;
 
-  void play(QString p_file);
-  void play_effect(QString p_effect);
-  void play_character_effect(QString p_character, QString p_effect);
+  AOSfxPlayer(AOApplication *ao_app, QObject *parent = nullptr);
+
+  void play(QString filename);
+  void play_effect(QString effect);
+  void play_character_effect(QString character, QString effect);
   void stop_all();
+
+  void play_ambient(QString filename);
+
+private:
+  DRAudioStreamFamily::ptr m_player;
+  QVector<DRAudioStream::ptr> m_stream_list;
+  QMap<QString, DRAudioStream::ptr> m_ambient_map;
+  DRAudioStream::ptr m_current_ambient;
+
+  DRAudioStream::ptr get_stream_by_qobject(QObject *object);
+
+private slots:
+  void remove_ambient();
+  void handle_ambient_fade(DRAudioStream::Fade fade);
 };

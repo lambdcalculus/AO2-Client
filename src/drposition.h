@@ -8,7 +8,9 @@ class DRPosition
 public:
   DRPosition();
 
-  DRPosition(QString p_back, QString p_front);
+  DRPosition(QString back, QString front);
+
+  DRPosition(QString back, QString front, QString ambient_sfx);
 
   ~DRPosition();
 
@@ -16,31 +18,36 @@ public:
 
   QString get_front();
 
-  void set_back(QString p_back);
+  QString get_ambient_sfx();
 
-  void set_front(QString p_front);
+  void set_back(QString back);
+
+  void set_front(QString front);
+
+  void set_ambient_sfx(QString ambient_sfx);
 
 private:
   QString m_back;
 
   QString m_front;
+
+  QString m_ambient_sfx;
 };
 
-class DRPositionReader : public QObject
+class DRPositionMap
 {
-  Q_OBJECT
-
 public:
-  DRPositionReader(QObject *parent = nullptr);
+  static const QMap<QString, DRPosition> LEGACY_POSITION_MAP;
 
-  ~DRPositionReader();
+  DRPositionMap();
+  ~DRPositionMap();
 
-  DRPosition get_position(QString p_id);
+  DRPosition get_position(QString id);
 
-  void load_file(QString p_filename);
+  void set_position(QString id, DRPosition position);
+
+  bool load_file(QString filename);
 
 private:
-  static const QMap<QString, DRPosition> READONLY_POSITIONS;
-
-  QMap<QString, DRPosition> m_positions;
+  QMap<QString, DRPosition> m_position_map;
 };

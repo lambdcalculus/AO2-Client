@@ -8,11 +8,20 @@
 #include <bass/bassopus.h>
 
 #include "draudioengine.h"
-#include "draudiostreamfamily.h"
 
-DRAudioStream::DRAudioStream(DRAudio::Family p_family) : m_engine(new DRAudioEngine(this)), m_family(p_family)
+DRAudioStream::DRAudioStream(DRAudio::Family p_family)
+    : m_engine(new DRAudioEngine(this))
+    , m_family(p_family)
+    , m_fade(NoFade)
 {
+  registerMetatypes();
+
   connect(m_engine, &DRAudioEngine::current_device_changed, this, &DRAudioStream::update_device);
+}
+
+void DRAudioStream::registerMetatypes()
+{
+  qRegisterMetaType<DRAudioStream::Fade>();
 }
 
 DRAudioStream::~DRAudioStream()
@@ -30,7 +39,7 @@ DRAudio::Family DRAudioStream::get_family() const
 
 QString DRAudioStream::get_file_name() const
 {
-  return m_file_name;
+  return m_filename;
 }
 
 bool DRAudioStream::is_playing() const
@@ -52,7 +61,7 @@ void DRAudioStream::play()
   if (!BASS_ChannelPlay(m_hstream, FALSE))
   {
     qWarning()
-        << QString("error: failed to play file: %1 (file: \"%1\")").arg(DRAudio::get_last_bass_error(), m_file_name);
+        << QString("error: failed to play file: %1 (file: \"%1\")").arg(DRAudio::get_last_bass_error(), m_filename);
     Q_EMIT finished();
   }
 }
@@ -67,13 +76,13 @@ void DRAudioStream::stop()
 
 std::optional<DRAudioError> DRAudioStream::set_file_name(QString p_file_name)
 {
-  m_file_name = p_file_name;
+  m_filename = p_file_name;
   m_init_state = InitNotDone;
   if (!ensure_init())
   {
     return DRAudioError("failed to set file");
   }
-  emit file_name_changed(m_file_name);
+  emit file_name_changed(m_filename);
   return std::nullopt;
 }
 
@@ -82,7 +91,7 @@ void DRAudioStream::set_volume(float p_volume)
   if (!ensure_init())
     return;
   m_volume = p_volume;
-  BASS_ChannelSetAttribute(m_hstream, BASS_ATTRIB_VOL, float(p_volume) * 0.01f);
+  update_volume();
 }
 
 void DRAudioStream::set_repeatable(bool p_enabled)
@@ -103,6 +112,32 @@ void DRAudioStream::set_loop(quint64 p_start, quint64 p_end)
   m_loop_start = p_start;
   m_loop_end = p_end;
   init_loop();
+}
+
+void DRAudioStream::fade(Fade p_fade, int p_duration)
+{
+  if (p_fade == NoFade || p_fade == m_fade || !ensure_init())
+  {
+    return;
+  }
+
+  float l_volume = m_volume * 0.01f;
+  if (m_fade == NoFade)
+  {
+    BASS_ChannelSetAttribute(m_hstream, BASS_ATTRIB_VOL, (p_fade == FadeOut ? l_volume : 0));
+  }
+  m_fade = p_fade;
+  BASS_ChannelSlideAttribute(m_hstream, BASS_ATTRIB_VOL, (p_fade == FadeOut ? 0 : l_volume), qMax(0, p_duration));
+}
+
+void DRAudioStream::fadeIn(int p_duration)
+{
+  fade(FadeIn, p_duration);
+}
+
+void DRAudioStream::fadeOut(int p_duration)
+{
+  fade(FadeOut, p_duration);
 }
 
 void DRAudioStream::end_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata)
@@ -132,32 +167,44 @@ void DRAudioStream::loop_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata)
   }
 }
 
+void DRAudioStream::fade_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata)
+{
+  Q_UNUSED(hsync);
+  Q_UNUSED(ch);
+  Q_UNUSED(data);
+
+  DRAudioStream *l_stream = static_cast<DRAudioStream *>(userdata);
+  emit l_stream->faded(l_stream->m_fade);
+}
+
 bool DRAudioStream::ensure_init()
 {
   if (m_init_state != InitNotDone)
     return m_init_state == InitFinished;
   m_init_state = InitError;
 
-  if (m_file_name.isEmpty())
+  if (m_filename.isEmpty())
     return false;
 
   HSTREAM l_hstream;
-  if (m_file_name.endsWith("opus", Qt::CaseInsensitive))
-    l_hstream = BASS_OPUS_StreamCreateFile(FALSE, m_file_name.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+  if (m_filename.endsWith("opus", Qt::CaseInsensitive))
+    l_hstream = BASS_OPUS_StreamCreateFile(FALSE, m_filename.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
   else
     l_hstream =
-        BASS_StreamCreateFile(FALSE, m_file_name.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE | BASS_STREAM_PRESCAN);
+        BASS_StreamCreateFile(FALSE, m_filename.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE | BASS_STREAM_PRESCAN);
 
   if (!l_hstream)
   {
-    qWarning() << "error: failed to create audio stream (file:" << m_file_name << ")";
+    qWarning() << "error: failed to create audio stream (file:" << m_filename << ")";
     return false;
   }
   m_hstream = l_hstream;
 
   BASS_ChannelSetSync(l_hstream, BASS_SYNC_END, 0, &end_sync, this);
+  BASS_ChannelSetSync(l_hstream, BASS_SYNC_SLIDE, 0, &fade_sync, this);
   m_init_state = InitFinished;
   init_loop();
+  update_volume();
   return true;
 }
 
@@ -207,4 +254,10 @@ void DRAudioStream::update_device(DRAudioDevice p_device)
       qDebug() << "error: failed to switch stream device;" << DRAudio::get_last_bass_error() << p_device.get_name();
     }
   }
+}
+
+void DRAudioStream::update_volume()
+{
+  const float l_volume = m_volume * 0.01f;
+  BASS_ChannelSetAttribute(m_hstream, BASS_ATTRIB_VOL, (m_fade == FadeOut ? 0 : l_volume));
 }

@@ -43,12 +43,6 @@ QString AOApplication::get_character_path(QString p_chr, QString p_file)
   return get_case_sensitive_path(r_path);
 }
 
-QString AOApplication::get_sounds_path(QString p_file)
-{
-  QString path = get_base_path() + "sounds/general/" + p_file;
-  return get_case_sensitive_path(path);
-}
-
 QString AOApplication::get_music_folder_path()
 {
   const QString l_path = get_base_path() + "sounds/music/";

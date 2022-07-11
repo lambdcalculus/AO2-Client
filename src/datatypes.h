@@ -35,7 +35,8 @@ enum ClientId
 class DRChatRecord
 {
 public:
-  DRChatRecord(QString p_name, QString p_message) : name(p_name), message(p_message) {}
+  DRChatRecord(QString p_name, QString p_message)
+      : name(p_name), message(p_message) {}
 
   QDateTime get_timestamp() const { return timestamp; }
   QString get_name() const { return name; }
@@ -130,6 +131,33 @@ struct pos_size_type
   int height = 0;
 };
 
+enum SpriteCategory
+{
+  SpriteGUI,
+  SpriteStage,
+  SpriteCharacter,
+  SpriteEffect,
+  SpriteShout,
+  SpriteSticker,
+};
+
+SpriteCategory string_to_sprite_category(QString p_category);
+QString sprite_category_to_string(SpriteCategory p_category);
+QStringList sprite_category_string_list();
+
+enum ViewportSprite
+{
+  ViewportStageBack,
+  ViewportStageFront,
+  ViewportCharacterPre,
+  ViewportCharacterIdle,
+  ViewportCharacterTalk,
+  ViewportEffect,
+  ViewportShout,
+};
+
+SpriteCategory viewport_sprite_to_sprite_category(ViewportSprite p_type);
+
 enum ChatMessage : int32_t
 {
   CMDeskModifier = 0,
@@ -205,7 +233,8 @@ struct ColorInfo
 {
 public:
   ColorInfo() = default;
-  ColorInfo(QString p_showname, QString p_code) : name(p_showname.toLower()), showname(p_showname), code(p_code) {}
+  ColorInfo(QString p_showname, QString p_code)
+      : name(p_showname.toLower()), showname(p_showname), code(p_code) {}
 
   QString name;
   QString showname;

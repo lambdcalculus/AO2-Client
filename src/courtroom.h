@@ -2,6 +2,8 @@
 #define COURTROOM_H
 
 #include "datatypes.h"
+#include "drposition.h"
+#include "mk2/spritereadersynchronizer.h"
 
 class AOApplication;
 class AOBlipPlayer;
@@ -22,8 +24,8 @@ class AOSystemPlayer;
 class AOTimer;
 class DRCharacterMovie;
 class DRChatLog;
+class DRMovie;
 class DREffectMovie;
-class DRPositionReader;
 class DRSceneMovie;
 class DRShoutMovie;
 class DRSplashMovie;
@@ -35,6 +37,7 @@ class DRVideoWidget;
 #include <QMap>
 #include <QModelIndex>
 #include <QQueue>
+#include <QSharedPointer>
 #include <QStack>
 #include <QTextCharFormat>
 
@@ -92,11 +95,17 @@ public:
   // called when a DONE#% from the server was received
   void done_received();
 
-  // updates background and front based on the position given from the chatmessage
+  void set_ambient(QString ambient_sfx);
+  void play_ambient();
+
+  // updates background based on the position given from the chatmessage; will reset preloading if active
   void update_background_scene();
 
-  // updates background and front based on legacy background
-  void update_legacy_background_scene();
+  // displays the current background
+  void display_background_scene();
+
+  // returns a position map based on legacy background implementation
+  DRPositionMap get_legacy_background(QString background);
 
   // sets text color based on text color in chatmessage
   void set_text_color();
@@ -159,7 +168,10 @@ public:
   // these functions handle chatmessages sequentially.
   // The process itself is very convoluted and merits separate documentation
   // But the general idea is objection animation->pre animation->talking->idle
-  void handle_chatmessage(QStringList p_contents);
+  void next_chatmessage(QStringList p_contents);
+  void reset_viewport();
+  void preload_chatmessage(QStringList p_contents);
+  void handle_chatmessage();
   void handle_chatmessage_2();
   void handle_chatmessage_3();
 
@@ -271,8 +283,12 @@ private:
   // Generate a File Name based on the time you launched the client
   QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'ddd MMMM dd yyyy hh.mm.ss.z'.txt'");
 
-  static const int MESSAGE_SIZE = 19;
-  QString m_chatmessage[MESSAGE_SIZE];
+  static const int MINIMUM_MESSAGE_SIZE = 15;
+  static const int OPTIMAL_MESSAGE_SIZE = 19;
+  QStringList m_pre_chatmessage;
+  QTimer *m_loading_timer;
+  mk2::SpriteReaderSynchronizer *m_preloader_sync;
+  QStringList m_chatmessage;
   int m_speaker_chr_id = SpectatorId;
   QString m_speaker_showname;
   bool m_hide_character = false;
@@ -338,10 +354,10 @@ private:
 
   int m_current_clock = -1;
 
+  QString m_ambient_sfx;
   DRAreaBackground m_background;
-  QString m_current_background_name;
-  bool m_is_legacy_background = false;
-  DRPositionReader *m_position_reader = nullptr;
+  QString m_background_name;
+  DRPositionMap m_position_map;
 
   AOImageDisplay *ui_background = nullptr;
 
@@ -363,6 +379,20 @@ private:
   DRSplashMovie *ui_vp_wtce = nullptr;
   DRShoutMovie *ui_vp_objection = nullptr;
   DRStickerMovie *ui_vp_chat_arrow = nullptr;
+  DRStickerMovie *ui_vp_loading = nullptr;
+
+  QMap<SpriteCategory, QVector<DRMovie *>> m_mapped_viewer_list;
+  QMap<ViewportSprite, DRMovie *> m_viewport_viewer_map;
+  QMap<ViewportSprite, mk2::SpriteReader::ptr> m_preloader_cache;
+  QMap<ViewportSprite, mk2::SpriteReader::ptr> m_reader_cache;
+
+  void map_viewers();
+  void map_viewport_viewers();
+  void map_viewport_readers();
+  mk2::SpriteReader::ptr get_viewport_reader(ViewportSprite type) const;
+  void assign_readers_for_all_viewers();
+  void swap_viewport_reader(DRMovie *viewer, ViewportSprite type);
+  void cleanup_preload_readers();
 
   AOImageDisplay *ui_vp_music_display_a = nullptr;
   AOImageDisplay *ui_vp_music_display_b = nullptr;
@@ -398,6 +428,9 @@ private:
   const QString m_sfx_default_file = "__DEFAULT__";
   QColor m_sfx_color_found;
   QColor m_sfx_color_missing;
+  QMenu *ui_sfx_menu = nullptr;
+  QAction *ui_sfx_menu_preview = nullptr;
+  QAction *ui_sfx_menu_insert_ooc = nullptr;
 
   QLineEdit *ui_ic_chat_showname = nullptr;
   QLineEdit *ui_ic_chat_message = nullptr;
@@ -513,7 +546,8 @@ private:
   void reset_widget_names();
   void insert_widget_name(QString p_widget_name, QWidget *p_widget);
   void insert_widget_names(QVector<QString> &p_widget_names, QVector<QWidget *> &p_widgets);
-  template <typename T> void insert_widget_names(QVector<QString> &p_widget_names, QVector<T *> &p_widgets);
+  template <typename T>
+  void insert_widget_names(QVector<QString> &p_widget_names, QVector<T *> &p_widgets);
   void set_widget_layers();
 
   void construct_char_select();
@@ -536,6 +570,9 @@ private:
 
   bool is_spectating();
 
+  QString get_shout_name(int shout_index);
+  QString get_effect_name(int effect_index);
+
 public slots:
   void video_finished();
   void objection_done();
@@ -549,11 +586,14 @@ private slots:
   void setup_chat();
   void play_sfx();
 
+  void on_loading_bar_delay_changed(int p_delay);
+  void start_chatmessage();
+
   void start_chat_timer();
   void stop_chat_timer();
   void calculate_chat_tick_interval();
   void next_chat_letter();
-  void post_chat();
+  void post_chatmessage();
 
   void on_showname_changed(QString);
   void on_showname_placeholder_changed(QString);
@@ -666,6 +706,9 @@ private slots:
 
   void ping_server();
 
+  // performance
+  void assign_readers_for_viewers(int p_type, bool p_caching);
+
   // character
   // ===========================================================================
 
@@ -705,7 +748,10 @@ private:
   void set_sfx_item_color(QListWidgetItem *item);
 
 private slots:
-  void _p_sfxCurrentItemChanged(QListWidgetItem *current_item, QListWidgetItem *previous_item);
+  void on_sfx_list_current_item_changed(QListWidgetItem *current_item, QListWidgetItem *previous_item);
+  void on_sfx_list_context_menu_requested(QPoint point);
+  void on_sfx_menu_preview_triggered();
+  void on_sfx_menu_insert_ooc_triggered();
 
   /*!
    * =============================================================================
@@ -734,7 +780,8 @@ protected:
   void closeEvent(QCloseEvent *event) override;
 };
 
-template <typename T> void Courtroom::insert_widget_names(QVector<QString> &p_widget_names, QVector<T *> &p_widgets)
+template <typename T>
+void Courtroom::insert_widget_names(QVector<QString> &p_widget_names, QVector<T *> &p_widgets)
 {
   QVector<QWidget *> widgets;
 

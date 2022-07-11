@@ -55,6 +55,12 @@ public:
   bool log_display_music_switch_enabled() const;
   bool log_is_recording_enabled() const;
 
+  // performance
+  bool sprite_caching_enabled(int type) const;
+  int system_memory_threshold() const;
+  int loading_bar_delay() const;
+  int caching_threshold() const;
+
   // audio
   std::optional<QString> favorite_device_driver() const;
   int master_volume() const;
@@ -114,6 +120,12 @@ public slots:
   void set_log_is_recording(bool p_enabled);
   void set_suppress_background_audio(bool p_enabled);
 
+  // performance
+  void set_sprite_caching(int type, bool on);
+  void set_system_memory_threshold(int percent);
+  void set_loading_bar_delay(int delay);
+  void set_caching_threshold(int percent);
+
   // audio
   void set_favorite_device_driver(QString p_device_driver);
   void set_master_volume(int p_number);
@@ -172,6 +184,12 @@ signals:
   void log_format_use_newline_changed(bool);
   void log_display_music_switch_changed(bool);
   void log_is_recording_changed(bool);
+
+  // performance
+  void sprite_caching_toggled(int, bool);
+  void system_memory_threshold_changed(int);
+  void loading_bar_delay_changed(int);
+  void caching_threshold_changed(int);
 
   // audio
   void favorite_device_changed(QString);

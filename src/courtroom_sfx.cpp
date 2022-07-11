@@ -1,6 +1,7 @@
 #include "courtroom.h"
 
 #include "aoapplication.h"
+#include "aosfxplayer.h"
 #include "commondefs.h"
 #include "file_functions.h"
 
@@ -8,6 +9,7 @@
 #include <QColor>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QMenu>
 
 #include <optional>
 
@@ -53,7 +55,7 @@ void Courtroom::load_current_character_sfx_list()
 
     const QString l_name = l_sfx_entry.at(l_sfx_entry.size() - 1).trimmed();
     const QString l_file = QString(l_sfx_entry.size() >= 2 ? l_sfx_entry.at(0) : nullptr).trimmed();
-    const bool l_is_found = !ao_app->find_asset_path({ao_app->get_sounds_path(l_file)}, audio_extensions()).isEmpty();
+    const bool l_is_found = !ao_app->find_asset_path({ao_app->get_sfx_noext_path(l_file)}, audio_extensions()).isEmpty();
     m_sfx_list.append(DRSfx(l_name, l_file, l_is_found));
   }
 
@@ -122,10 +124,27 @@ void Courtroom::update_all_sfx_item_color()
     set_sfx_item_color(ui_sfx_list->item(i));
 }
 
-void Courtroom::_p_sfxCurrentItemChanged(QListWidgetItem *p_current_item, QListWidgetItem *p_previous_item)
+void Courtroom::on_sfx_list_current_item_changed(QListWidgetItem *p_current_item, QListWidgetItem *p_previous_item)
 {
   set_sfx_item_color(p_current_item);
   set_sfx_item_color(p_previous_item);
   ui_pre->setChecked(ui_pre->isChecked() || current_sfx().has_value());
   ui_ic_chat_message->setFocus();
+}
+
+void Courtroom::on_sfx_list_context_menu_requested(QPoint p_point)
+{
+  const QPoint l_global_point = ui_sfx_list->viewport()->mapToGlobal(p_point);
+  ui_sfx_menu->popup(l_global_point);
+}
+
+void Courtroom::on_sfx_menu_preview_triggered()
+{
+  m_effects_player->play_effect(current_sfx_file());
+}
+
+void Courtroom::on_sfx_menu_insert_ooc_triggered()
+{
+  ui_ooc_chat_message->insert(current_sfx_file());
+  ui_ooc_chat_message->setFocus();
 }

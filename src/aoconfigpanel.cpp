@@ -5,6 +5,7 @@
 #include "aoguiloader.h"
 #include "datatypes.h"
 #include "drpather.h"
+#include "mk2/spritedynamicreader.h"
 #include "version.h"
 
 #include <QCheckBox>
@@ -21,9 +22,7 @@
 #include <QTabWidget>
 
 AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
-    : QWidget(p_parent),
-      m_config(new AOConfig(this)),
-      m_engine(new DRAudioEngine(this))
+    : QWidget(p_parent), m_config(new AOConfig(this)), m_engine(new DRAudioEngine(this))
 {
   ao_app = p_ao_app;
 
@@ -83,6 +82,27 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_log_orientation_top_down = AO_GUI_WIDGET(QRadioButton, "log_orientation_top_down");
   ui_log_orientation_bottom_up = AO_GUI_WIDGET(QRadioButton, "log_orientation_bottom_up");
   ui_log_is_recording = AO_GUI_WIDGET(QCheckBox, "log_recording");
+
+  // performance
+  ui_cache_backgrounds = AO_GUI_WIDGET(QCheckBox, "cache_backgrounds");
+  ui_cache_characters = AO_GUI_WIDGET(QCheckBox, "cache_characters");
+  ui_cache_effects = AO_GUI_WIDGET(QCheckBox, "cache_effects");
+  ui_cache_shouts = AO_GUI_WIDGET(QCheckBox, "cache_shouts");
+  ui_cache_gui = AO_GUI_WIDGET(QCheckBox, "cache_gui");
+  ui_cache_stickers = AO_GUI_WIDGET(QCheckBox, "cache_stickers");
+  ui_system_memory_threshold = AO_GUI_WIDGET(QSlider, "system_memory_threshold");
+  ui_system_memory_threshold_label = AO_GUI_WIDGET(QLabel, "system_memory_threshold_label");
+  ui_caching_threshold = AO_GUI_WIDGET(QSlider, "caching_threshold");
+  ui_caching_threshold_label = AO_GUI_WIDGET(QLabel, "caching_threshold_label");
+  ui_loading_bar_delay = AO_GUI_WIDGET(QSlider, "loading_bar_delay");
+  ui_loading_bar_delay_label = AO_GUI_WIDGET(QLabel, "loading_bar_delay_label");
+
+  m_cache_checkbox_map.insert(SpriteStage, ui_cache_backgrounds);
+  m_cache_checkbox_map.insert(SpriteCharacter, ui_cache_characters);
+  m_cache_checkbox_map.insert(SpriteEffect, ui_cache_effects);
+  m_cache_checkbox_map.insert(SpriteShout, ui_cache_shouts);
+  m_cache_checkbox_map.insert(SpriteGUI, ui_cache_gui);
+  m_cache_checkbox_map.insert(SpriteSticker, ui_cache_stickers);
 
   // audio
   ui_device = AO_GUI_WIDGET(QComboBox, "device");
@@ -302,6 +322,28 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_discord_presence->setChecked(m_config->discord_presence());
   ui_discord_hide_server->setChecked(m_config->discord_hide_server());
   ui_discord_hide_character->setChecked(m_config->discord_hide_character());
+
+  // performance
+  connect(m_config, SIGNAL(sprite_caching_toggled(int, bool)), this, SLOT(set_sprite_caching_toggled(int, bool)));
+  connect(this, SIGNAL(emit_sprite_caching_toggled(int, bool)), m_config, SLOT(set_sprite_caching(int, bool)));
+  for (auto it = m_cache_checkbox_map.cbegin(); it != m_cache_checkbox_map.cend(); ++it)
+  {
+    QCheckBox *l_checkbox = it.value();
+    connect(l_checkbox, SIGNAL(toggled(bool)), this, SLOT(handle_sprite_caching_toggled(bool)));
+    l_checkbox->setChecked(m_config->sprite_caching_enabled(it.key()));
+  }
+
+  connect(m_config, SIGNAL(system_memory_threshold_changed(int)), this, SLOT(set_system_memory_threshold(int)));
+  connect(ui_system_memory_threshold, SIGNAL(valueChanged(int)), m_config, SLOT(set_system_memory_threshold(int)));
+  set_system_memory_threshold(m_config->system_memory_threshold());
+
+  connect(m_config, SIGNAL(loading_bar_delay_changed(int)), this, SLOT(set_loading_bar_delay(int)));
+  connect(ui_loading_bar_delay, SIGNAL(valueChanged(int)), m_config, SLOT(set_loading_bar_delay(int)));
+  set_loading_bar_delay(m_config->loading_bar_delay());
+
+  connect(m_config, SIGNAL(caching_threshold_changed(int)), this, SLOT(set_caching_threshold(int)));
+  connect(ui_caching_threshold, SIGNAL(valueChanged(int)), m_config, SLOT(set_caching_threshold(int)));
+  set_caching_threshold(m_config->caching_threshold());
 
   // audio
   update_audio_device_list();
@@ -594,6 +636,43 @@ void AOConfigPanel::on_video_value_changed(int p_num)
 void AOConfigPanel::on_blip_value_changed(int p_num)
 {
   ui_blip_value->setText(QString::number(p_num) + "%");
+}
+
+void AOConfigPanel::set_sprite_caching_toggled(int p_category, bool p_enabled)
+{
+  QCheckBox *l_checkbox = m_cache_checkbox_map[SpriteCategory(p_category)];
+  l_checkbox->setChecked(p_enabled);
+}
+
+void AOConfigPanel::handle_sprite_caching_toggled(bool p_enabled)
+{
+  QObject *l_sender = sender();
+  for (auto it = m_cache_checkbox_map.cbegin(); it != m_cache_checkbox_map.cend(); ++it)
+  {
+    if (l_sender == it.value())
+    {
+      emit emit_sprite_caching_toggled(it.key(), p_enabled);
+      break;
+    }
+  }
+}
+
+void AOConfigPanel::set_system_memory_threshold(int p_percent)
+{
+  ui_system_memory_threshold->setValue(p_percent);
+  ui_system_memory_threshold_label->setText(QString::number(p_percent) + "%");
+}
+
+void AOConfigPanel::set_loading_bar_delay(int p_number)
+{
+  ui_loading_bar_delay->setValue(p_number);
+  ui_loading_bar_delay_label->setText(QString::number(p_number) + "ms");
+}
+
+void AOConfigPanel::set_caching_threshold(int p_number)
+{
+  ui_caching_threshold->setValue(p_number);
+  ui_caching_threshold_label->setText(QString::number(p_number) + "%");
 }
 
 void AOConfigPanel::username_editing_finished()
