@@ -187,6 +187,7 @@ signals:
 
   void connecting_to_server();
   void connected_to_server();
+  void closed_connection_to_server();
   void disconnected_from_server();
 
 private:

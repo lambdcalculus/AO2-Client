@@ -138,7 +138,11 @@ void AOApplication::destruct_courtroom()
   }
 
   // gracefully close our connection to the current server
-  m_server_socket->disconnect_from_server();
+  if (m_server_socket->is_connected())
+  {
+    m_server_socket->disconnect_from_server();
+    emit closed_connection_to_server();
+  }
 }
 
 DRDiscord *AOApplication::get_discord() const

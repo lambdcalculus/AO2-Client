@@ -60,6 +60,7 @@ private:
     NotConnectedState,
     ConnectingState,
     ConnectedState,
+    LostConnectionState,
   };
   ConnectionState m_connection_state;
 
@@ -124,6 +125,7 @@ private slots:
 
   void _p_on_connecting_to_server();
   void _p_on_connected_to_server();
+  void _p_on_closed_connection_to_server();
   void _p_on_disconnected_from_server();
 
   void _p_update_description();

@@ -80,6 +80,7 @@ Lobby::Lobby(AOApplication *p_ao_app)
 
   connect(ao_app, SIGNAL(connecting_to_server()), this, SLOT(_p_on_connecting_to_server()));
   connect(ao_app, SIGNAL(connected_to_server()), this, SLOT(_p_on_connected_to_server()));
+  connect(ao_app, SIGNAL(closed_connection_to_server()), this, SLOT(_p_on_closed_connection_to_server()));
   connect(ao_app, SIGNAL(disconnected_from_server()), this, SLOT(_p_on_disconnected_from_server()));
 
   connect(ui_public_server_filter, SIGNAL(clicked()), this, SLOT(toggle_public_server_filter()));
@@ -577,9 +578,14 @@ void Lobby::_p_on_connected_to_server()
   set_connection_state(ConnectedState);
 }
 
-void Lobby::_p_on_disconnected_from_server()
+void Lobby::_p_on_closed_connection_to_server()
 {
   set_connection_state(NotConnectedState);
+}
+
+void Lobby::_p_on_disconnected_from_server()
+{
+  set_connection_state(LostConnectionState);
 }
 
 void Lobby::_p_update_description()
@@ -589,15 +595,19 @@ void Lobby::_p_update_description()
     const QString l_format = QMap<ConnectionState, QString>{
         {
             NotConnectedState,
-            tr("Failed to connect to server (%1)"),
+            tr("Choose a server."),
         },
         {
             ConnectingState,
-            tr("Connecting to server (%1)"),
+            tr("Connecting to server (%1)..."),
         },
         {
             ConnectedState,
-            tr("Connected to server (%1)"),
+            tr("Connected to server (%1)."),
+        },
+        {
+            LostConnectionState,
+            tr("Failed to connect to server (%1)."),
         },
     }[m_connection_state];
     l_message = QString(l_format).arg(m_current_server.name.toHtmlEscaped());
@@ -621,7 +631,7 @@ void Lobby::_p_update_description()
 void Lobby::set_choose_a_server()
 {
   ui_player_count->setText(nullptr);
-  ui_description->setHtml(tr("Choose a server."));
+  _p_update_description();
 }
 
 void Lobby::set_player_count(int players_online, int max_players)
