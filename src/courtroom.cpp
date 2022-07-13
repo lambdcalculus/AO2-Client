@@ -847,17 +847,14 @@ void Courtroom::on_ic_message_return_pressed()
     f_text_color = QString::number(m_text_color);
   packet_contents.append(f_text_color);
 
-  if (ao_app->get_server_client_version_status() == VersionStatus::Ok)
-  {
-    // showname
-    packet_contents.append(ao_config->showname());
+  // showname
+  packet_contents.append(ao_config->showname());
 
-    // video name
-    packet_contents.append(!l_emote.video_file.isEmpty() ? l_emote.video_file : "0");
+  // video name
+  packet_contents.append(!l_emote.video_file.isEmpty() ? l_emote.video_file : "0");
 
-    // hide character
-    packet_contents.append(QString::number(ui_hide_character->isChecked()));
-  }
+  // hide character
+  packet_contents.append(QString::number(ui_hide_character->isChecked()));
 
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 }
