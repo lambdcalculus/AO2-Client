@@ -135,25 +135,19 @@ jobs:
         repository: Skycoder42/QtApng
         path: ./qtapng
         
-    - name: Make QtApng
-      run: |
-        cd ./qtapng
-        qmake
-        
     - name: Build QtApng (Windows)
       if: contains(matrix.os, 'windows')
       run: |
+        cd ./qtapng
+        qmake
         nmake
         
     - name: Build QtApng (Others)
       if: contains(matrix.os, 'windows') != true
       run: |
+        cd ./qtapng
+        qmake
         make -j3
-        
-    - name: Post Build QtApng
-      run: |
-        ls -R
-        cd ..
 
     - name: Make Project
       run: |
