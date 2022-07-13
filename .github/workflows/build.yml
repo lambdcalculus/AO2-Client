@@ -151,6 +151,7 @@ jobs:
         nmake
         
     - name: Post Build QtApng
+      run: |
         ls -R
         cd ..
 
