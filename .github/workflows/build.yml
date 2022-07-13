@@ -1,5 +1,9 @@
 name: Build
 
+env: 
+  # Multi-threaded compilation for MSVC
+  CL: /MP
+
 on: [workflow_dispatch, push]
     
 jobs:
@@ -12,8 +16,6 @@ jobs:
         include:
         - os: windows-latest
           os-caption: Windows
-          arch: win64_mingw81
-          compiler: mingw81_64
         - os: ubuntu-latest
           os-caption: Ubuntu
         - os: macos-latest
@@ -21,7 +23,7 @@ jobs:
 
     runs-on: ${{matrix.os}}
     steps:
-    - name: Checkout
+    - name: Clone Project
       uses: actions/checkout@v2.4.2
 
     - name: Fetch Git Info
@@ -121,38 +123,50 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get upgrade
-        
-    - name: Install Qt (Windows)
-      if: contains(matrix.os, 'windows')
-      uses: jurplel/install-qt-action@v2.14.0
-      with:
-        version: ${{matrix.version}}
-        arch: ${{matrix.arch}}
 
-    - name: Install Qt (Other)
-      if: contains(matrix.os, 'windows') != true
+    - name: Install Qt
       uses: jurplel/install-qt-action@v2.14.0
       with:
         version: ${{matrix.version}}
       
-    - name: Pull QtApng
+    - name: Clone QtApng
       uses: actions/checkout@v2
       with:
         repository: Skycoder42/QtApng
         path: ./qtapng
         
-    - name: Build QtApng
+    - name: Make QtApng
       run: |
         cd ./qtapng
         qmake
+        
+    - name: Build QtApng (Windows)
+      if: contains(matrix.os, 'windows')
+      run: |
         make -j3
+        
+    - name: Build QtApng (Others)
+      if: contains(matrix.os, 'windows') != true
+      run: |
+        nmake
+        
+    - name: Post Build QtApng
         ls -R
         cd ..
 
-    - name: Build
+    - name: Make Project
       run: |
         cp ./data/.qmake.conf .
         qmake
+
+    - name: Build Project (Windows)
+      if: contains(matrix.os, 'windows')
+      run: |
+        nmake
+
+    - name: Build Project (Others)
+      if: contains(matrix.os, 'windows') != true
+      run: |
         make -j3
     
     - name: Packing (Windows)
@@ -162,9 +176,6 @@ jobs:
         windeployqt dro-client.exe --compiler-runtime --no-quick-import --no-translations
         cp ../qtapng/plugins/imageformats/qapng.dll ./imageformats
         cp ../3rd/*.dll .
-        cp ../../Qt/${{matrix.version}}/${{matrix.compiler}}/bin/libgcc_s_seh-1.dll .
-        cp ../../Qt/${{matrix.version}}/${{matrix.compiler}}/bin/libwinpthread-1.dll .
-        cp ../../Qt/${{matrix.version}}/${{matrix.compiler}}/bin/libstdc++-6.dll .
         cd ..
     
     - name: Packing (Ubuntu)
