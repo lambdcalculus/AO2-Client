@@ -143,12 +143,12 @@ jobs:
     - name: Build QtApng (Windows)
       if: contains(matrix.os, 'windows')
       run: |
-        make -j3
+        nmake
         
     - name: Build QtApng (Others)
       if: contains(matrix.os, 'windows') != true
       run: |
-        nmake
+        make -j3
         
     - name: Post Build QtApng
       run: |
