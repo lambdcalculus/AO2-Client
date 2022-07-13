@@ -2155,7 +2155,7 @@ void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 void Courtroom::on_music_list_context_menu_requested(QPoint p_point)
 {
   const QPoint l_global_point = ui_music_list->viewport()->mapToGlobal(p_point);
-  ui_music_menu->popup(mapToGlobal(l_global_point));
+  ui_music_menu->popup(l_global_point);
 }
 
 void Courtroom::on_music_menu_play_triggered()
