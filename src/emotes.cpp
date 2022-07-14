@@ -195,7 +195,7 @@ void Courtroom::select_emote(int p_id)
 
   ui_emote_dropdown->setCurrentIndex(m_emote_id);
 
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_emote_clicked(int p_id)
@@ -257,7 +257,7 @@ void Courtroom::on_emote_left_clicked()
 
   refresh_emote_page();
 
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_emote_right_clicked()
@@ -266,7 +266,7 @@ void Courtroom::on_emote_right_clicked()
 
   refresh_emote_page();
 
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_emote_dropdown_changed(int p_index)

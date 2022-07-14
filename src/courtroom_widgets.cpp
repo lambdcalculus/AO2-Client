@@ -32,6 +32,7 @@
 #include <QComboBox>
 #include <QDebug>
 #include <QFile>
+#include <QHBoxLayout>
 #include <QListWidget>
 #include <QMenu>
 #include <QPropertyAnimation>
@@ -158,21 +159,36 @@ void Courtroom::create_widgets()
   ui_ic_chat_showname->setPlaceholderText("Showname");
   ui_ic_chat_showname->setText(ao_config->showname());
 
-  ui_ic_chat_message = new QLineEdit(this);
-  ui_ic_chat_message->setFrame(false);
-  ui_ic_chat_message->setPlaceholderText(tr("Say something in-character."));
+  ui_ic_chat_message = new QWidget(this);
 
-  ui_muted = new AOImageDisplay(ui_ic_chat_message, ao_app);
+  ui_ic_chat_message_field = new QLineEdit(ui_ic_chat_message);
+  ui_ic_chat_message_field->setFrame(false);
+  ui_ic_chat_message_field->setPlaceholderText(tr("Say something in-character."));
+  ui_ic_chat_message_field->setMaxLength(255);
+
+  ui_ic_chat_message_counter = new QLabel(ui_ic_chat_message);
+  ui_ic_chat_message_counter->setAlignment(Qt::AlignCenter);
+  ui_ic_chat_message_counter->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+
+  {
+    auto l_layout = new QHBoxLayout(ui_ic_chat_message);
+    l_layout->setContentsMargins(0, 0, l_layout->contentsMargins().right(), 0);
+    l_layout->addWidget(ui_ic_chat_message_field);
+    l_layout->addWidget(ui_ic_chat_message_counter);
+  }
+
+  ui_muted = new AOImageDisplay(ui_ic_chat_message_field, ao_app);
   ui_muted->hide();
-
-  ui_ooc_chat_message = new QLineEdit(this);
-  ui_ooc_chat_message->setFrame(false);
-  ui_ooc_chat_message->setPlaceholderText(tr("Say something out-of-character."));
 
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText("Name");
   ui_ooc_chat_name->setText(ao_config->username());
+
+  ui_ooc_chat_message = new QLineEdit(this);
+  ui_ooc_chat_message->setFrame(false);
+  ui_ooc_chat_message->setPlaceholderText(tr("Say something out-of-character."));
+  ui_ooc_chat_message->setMaxLength(255);
 
   ui_note_area = new AONoteArea(this, ao_app);
   ui_note_area->add_button = new AOButton(ui_note_area, ao_app);
@@ -288,13 +304,14 @@ void Courtroom::connect_widgets()
           SLOT(on_showname_placeholder_changed(QString)));
   connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(on_character_ini_changed()));
   connect(ui_ic_chat_showname, SIGNAL(editingFinished()), this, SLOT(on_ic_showname_editing_finished()));
-  connect(ui_ic_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
+  connect(ui_ic_chat_message_field, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
+  connect(ui_ic_chat_message_field, SIGNAL(textChanged(QString)), this, SLOT(on_ic_message_text_changed(QString)));
   connect(ui_ic_chatlog->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(on_ic_chatlog_scroll_changed()));
   connect(ui_ic_chatlog_scroll_topdown, SIGNAL(clicked()), this, SLOT(on_ic_chatlog_scroll_topdown_clicked()));
   connect(ui_ic_chatlog_scroll_bottomup, SIGNAL(clicked()), this, SLOT(on_ic_chatlog_scroll_bottomup_clicked()));
   connect(ao_config, SIGNAL(username_changed(QString)), ui_ooc_chat_name, SLOT(setText(QString)));
   connect(ui_ooc_chat_name, SIGNAL(editingFinished()), this, SLOT(on_ooc_name_editing_finished()));
-  connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_return_pressed()));
+  connect(ui_ooc_chat_message, SIGNAL(returnPressed()), this, SLOT(on_ooc_message_return_pressed()));
 
   connect(ui_music_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_music_list_clicked()));
   connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
@@ -677,12 +694,18 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_ic_chat_showname, "ic_chat_name", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ic_chat_showname, "ic_chat_name", COURTROOM_FONTS_INI, ao_app);
   if (!set_stylesheet(ui_ic_chat_showname, "[IC NAME LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
+  {
     ui_ic_chat_showname->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
+  }
 
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message", COURTROOM_DESIGN_INI, ao_app);
-  set_text_alignment(ui_ic_chat_message, "ao2_ic_chat_message", COURTROOM_FONTS_INI, ao_app);
+  set_text_alignment(ui_ic_chat_message_field, "ao2_ic_chat_message", COURTROOM_FONTS_INI, ao_app);
   if (!set_stylesheet(ui_ic_chat_message, "[IC LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
-    ui_ic_chat_message->setStyleSheet("QLineEdit{background-color: rgba(100, 100, 100, 255);}");
+  {
+    ui_ic_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
+  }
+  ui_ic_chat_message_field->setStyleSheet(ui_ic_chat_message->styleSheet());
+  ui_ic_chat_message_counter->setStyleSheet(ui_ic_chat_message->styleSheet());
 
   set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", COURTROOM_DESIGN_INI, ao_app);
 
@@ -705,18 +728,22 @@ void Courtroom::set_widgets()
   ui_vp_chatbox->set_theme_image("chatmed.png");
   ui_vp_chatbox->hide();
 
-  ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
+  ui_muted->resize(ui_ic_chat_message_field->width(), ui_ic_chat_message_field->height());
   ui_muted->set_theme_image("muted.png");
-
-  set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_DESIGN_INI, ao_app);
-  set_text_alignment(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_FONTS_INI, ao_app);
-  if (!set_stylesheet(ui_ooc_chat_message, "[OOC LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
-    ui_ooc_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_FONTS_INI, ao_app);
   if (!set_stylesheet(ui_ooc_chat_name, "[OOC NAME LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
+  {
     ui_ooc_chat_name->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
+  }
+
+  set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_DESIGN_INI, ao_app);
+  set_text_alignment(ui_ooc_chat_message, "ooc_chat_message", COURTROOM_FONTS_INI, ao_app);
+  if (!set_stylesheet(ui_ooc_chat_message, "[OOC LINE]", COURTROOM_STYLESHEETS_CSS, ao_app))
+  {
+    ui_ooc_chat_message->setStyleSheet("background-color: rgba(100, 100, 100, 255);");
+  }
 
   set_size_and_pos(ui_sfx_search, "sfx_search", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_sfx_search, "sfx_search", COURTROOM_FONTS_INI, ao_app);

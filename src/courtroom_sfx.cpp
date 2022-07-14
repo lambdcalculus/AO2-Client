@@ -129,7 +129,7 @@ void Courtroom::on_sfx_list_current_item_changed(QListWidgetItem *p_current_item
   set_sfx_item_color(p_current_item);
   set_sfx_item_color(p_previous_item);
   ui_pre->setChecked(ui_pre->isChecked() || current_sfx().has_value());
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_sfx_list_context_menu_requested(QPoint p_point)

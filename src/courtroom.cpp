@@ -32,6 +32,7 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QCursor>
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
@@ -44,6 +45,7 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QTimer>
+#include <QToolTip>
 #include <QVBoxLayout>
 
 const int Courtroom::DEFAULT_WIDTH = 714;
@@ -306,7 +308,7 @@ void Courtroom::enter_courtroom(int p_cid)
 
   if (l_changed_chr_id) update_default_iniswap_item();
 
-  QLineEdit *l_current_field = ui_ic_chat_message;
+  QLineEdit *l_current_field = ui_ic_chat_message_field;
   if (ui_ooc_chat_message->hasFocus()) l_current_field = ui_ooc_chat_message;
   const int l_current_cursor_pos = l_current_field->cursorPosition();
 
@@ -356,7 +358,7 @@ void Courtroom::enter_courtroom(int p_cid)
   ui_emotes->setHidden(is_spectating());
   ui_emote_dropdown->setDisabled(is_spectating());
   ui_iniswap_dropdown->setDisabled(is_spectating());
-  ui_ic_chat_message->setDisabled(is_spectating());
+  ui_ic_chat_message_field->setDisabled(is_spectating());
 
   // restore line field focus
   l_current_field->setFocus();
@@ -746,7 +748,7 @@ void Courtroom::on_character_ini_changed()
 
 void Courtroom::on_ic_message_return_pressed()
 {
-  if (ui_ic_chat_message->text() == "" || is_client_muted) return;
+  if (ui_ic_chat_message_field->text() == "" || is_client_muted) return;
 
   if ((anim_state < 3 || text_state < 2) && m_shout_state == 0) return;
 
@@ -786,7 +788,7 @@ void Courtroom::on_ic_message_return_pressed()
   else
     packet_contents.append(l_emote.dialog);
 
-  packet_contents.append(ui_ic_chat_message->text());
+  packet_contents.append(ui_ic_chat_message_field->text());
 
   const QString l_side = ao_app->get_char_side(get_character_ini());
   packet_contents.append(l_side);
@@ -859,9 +861,19 @@ void Courtroom::on_ic_message_return_pressed()
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 }
 
+void Courtroom::on_ic_message_text_changed(QString p_text)
+{
+  const int l_length = p_text.length();
+  ui_ic_chat_message_counter->setText(l_length ? QString::number(l_length) : nullptr);
+  if (l_length == 255)
+  {
+    QToolTip::showText(QCursor::pos(), QString(tr("Your message cannot be longer than %1 character(s).")).arg(ui_ic_chat_message_field->maxLength()));
+  }
+}
+
 void Courtroom::handle_acknowledged_ms()
 {
-  ui_ic_chat_message->clear();
+  ui_ic_chat_message_field->clear();
 
   // reset states
   ui_pre->setChecked(ao_config->always_pre_enabled());
@@ -1827,14 +1839,14 @@ void Courtroom::set_muted(bool p_muted, int p_cid)
   else
   {
     ui_muted->hide();
-    ui_ic_chat_message->setFocus();
+    ui_ic_chat_message_field->setFocus();
   }
 
-  ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
+  ui_muted->resize(ui_ic_chat_message_field->width(), ui_ic_chat_message_field->height());
   ui_muted->set_theme_image("muted.png");
 
   is_client_muted = p_muted;
-  ui_ic_chat_message->setEnabled(!p_muted);
+  ui_ic_chat_message_field->setEnabled(!p_muted);
 }
 
 void Courtroom::set_ban(int p_cid)
@@ -1995,7 +2007,7 @@ void Courtroom::on_ooc_name_editing_finished()
   ao_config->set_username(l_text);
 }
 
-void Courtroom::on_ooc_return_pressed()
+void Courtroom::on_ooc_message_return_pressed()
 {
   const QString l_message = ui_ooc_chat_message->text();
 
@@ -2075,7 +2087,7 @@ void Courtroom::on_ooc_return_pressed()
 
 void Courtroom::on_pos_dropdown_changed(int p_index)
 {
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 
   if (p_index < 0 || p_index > 5) return;
 
@@ -2117,14 +2129,14 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 
 void Courtroom::on_area_list_clicked()
 {
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_area_list_double_clicked(QModelIndex p_model)
 {
   const QString l_area_name = ui_area_list->item(p_model.row())->text();
   ao_app->send_server_packet(DRPacket("MC", {l_area_name, QString::number(m_chr_id)}));
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_area_search_edited(QString p_filter)
@@ -2139,14 +2151,14 @@ void Courtroom::on_area_search_edited()
 
 void Courtroom::on_music_list_clicked()
 {
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_music_list_double_clicked(QModelIndex p_model)
 {
   const QString l_song_name = ui_music_list->item(p_model.row())->data(Qt::UserRole).toString();
   send_mc_packet(l_song_name);
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_music_list_context_menu_requested(QPoint p_point)
@@ -2163,7 +2175,7 @@ void Courtroom::on_music_menu_play_triggered()
     const QString l_song = l_item->data(Qt::UserRole).toString();
     send_mc_packet(l_song);
   }
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_music_menu_insert_ooc_triggered()
@@ -2224,7 +2236,7 @@ void Courtroom::on_shout_button_clicked(const bool p_checked)
   }
   m_shout_state = p_checked ? l_id : 0;
 
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_shout_button_toggled(const bool p_checked)
@@ -2273,7 +2285,7 @@ void Courtroom::on_cycle_clicked()
     m_system_player->play(ao_app->get_sfx("cycle"));
 
   set_shouts();
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 /**
@@ -2343,7 +2355,7 @@ void Courtroom::on_effect_button_clicked(const bool p_checked)
   }
 
   m_effect_state = p_checked ? l_id : 0;
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_effect_button_toggled(const bool p_checked)
@@ -2390,7 +2402,7 @@ void Courtroom::on_prosecution_plus_clicked()
 void Courtroom::on_text_color_changed(int p_color)
 {
   m_text_color = p_color;
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 /**
@@ -2428,7 +2440,7 @@ void Courtroom::on_wtce_clicked()
 
   ao_app->send_server_packet(DRPacket("RT", {QString("testimony%1").arg(id)}));
 
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_change_character_clicked()
@@ -2498,7 +2510,7 @@ void Courtroom::on_call_mod_clicked()
   else
     qDebug() << "Did not call mod";
 
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_switch_area_music_clicked()
@@ -2523,23 +2535,23 @@ void Courtroom::on_switch_area_music_clicked()
 
 void Courtroom::on_pre_clicked()
 {
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_flip_clicked()
 {
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_hidden_clicked()
 {
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_config_panel_clicked()
 {
   ao_app->toggle_config_panel();
-  ui_ic_chat_message->setFocus();
+  ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::on_note_button_clicked()
@@ -2557,7 +2569,7 @@ void Courtroom::on_note_button_clicked()
     save_note();
     ui_vp_notepad_image->hide();
     ui_vp_notepad->hide();
-    ui_ic_chat_message->setFocus();
+    ui_ic_chat_message_field->setFocus();
     is_note_shown = false;
   }
 }

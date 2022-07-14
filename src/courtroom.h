@@ -51,6 +51,7 @@ class QMenu;
 class QPropertyAnimation;
 class QScrollArea;
 class QSignalMapper;
+class QLabel;
 
 #include <optional>
 
@@ -433,7 +434,9 @@ private:
   QAction *ui_sfx_menu_insert_ooc = nullptr;
 
   QLineEdit *ui_ic_chat_showname = nullptr;
-  QLineEdit *ui_ic_chat_message = nullptr;
+  QWidget *ui_ic_chat_message = nullptr;
+  QLineEdit *ui_ic_chat_message_field = nullptr;
+  QLabel *ui_ic_chat_message_counter = nullptr;
 
   QLineEdit *ui_ooc_chat_name = nullptr;
   QLineEdit *ui_ooc_chat_message = nullptr;
@@ -600,6 +603,7 @@ private slots:
   void on_character_ini_changed();
   void on_ic_showname_editing_finished();
   void on_ic_message_return_pressed();
+  void on_ic_message_text_changed(QString text);
   void on_chat_config_changed();
 
   void on_ic_chatlog_scroll_changed();
@@ -607,7 +611,7 @@ private slots:
   void on_ic_chatlog_scroll_bottomup_clicked();
 
   void on_ooc_name_editing_finished();
-  void on_ooc_return_pressed();
+  void on_ooc_message_return_pressed();
 
   void on_area_list_clicked();
   void on_area_list_double_clicked(QModelIndex p_model);
