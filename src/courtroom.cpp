@@ -865,7 +865,7 @@ void Courtroom::on_ic_message_text_changed(QString p_text)
 {
   const int l_length = p_text.length();
   const int l_max_length = ui_ic_chat_message_field->maxLength();
-  ui_ic_chat_message_counter->setText(QString::number(l_length));
+  ui_ic_chat_message_counter->setText(QString::number(l_max_length - l_length));
   ui_ic_chat_message_counter->setVisible(l_length >= int(l_max_length * 0.8));
   if (l_length == l_max_length)
   {
