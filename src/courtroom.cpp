@@ -861,12 +861,12 @@ void Courtroom::on_ic_message_return_pressed()
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 }
 
-void Courtroom::on_ic_message_text_changed(QString p_text)
+void Courtroom::handle_ic_message_length()
 {
-  const int l_length = p_text.length();
+  const int l_length = ui_ic_chat_message_field->text().length();
   const int l_max_length = ui_ic_chat_message_field->maxLength();
   ui_ic_chat_message_counter->setText(QString::number(l_max_length - l_length));
-  ui_ic_chat_message_counter->setVisible(l_length >= int(l_max_length * 0.8));
+  ui_ic_chat_message_counter->setVisible(l_length >= int(l_max_length * (ao_config->message_length_threshold() * 0.01)));
   if (l_length == l_max_length)
   {
     QToolTip::showText(QCursor::pos(), QString(tr("Your message cannot be longer than %1 character(s).")).arg(ui_ic_chat_message_field->maxLength()));

@@ -71,6 +71,7 @@ private:
   int chat_tick_interval;
   bool emote_preview;
   bool sticky_sfx;
+  int message_length_threshold;
   int log_max_lines;
   bool log_display_timestamp;
   bool log_display_client_id;
@@ -165,6 +166,7 @@ void AOConfigPrivate::read_file()
   chat_tick_interval = cfg.value("chat_tick_interval", 60).toInt();
   emote_preview = cfg.value("emote_preview", true).toBool();
   sticky_sfx = cfg.value("sticky_sfx", false).toBool();
+  message_length_threshold = cfg.value("message_length_threshold", 70).toInt();
   log_max_lines = cfg.value("chatlog_limit", 100).toInt();
   log_is_topdown = cfg.value("chatlog_scrolldown", true).toBool();
   log_display_timestamp = cfg.value("chatlog_display_timestamp", true).toBool();
@@ -273,6 +275,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("chat_tick_interval", chat_tick_interval);
   cfg.setValue("emote_preview", emote_preview);
   cfg.setValue("sticky_sfx", sticky_sfx);
+  cfg.setValue("message_length_threshold", message_length_threshold);
   cfg.setValue("chatlog_limit", log_max_lines);
   cfg.setValue("chatlog_display_timestamp", log_display_timestamp);
   cfg.setValue("chatlog_display_client_id", log_display_client_id);
@@ -550,6 +553,11 @@ bool AOConfig::emote_preview_enabled() const
 bool AOConfig::sticky_sfx_enabled() const
 {
   return d->sticky_sfx;
+}
+
+int AOConfig::message_length_threshold() const
+{
+  return d->message_length_threshold;
 }
 
 int AOConfig::log_max_lines() const
@@ -901,6 +909,14 @@ void AOConfig::set_sticky_sfx(bool p_enabled)
     return;
   d->sticky_sfx = p_enabled;
   d->invoke_signal("sticky_sfx_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::set_message_length_threshold(int p_number)
+{
+  if (d->message_length_threshold == p_number)
+    return;
+  d->message_length_threshold = p_number;
+  d->invoke_signal("message_length_threshold_changed", Q_ARG(int, p_number));
 }
 
 void AOConfig::set_log_max_lines(int p_number)

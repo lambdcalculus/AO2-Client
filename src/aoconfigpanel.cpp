@@ -71,6 +71,10 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_emote_preview = AO_GUI_WIDGET(QCheckBox, "emote_preview");
   ui_sticky_sfx = AO_GUI_WIDGET(QCheckBox, "sticky_sfx");
 
+  // IC message
+  ui_length_threshold = AO_GUI_WIDGET(QSlider, "length_threshold");
+  ui_length_threshold_label = AO_GUI_WIDGET(QLabel, "length_threshold_label");
+
   // IC Chatlog
   ui_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
   ui_log_display_timestamp = AO_GUI_WIDGET(QCheckBox, "log_display_timestamp");
@@ -244,6 +248,11 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_emote_preview, SIGNAL(toggled(bool)), m_config, SLOT(set_emote_preview(bool)));
   connect(ui_sticky_sfx, SIGNAL(toggled(bool)), m_config, SLOT(set_sticky_sfx(bool)));
 
+  // ic message
+  connect(m_config, SIGNAL(message_length_threshold_changed(int)), ui_length_threshold, SLOT(setValue(int)));
+  connect(ui_length_threshold, SIGNAL(valueChanged(int)), m_config, SLOT(set_message_length_threshold(int)));
+  connect(ui_length_threshold, SIGNAL(valueChanged(int)), this, SLOT(on_length_threshold_value_changed(int)));
+
   // out, log
   connect(ui_log_max_lines, SIGNAL(valueChanged(int)), m_config, SLOT(set_log_max_lines(int)));
   connect(ui_log_display_timestamp, SIGNAL(toggled(bool)), m_config, SLOT(set_log_display_timestamp(bool)));
@@ -298,6 +307,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_chat_tick_interval->setValue(m_config->chat_tick_interval());
   ui_emote_preview->setChecked(m_config->emote_preview_enabled());
   ui_sticky_sfx->setChecked(m_config->sticky_sfx_enabled());
+
+  // ic message
+  ui_length_threshold->setValue(m_config->message_length_threshold());
 
   // log
   ui_log_max_lines->setValue(m_config->log_max_lines());
@@ -636,6 +648,11 @@ void AOConfigPanel::on_video_value_changed(int p_num)
 void AOConfigPanel::on_blip_value_changed(int p_num)
 {
   ui_blip_value->setText(QString::number(p_num) + "%");
+}
+
+void AOConfigPanel::on_length_threshold_value_changed(int p_number)
+{
+  ui_length_threshold_label->setText(QString::number(p_number) + "%");
 }
 
 void AOConfigPanel::set_sprite_caching_toggled(int p_category, bool p_enabled)

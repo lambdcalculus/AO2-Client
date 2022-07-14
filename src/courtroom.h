@@ -603,7 +603,7 @@ private slots:
   void on_character_ini_changed();
   void on_ic_showname_editing_finished();
   void on_ic_message_return_pressed();
-  void on_ic_message_text_changed(QString text);
+  void handle_ic_message_length();
   void on_chat_config_changed();
 
   void on_ic_chatlog_scroll_changed();

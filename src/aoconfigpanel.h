@@ -71,6 +71,8 @@ private slots:
   void on_video_value_changed(int p_num);
   void on_blip_value_changed(int p_num);
 
+  void on_length_threshold_value_changed(int p_number);
+
   // performance
   void set_sprite_caching_toggled(int type, bool enabled);
   void handle_sprite_caching_toggled(bool enabled);
@@ -126,6 +128,10 @@ private:
   QLineEdit *ui_timeofday = nullptr;
   QComboBox *ui_manual_timeofday = nullptr;
   QCheckBox *ui_manual_timeofday_selection = nullptr;
+
+  // messages
+  QSlider *ui_length_threshold = nullptr;
+  QLabel *ui_length_threshold_label = nullptr;
 
   // chatlog
   QSpinBox *ui_log_max_lines = nullptr;

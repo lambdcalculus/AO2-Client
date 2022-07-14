@@ -45,6 +45,7 @@ public:
   int chat_tick_interval() const;
   bool emote_preview_enabled() const;
   bool sticky_sfx_enabled() const;
+  int message_length_threshold() const;
   int log_max_lines() const;
   bool log_display_timestamp_enabled() const;
   bool log_display_client_id_enabled() const;
@@ -109,6 +110,7 @@ public slots:
   void set_chat_tick_interval(int p_number);
   void set_emote_preview(bool p_enabled);
   void set_sticky_sfx(bool p_enabled);
+  void set_message_length_threshold(int percent);
   void set_log_max_lines(int p_number);
   void set_log_display_timestamp(bool p_enabled);
   void set_log_display_client_id(bool p_enabled);
@@ -173,6 +175,9 @@ signals:
   void timeofday_changed(QString);
   void manual_timeofday_changed(QString);
   void manual_timeofday_selection_changed(bool);
+
+  // ic
+  void message_length_threshold_changed(int);
 
   // log
   void log_max_lines_changed(int);

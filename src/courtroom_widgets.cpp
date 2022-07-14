@@ -167,12 +167,13 @@ void Courtroom::create_widgets()
   ui_ic_chat_message_field->setMaxLength(255);
 
   ui_ic_chat_message_counter = new QLabel(ui_ic_chat_message);
-  ui_ic_chat_message_counter->setAlignment(Qt::AlignCenter);
+  ui_ic_chat_message_counter->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
   ui_ic_chat_message_counter->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
   {
     auto l_layout = new QHBoxLayout(ui_ic_chat_message);
-    l_layout->setContentsMargins(0, 0, l_layout->contentsMargins().right(), 0);
+    ui_ic_chat_message_counter->setIndent(l_layout->contentsMargins().right());
+    l_layout->setContentsMargins(0, 0, 0, 0);
     l_layout->addWidget(ui_ic_chat_message_field);
     l_layout->addWidget(ui_ic_chat_message_counter);
   }
@@ -305,7 +306,8 @@ void Courtroom::connect_widgets()
   connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(on_character_ini_changed()));
   connect(ui_ic_chat_showname, SIGNAL(editingFinished()), this, SLOT(on_ic_showname_editing_finished()));
   connect(ui_ic_chat_message_field, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
-  connect(ui_ic_chat_message_field, SIGNAL(textChanged(QString)), this, SLOT(on_ic_message_text_changed(QString)));
+  connect(ao_config, SIGNAL(message_length_threshold_changed(int)), this, SLOT(handle_ic_message_length()));
+  connect(ui_ic_chat_message_field, SIGNAL(textChanged(QString)), this, SLOT(handle_ic_message_length()));
   connect(ui_ic_chatlog->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(on_ic_chatlog_scroll_changed()));
   connect(ui_ic_chatlog_scroll_topdown, SIGNAL(clicked()), this, SLOT(on_ic_chatlog_scroll_topdown_clicked()));
   connect(ui_ic_chatlog_scroll_bottomup, SIGNAL(clicked()), this, SLOT(on_ic_chatlog_scroll_bottomup_clicked()));
