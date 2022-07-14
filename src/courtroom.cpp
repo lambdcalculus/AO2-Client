@@ -864,8 +864,10 @@ void Courtroom::on_ic_message_return_pressed()
 void Courtroom::on_ic_message_text_changed(QString p_text)
 {
   const int l_length = p_text.length();
-  ui_ic_chat_message_counter->setText(l_length ? QString::number(l_length) : nullptr);
-  if (l_length == 255)
+  const int l_max_length = ui_ic_chat_message_field->maxLength();
+  ui_ic_chat_message_counter->setText(QString::number(l_length));
+  ui_ic_chat_message_counter->setVisible(l_length >= int(l_max_length * 0.8));
+  if (l_length == l_max_length)
   {
     QToolTip::showText(QCursor::pos(), QString(tr("Your message cannot be longer than %1 character(s).")).arg(ui_ic_chat_message_field->maxLength()));
   }
