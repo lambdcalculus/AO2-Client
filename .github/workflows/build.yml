@@ -121,13 +121,13 @@ jobs:
     - name: Update packages (Ubuntu)
       if: contains(matrix.os, 'ubuntu')
       run: |
-        sudo apt update
-        sudo apt upgrade
+        sudo apt-get update
+        sudo apt-get upgrade
         
     - name: Install Qt (Ubuntu)
       if: contains(matrix.os, 'ubuntu')
       run: |
-        sudo apt install qt5-default qttools5-dev
+        sudo apt-get install qt5-default qttools5-dev
         
     - name: Install Qt (Others)
       if: contains(matrix.os, 'ubuntu') != true
