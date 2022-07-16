@@ -1,0 +1,5 @@
+To extract the application properly, double click Danganronpa Online.dmg, drag "Danganronpa Online" to your Danganronpa Online folder, and delete the dmg file.
+
+If you attempt to open the application as is, MacOS will give you a warning indicating it has blocked the launch of the application as the developer could not be verified. If you downloaded these files from the Danganronpa Online discord, you can trust these files. To open Danganronpa Online for the first time, you have to Right Click the application while holding the Control key, then click Open, and on the prompt click Open again.
+
+If at some point you get a prompt indicating application would like to access files in your Desktop folder (or wherever you put your files), accept. Otherwise, the application will be unable to display images or play audio files.

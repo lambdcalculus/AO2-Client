@@ -199,6 +199,7 @@ jobs:
         cp ../3rd/*.dylib "./Danganronpa Online.app/Contents/Frameworks"
         hdiutil create -volname "Danganronpa Online" -srcfolder "./Danganronpa Online.app" -ov -format UDZO "Danganronpa Online.dmg"
         rm -rf "./Danganronpa Online.app"
+        cp ../data/README-MACOS.txt ./README.txt
         cd ..
         
     - name: Create Artifact
