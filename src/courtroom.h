@@ -111,10 +111,6 @@ public:
   // sets text color based on text color in chatmessage
   void set_text_color();
 
-  // disables chat if current cid matches second argument
-  // enables if p_muted is false
-  void set_muted(bool p_muted, int p_cid);
-
   // send a message that the player is banned and quits the server
   void set_ban(int p_cid);
 
@@ -521,8 +517,6 @@ private:
   AOButton *ui_prosecution_minus = nullptr;
 
   QComboBox *ui_text_color = nullptr;
-
-  AOImageDisplay *ui_muted = nullptr;
 
   AOButton *ui_note_button = nullptr;
 

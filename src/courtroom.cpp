@@ -748,7 +748,7 @@ void Courtroom::on_character_ini_changed()
 
 void Courtroom::on_ic_message_return_pressed()
 {
-  if (ui_ic_chat_message_field->text() == "" || is_client_muted) return;
+  if (ui_ic_chat_message_field->text() == "") return;
 
   if ((anim_state < 3 || text_state < 2) && m_shout_state == 0) return;
 
@@ -1830,25 +1830,6 @@ void Courtroom::set_text_color()
   const QString color_code = color_map[color_map.contains(color) ? color : DR::CDefault].code;
   ui_vp_message->setStyleSheet("background-color: rgba(0, 0, 0, 0)");
   m_message_color.setNamedColor(color_code);
-}
-
-void Courtroom::set_muted(bool p_muted, int p_cid)
-{
-  if (p_cid != m_chr_id && p_cid != SpectatorId) return;
-
-  if (p_muted)
-    ui_muted->show();
-  else
-  {
-    ui_muted->hide();
-    ui_ic_chat_message_field->setFocus();
-  }
-
-  ui_muted->resize(ui_ic_chat_message_field->width(), ui_ic_chat_message_field->height());
-  ui_muted->set_theme_image("muted.png");
-
-  is_client_muted = p_muted;
-  ui_ic_chat_message_field->setEnabled(!p_muted);
 }
 
 void Courtroom::set_ban(int p_cid)

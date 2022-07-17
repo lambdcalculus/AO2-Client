@@ -154,17 +154,17 @@ void Courtroom::create_widgets()
   ui_sfx_menu_preview = ui_sfx_menu->addAction(tr("Preview"));
   ui_sfx_menu_insert_ooc = ui_sfx_menu->addAction(tr("Insert to OOC"));
 
-  ui_ic_chat_showname = new QLineEdit(this);
-  ui_ic_chat_showname->setFrame(false);
-  ui_ic_chat_showname->setPlaceholderText("Showname");
-  ui_ic_chat_showname->setText(ao_config->showname());
-
   ui_ic_chat_message = new QWidget(this);
 
   ui_ic_chat_message_field = new QLineEdit(ui_ic_chat_message);
   ui_ic_chat_message_field->setFrame(false);
   ui_ic_chat_message_field->setPlaceholderText(tr("Say something in-character."));
   ui_ic_chat_message_field->setMaxLength(255);
+
+  ui_ooc_chat_message = new QLineEdit(this);
+  ui_ooc_chat_message->setFrame(false);
+  ui_ooc_chat_message->setPlaceholderText(tr("Say something out-of-character."));
+  ui_ooc_chat_message->setMaxLength(255);
 
   ui_ic_chat_message_counter = new QLabel(ui_ic_chat_message);
   ui_ic_chat_message_counter->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -178,18 +178,15 @@ void Courtroom::create_widgets()
     l_layout->addWidget(ui_ic_chat_message_counter);
   }
 
-  ui_muted = new AOImageDisplay(ui_ic_chat_message_field, ao_app);
-  ui_muted->hide();
-
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText("Name");
   ui_ooc_chat_name->setText(ao_config->username());
 
-  ui_ooc_chat_message = new QLineEdit(this);
-  ui_ooc_chat_message->setFrame(false);
-  ui_ooc_chat_message->setPlaceholderText(tr("Say something out-of-character."));
-  ui_ooc_chat_message->setMaxLength(255);
+  ui_ic_chat_showname = new QLineEdit(this);
+  ui_ic_chat_showname->setFrame(false);
+  ui_ic_chat_showname->setPlaceholderText("Showname");
+  ui_ic_chat_showname->setText(ao_config->showname());
 
   ui_note_area = new AONoteArea(this, ao_app);
   ui_note_area->add_button = new AOButton(ui_note_area, ao_app);
@@ -729,9 +726,6 @@ void Courtroom::set_widgets()
 
   ui_vp_chatbox->set_theme_image("chatmed.png");
   ui_vp_chatbox->hide();
-
-  ui_muted->resize(ui_ic_chat_message_field->width(), ui_ic_chat_message_field->height());
-  ui_muted->set_theme_image("muted.png");
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_FONTS_INI, ao_app);
