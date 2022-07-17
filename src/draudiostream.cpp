@@ -91,7 +91,16 @@ void DRAudioStream::set_volume(float p_volume)
   if (!ensure_init())
     return;
   m_volume = p_volume;
-  update_volume();
+  if (m_fade_running)
+  {
+    const Fade l_prev_fade = m_fade;
+    m_fade = NoFade;
+    fade(l_prev_fade, m_fade_duration);
+  }
+  else
+  {
+    update_volume();
+  }
 }
 
 void DRAudioStream::set_repeatable(bool p_enabled)
@@ -127,6 +136,8 @@ void DRAudioStream::fade(Fade p_fade, int p_duration)
     BASS_ChannelSetAttribute(m_hstream, BASS_ATTRIB_VOL, (p_fade == FadeOut ? l_volume : 0));
   }
   m_fade = p_fade;
+  m_fade_duration = p_duration;
+  m_fade_running = true;
   BASS_ChannelSlideAttribute(m_hstream, BASS_ATTRIB_VOL, (p_fade == FadeOut ? 0 : l_volume), qMax(0, p_duration));
 }
 
@@ -174,6 +185,7 @@ void DRAudioStream::fade_sync(HSYNC hsync, DWORD ch, DWORD data, void *userdata)
   Q_UNUSED(data);
 
   DRAudioStream *l_stream = static_cast<DRAudioStream *>(userdata);
+  l_stream->m_fade_running = false;
   emit l_stream->faded(l_stream->m_fade);
 }
 
@@ -258,6 +270,10 @@ void DRAudioStream::update_device(DRAudioDevice p_device)
 
 void DRAudioStream::update_volume()
 {
-  const float l_volume = m_volume * 0.01f;
-  BASS_ChannelSetAttribute(m_hstream, BASS_ATTRIB_VOL, (m_fade == FadeOut ? 0 : l_volume));
+  float l_volume = m_volume * 0.01f;
+  if (m_fade_running)
+  {
+    BASS_ChannelGetAttribute(m_hstream, BASS_ATTRIB_VOL, &l_volume);
+  }
+  BASS_ChannelSetAttribute(m_hstream, BASS_ATTRIB_VOL, l_volume);
 }

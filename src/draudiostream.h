@@ -98,6 +98,8 @@ private:
   QString m_filename;
   DRAudioStream::InitState m_init_state = InitNotDone;
   DRAudioStream::Fade m_fade;
+  int m_fade_duration = 0;
+  bool m_fade_running = false;
   HSTREAM m_hstream = 0;
   float m_volume = 0.0f;
   bool m_repeatable = false;
