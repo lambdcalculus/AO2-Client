@@ -62,7 +62,6 @@ void AOSfxPlayer::play_ambient(QString p_filename)
     }
 
     m_current_ambient->fadeOut(DEFAULT_FADE_DURATION);
-    m_current_ambient.clear();
   }
 
   DRAudioStream::ptr l_ambient;
@@ -79,6 +78,10 @@ void AOSfxPlayer::play_ambient(QString p_filename)
       connect(l_ambient.data(), SIGNAL(finished()), this, SLOT(remove_ambient()));
 
       l_ambient->set_repeatable(true);
+    }
+    else
+    {
+      return;
     }
   }
   else
@@ -132,6 +135,10 @@ void AOSfxPlayer::remove_ambient()
 
   qDebug() << "Removing ambient" << l_stream->get_file_name();
   m_ambient_map.remove(l_stream->get_file_name());
+  if (m_current_ambient == l_stream)
+  {
+    m_current_ambient.reset();
+  }
 }
 
 void AOSfxPlayer::handle_ambient_fade(DRAudioStream::Fade p_fade)
