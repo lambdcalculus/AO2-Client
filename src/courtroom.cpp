@@ -913,7 +913,9 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
     }
   }
 
-  const QString l_message = p_chatmessage[CMMessage];
+  const QString l_message = QString(p_chatmessage[CMMessage])
+                                .remove(QRegularExpression("(?<!\\\\)(\\{|\\})"))
+                                .replace(QRegularExpression("\\\\(\\{|\\})"), "\\1");
   if (l_message_chr_id == SpectatorId)
   {
     append_system_text(l_showname, l_message);
