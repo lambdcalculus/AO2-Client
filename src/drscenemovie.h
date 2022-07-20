@@ -9,7 +9,7 @@ class DRSceneMovie : public DRMovie
   Q_OBJECT
 
 public:
-  explicit DRSceneMovie(QWidget *parent = nullptr);
+  explicit DRSceneMovie(AOApplication *ao_app, QGraphicsItem *parent = nullptr);
   ~DRSceneMovie();
 
   void set_background_image(QString p_background_name, QString p_image);

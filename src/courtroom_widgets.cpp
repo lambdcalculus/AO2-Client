@@ -21,10 +21,10 @@
 #include "drscenemovie.h"
 #include "drshoutmovie.h"
 #include "drsplashmovie.h"
-#include "drstickermovie.h"
+#include "drstickerviewer.h"
 #include "drtextedit.h"
-#include "drvideoscreen.h"
 #include "file_functions.h"
+#include "mk2/graphicsvideoscreen.h"
 #include "theme.h"
 
 #include <QAction>
@@ -67,12 +67,38 @@ void Courtroom::create_widgets()
 
   ui_background = new AOImageDisplay(this, ao_app);
 
-  ui_viewport = new QWidget(this);
-  ui_video = new DRVideoWidget(this);
-  ui_video->hide();
-  ui_vp_background = new DRSceneMovie(ui_viewport);
-  ui_vp_player_char = new DRCharacterMovie(ui_viewport);
-  ui_vp_desk = new DRSceneMovie(ui_viewport);
+  ui_viewport = new DRGraphicsView(this);
+
+  { // populate scene
+    auto *l_scene = ui_viewport->scene();
+
+    ui_vp_background = new DRSceneMovie(ao_app);
+    l_scene->addItem(ui_vp_background);
+
+    ui_vp_player_char = new DRCharacterMovie(ao_app);
+    l_scene->addItem(ui_vp_player_char);
+
+    ui_vp_desk = new DRSceneMovie(ao_app);
+    l_scene->addItem(ui_vp_desk);
+
+    ui_vp_effect = new DREffectMovie(ao_app);
+    l_scene->addItem(ui_vp_effect);
+
+    ui_vp_wtce = new DRSplashMovie(ao_app);
+    l_scene->addItem(ui_vp_wtce);
+
+    ui_vp_objection = new DRShoutMovie(ao_app);
+    l_scene->addItem(ui_vp_objection);
+
+    ui_video = new DRVideoScreen(ao_app);
+    l_scene->addItem(ui_video);
+
+    // move to the corner
+    for (auto i_item : l_scene->items())
+    {
+      i_item->setPos(0, 0);
+    }
+  }
 
   ui_vp_music_display_a = new AOImageDisplay(this, ao_app);
   ui_vp_music_display_b = new AOImageDisplay(this, ao_app);
@@ -85,7 +111,7 @@ void Courtroom::create_widgets()
   music_anim = new QPropertyAnimation(ui_vp_music_name, "geometry", this);
   set_music_text("DANGANRONPA ONLINE");
 
-  ui_vp_clock = new DRStickerMovie(this);
+  ui_vp_clock = new DRStickerViewer(ao_app, this);
 
   ui_vp_chatbox = new AOImageDisplay(this, ao_app);
   ui_vp_showname = new DRTextEdit(ui_vp_chatbox);
@@ -101,12 +127,8 @@ void Courtroom::create_widgets()
 
   ui_vp_showname_image = new AOImageDisplay(this, ao_app);
 
-  ui_vp_effect = new DREffectMovie(this);
-  ui_vp_wtce = new DRSplashMovie(this);
-  ui_vp_objection = new DRShoutMovie(this);
-
-  ui_vp_chat_arrow = new DRStickerMovie(this);
-  ui_vp_loading = new DRStickerMovie(this);
+  ui_vp_chat_arrow = new DRStickerViewer(ao_app, this);
+  ui_vp_loading = new DRStickerViewer(ao_app, this);
   ui_vp_loading->hide();
 
   m_loading_timer = new QTimer(this);
@@ -267,8 +289,6 @@ void Courtroom::create_widgets()
   ui_timers.resize(1);
   ui_timers[0] = new AOTimer(this);
 
-  load_free_blocks(); // Done last so they are guaranteed to be at bottom
-
   construct_char_select();
 }
 
@@ -276,8 +296,6 @@ void Courtroom::connect_widgets()
 {
   connect(m_keepalive_timer, SIGNAL(timeout()), this, SLOT(ping_server()));
 
-  connect(ui_video, SIGNAL(started()), ui_video, SLOT(show()));
-  connect(ui_video, SIGNAL(finished()), ui_video, SLOT(hide()));
   connect(ui_video, SIGNAL(finished()), this, SLOT(video_finished()));
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
@@ -394,10 +412,6 @@ void Courtroom::reset_widget_names()
   widget_names = {
       {"courtroom", this},
       {"viewport", ui_viewport},
-      {"video", ui_video},
-      {"background", ui_vp_background},   //*
-      {"player_char", ui_vp_player_char}, //*
-      {"desk", ui_vp_desk},               //*
       {"music_display_a", ui_vp_music_display_a},
       {"music_display_b", ui_vp_music_display_b},
       {"music_area", ui_vp_music_area},
@@ -408,9 +422,6 @@ void Courtroom::reset_widget_names()
       {"showname", ui_vp_showname},
       {"message", ui_vp_message},
       {"showname_image", ui_vp_showname_image},
-      {"vp_effect", ui_vp_effect},
-      {"vp_wtce", ui_vp_wtce},
-      {"vp_objection", ui_vp_objection},
       {"chat_arrow", ui_vp_chat_arrow},
       {"loading", ui_vp_loading},
       {"ic_chatlog", ui_ic_chatlog},
@@ -502,83 +513,88 @@ void Courtroom::set_widget_names()
 
   // setup table of widgets and names
   insert_widget_names(effect_names, ui_effects);
-  insert_widget_names(free_block_names, ui_free_blocks);
   insert_widget_names(shout_names, ui_shouts);
   insert_widget_names(wtce_names, ui_wtce);
+
+  for (auto *i_block : qAsConst(ui_free_blocks))
+  {
+    widget_names.insert(i_block->objectName(), i_block);
+  }
 
   // timers are special children
   QVector<QString> timer_names;
   for (int i = 0; i < ui_timers.length(); ++i)
+  {
     timer_names.append("timer_" + QString::number(i));
+  }
   insert_widget_names(timer_names, ui_timers);
 }
 
 void Courtroom::set_widget_layers()
 {
-  // File lookup order
-  // 1. In the theme folder (gamemode-timeofday/main/default), look for
+  QStringList l_widget_records;
 
-  QString path = ao_app->find_theme_asset_path(COURTROOM_LAYERS_INI);
-  QFile layer_ini(path);
-  // needed to avoid cyclic parenting
-  QStringList recorded_widgets;
-
-  // Given the purpose of find_theme_asset_path, this step failing would be
-  // weird
-  if (layer_ini.open(QFile::ReadOnly))
+  const QString l_ini_path = ao_app->find_theme_asset_path(COURTROOM_LAYERS_INI);
+  QFile l_layer_ini(l_ini_path);
+  if (l_layer_ini.open(QFile::ReadOnly))
   {
-    QTextStream in(&layer_ini);
+    QTextStream in(&l_layer_ini);
 
-    // current parent's name
-    QString parent_name = "courtroom";
-    // the courtroom is ALWAYS going to be recorded
-    recorded_widgets.append(parent_name);
+    const QString l_default_parent_name = objectName();
 
+    l_widget_records.append(l_default_parent_name);
+
+    QString l_parent_name = l_default_parent_name;
     while (!in.atEnd())
     {
-      QString line = in.readLine().trimmed();
+      QString l_line = in.readLine().trimmed();
 
       // skip if line is empty
-      if (line.isEmpty()) continue;
+      if (l_line.isEmpty())
+      {
+        continue;
+      }
 
       // revert to default parent if we encounter an end scope
-      if (line.startsWith("[\\"))
+      if (l_line.startsWith("[\\"))
       {
-        parent_name = "courtroom";
+        l_parent_name = l_default_parent_name;
       }
       // is this a parent?
-      else if (line.startsWith("["))
+      else if (l_line.startsWith("["))
       {
         // update the current parent
-        parent_name = line.remove(0, 1).chopped(1).trimmed();
+        l_parent_name = l_line.remove(0, 1).chopped(1).trimmed();
       }
       // if this is not a parent, it's a child
       else
       {
         // if the child is already known, skip
-        if (recorded_widgets.contains(line)) continue;
-        // make the child known
-        recorded_widgets.append(line);
+        if (l_widget_records.contains(l_line))
+        {
+          qWarning() << "error: widget already recorded:" << l_line;
+          continue;
+        }
+        l_widget_records.append(l_line);
 
         // attach the children to the parents'
-        QWidget *child = widget_names[line];
-        // if child is null, then it does not exist
-        if (!child) continue;
-
-        QWidget *parent = widget_names[parent_name];
-        // if parent is null, attach main parent
-        if (!parent) parent = widget_names["courtroom"];
+        if (!widget_names.contains(l_line))
+        {
+          qWarning() << "widget does not exist:" << l_line;
+          continue;
+        }
+        QWidget *l_widget = widget_names.value(l_line);
+        QWidget *l_parent = widget_names.value(l_parent_name, this);
 
         // set child to parent
-        bool was_visible = child->isVisible();
-        child->setParent(parent);
-        child->raise();
-
-        // Readjust visibility in case this changed after the widget changed
-        // parent I don't know why, I don't want to know why, I shouldn't have
-        // to wonder why, but for whatever reason these stupid panels aren't
-        // laying out correctly unless we do this terribleness
-        if (child->isVisible() != was_visible) child->setVisible(was_visible);
+        qDebug() << "attaching widget" << l_widget->objectName() << "to parent" << l_parent->objectName();
+        const bool l_visible = l_widget->isVisible();
+        l_widget->setParent(l_parent);
+        if (l_visible)
+        {
+          l_widget->setVisible(l_visible);
+        }
+        l_widget->raise();
       }
     }
   }
@@ -587,11 +603,11 @@ void Courtroom::set_widget_layers()
   // particular, make it visible and raise it in front of all assets. This can
   // help assist a theme designer who accidentally missed config_panel and would
   // have become unable to reload themes had they closed the config panel
-  if (!recorded_widgets.contains("config_panel"))
+  if (!l_widget_records.contains("config_panel"))
   {
     ui_config_panel->setParent(this);
-    ui_config_panel->raise();
     ui_config_panel->setVisible(true);
+    ui_config_panel->raise();
   }
 }
 
@@ -623,19 +639,6 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_viewport, "viewport", COURTROOM_DESIGN_INI, ao_app);
 
-  ui_video->move(ui_viewport->pos());
-  ui_video->resize(ui_viewport->size());
-
-  ui_vp_background->move(0, 0);
-  ui_vp_background->resize(ui_viewport->size());
-
-  ui_vp_player_char->move(0, 0);
-  ui_vp_player_char->resize(ui_viewport->size());
-
-  // the AO2 desk element
-  ui_vp_desk->move(0, 0);
-  ui_vp_desk->resize(ui_viewport->size());
-
   set_size_and_pos(ui_vp_notepad_image, "notepad_image", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_notepad_image->set_theme_image("notepad_image.png");
   ui_vp_notepad_image->hide();
@@ -656,7 +659,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_vp_chat_arrow, "chat_arrow", COURTROOM_DESIGN_INI, ao_app);
   if (!ao_app->find_theme_asset_path("chat_arrow", animated_or_static_extensions()).isEmpty())
   {
-    ui_vp_chat_arrow->play("chat_arrow");
+    ui_vp_chat_arrow->set_theme_image("chat_arrow");
   }
   set_sticker_play_once(ui_vp_chat_arrow, "chat_arrow", COURTROOM_CONFIG_INI, ao_app);
   ui_vp_chat_arrow->hide();
@@ -664,19 +667,9 @@ void Courtroom::set_widgets()
   {
     const bool l_visible = ui_vp_loading->isVisible();
     set_size_and_pos(ui_vp_loading, "loading", COURTROOM_DESIGN_INI, ao_app);
-    ui_vp_loading->play("loading");
+    ui_vp_loading->set_theme_image("loading");
     ui_vp_loading->setVisible(l_visible);
   }
-
-  ui_vp_effect->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_effect->resize(ui_viewport->width(), ui_viewport->height());
-  ui_vp_effect->hide();
-
-  ui_vp_wtce->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_wtce->resize(ui_viewport->width(), ui_viewport->height());
-
-  ui_vp_objection->move(ui_viewport->x(), ui_viewport->y());
-  ui_vp_objection->resize(ui_viewport->width(), ui_viewport->height());
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_ic_chatlog_scroll_topdown, "ic_chatlog_scroll_topdown", COURTROOM_DESIGN_INI, ao_app);
@@ -763,9 +756,6 @@ void Courtroom::set_widgets()
     ui_switch_area_music->setHidden(l_is_area_music_list_separated);
   }
 
-  // char select
-  reconstruct_char_select();
-
   // emotes
   set_size_and_pos(ui_emotes, "emotes", COURTROOM_DESIGN_INI, ao_app);
   construct_emote_page_layout();
@@ -784,8 +774,8 @@ void Courtroom::set_widgets()
       l_emote_preview_size.height = 192;
     }
     ui_emote_preview->resize(l_emote_preview_size.width, l_emote_preview_size.height);
-    ui_emote_preview->set_theme_image("emote_preview.png");
-    ui_emote_preview_character->resize(l_emote_preview_size.width, l_emote_preview_size.height);
+    ui_emote_preview_background->set_theme_image("emote_preview.png");
+    ui_emote_preview_character->set_size(QSizeF(l_emote_preview_size.width, l_emote_preview_size.height));
   }
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown", COURTROOM_DESIGN_INI, ao_app);
@@ -874,11 +864,14 @@ void Courtroom::set_widgets()
   set_judge_wtce();
   reset_wtce_buttons();
 
-  for (int i = 0; i < free_block_names.size(); ++i)
+  for (DRStickerViewer *i_sticker : ui_free_blocks)
   {
-    set_size_and_pos(ui_free_blocks[i], free_block_names[i], COURTROOM_DESIGN_INI, ao_app);
+    const QString l_name = i_sticker->objectName();
+    set_size_and_pos(i_sticker, l_name, COURTROOM_DESIGN_INI, ao_app);
+    i_sticker->set_theme_image(l_name);
+    set_sticker_play_once(i_sticker, l_name, COURTROOM_CONFIG_INI, ao_app);
+    i_sticker->show();
   }
-  set_free_blocks();
 
   // Set the default values for the buttons, then determine if they should be
   // replaced by images
@@ -1006,10 +999,10 @@ void Courtroom::set_widgets()
   ui_char_button_selector->set_theme_image("char_selector.png");
   ui_char_button_selector->hide();
 
+  set_size_and_pos(ui_char_buttons, "char_buttons", COURTROOM_DESIGN_INI, ao_app);
+
   set_size_and_pos(ui_back_to_lobby, "back_to_lobby", COURTROOM_DESIGN_INI, ao_app);
   ui_back_to_lobby->setText("Back to Lobby");
-
-  set_size_and_pos(ui_char_buttons, "char_buttons", COURTROOM_DESIGN_INI, ao_app);
 
   set_size_and_pos(ui_chr_select_left, "char_select_left", COURTROOM_DESIGN_INI, ao_app);
   ui_chr_select_left->set_image("arrow_left.png");
@@ -1146,24 +1139,6 @@ void Courtroom::check_effects()
   }
 }
 
-void Courtroom::check_free_blocks()
-{
-  // Asset lookup order
-  // 1. In the character folder, look for
-  // `free_block_names.at(i)` + extensions in `exts` in order
-  // 2. In the theme folder (gamemode-timeofday/main/default), look for
-  // `free_block_names.at(i)` + extensions in `exts` in order
-  // Only enable buttons where a file was found
-
-  for (int i = 0; i < ui_free_blocks.size(); ++i)
-  {
-    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), free_block_names.at(i))},
-                                           animated_extensions());
-    if (path.isEmpty()) path = ao_app->find_theme_asset_path(free_block_names.at(i), animated_extensions());
-    free_blocks_enabled[i] = (!path.isEmpty());
-  }
-}
-
 void Courtroom::check_shouts()
 {
   // Asset lookup order
@@ -1265,30 +1240,21 @@ void Courtroom::load_free_blocks()
   for (QWidget *widget : qAsConst(ui_free_blocks))
     delete_widget(widget);
 
-  // And create new free block buttons
-  int free_block_number = ao_app->read_theme_ini_int("free_block_number", COURTROOM_CONFIG_INI);
-  free_blocks_enabled.resize(free_block_number);
-  ui_free_blocks.resize(free_block_number);
-
-  for (int i = 0; i < ui_free_blocks.size(); ++i)
+  ui_free_blocks.clear();
+  const int l_block_count = ao_app->read_theme_ini_int("free_block_number", COURTROOM_CONFIG_INI);
+  for (int i = 0; i < l_block_count; ++i)
   {
-    ui_free_blocks[i] = new DRStickerMovie(this);
-    // ui_free_blocks[i]->setProperty("free_block_id", i+1);
-    ui_free_blocks[i]->set_play_once(false);
-    ui_free_blocks[i]->stackUnder(ui_vp_player_char);
-  }
-
-  // And add names
-  free_block_names.clear();
-  for (int i = 0; i < ui_free_blocks.size(); ++i)
-  {
-    QString name = "free_block_" + ao_app->get_spbutton("[FREE BLOCKS]", i + 1).trimmed();
-    if (!name.isEmpty())
+    const QString l_name = ao_app->get_spbutton("[FREE BLOCKS]", i + 1).trimmed();
+    if (l_name.isEmpty())
     {
-      free_block_names.append(name);
-      widget_names[name] = ui_free_blocks[i];
-      ui_free_blocks[i]->setObjectName(name);
+      qWarning() << "error: block index" << i << "has no block name.";
+      continue;
     }
+    const QString l_block_name = "free_block_" + l_name;
+    auto *l_block = new DRStickerViewer(ao_app, this);
+    l_block->setObjectName(l_block_name);
+    ui_free_blocks.append(l_block);
+    widget_names.insert(l_block_name, l_block);
   }
 }
 
@@ -1432,20 +1398,6 @@ void Courtroom::set_judge_wtce()
   {
     for (AOButton *i_wtce : qAsConst(ui_wtce))
       i_wtce->show();
-  }
-}
-
-/**
- * @brief Show all free blocks and restart their animations.
- */
-void Courtroom::set_free_blocks()
-{
-  for (int i = 0; i < ui_free_blocks.size(); i++)
-  {
-    DRStickerMovie *l_block = ui_free_blocks[i];
-    const QString l_block_name = free_block_names[i];
-    l_block->play(l_block_name);
-    set_sticker_play_once(l_block, l_block_name, COURTROOM_CONFIG_INI, ao_app);
   }
 }
 

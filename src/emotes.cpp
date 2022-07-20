@@ -7,6 +7,7 @@
 #include "aoimagedisplay.h"
 #include "commondefs.h"
 #include "drcharactermovie.h"
+#include "drgraphicscene.h"
 #include "theme.h"
 
 #include <QCheckBox>
@@ -22,11 +23,19 @@ void Courtroom::construct_emotes()
   ui_emote_left = new AOButton(this, ao_app);
   ui_emote_right = new AOButton(this, ao_app);
 
-  ui_emote_preview = new AOImageDisplay(nullptr, ao_app);
+  ui_emote_preview = new DRGraphicsView(nullptr);
   ui_emote_preview->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint | Qt::BypassGraphicsProxyWidget);
   ui_emote_preview->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_emote_preview_character = new DRCharacterMovie(ui_emote_preview);
-  ui_emote_preview_character->setAttribute(Qt::WA_TransparentForMouseEvents);
+
+  {
+    auto *l_scene = ui_emote_preview->scene();
+
+    ui_emote_preview_background = new DRThemeMovie(ao_app);
+    l_scene->addItem(ui_emote_preview_background);
+
+    ui_emote_preview_character = new DRCharacterMovie(ao_app);
+    l_scene->addItem(ui_emote_preview_character);
+  }
 
   ui_emote_dropdown = new QComboBox(this);
   ui_pos_dropdown = new QComboBox(this);

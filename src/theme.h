@@ -2,7 +2,7 @@
 
 // src
 class AOApplication;
-class DRStickerMovie;
+class DRStickerViewer;
 class DRTextEdit;
 
 // qt
@@ -16,4 +16,4 @@ void set_font(QWidget *widget, QString identifier, QString ini_file, AOApplicati
 void set_drtextedit_font(DRTextEdit *widget, QString identifier, QString ini_file, AOApplication *ao_app);
 bool set_stylesheet(QWidget *widget, QString identifier, QString ini_file, AOApplication *ao_app);
 void center_widget_to_screen(QWidget *widget);
-void set_sticker_play_once(DRStickerMovie *sticker, QString identifier, QString ini_file, AOApplication *ao_app);
+void set_sticker_play_once(DRStickerViewer *sticker, QString identifier, QString ini_file, AOApplication *ao_app);

@@ -49,8 +49,7 @@ void Courtroom::construct_char_select()
 
 void Courtroom::reconstruct_char_select()
 {
-  while (!ui_char_button_list.isEmpty())
-    delete ui_char_button_list.takeLast();
+  qDeleteAll(ui_char_button_list.begin(), ui_char_button_list.end());
 
   QPoint f_spacing = ao_app->get_button_spacing("char_button_spacing", COURTROOM_DESIGN_INI);
 
@@ -62,26 +61,26 @@ void Courtroom::reconstruct_char_select()
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
 
-  set_size_and_pos(ui_char_buttons, "char_buttons", COURTROOM_DESIGN_INI, ao_app);
-
   char_columns = ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
   char_rows = ((ui_char_buttons->height() - button_height) / (y_spacing + button_height)) + 1;
 
   m_page_max_chr_count = qMax(1, char_columns * char_rows);
+
+  ui_char_button_list.clear();
   for (int n = 0; n < m_page_max_chr_count; ++n)
   {
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
-    AOCharButton *button = new AOCharButton(ui_char_buttons, ao_app, x_pos, y_pos);
-    ui_char_button_list.append(button);
+    AOCharButton *l_button = new AOCharButton(ui_char_buttons, ao_app, x_pos, y_pos);
+    ui_char_button_list.append(l_button);
 
-    connect(button, SIGNAL(clicked()), char_button_mapper, SLOT(map()));
-    char_button_mapper->setMapping(button, n);
+    connect(l_button, SIGNAL(clicked()), char_button_mapper, SLOT(map()));
+    char_button_mapper->setMapping(l_button, n);
 
     // mouse events
-    connect(button, SIGNAL(mouse_entered(AOCharButton *)), this, SLOT(char_mouse_entered(AOCharButton *)));
-    connect(button, SIGNAL(mouse_left()), this, SLOT(char_mouse_left()));
+    connect(l_button, SIGNAL(mouse_entered(AOCharButton *)), this, SLOT(char_mouse_entered(AOCharButton *)));
+    connect(l_button, SIGNAL(mouse_left()), this, SLOT(char_mouse_left()));
 
     ++x_mod_count;
 

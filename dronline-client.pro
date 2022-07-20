@@ -49,6 +49,7 @@ HEADERS += \
   src/drchatlog.h \
   src/drdiscord.h \
   src/dreffectmovie.h \
+  src/drgraphicscene.h \
   src/drmasterclient.h \
   src/drmediatester.h \
   src/drmovie.h \
@@ -59,16 +60,19 @@ HEADERS += \
   src/drserversocket.h \
   src/drshoutmovie.h \
   src/drsplashmovie.h \
-  src/drstickermovie.h \
+  src/drstickerviewer.h \
   src/drtextedit.h \
-  src/drvideoscreen.h \
+  src/drthememovie.h \
   src/file_functions.h \
   src/hardware_functions.h \
   src/lobby.h \
   src/logger.h \
   src/misc_functions.h \
+  src/mk2/graphicsspriteitem.h \
+  src/mk2/graphicsvideoscreen.h \
   src/mk2/spritecachingreader.h \
   src/mk2/spritedynamicreader.h \
+  src/mk2/spriteplayer.h \
   src/mk2/spritereader.h \
   src/mk2/spritereadersynchronizer.h \
   src/mk2/spriteseekingreader.h \
@@ -119,6 +123,7 @@ SOURCES += \
   src/drcharactermovie.cpp \
   src/drchatlog.cpp \
   src/dreffectmovie.cpp \
+  src/drgraphicscene.cpp \
   src/drmasterclient.cpp \
   src/drmediatester.cpp \
   src/drmovie.cpp \
@@ -129,10 +134,10 @@ SOURCES += \
   src/drserversocket.cpp \
   src/drshoutmovie.cpp \
   src/drsplashmovie.cpp \
-  src/drstickermovie.cpp \
+  src/drstickerviewer.cpp \
   src/drtextedit.cpp \
   src/drdiscord.cpp \
-  src/drvideoscreen.cpp \
+  src/drthememovie.cpp \
   src/emotes.cpp \
   src/file_functions.cpp \
   src/hardware_functions.cpp \
@@ -140,8 +145,11 @@ SOURCES += \
   src/logger.cpp \
   src/main.cpp \
   src/misc_functions.cpp \
+  src/mk2/graphicsspriteitem.cpp \
+  src/mk2/graphicsvideoscreen.cpp \
   src/mk2/spritecachingreader.cpp \
   src/mk2/spritedynamicreader.cpp \
+  src/mk2/spriteplayer.cpp \
   src/mk2/spriteseekingreader.cpp \
   src/path_functions.cpp \
   src/server_socket.cpp \

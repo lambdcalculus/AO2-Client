@@ -1,13 +1,13 @@
 #pragma once
 
-#include "mk2/spriteviewer.h"
+#include "mk2/graphicsspriteitem.h"
 
-class DRMovie : public mk2::SpriteViewer
+class DRMovie : public mk2::GraphicsSpriteItem
 {
   Q_OBJECT
 
 public:
-  DRMovie(QWidget *parent = nullptr);
+  DRMovie(QGraphicsItem *parent = nullptr);
   ~DRMovie();
 
   QString file_name();
@@ -22,5 +22,5 @@ private:
   bool m_mirrored;
 
 private slots:
-  void _p_update_visibility();
+  void update_visibility();
 };

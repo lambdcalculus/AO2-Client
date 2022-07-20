@@ -2,7 +2,11 @@
 #define COURTROOM_H
 
 #include "datatypes.h"
+#include "drgraphicscene.h"
 #include "drposition.h"
+#include "drthememovie.h"
+#include "mk2/graphicsvideoscreen.h"
+#include "mk2/spriteplayer.h"
 #include "mk2/spritereadersynchronizer.h"
 
 class AOApplication;
@@ -29,9 +33,8 @@ class DREffectMovie;
 class DRSceneMovie;
 class DRShoutMovie;
 class DRSplashMovie;
-class DRStickerMovie;
+class DRStickerViewer;
 class DRTextEdit;
-class DRVideoWidget;
 
 #include <QMainWindow>
 #include <QMap>
@@ -55,7 +58,7 @@ class QLabel;
 
 #include <optional>
 
-class Courtroom : public QMainWindow
+class Courtroom : public QWidget
 {
   Q_OBJECT
 
@@ -63,7 +66,7 @@ public:
   static const int DEFAULT_WIDTH;
   static const int DEFAULT_HEIGHT;
 
-  explicit Courtroom(AOApplication *p_ao_app);
+  Courtroom(AOApplication *p_ao_app, QWidget *parent = nullptr);
   ~Courtroom();
 
   QVector<char_type> get_character_list();
@@ -153,7 +156,6 @@ public:
 
   void set_judge_wtce();
 
-  void set_free_blocks();
   void set_judge_enabled(bool p_enabled);
 
   // these are for OOC chat
@@ -218,7 +220,6 @@ public:
   void check_shouts();
   void check_effects();
   void check_wtce();
-  void check_free_blocks();
 
   void resume_timer(int timer_id);
   void set_timer_time(int timer_id, int new_time);
@@ -358,8 +359,8 @@ private:
 
   AOImageDisplay *ui_background = nullptr;
 
-  QWidget *ui_viewport = nullptr;
-  DRVideoWidget *ui_video = nullptr;
+  DRGraphicsView *ui_viewport = nullptr;
+  DRVideoScreen *ui_video = nullptr;
   DRSceneMovie *ui_vp_background = nullptr;
   DRCharacterMovie *ui_vp_player_char = nullptr;
   DRSceneMovie *ui_vp_desk = nullptr;
@@ -375,11 +376,11 @@ private:
   DREffectMovie *ui_vp_effect = nullptr;
   DRSplashMovie *ui_vp_wtce = nullptr;
   DRShoutMovie *ui_vp_objection = nullptr;
-  DRStickerMovie *ui_vp_chat_arrow = nullptr;
-  DRStickerMovie *ui_vp_loading = nullptr;
+  DRStickerViewer *ui_vp_chat_arrow = nullptr;
+  DRStickerViewer *ui_vp_loading = nullptr;
 
-  QMap<SpriteCategory, QVector<DRMovie *>> m_mapped_viewer_list;
-  QMap<ViewportSprite, DRMovie *> m_viewport_viewer_map;
+  QMap<SpriteCategory, QVector<mk2::SpritePlayer *>> m_mapped_viewer_list;
+  QMap<ViewportSprite, mk2::SpritePlayer *> m_viewport_viewer_map;
   QMap<ViewportSprite, mk2::SpriteReader::ptr> m_preloader_cache;
   QMap<ViewportSprite, mk2::SpriteReader::ptr> m_reader_cache;
 
@@ -401,7 +402,7 @@ private:
 
   QWidget *ui_vp_music_area = nullptr;
 
-  DRStickerMovie *ui_vp_clock = nullptr;
+  DRStickerViewer *ui_vp_clock = nullptr;
   QVector<AOTimer *> ui_timers;
 
   DRTextEdit *ui_ic_chatlog = nullptr;
@@ -443,8 +444,9 @@ private:
   QVector<AOEmoteButton *> ui_emote_list;
   AOButton *ui_emote_left = nullptr;
   AOButton *ui_emote_right = nullptr;
-  AOImageDisplay *ui_emote_preview = nullptr;
-  DRCharacterMovie *ui_emote_preview_character = nullptr;
+  DRGraphicsView *ui_emote_preview;
+  DRThemeMovie *ui_emote_preview_background;
+  DRCharacterMovie *ui_emote_preview_character;
 
   QComboBox *ui_emote_dropdown = nullptr;
   QComboBox *ui_iniswap_dropdown = nullptr;
@@ -470,7 +472,7 @@ private:
   // holds all the shout buttons objects
   QVector<AOButton *> ui_wtce;
   // holds all the free block objects
-  QVector<DRStickerMovie *> ui_free_blocks;
+  QVector<DRStickerViewer *> ui_free_blocks;
 
   // holds all the names for sound files for the shouts
   QVector<QString> shout_names;
@@ -480,9 +482,6 @@ private:
 
   // holds all the names for sound/anim files for the shouts
   QVector<QString> wtce_names;
-
-  // holds all the names for free blocks
-  QVector<QString> free_block_names;
 
   // holds whether the animation file exists for a determined shout/effect
   QVector<bool> shouts_enabled;

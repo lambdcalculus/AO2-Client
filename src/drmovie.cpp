@@ -1,13 +1,13 @@
 #include "drmovie.h"
 
-DRMovie::DRMovie(QWidget *parent)
-    : SpriteViewer{parent}
+DRMovie::DRMovie(QGraphicsItem *parent)
+    : mk2::GraphicsSpriteItem{parent}
     , m_hide_when_done{false}
     , m_mirrored{false}
 {
-  connect(this, SIGNAL(started()), this, SLOT(show()));
+  connect(this, SIGNAL(started()), this, SLOT(update_visibility()));
   connect(this, SIGNAL(finished()), this, SIGNAL(done()));
-  connect(this, SIGNAL(finished()), this, SLOT(_p_update_visibility()));
+  connect(this, SIGNAL(finished()), this, SLOT(update_visibility()));
 }
 
 DRMovie::~DRMovie()
@@ -28,9 +28,13 @@ void DRMovie::set_mirrored(bool p_on)
   set_mirror(p_on);
 }
 
-void DRMovie::_p_update_visibility()
+void DRMovie::update_visibility()
 {
-  if (m_hide_when_done)
+  if (is_running())
+  {
+    show();
+  }
+  else if (m_hide_when_done)
   {
     hide();
   }

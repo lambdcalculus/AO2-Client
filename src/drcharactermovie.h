@@ -9,7 +9,7 @@ class DRCharacterMovie : public DRMovie
   Q_OBJECT
 
 public:
-  explicit DRCharacterMovie(QWidget *parent = nullptr);
+  explicit DRCharacterMovie(AOApplication *ao_app, QGraphicsItem *parent = nullptr);
   ~DRCharacterMovie();
 
   void play(QString character, QString emote, QString prefix, bool p_use_placeholder, bool play_once);

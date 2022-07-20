@@ -3,10 +3,10 @@
 #include "aoapplication.h"
 #include "file_functions.h"
 
-DRSceneMovie::DRSceneMovie(QWidget *parent)
-    : DRMovie(parent), ao_app(dynamic_cast<AOApplication *>(qApp))
+DRSceneMovie::DRSceneMovie(AOApplication *ao_app, QGraphicsItem *parent)
+    : DRMovie(parent)
+    , ao_app(ao_app)
 {
-  Q_ASSERT(ao_app);
   set_scaling_mode(ScalingMode::DynamicScaling);
 }
 

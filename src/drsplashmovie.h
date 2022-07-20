@@ -1,12 +1,20 @@
 #pragma once
 
-#include "drstickermovie.h"
+#include "drmovie.h"
 
-class DRSplashMovie : public DRStickerMovie
+class AOApplication;
+
+class DRSplashMovie : public DRMovie
 {
   Q_OBJECT
 
 public:
-  explicit DRSplashMovie(QWidget *parent = nullptr);
+  explicit DRSplashMovie(AOApplication *ao_app, QGraphicsItem *parent = nullptr);
   ~DRSplashMovie();
+
+  void play(QString p_file_name, QString p_character);
+  void play(QString p_file_name);
+
+private:
+  AOApplication *ao_app;
 };

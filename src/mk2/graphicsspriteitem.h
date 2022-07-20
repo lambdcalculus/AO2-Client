@@ -17,28 +17,31 @@
 ** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **
 **************************************************************************/
-
 #pragma once
 
 #include "spriteplayer.h"
 #include "spritereader.h"
 
-#include <QLabel>
-#include <QScopedPointer>
+#include <QGraphicsObject>
+#include <QObject>
 
 namespace mk2
 {
-class SpriteViewer : public QLabel
+class GraphicsSpriteItem : public QGraphicsObject
 {
   Q_OBJECT
+
+  Q_PROPERTY(QSizeF size READ get_size WRITE set_size NOTIFY size_changed)
 
 public:
   using ScalingMode = SpritePlayer::ScalingMode;
 
-  SpriteViewer(QWidget *parent = nullptr);
-  ~SpriteViewer();
+  GraphicsSpriteItem(QGraphicsItem *parent = nullptr);
+  ~GraphicsSpriteItem();
 
   SpritePlayer::ScalingMode get_scaling_mode() const;
+
+  QSizeF get_size() const;
 
   QString get_file_name() const;
 
@@ -52,8 +55,14 @@ public:
 
   bool is_running() const;
 
+  QRectF boundingRect() const final;
+
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) final;
+
 public slots:
   void set_scaling_mode(SpritePlayer::ScalingMode scaling_mode);
+
+  void set_size(QSizeF size);
 
   void set_play_once(bool on);
 
@@ -70,6 +79,8 @@ public slots:
   void stop();
 
 signals:
+  void size_changed(QSizeF);
+
   void file_name_changed(QString);
 
   void reader_changed();
@@ -77,13 +88,12 @@ signals:
   void started();
   void finished();
 
-protected:
-  void resizeEvent(QResizeEvent *event) final;
-
 private:
   QScopedPointer<SpritePlayer> m_player;
 
 private slots:
-  void paint_frame();
+  void notify_size();
+
+  void notify_update();
 };
 } // namespace mk2

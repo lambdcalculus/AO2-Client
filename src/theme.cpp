@@ -11,7 +11,7 @@
 // src
 #include "aoapplication.h"
 #include "datatypes.h"
-#include "drstickermovie.h"
+#include "drstickerviewer.h"
 #include "drtextedit.h"
 
 void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
@@ -136,11 +136,11 @@ void center_widget_to_screen(QWidget *p_widget)
   p_widget->move(x, y);
 }
 
-void set_sticker_play_once(DRStickerMovie *p_sticker, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
+void set_sticker_play_once(DRStickerViewer *p_sticker, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
 {
   const bool l_play_once = ao_app->read_theme_ini_bool(p_identifier + "_play_once", p_ini_file);
   p_sticker->set_play_once(l_play_once);
-  if (l_play_once && !p_sticker->is_running())
+  if (!p_sticker->is_running())
   {
     p_sticker->start();
   }
