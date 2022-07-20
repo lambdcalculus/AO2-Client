@@ -585,6 +585,7 @@ void Courtroom::handle_clock(QString time)
     return;
   }
   ui_vp_clock->set_theme_image(clock_filename);
+  ui_vp_clock->start();
   ui_vp_clock->show();
 }
 
