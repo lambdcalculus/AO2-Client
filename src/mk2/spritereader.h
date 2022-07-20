@@ -29,7 +29,7 @@ namespace mk2
 class SpriteFrame
 {
 public:
-  QPixmap image;
+  QImage image;
   int delay = 0;
 
   SpriteFrame();

@@ -421,3 +421,23 @@ void AOApplication::on_courtroom_destroyed()
 {
   ao_config_panel->hide();
 }
+
+bool AOApplication::notify(QObject *receiver, QEvent *event)
+{
+  bool l_done = true;
+
+  try
+  {
+    l_done = QApplication::notify(receiver, event);
+  }
+  catch (const std::exception &e)
+  {
+    qCritical() << "Caught exception:" << e.what();
+  }
+  catch (...)
+  {
+    qFatal("Caught UNKNOWN exception. Cannot recover.");
+  }
+
+  return l_done;
+}

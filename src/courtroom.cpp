@@ -23,9 +23,9 @@
 #include "drscenemovie.h"
 #include "drshoutmovie.h"
 #include "drsplashmovie.h"
-#include "drstickermovie.h"
-#include "drvideoscreen.h"
+#include "drstickerviewer.h"
 #include "file_functions.h"
+#include "mk2/graphicsvideoscreen.h"
 #include "mk2/spritedynamicreader.h"
 #include "mk2/spriteseekingreader.h"
 #include "src/datatypes.h"
@@ -51,8 +51,8 @@
 const int Courtroom::DEFAULT_WIDTH = 714;
 const int Courtroom::DEFAULT_HEIGHT = 668;
 
-Courtroom::Courtroom(AOApplication *p_ao_app)
-    : QMainWindow()
+Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
+    : QWidget(parent)
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -123,15 +123,6 @@ void Courtroom::setup_courtroom()
   map_viewport_readers();
   assign_readers_for_all_viewers();
 
-  // Update widgets first, then check if everything is valid
-  // This will also handle showing the correct shouts, effects and wtce buttons,
-  // and cycling through them if the buttons that are supposed to be displayed
-  // do not exist It will also take care of free blocks
-
-  const bool l_chr_select_visible = ui_char_select_background->isVisible();
-  set_widgets();
-  ui_char_select_background->setVisible(l_chr_select_visible);
-
   m_shout_state = 0;
   m_shout_current = 0;
   check_shouts();
@@ -147,18 +138,29 @@ void Courtroom::setup_courtroom()
   check_wtce();
   if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current])) cycle_wtce(1);
 
-  check_free_blocks();
-
   ui_flip->show();
 
   list_music();
   list_areas();
 
+  // Update widgets first, then check if everything is valid
+  // This will also handle showing the correct shouts, effects and wtce buttons,
+  // and cycling through them if the buttons that are supposed to be displayed
+  // do not exist It will also take care of free blocks
+  const bool l_chr_select_visible = ui_char_select_background->isVisible();
+
   set_widget_names();
+  set_widgets();
   set_widget_layers();
 
+  // char select
+  reconstruct_char_select();
+  ui_char_select_background->setVisible(l_chr_select_visible);
+
   for (AOTimer *i_timer : qAsConst(ui_timers))
+  {
     i_timer->redraw();
+  }
 }
 
 void Courtroom::map_viewers()
@@ -167,42 +169,42 @@ void Courtroom::map_viewers()
 
   // general ui elements
   m_mapped_viewer_list[SpriteGUI].append({
-      ui_vp_chat_arrow,
-      ui_vp_clock,
+      ui_vp_chat_arrow->get_player(),
+      ui_vp_clock->get_player(),
   });
 
   // backgrounds
   m_mapped_viewer_list[SpriteStage].append({
-      ui_vp_background,
-      ui_vp_desk,
+      ui_vp_background->get_player(),
+      ui_vp_desk->get_player(),
   });
 
   // characters
-  m_mapped_viewer_list[SpriteCharacter].append(ui_vp_player_char);
+  m_mapped_viewer_list[SpriteCharacter].append(ui_vp_player_char->get_player());
 
   // shouts
-  m_mapped_viewer_list[SpriteShout].append(ui_vp_objection);
+  m_mapped_viewer_list[SpriteShout].append(ui_vp_objection->get_player());
 
   // effects
-  m_mapped_viewer_list[SpriteEffect].append(ui_vp_effect);
+  m_mapped_viewer_list[SpriteEffect].append(ui_vp_effect->get_player());
 
   // stickers
-  for (DRStickerMovie *i_sticker : qAsConst(ui_free_blocks))
+  for (DRStickerViewer *i_sticker : qAsConst(ui_free_blocks))
   {
-    m_mapped_viewer_list[SpriteSticker].append(i_sticker);
+    m_mapped_viewer_list[SpriteSticker].append(i_sticker->get_player());
   }
 }
 
 void Courtroom::map_viewport_viewers()
 {
   m_viewport_viewer_map.clear();
-  m_viewport_viewer_map.insert(ViewportStageBack, ui_vp_background);
-  m_viewport_viewer_map.insert(ViewportStageFront, ui_vp_desk);
-  m_viewport_viewer_map.insert(ViewportCharacterPre, ui_vp_player_char);
-  m_viewport_viewer_map.insert(ViewportCharacterIdle, ui_vp_player_char);
-  m_viewport_viewer_map.insert(ViewportCharacterTalk, ui_vp_player_char);
-  m_viewport_viewer_map.insert(ViewportEffect, ui_vp_effect);
-  m_viewport_viewer_map.insert(ViewportShout, ui_vp_objection);
+  m_viewport_viewer_map.insert(ViewportStageBack, ui_vp_background->get_player());
+  m_viewport_viewer_map.insert(ViewportStageFront, ui_vp_desk->get_player());
+  m_viewport_viewer_map.insert(ViewportCharacterPre, ui_vp_player_char->get_player());
+  m_viewport_viewer_map.insert(ViewportCharacterIdle, ui_vp_player_char->get_player());
+  m_viewport_viewer_map.insert(ViewportCharacterTalk, ui_vp_player_char->get_player());
+  m_viewport_viewer_map.insert(ViewportEffect, ui_vp_effect->get_player());
+  m_viewport_viewer_map.insert(ViewportShout, ui_vp_objection->get_player());
 }
 
 void Courtroom::map_viewport_readers()
@@ -217,7 +219,7 @@ void Courtroom::map_viewport_readers()
 mk2::SpriteReader::ptr Courtroom::get_viewport_reader(ViewportSprite p_type) const
 {
   Q_ASSERT(m_viewport_viewer_map.contains(p_type));
-  DRMovie *l_viewer = m_viewport_viewer_map[p_type];
+  auto l_viewer = m_viewport_viewer_map[p_type];
   return l_viewer->get_reader();
 }
 
@@ -225,10 +227,9 @@ void Courtroom::assign_readers_for_all_viewers()
 {
   for (auto it = m_mapped_viewer_list.cbegin(); it != m_mapped_viewer_list.cend(); ++it)
   {
-    const SpriteCategory l_cat = it.key();
-
-    const bool l_caching = ao_config->sprite_caching_enabled(l_cat);
-    assign_readers_for_viewers(l_cat, l_caching);
+    const SpriteCategory l_category = it.key();
+    const bool l_caching = ao_config->sprite_caching_enabled(l_category);
+    assign_readers_for_viewers(l_category, l_caching);
   }
 }
 
@@ -254,8 +255,8 @@ void Courtroom::assign_readers_for_viewers(int p_category, bool p_caching)
   const SpriteCategory l_category = SpriteCategory(p_category);
 
   // viewport readers
-  const QVector<DRMovie *> &l_viewer_list = m_mapped_viewer_list[l_category];
-  for (DRMovie *i_viewer : qAsConst(l_viewer_list))
+  const auto &l_viewer_list = m_mapped_viewer_list[l_category];
+  for (auto i_viewer : qAsConst(l_viewer_list))
   {
     mk2::SpriteReader::ptr l_new_reader;
     if (p_caching)
@@ -270,7 +271,7 @@ void Courtroom::assign_readers_for_viewers(int p_category, bool p_caching)
 
     const mk2::SpriteReader::ptr l_prev_reader = i_viewer->get_reader();
     const bool l_is_running = i_viewer->is_running();
-    const bool l_is_visible = i_viewer->isVisible();
+    const bool l_is_visible = i_viewer->property("visible").toBool();
 
     { // update reader cache
       const QList<ViewportSprite> l_type_list = m_reader_cache.keys();
@@ -289,7 +290,7 @@ void Courtroom::assign_readers_for_viewers(int p_category, bool p_caching)
     {
       i_viewer->start();
     }
-    i_viewer->setVisible(l_is_visible);
+    i_viewer->setProperty("visible", l_is_visible);
   }
 }
 
@@ -583,7 +584,7 @@ void Courtroom::handle_clock(QString time)
     qDebug() << "Asset not found; aborting.";
     return;
   }
-  ui_vp_clock->play(clock_filename);
+  ui_vp_clock->set_theme_image(clock_filename);
   ui_vp_clock->show();
 }
 
@@ -997,7 +998,7 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
     const ViewportSprite l_type = it.key();
     const QString &l_file_name = it.value();
 
-    DRMovie *l_viewer = m_viewport_viewer_map.value(l_type);
+    auto l_viewer = m_viewport_viewer_map.value(l_type);
     const QString l_current_file_name = l_viewer->get_file_name();
 
     // reuse readers when available
@@ -1109,6 +1110,16 @@ void Courtroom::handle_chatmessage()
   ui_vp_effect->stop();
   ui_vp_effect->hide();
 
+  /**
+   * WARNING No check prior to changing will cause an unrecoverable
+   * exception. You have been warned!
+   *
+   * Qt Version: <= 5.15
+   */
+  if (!ui_video->isVisible())
+  {
+    ui_video->show();
+  }
   ui_video->play_character_video(m_chatmessage[CMChrName], m_chatmessage[CMVideoName]);
 }
 
@@ -1134,6 +1145,17 @@ QString Courtroom::get_effect_name(int effect_index)
 
 void Courtroom::video_finished()
 {
+  /**
+   * WARNING No check prior to changing will cause an unrecoverable
+   * exception. You have been warned!
+   *
+   * Qt Version: <= 5.15
+   */
+  if (ui_video->isVisible())
+  {
+    ui_video->hide();
+  }
+
   const QString l_character = m_chatmessage[CMChrName];
   const int l_shout_index = m_chatmessage[CMShoutModifier].toInt();
 
@@ -1293,7 +1315,7 @@ void Courtroom::handle_chatmessage_3()
       if (!l_effect_name.isEmpty()) // check to prevent crashing
       {
         QStringList offset = ao_app->get_effect_offset(f_char, l_effect_index);
-        ui_vp_effect->move(ui_viewport->x() + offset.at(0).toInt(), ui_viewport->y() + offset.at(1).toInt());
+        ui_vp_effect->setPos(ui_viewport->x() + offset.at(0).toInt(), ui_viewport->y() + offset.at(1).toInt());
 
         QString s_eff = effect_names.at(l_effect_index - 1);
         QStringList f_eff = ao_app->get_effect(l_effect_index);
@@ -2571,7 +2593,7 @@ void Courtroom::ping_server()
 
 void Courtroom::changeEvent(QEvent *event)
 {
-  QMainWindow::changeEvent(event);
+  QWidget::changeEvent(event);
   if (event->type() == QEvent::WindowStateChange)
   {
     m_is_maximized = windowState().testFlag(Qt::WindowMaximized);
@@ -2581,7 +2603,7 @@ void Courtroom::changeEvent(QEvent *event)
 
 void Courtroom::closeEvent(QCloseEvent *event)
 {
-  QMainWindow::closeEvent(event);
+  QWidget::closeEvent(event);
   Q_EMIT closing();
 }
 

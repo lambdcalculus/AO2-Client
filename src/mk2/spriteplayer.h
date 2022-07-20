@@ -20,25 +20,39 @@
 
 #pragma once
 
-#include "spriteplayer.h"
 #include "spritereader.h"
 
-#include <QLabel>
-#include <QScopedPointer>
+#include <QObject>
+#include <QSharedPointer>
+#include <QTimer>
+
+#include <QElapsedTimer>
 
 namespace mk2
 {
-class SpriteViewer : public QLabel
+class SpritePlayer : public QObject
 {
   Q_OBJECT
 
 public:
-  using ScalingMode = SpritePlayer::ScalingMode;
+  enum ScalingMode
+  {
+    NoScaling,
+    WidthScaling,
+    HeightScaling,
+    StretchScaling,
+    DynamicScaling,
+  };
+  Q_ENUM(ScalingMode)
 
-  SpriteViewer(QWidget *parent = nullptr);
-  ~SpriteViewer();
+  SpritePlayer(QObject *parent = nullptr);
+  ~SpritePlayer();
+
+  QImage get_current_frame() const;
 
   SpritePlayer::ScalingMode get_scaling_mode() const;
+
+  QSize get_size() const;
 
   QString get_file_name() const;
 
@@ -46,18 +60,18 @@ public:
 
   SpriteReader::ptr get_reader() const;
 
-  SpritePlayer *get_player() const;
-
   bool is_valid() const;
 
   bool is_running() const;
 
 public slots:
-  void set_scaling_mode(SpritePlayer::ScalingMode scaling_mode);
-
   void set_play_once(bool on);
 
   void set_mirror(bool on);
+
+  void set_scaling_mode(SpritePlayer::ScalingMode scaling_mode);
+
+  void set_size(QSize size);
 
   void set_file_name(QString file_name);
 
@@ -70,6 +84,10 @@ public slots:
   void stop();
 
 signals:
+  void current_frame_changed();
+
+  void size_changed(QSize);
+
   void file_name_changed(QString);
 
   void reader_changed();
@@ -77,13 +95,27 @@ signals:
   void started();
   void finished();
 
-protected:
-  void resizeEvent(QResizeEvent *event) final;
-
 private:
-  QScopedPointer<SpritePlayer> m_player;
+  SpriteReader::ptr m_reader;
+  SpriteFrame m_current_frame;
+  QImage m_scaled_current_frame;
+  SpritePlayer::ScalingMode m_scaling_mode;
+  SpritePlayer::ScalingMode m_resolved_scaling_mode;
+  Qt::TransformationMode m_transform;
+  QSize m_size;
+  bool m_running;
+  bool m_mirror;
+  bool m_play_once;
+  int m_frame_count;
+  int m_frame_number;
+  QElapsedTimer m_elapsed_timer;
+  QTimer m_frame_timer;
+  QTimer m_repaint_timer;
+
+  void resolve_scaling_mode();
 
 private slots:
-  void paint_frame();
+  void fetch_next_frame();
+  void scale_current_frame();
 };
 } // namespace mk2

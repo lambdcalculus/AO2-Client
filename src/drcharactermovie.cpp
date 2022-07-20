@@ -5,8 +5,9 @@
 
 #include <QDebug>
 
-DRCharacterMovie::DRCharacterMovie(QWidget *parent)
-    : DRMovie(parent), ao_app(dynamic_cast<AOApplication *>(qApp))
+DRCharacterMovie::DRCharacterMovie(AOApplication *ao_app, QGraphicsItem *parent)
+    : DRMovie(parent)
+    , ao_app(ao_app)
 {
   Q_ASSERT(ao_app);
   set_scaling_mode(ScalingMode::HeightScaling);

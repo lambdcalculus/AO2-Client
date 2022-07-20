@@ -69,7 +69,7 @@ mk2::SpriteFrame SpriteSeekingReader::get_frame(int p_number)
     m_reader.read(&l_image);
     m_current_frame.delay = m_reader.nextImageDelay();
   }
-  m_current_frame.image = QPixmap::fromImage(l_image);
+  m_current_frame.image = l_image;
 
   return m_current_frame;
 }

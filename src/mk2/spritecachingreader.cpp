@@ -143,7 +143,7 @@ void SpriteCachingReader::_p_preload(QByteArray p_raw_data)
       SpriteFrame l_frame;
       QImage l_image_buffer = l_image_buffer_list.takeFirst();
       l_reader.read(&l_image_buffer);
-      l_frame.image = QPixmap::fromImage(l_image_buffer);
+      l_frame.image = l_image_buffer;
       l_frame.delay = l_reader.nextImageDelay();
       {
         QMutexLocker locker(&m_lock);
