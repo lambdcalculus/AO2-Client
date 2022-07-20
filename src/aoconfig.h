@@ -80,6 +80,7 @@ public:
 
   // io
 public slots:
+  void load_file();
   void save_file();
 
   // setters

@@ -29,7 +29,7 @@ public:
 
   // setters
 public slots:
-  void read_file();
+  void load_file();
   void save_file();
 
 private:
@@ -115,18 +115,13 @@ AOConfigPrivate::AOConfigPrivate()
   connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), this,
           SLOT(on_application_state_changed(Qt::ApplicationState)));
 
-  read_file();
+  load_file();
 }
 
 AOConfigPrivate::~AOConfigPrivate()
-{
-  if (autosave)
-  {
-    save_file();
-  }
-}
+{}
 
-void AOConfigPrivate::read_file()
+void AOConfigPrivate::load_file()
 {
   autosave = cfg.value("autosave", true).toBool();
 
@@ -692,6 +687,11 @@ int AOConfig::blip_rate() const
 bool AOConfig::blank_blips_enabled() const
 {
   return d->blank_blips;
+}
+
+void AOConfig::load_file()
+{
+  d->load_file();
 }
 
 void AOConfig::save_file()
