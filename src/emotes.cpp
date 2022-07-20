@@ -227,7 +227,9 @@ void Courtroom::show_emote_tooltip(int p_id, QPoint p_global_pos)
 
   QScreen *screen = QApplication::screenAt(p_global_pos);
   if (screen == nullptr)
+  {
     return;
+  }
   QRect l_screen_geometry = screen->geometry();
 
   // position below cursor
@@ -235,10 +237,14 @@ void Courtroom::show_emote_tooltip(int p_id, QPoint p_global_pos)
   QPoint l_final_global_pos(p_global_pos.x(), p_global_pos.y() + l_vertical_spacing);
 
   if (l_screen_geometry.width() < ui_emote_preview->width() + l_final_global_pos.x())
+  {
     l_final_global_pos.setX(p_global_pos.x() - ui_emote_preview->width());
+  }
 
   if (l_screen_geometry.height() < ui_emote_preview->height() + l_final_global_pos.y())
+  {
     l_final_global_pos.setY(p_global_pos.y() - ui_emote_preview->height() - l_vertical_spacing);
+  }
 
   ui_emote_preview->move(l_final_global_pos);
   ui_emote_preview->show();

@@ -19,6 +19,7 @@
 **************************************************************************/
 #include "graphicsspriteitem.h"
 
+#include <QGraphicsScene>
 #include <QPainter>
 
 #include <functional>
@@ -29,7 +30,7 @@ GraphicsSpriteItem::GraphicsSpriteItem(QGraphicsItem *parent)
     : QGraphicsObject(parent)
     , m_player(new SpritePlayer)
 {
-  connect(m_player.get(), SIGNAL(finished()), this, SLOT(notify_size()));
+  connect(m_player.get(), SIGNAL(size_changed(QSize)), this, SLOT(notify_size()));
   connect(m_player.get(), SIGNAL(current_frame_changed()), this, SLOT(notify_update()));
   connect(m_player.get(), SIGNAL(file_name_changed(QString)), this, SIGNAL(file_name_changed(QString)));
   connect(m_player.get(), SIGNAL(reader_changed()), this, SIGNAL(reader_changed()));
@@ -146,7 +147,16 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
   {
     painter->save();
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-    painter->drawImage(0, 0, m_player->get_current_frame());
+
+    // calculate center position
+    QPointF l_horizontal_center;
+    if (auto *l_scene = scene())
+    {
+      const QPointF l_center = l_scene->sceneRect().center() - m_player->get_scaled_bounding_rect().center();
+      l_horizontal_center.setX(l_center.x());
+    }
+
+    painter->drawImage(l_horizontal_center, m_player->get_current_frame());
     painter->restore();
   }
 }

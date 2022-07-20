@@ -56,6 +56,11 @@ QImage SpritePlayer::get_current_frame() const
   return m_scaled_current_frame;
 }
 
+QRectF SpritePlayer::get_scaled_bounding_rect() const
+{
+  return m_scaled_current_frame.rect();
+}
+
 QString SpritePlayer::get_file_name() const
 {
   return m_reader->get_file_name();

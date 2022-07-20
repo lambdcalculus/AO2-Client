@@ -32,4 +32,7 @@ public:
 
 protected:
   void resizeEvent(QResizeEvent *event) final;
+
+private:
+  QGraphicsScene *m_scene;
 };

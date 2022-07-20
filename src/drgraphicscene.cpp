@@ -27,6 +27,7 @@
 
 DRGraphicsView::DRGraphicsView(QWidget *parent)
     : QGraphicsView(parent)
+    , m_scene(new QGraphicsScene(this))
 {
   setInteractive(false);
 
@@ -36,7 +37,7 @@ DRGraphicsView::DRGraphicsView(QWidget *parent)
   setFrameShape(QFrame::NoFrame);
   setFrameStyle(0);
 
-  setScene(new QGraphicsScene(this));
+  setScene(m_scene);
 
   setBackgroundBrush(Qt::black);
 }
@@ -55,5 +56,6 @@ void DRGraphicsView::resizeEvent(QResizeEvent *event)
       l_object->setProperty("size", event->size());
     }
   }
+  m_scene->setSceneRect(rect());
   setSceneRect(rect());
 }

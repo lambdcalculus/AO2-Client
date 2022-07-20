@@ -50,6 +50,8 @@ public:
 
   QImage get_current_frame() const;
 
+  QRectF get_scaled_bounding_rect() const;
+
   SpritePlayer::ScalingMode get_scaling_mode() const;
 
   QSize get_size() const;
