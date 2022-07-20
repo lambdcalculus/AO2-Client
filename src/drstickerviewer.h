@@ -12,7 +12,7 @@ public:
   explicit DRStickerViewer(AOApplication *ao_app, QWidget *parent = nullptr);
   ~DRStickerViewer();
 
-  void set_hide_when_done(bool on);
+  void set_hide_when_done(bool enabled);
 
   void set_theme_image(QString p_file_name, QString p_character);
 

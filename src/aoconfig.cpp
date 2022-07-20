@@ -871,12 +871,12 @@ void AOConfig::set_manual_timeofday_selection_enabled(bool p_enabled)
   d->invoke_signal("manual_timeofday_selection_changed", Q_ARG(bool, p_enabled));
 }
 
-void AOConfig::set_searchable_iniswap(bool p_on)
+void AOConfig::set_searchable_iniswap(bool p_enabled)
 {
-  if (d->searchable_iniswap == p_on)
+  if (d->searchable_iniswap == p_enabled)
     return;
-  d->searchable_iniswap = p_on;
-  d->invoke_signal("searchable_iniswap_changed", Q_ARG(bool, p_on));
+  d->searchable_iniswap = p_enabled;
+  d->invoke_signal("searchable_iniswap_changed", Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_always_pre(bool p_enabled)
@@ -1018,12 +1018,12 @@ void AOConfig::set_system_memory_threshold(int p_percent)
   d->invoke_signal("system_memory_threshold_changed", Q_ARG(int, p_percent));
 }
 
-void AOConfig::set_sprite_caching(int p_type, bool p_on)
+void AOConfig::set_sprite_caching(int p_type, bool p_enabled)
 {
-  if (d->sprite_caching[p_type] == p_on)
+  if (d->sprite_caching[p_type] == p_enabled)
     return;
-  d->sprite_caching[p_type] = p_on;
-  d->invoke_signal("sprite_caching_toggled", Q_ARG(int, p_type), Q_ARG(bool, p_on));
+  d->sprite_caching[p_type] = p_enabled;
+  d->invoke_signal("sprite_caching_toggled", Q_ARG(int, p_type), Q_ARG(bool, p_enabled));
 }
 
 void AOConfig::set_loading_bar_delay(int p_delay)

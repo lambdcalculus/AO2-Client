@@ -106,14 +106,14 @@ void SpritePlayer::set_device(QIODevice *p_device)
   }
 }
 
-void SpritePlayer::set_play_once(bool p_on)
+void SpritePlayer::set_play_once(bool p_enabled)
 {
-  m_play_once = p_on;
+  m_play_once = p_enabled;
 }
 
-void SpritePlayer::set_mirror(bool p_on)
+void SpritePlayer::set_mirror(bool p_enabled)
 {
-  m_mirror = p_on;
+  m_mirror = p_enabled;
 }
 
 void SpritePlayer::set_scaling_mode(ScalingMode scaling_mode)

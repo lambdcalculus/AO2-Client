@@ -52,14 +52,14 @@ void SpriteViewer::set_scaling_mode(SpritePlayer::ScalingMode p_scaling_mode)
   m_player->set_scaling_mode(p_scaling_mode);
 }
 
-void SpriteViewer::set_play_once(bool p_on)
+void SpriteViewer::set_play_once(bool p_enabled)
 {
-  m_player->set_play_once(p_on);
+  m_player->set_play_once(p_enabled);
 }
 
-void SpriteViewer::set_mirror(bool p_on)
+void SpriteViewer::set_mirror(bool p_enabled)
 {
-  m_player->set_mirror(p_on);
+  m_player->set_mirror(p_enabled);
 }
 
 QString SpriteViewer::get_file_name() const

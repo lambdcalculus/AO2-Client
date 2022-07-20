@@ -11,8 +11,8 @@ public:
   ~DRMovie();
 
   QString file_name();
-  void set_hide_on_done(bool on);
-  void set_mirrored(bool on);
+  void set_hide_on_done(bool enabled);
+  void set_mirrored(bool enabled);
 
 signals:
   void done();

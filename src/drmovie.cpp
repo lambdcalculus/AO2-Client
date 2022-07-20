@@ -18,14 +18,14 @@ QString DRMovie::file_name()
   return get_file_name();
 }
 
-void DRMovie::set_hide_on_done(bool p_on)
+void DRMovie::set_hide_on_done(bool p_enabled)
 {
-  m_hide_when_done = p_on;
+  m_hide_when_done = p_enabled;
 }
 
-void DRMovie::set_mirrored(bool p_on)
+void DRMovie::set_mirrored(bool p_enabled)
 {
-  set_mirror(p_on);
+  set_mirror(p_enabled);
 }
 
 void DRMovie::update_visibility()

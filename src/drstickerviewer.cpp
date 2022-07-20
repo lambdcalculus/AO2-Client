@@ -14,13 +14,13 @@ DRStickerViewer::DRStickerViewer(AOApplication *ao_app, QWidget *parent)
 DRStickerViewer::~DRStickerViewer()
 {}
 
-void DRStickerViewer::set_hide_when_done(bool p_on)
+void DRStickerViewer::set_hide_when_done(bool p_enabled)
 {
-  if (m_hide_when_done == p_on)
+  if (m_hide_when_done == p_enabled)
   {
     return;
   }
-  m_hide_when_done = p_on;
+  m_hide_when_done = p_enabled;
   if (!is_running())
   {
     maybe_hide();

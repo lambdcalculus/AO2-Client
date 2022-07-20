@@ -64,9 +64,9 @@ public slots:
 
   void set_size(QSizeF size);
 
-  void set_play_once(bool on);
+  void set_play_once(bool enabled);
 
-  void set_mirror(bool on);
+  void set_mirror(bool enabled);
 
   void set_file_name(QString file_name);
 

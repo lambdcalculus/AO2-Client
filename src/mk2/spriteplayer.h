@@ -67,9 +67,9 @@ public:
   bool is_running() const;
 
 public slots:
-  void set_play_once(bool on);
+  void set_play_once(bool enabled);
 
-  void set_mirror(bool on);
+  void set_mirror(bool enabled);
 
   void set_scaling_mode(SpritePlayer::ScalingMode scaling_mode);
 

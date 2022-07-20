@@ -124,7 +124,7 @@ public slots:
   void set_suppress_background_audio(bool p_enabled);
 
   // performance
-  void set_sprite_caching(int type, bool on);
+  void set_sprite_caching(int type, bool enabled);
   void set_system_memory_threshold(int percent);
   void set_loading_bar_delay(int delay);
   void set_caching_threshold(int percent);

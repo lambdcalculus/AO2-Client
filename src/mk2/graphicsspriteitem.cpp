@@ -61,14 +61,14 @@ void GraphicsSpriteItem::set_size(QSizeF p_size)
   m_player->set_size(p_size.toSize());
 }
 
-void GraphicsSpriteItem::set_play_once(bool p_on)
+void GraphicsSpriteItem::set_play_once(bool p_enabled)
 {
-  m_player->set_play_once(p_on);
+  m_player->set_play_once(p_enabled);
 }
 
-void GraphicsSpriteItem::set_mirror(bool p_on)
+void GraphicsSpriteItem::set_mirror(bool p_enabled)
 {
-  m_player->set_mirror(p_on);
+  m_player->set_mirror(p_enabled);
 }
 
 QString GraphicsSpriteItem::get_file_name() const
