@@ -21,8 +21,11 @@ AOApplication::AOApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
   ao_config = new AOConfig(this);
+
   ao_config_panel = new AOConfigPanel(this);
+
   dr_discord = new DRDiscord(this);
+
   m_server_socket = new DRServerSocket(this);
 
   connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(handle_theme_modification()));
@@ -198,45 +201,66 @@ QString AOApplication::get_sfx_noext_path(QString p_file)
 
 QString AOApplication::get_character_sprite_path(QString p_character, QString p_emote, QString p_prefix, bool p_use_placeholder)
 {
-  QStringList l_filelist;
-  QStringList l_blacklist;
-  for (const QString &i_character_name : get_char_include_tree(p_character))
+  bool l_valid = true;
+  const QStringList l_blacklist{
+      "char_icon.png",
+      "showname.png",
+      "emotions",
+  };
+  for (const QString &i_black : l_blacklist)
   {
-    l_blacklist.append({
-        get_character_path(i_character_name, "char_icon.png"),
-        get_character_path(i_character_name, "showname.png"),
-        get_character_path(i_character_name, "emotions"),
-    });
-
-    if (!p_prefix.isEmpty())
+    if (p_emote.startsWith(i_black, Qt::CaseInsensitive))
     {
-      l_filelist.append(get_character_path(i_character_name, QString("%1%2").arg(p_prefix, p_emote)));
-    }
-    l_filelist.append(get_character_path(i_character_name, p_emote));
-  }
-
-  QString l_file = find_asset_path(l_filelist, animated_or_static_extensions());
-  if (l_file.isEmpty() && p_use_placeholder)
-  {
-    l_file = find_theme_asset_path("placeholder", animated_extensions());
-  }
-
-  for (const QString &i_blackened : qAsConst(l_blacklist))
-  {
-    if (l_file == i_blackened)
-    {
-      l_file.clear();
+      l_valid = false;
       break;
     }
   }
 
-  if (l_file.isEmpty())
+  QStringList l_file_name_list;
+  for (const QString &i_extension : animated_or_static_extensions())
+  {
+    if (!p_prefix.isEmpty())
+    {
+      l_file_name_list.append(p_prefix + p_emote + i_extension);
+    }
+    l_file_name_list.append(p_emote + i_extension);
+  }
+
+  QString l_file_path;
+  if (l_valid)
+  {
+    QStringList l_file_path_list;
+    for (const QString &i_chr_name : get_char_include_tree(p_character))
+    {
+      for (const QString &i_file_name : qAsConst(l_file_name_list))
+      {
+        l_file_path_list.append(get_character_path(i_chr_name, i_file_name));
+      }
+    }
+
+    for (const QString &i_file_path : qAsConst(l_file_path_list))
+    {
+      const QString l_resolved_file_path = find_asset_path(i_file_path);
+      if (!l_resolved_file_path.isEmpty())
+      {
+        l_file_path = l_resolved_file_path;
+        break;
+      }
+    }
+  }
+
+  if (l_file_path.isEmpty() && p_use_placeholder)
+  {
+    l_file_path = find_theme_asset_path("placeholder", animated_extensions());
+  }
+
+  if (l_file_path.isEmpty())
   {
     qWarning() << "error: character animation not found"
                << "character:" << p_character << "emote:" << p_emote << "prefix:" << p_prefix;
   }
 
-  return l_file;
+  return l_file_path;
 }
 
 QString AOApplication::get_character_sprite_pre_path(QString character, QString emote)

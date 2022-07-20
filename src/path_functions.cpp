@@ -33,14 +33,12 @@ QString AOApplication::get_base_file_path(QString p_file)
 
 QString AOApplication::get_character_folder_path(QString p_chr)
 {
-  QString r_path = get_base_path() + "characters/" + p_chr;
-  return get_case_sensitive_path(r_path);
+  return get_base_path() + "characters/" + p_chr;
 }
 
 QString AOApplication::get_character_path(QString p_chr, QString p_file)
 {
-  const QString r_path = get_character_folder_path(p_chr) + "/" + p_file;
-  return get_case_sensitive_path(r_path);
+  return get_character_folder_path(p_chr) + "/" + p_file;
 }
 
 QString AOApplication::get_music_folder_path()
@@ -130,34 +128,17 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
 }
 #else
 {
-  // First, check to see if the file already exists as it is.
-  if (QFile(p_file).exists())
+  if (QFile::exists(p_file) || p_file.isEmpty())
+  {
     return p_file;
+  }
 
-  QFileInfo file(p_file);
-
-  QString file_basename = file.fileName();
-  QString file_parent_dir = get_case_sensitive_path(file.absolutePath());
-
-  // Second, does it exist in the new parent directory?
-  if (QFile(file_parent_dir + "/" + file_basename).exists())
-    return file_parent_dir + "/" + file_basename;
-
-  // In case it doesn't, look through the entries in the parent directory, and
-  // try and find it based on a case-insensitive regex search.
-  // Note also the fixed string search here. This is so that, for example, music
-  // files with parentheses don't get interpreted as grouping for a regex
-  // search.
-  QRegExp file_rx = QRegExp(file_basename, Qt::CaseInsensitive, QRegExp::FixedString);
-  QStringList files = QDir(file_parent_dir).entryList();
-
-  int result = files.indexOf(file_rx);
-
-  if (result != -1)
-    return file_parent_dir + "/" + files.at(result);
-
-  // If nothing is found, we let the caller handle that case.
-  return file_parent_dir + "/" + file_basename;
+  QFileInfo l_file_info(p_file);
+  const QDir l_dir(l_file_info.absolutePath());
+  const QString l_file_name = l_file_info.fileName();
+  const QStringList l_file_list = l_dir.entryList();
+  const QRegExp l_regex = QRegExp(l_file_name, Qt::CaseInsensitive, QRegExp::FixedString);
+  return l_file_list.value(l_file_list.indexOf(l_regex), l_file_name);
 }
 #endif
 
@@ -178,23 +159,17 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
  */
 QString AOApplication::find_asset_path(QStringList p_file_list, QStringList p_extension_list)
 {
-  for (QString &i_root : p_file_list)
+  for (const QString &i_file : qAsConst(p_file_list))
   {
-    // We can assume that possible_exts will only be populated with hardcoded strings.
-    // Therefore, the only place where sanitize_path could catch something bad is in the root.
-    // So, check that now, so we don't need to check later.
-    if (!is_safe_path(i_root))
-      continue;
+    const QDir l_dir(get_case_sensitive_path(QFileInfo(i_file).absolutePath()));
 
-    // Check if parent folder actually exists. If it does not, none of the following files would exist
-    if (!dir_exists(QFileInfo(i_root).absolutePath()))
-      continue;
-
-    for (QString &i_ext : p_extension_list)
+    for (const QString &i_extension : qAsConst(p_extension_list))
     {
-      QString full_path = get_case_sensitive_path(i_root + i_ext);
-      if (file_exists(full_path))
-        return full_path;
+      const QString l_file_path = get_case_sensitive_path(l_dir.filePath(i_file + i_extension));
+      if (file_exists(l_file_path))
+      {
+        return l_file_path;
+      }
     }
   }
 

@@ -1,9 +1,13 @@
 #include "aoapplication.h"
+#include "aoconfig.h"
 #include "drmediatester.h"
 #include "lobby.h"
 #include "logger.h"
 
 #include <QDebug>
+
+#include "drcharactermovie.h"
+#include "drscenemovie.h"
 
 int main(int argc, char *argv[])
 {
@@ -42,15 +46,27 @@ int main(int argc, char *argv[])
   }
 
   AOApplication app(argc, argv);
-  DRMediaTester tester;
 
-  app.load_fonts();
-  app.construct_lobby();
-  app.get_lobby()->show();
+  int l_exit_code = 0;
+  {
+    AOConfig l_config;
+    l_config.load_file();
 
-  const int code = app.exec();
+    DRMediaTester tester;
 
-  logger::shutdown();
+    app.load_fonts();
+    app.construct_lobby();
+    app.get_lobby()->show();
 
-  return code;
+    l_exit_code = app.exec();
+
+    logger::shutdown();
+
+    if (l_config.autosave())
+    {
+      l_config.save_file();
+    }
+  }
+
+  return l_exit_code;
 }
