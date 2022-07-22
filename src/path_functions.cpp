@@ -58,50 +58,9 @@ QString AOApplication::get_background_path(QString p_identifier)
   return get_base_path() + "background/" + p_identifier;
 }
 
-QStringList AOApplication::get_available_background_identifier_list()
+QString AOApplication::get_background_dir_path(QString p_identifier)
 {
-  QStringList l_bg_list;
-
-  if (is_courtroom_constructed)
-  {
-    const DRAreaBackground l_area_bg = m_courtroom->get_background();
-
-    const QMap<QString, QString> &l_bg_map = l_area_bg.background_tod_map;
-    if (ao_config->is_manual_timeofday_selection_enabled())
-    {
-      const QString l_manual_tod = ao_config->manual_timeofday();
-      if (!l_manual_tod.isEmpty() && l_bg_map.contains(l_manual_tod))
-        l_bg_list.append(l_bg_map.value(l_manual_tod));
-    }
-
-    const QString l_tod = ao_config->timeofday();
-    if (!l_tod.isEmpty() && l_bg_map.contains(l_tod))
-      l_bg_list.append(l_bg_map.value(l_tod));
-
-    if (!l_area_bg.background.isEmpty())
-      l_bg_list.append(l_area_bg.background);
-  }
-
-  return l_bg_list;
-}
-
-QString AOApplication::get_current_background()
-{
-  QString l_background_name;
-
-  if (is_courtroom_constructed)
-  {
-    const QStringList l_background_name_list = get_available_background_identifier_list();
-    for (const QString &i_background_name : l_background_name_list)
-    {
-      if (!dir_exists(get_case_sensitive_path(get_background_path(i_background_name))))
-        continue;
-      l_background_name = i_background_name;
-      break;
-    }
-  }
-
-  return l_background_name;
+  return get_case_sensitive_path(get_background_path(p_identifier));
 }
 
 /**

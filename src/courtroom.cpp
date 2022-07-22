@@ -409,11 +409,21 @@ void Courtroom::play_ambient()
   m_effects_player->play_ambient(l_filepath);
 }
 
+QString Courtroom::get_current_background() const
+{
+  QString l_tod = ao_config->timeofday();
+  if (ao_config->is_manual_timeofday_selection_enabled())
+  {
+    l_tod = ao_config->manual_timeofday();
+  }
+
+  return m_background.background_tod_map.value(l_tod, m_background.background);
+}
+
 void Courtroom::update_background_scene()
 {
   const QString l_prev_background_name = m_background_name;
-  // TOD background is resolved in the method below
-  m_background_name = ao_app->get_current_background();
+  m_background_name = get_current_background();
 
   if (l_prev_background_name.isEmpty() || l_prev_background_name != m_background_name)
   {
@@ -2472,6 +2482,7 @@ void Courtroom::load_theme()
   }
 
   setup_courtroom();
+  update_background_scene();
 }
 
 void Courtroom::load_character()

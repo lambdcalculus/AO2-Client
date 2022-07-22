@@ -102,6 +102,8 @@ public:
   void set_ambient(QString ambient_sfx);
   void play_ambient();
 
+  QString get_current_background() const;
+
   // updates background based on the position given from the chatmessage; will reset preloading if active
   void update_background_scene();
 
