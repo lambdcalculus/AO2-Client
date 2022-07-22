@@ -1,6 +1,7 @@
 #include "aolineedit.h"
 
-AOLineEdit::AOLineEdit(QWidget *parent) : QLineEdit(parent)
+AOLineEdit::AOLineEdit(QWidget *parent)
+    : QLineEdit(parent)
 {
   setReadOnly(true);
   setFrame(false);

@@ -36,21 +36,56 @@ class DRChatRecord
 {
 public:
   DRChatRecord(QString p_name, QString p_message)
-      : name(p_name), message(p_message) {}
+      : name(p_name)
+      , message(p_message)
+  {}
 
-  QDateTime get_timestamp() const { return timestamp; }
-  QString get_name() const { return name; }
-  QString get_message() const { return message; }
-  int get_client_id() const { return client_id; }
-  bool is_self() const { return self; }
-  bool is_system() const { return system; }
-  bool is_music() const { return music; }
+  QDateTime get_timestamp() const
+  {
+    return timestamp;
+  }
+  QString get_name() const
+  {
+    return name;
+  }
+  QString get_message() const
+  {
+    return message;
+  }
+  int get_client_id() const
+  {
+    return client_id;
+  }
+  bool is_self() const
+  {
+    return self;
+  }
+  bool is_system() const
+  {
+    return system;
+  }
+  bool is_music() const
+  {
+    return music;
+  }
 
   // set
-  void set_client_id(const int p_client_id) { client_id = p_client_id; }
-  void set_self(const bool p_enabled) { self = p_enabled; }
-  void set_system(bool p_enabled) { system = p_enabled; }
-  void set_music(bool p_enabled) { music = p_enabled; }
+  void set_client_id(const int p_client_id)
+  {
+    client_id = p_client_id;
+  }
+  void set_self(const bool p_enabled)
+  {
+    self = p_enabled;
+  }
+  void set_system(bool p_enabled)
+  {
+    system = p_enabled;
+  }
+  void set_music(bool p_enabled)
+  {
+    music = p_enabled;
+  }
 
 private:
   QDateTime timestamp = QDateTime::currentDateTime();
@@ -67,7 +102,9 @@ struct DRSfx
 public:
   DRSfx() = default;
   DRSfx(QString p_name, QString p_file, bool p_is_found = false)
-      : name(p_name.trimmed()), file(p_file.trimmed()), is_found(p_is_found)
+      : name(p_name.trimmed())
+      , file(p_file.trimmed())
+      , is_found(p_is_found)
   {}
 
   QString name;
@@ -234,7 +271,10 @@ struct ColorInfo
 public:
   ColorInfo() = default;
   ColorInfo(QString p_showname, QString p_code)
-      : name(p_showname.toLower()), showname(p_showname), code(p_code) {}
+      : name(p_showname.toLower())
+      , showname(p_showname)
+      , code(p_code)
+  {}
 
   QString name;
   QString showname;

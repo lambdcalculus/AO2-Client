@@ -497,7 +497,8 @@ void Courtroom::insert_widget_name(QString p_widget_name, QWidget *p_widget)
 
 void Courtroom::insert_widget_names(QVector<QString> &p_name_list, QVector<QWidget *> &p_widget_list)
 {
-  if (p_name_list.length() != p_widget_list.length()) qFatal("[WARNING] Length of names and widgets differs!");
+  if (p_name_list.length() != p_widget_list.length())
+    qFatal("[WARNING] Length of names and widgets differs!");
   for (int i = 0; i < p_widget_list.length(); ++i)
     insert_widget_name(p_name_list[i], p_widget_list[i]);
 }
@@ -714,7 +715,8 @@ void Courtroom::set_widgets()
   ui_vp_music_display_b->show();
 
   set_size_and_pos(ui_vp_clock, "clock", COURTROOM_DESIGN_INI, ao_app);
-  if (m_current_clock == -1) ui_vp_clock->hide();
+  if (m_current_clock == -1)
+    ui_vp_clock->hide();
   set_sticker_play_once(ui_vp_clock, "clock", COURTROOM_CONFIG_INI, ao_app);
 
   ui_vp_chatbox->set_theme_image("chatmed.png");
@@ -899,19 +901,24 @@ void Courtroom::set_widgets()
     // set_image first tries the gamemode-timeofday folder, then the theme
     // folder, then falls back to the default theme
     ui_change_character->set_image("changecharacter.png");
-    if (ui_change_character->get_image().isEmpty()) ui_change_character->setText("Change Character");
+    if (ui_change_character->get_image().isEmpty())
+      ui_change_character->setText("Change Character");
 
     ui_call_mod->set_image("callmod.png");
-    if (ui_call_mod->get_image().isEmpty()) ui_call_mod->setText("Call Mod");
+    if (ui_call_mod->get_image().isEmpty())
+      ui_call_mod->setText("Call Mod");
 
     ui_switch_area_music->set_image("switch_area_music.png");
-    if (ui_switch_area_music->get_image().isEmpty()) ui_switch_area_music->setText("A/M");
+    if (ui_switch_area_music->get_image().isEmpty())
+      ui_switch_area_music->setText("A/M");
 
     ui_config_panel->set_image("config_panel.png");
-    if (ui_config_panel->get_image().isEmpty()) ui_config_panel->setText("Config");
+    if (ui_config_panel->get_image().isEmpty())
+      ui_config_panel->setText("Config");
 
     ui_note_button->set_image("notebutton.png");
-    if (ui_note_button->get_image().isEmpty()) ui_note_button->setText("Notes");
+    if (ui_note_button->get_image().isEmpty())
+      ui_note_button->setText("Notes");
   }
 
   // The config panel has a special property. If it is displayed beyond the right or lower limit of the window, it will
@@ -925,7 +932,8 @@ void Courtroom::set_widgets()
     ui_config_panel->move(0, 0);
     // Moreover, if the width or height is invalid, change it to some fixed
     // values
-    if (ui_config_panel->width() <= 0 || ui_config_panel->height() <= 0) ui_config_panel->resize(64, 64);
+    if (ui_config_panel->width() <= 0 || ui_config_panel->height() <= 0)
+      ui_config_panel->resize(64, 64);
   }
 
   set_size_and_pos(ui_pre, "pre", COURTROOM_DESIGN_INI, ao_app);
@@ -1134,7 +1142,8 @@ void Courtroom::check_effects()
   {
     QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), effect_names.at(i))},
                                            animated_extensions());
-    if (path.isEmpty()) path = ao_app->find_theme_asset_path(effect_names.at(i), animated_extensions());
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(effect_names.at(i), animated_extensions());
     effects_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1153,7 +1162,8 @@ void Courtroom::check_shouts()
     QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), shout_names.at(i))},
                                            animated_extensions());
 
-    if (path.isEmpty()) path = ao_app->find_theme_asset_path(shout_names.at(i), animated_extensions());
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(shout_names.at(i), animated_extensions());
 
     shouts_enabled[i] = (!path.isEmpty());
   }
@@ -1172,7 +1182,8 @@ void Courtroom::check_wtce()
   {
     QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), wtce_names.at(i))},
                                            animated_extensions());
-    if (path.isEmpty()) path = ao_app->find_theme_asset_path(wtce_names.at(i), animated_extensions());
+    if (path.isEmpty())
+      path = ao_app->find_theme_asset_path(wtce_names.at(i), animated_extensions());
     wtce_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1185,7 +1196,8 @@ void Courtroom::delete_widget(QWidget *p_widget)
   // transfer the children to our grandparent since our parent is about to be deleted
   QWidget *grand_parent = p_widget->parentWidget();
   // if we don't have a grand parent, attach ourselves to courtroom
-  if (!grand_parent) grand_parent = this;
+  if (!grand_parent)
+    grand_parent = this;
 
   // set new parent
   for (QWidget *child : p_widget->findChildren<QWidget *>(nullptr, Qt::FindDirectChildrenOnly))
@@ -1340,7 +1352,8 @@ void Courtroom::set_shouts()
 {
   for (auto &shout : ui_shouts)
     shout->hide();
-  if (ui_shouts.size() > 0) ui_shouts[m_shout_current]->show(); // check to prevent crashing
+  if (ui_shouts.size() > 0)
+    ui_shouts[m_shout_current]->show(); // check to prevent crashing
 }
 
 /**
@@ -1353,7 +1366,8 @@ void Courtroom::set_effects()
     effect->hide();
 
   // check to prevent crashing
-  if (ui_effects.size() > 0) ui_effects[m_effect_current]->show();
+  if (ui_effects.size() > 0)
+    ui_effects[m_effect_current]->show();
 }
 
 void Courtroom::set_judge_enabled(bool p_enabled)
@@ -1387,7 +1401,8 @@ void Courtroom::set_judge_wtce()
   ui_wtce_down->setVisible(is_judge && is_single_wtce);
 
   // prevent going ahead if we have no wtce
-  if (!is_judge || ui_wtce.length() == 0) return;
+  if (!is_judge || ui_wtce.length() == 0)
+    return;
 
   // set visibility based off parameter
   if (is_single_wtce == true)

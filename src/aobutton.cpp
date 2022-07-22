@@ -6,7 +6,8 @@
 
 #include <QDebug>
 
-AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app) : QPushButton(parent)
+AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)
+    : QPushButton(parent)
 {
   ao_app = p_ao_app;
 }

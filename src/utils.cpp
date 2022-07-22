@@ -13,7 +13,8 @@ static QString lookupKey(const QStringList &p_key_list, const QString &p_target_
   return p_target_key;
 }
 
-QSettingsKeyFetcher::QSettingsKeyFetcher(QSettings &settings) : m_settings(settings)
+QSettingsKeyFetcher::QSettingsKeyFetcher(QSettings &settings)
+    : m_settings(settings)
 {}
 
 QString QSettingsKeyFetcher::lookup_group(QString p_name)

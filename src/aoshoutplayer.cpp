@@ -4,7 +4,8 @@
 #include "draudioengine.h"
 #include "file_functions.h"
 
-AOShoutPlayer::AOShoutPlayer(AOApplication *p_ao_app, QObject *p_parent) : AOObject(p_ao_app, p_parent)
+AOShoutPlayer::AOShoutPlayer(AOApplication *p_ao_app, QObject *p_parent)
+    : AOObject(p_ao_app, p_parent)
 {}
 
 void AOShoutPlayer::play(QString p_chr, QString p_shout)

@@ -134,30 +134,30 @@ void DRVideoScreen::check_status(QMediaPlayer::MediaStatus p_status)
   {
     switch (p_status)
     {
-      case QMediaPlayer::InvalidMedia:
-        m_scanned = true;
-        qWarning() << "error: media file is invalid:" << m_file_name;
+    case QMediaPlayer::InvalidMedia:
+      m_scanned = true;
+      qWarning() << "error: media file is invalid:" << m_file_name;
+      finish_playback();
+      break;
+
+    case QMediaPlayer::NoMedia:
+      m_scanned = true;
+      finish_playback();
+
+    case QMediaPlayer::LoadedMedia:
+      m_scanned = true;
+      if (m_video_available)
+      {
+        start_playback();
+      }
+      else
+      {
         finish_playback();
-        break;
+      }
+      break;
 
-      case QMediaPlayer::NoMedia:
-        m_scanned = true;
-        finish_playback();
-
-      case QMediaPlayer::LoadedMedia:
-        m_scanned = true;
-        if (m_video_available)
-        {
-          start_playback();
-        }
-        else
-        {
-          finish_playback();
-        }
-        break;
-
-      default:
-        break;
+    default:
+      break;
     }
   }
 }
@@ -166,19 +166,19 @@ void DRVideoScreen::check_state(QMediaPlayer::State p_state)
 {
   switch (p_state)
   {
-    case QMediaPlayer::PlayingState:
-      emit started();
-      break;
+  case QMediaPlayer::PlayingState:
+    emit started();
+    break;
 
-    case QMediaPlayer::StoppedState:
-      if (m_running)
-      {
-        finish_playback();
-      }
-      break;
+  case QMediaPlayer::StoppedState:
+    if (m_running)
+    {
+      finish_playback();
+    }
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 }
 

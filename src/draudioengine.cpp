@@ -51,7 +51,8 @@ private:
   ptr d;
 } d;
 
-DRAudioEngine::DRAudioEngine(QObject *p_parent) : QObject(p_parent)
+DRAudioEngine::DRAudioEngine(QObject *p_parent)
+    : QObject(p_parent)
 {
   d->children.append(this);
 }

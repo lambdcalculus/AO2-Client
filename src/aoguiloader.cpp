@@ -4,10 +4,9 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-AOGuiLoader::AOGuiLoader(QObject *p_parent) : QUiLoader(p_parent)
-{
-  // padding
-}
+AOGuiLoader::AOGuiLoader(QObject *p_parent)
+    : QUiLoader(p_parent)
+{}
 
 QWidget *AOGuiLoader::load_from_file(QString p_file_path, QWidget *p_parent)
 {

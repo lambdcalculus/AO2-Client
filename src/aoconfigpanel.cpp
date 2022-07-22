@@ -22,7 +22,9 @@
 #include <QTabWidget>
 
 AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
-    : QWidget(p_parent), m_config(new AOConfig(this)), m_engine(new DRAudioEngine(this))
+    : QWidget(p_parent)
+    , m_config(new AOConfig(this))
+    , m_engine(new DRAudioEngine(this))
 {
   ao_app = p_ao_app;
 

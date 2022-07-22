@@ -26,6 +26,7 @@ public:
 
   void set_active(bool p_active);
   bool is_active();
+
 private:
   AOApplication *ao_app = nullptr;
 

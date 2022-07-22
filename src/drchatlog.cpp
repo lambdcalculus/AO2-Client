@@ -8,7 +8,9 @@
 #include <QScrollBar>
 #include <QUrl>
 
-DRChatLog::DRChatLog(QWidget *parent) : QTextBrowser(parent), dr_config(new AOConfig(this))
+DRChatLog::DRChatLog(QWidget *parent)
+    : QTextBrowser(parent)
+    , dr_config(new AOConfig(this))
 {
   connect(this, SIGNAL(message_queued()), this, SLOT(_p_write_message_queue()));
 }
@@ -93,8 +95,12 @@ void DRChatLog::_p_write_message_queue()
         QString text;
         bool is_href = false;
 
-        TextPiece() {}
-        TextPiece(QString p_text, bool p_is_href = false) : text(p_text), is_href(p_is_href) {}
+        TextPiece()
+        {}
+        TextPiece(QString p_text, bool p_is_href = false)
+            : text(p_text)
+            , is_href(p_is_href)
+        {}
       };
       QVector<TextPiece> l_piece_list;
 

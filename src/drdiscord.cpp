@@ -27,7 +27,8 @@ QByteArray resize_buf(const QString &f_str_message, const int f_max_size)
   return l_message;
 }
 
-DRDiscord::DRDiscord(QObject *f_parent) : QObject(f_parent)
+DRDiscord::DRDiscord(QObject *f_parent)
+    : QObject(f_parent)
 {
   m_waiter = new QTimer(this);
   m_waiter->setInterval(std::chrono::seconds(1));

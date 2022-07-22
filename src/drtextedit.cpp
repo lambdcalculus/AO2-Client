@@ -4,7 +4,8 @@
 #include <QDebug>
 #include <QTextBlock>
 
-DRTextEdit::DRTextEdit(QWidget *parent) : QTextEdit(parent)
+DRTextEdit::DRTextEdit(QWidget *parent)
+    : QTextEdit(parent)
 {
   connect(this, SIGNAL(textChanged()), this, SLOT(on_text_changed()));
   connect(this, SIGNAL(text_alignment_changed(Qt::Alignment)), this, SLOT(on_text_changed()));

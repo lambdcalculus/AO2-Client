@@ -88,7 +88,8 @@ void DRAudiotrackMetadata::update_cache()
 DRAudiotrackMetadata::DRAudiotrackMetadata()
 {}
 
-DRAudiotrackMetadata::DRAudiotrackMetadata(QString p_file_name) : m_filename(p_file_name)
+DRAudiotrackMetadata::DRAudiotrackMetadata(QString p_file_name)
+    : m_filename(p_file_name)
 {
   const QString l_lower_file_name = p_file_name.toLower();
   if (s_audiotrack_cache.contains(l_lower_file_name))

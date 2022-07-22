@@ -22,7 +22,9 @@ QVector<DRAudioDevice> DRAudioDevice::get_device_list()
   return r_device_list;
 }
 
-DRAudioDevice::DRAudioDevice() : m_id(0), m_name("<unknown>")
+DRAudioDevice::DRAudioDevice()
+    : m_id(0)
+    , m_name("<unknown>")
 {}
 
 DRAudioDevice::~DRAudioDevice()

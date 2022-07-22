@@ -34,11 +34,14 @@ DRPosition::DRPosition()
 {}
 
 DRPosition::DRPosition(QString p_back, QString p_front)
-    : m_back(p_back), m_front(p_front)
+    : m_back(p_back)
+    , m_front(p_front)
 {}
 
 DRPosition::DRPosition(QString p_back, QString p_front, QString p_ambient_sfx)
-    : m_back(p_back), m_front(p_front), m_ambient_sfx(p_ambient_sfx)
+    : m_back(p_back)
+    , m_front(p_front)
+    , m_ambient_sfx(p_ambient_sfx)
 {}
 
 DRPosition::~DRPosition()

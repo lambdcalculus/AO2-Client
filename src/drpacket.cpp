@@ -12,7 +12,8 @@ QString DRPacket::decode(QString p_data)
   return p_data.replace("<num>", "#").replace("<percent>", "%").replace("<dollar>", "$").replace("<and>", "&");
 }
 
-DRPacket::DRPacket(QString p_header) : DRPacket(p_header, {})
+DRPacket::DRPacket(QString p_header)
+    : DRPacket(p_header, {})
 {}
 
 DRPacket::DRPacket(QString p_header, QStringList p_content)

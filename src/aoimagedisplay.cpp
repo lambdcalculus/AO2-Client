@@ -10,7 +10,8 @@
  * @class AOImageDisplay
  * @brief Represents a static theme-dependent image.
  */
-AOImageDisplay::AOImageDisplay(QWidget *parent, AOApplication *p_ao_app) : QLabel(parent)
+AOImageDisplay::AOImageDisplay(QWidget *parent, AOApplication *p_ao_app)
+    : QLabel(parent)
 {
   ao_app = p_ao_app;
 }

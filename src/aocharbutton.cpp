@@ -7,7 +7,8 @@
 #include <QFile>
 #include <QLabel>
 
-AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos) : QPushButton(parent)
+AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos)
+    : QPushButton(parent)
 {
   ao_app = p_ao_app;
 

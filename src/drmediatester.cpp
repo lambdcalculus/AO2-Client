@@ -4,7 +4,8 @@
 
 #include "debug_functions.h"
 
-DRMediaTester::DRMediaTester(QObject *parent) : QObject(parent)
+DRMediaTester::DRMediaTester(QObject *parent)
+    : QObject(parent)
 {
   m_player.setMuted(true);
   connect(&m_player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this,

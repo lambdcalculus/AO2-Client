@@ -23,7 +23,10 @@
 using namespace mk2;
 
 SpriteReaderSynchronizer::SpriteReaderSynchronizer(QObject *parent)
-    : QObject{parent}, m_waiting{false}, m_finished{false}, m_threshold{50}
+    : QObject{parent}
+    , m_waiting{false}
+    , m_finished{false}
+    , m_threshold{50}
 {}
 
 SpriteReaderSynchronizer::~SpriteReaderSynchronizer()

@@ -126,17 +126,20 @@ void Courtroom::setup_courtroom()
   m_shout_state = 0;
   m_shout_current = 0;
   check_shouts();
-  if (m_shout_current < shouts_enabled.length() && !shouts_enabled[m_shout_current]) cycle_shout(1);
+  if (m_shout_current < shouts_enabled.length() && !shouts_enabled[m_shout_current])
+    cycle_shout(1);
 
   m_effect_state = 0;
   m_effect_current = 0;
   check_effects();
-  if (m_effect_current < effects_enabled.length() && !effects_enabled[m_effect_current]) cycle_effect(1);
+  if (m_effect_current < effects_enabled.length() && !effects_enabled[m_effect_current])
+    cycle_effect(1);
 
   m_wtce_current = 0;
   reset_wtce_buttons();
   check_wtce();
-  if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current])) cycle_wtce(1);
+  if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current]))
+    cycle_wtce(1);
 
   ui_flip->show();
 
@@ -307,10 +310,12 @@ void Courtroom::enter_courtroom(int p_cid)
   const bool l_changed_chr_id = (m_chr_id != p_cid);
   m_chr_id = p_cid;
 
-  if (l_changed_chr_id) update_default_iniswap_item();
+  if (l_changed_chr_id)
+    update_default_iniswap_item();
 
   QLineEdit *l_current_field = ui_ic_chat_message_field;
-  if (ui_ooc_chat_message->hasFocus()) l_current_field = ui_ooc_chat_message;
+  if (ui_ooc_chat_message->hasFocus())
+    l_current_field = ui_ooc_chat_message;
   const int l_current_cursor_pos = l_current_field->cursorPosition();
 
   const QString l_chr_name = get_character_ini();
@@ -331,7 +336,8 @@ void Courtroom::enter_courtroom(int p_cid)
     ao_app->send_server_packet(DRPacket("chrini", l_content));
   }
   const bool l_changed_chr = l_chr_name != l_prev_chr_name;
-  if (l_changed_chr) set_character_position(ao_app->get_char_side(l_chr_name));
+  if (l_changed_chr)
+    set_character_position(ao_app->get_char_side(l_chr_name));
   select_base_character_iniswap();
   refresh_character_content_url();
 
@@ -366,7 +372,8 @@ void Courtroom::enter_courtroom(int p_cid)
   l_current_field->setCursorPosition(l_current_cursor_pos);
 
   const QString l_showname = ao_config->showname();
-  if (!l_showname.isEmpty() && !is_first_showname_sent) send_showname_packet(l_showname);
+  if (!l_showname.isEmpty() && !is_first_showname_sent)
+    send_showname_packet(l_showname);
 
   ui_char_select_background->hide();
 }
@@ -575,7 +582,8 @@ void Courtroom::update_music_text_anim()
 void Courtroom::handle_clock(QString time)
 {
   m_current_clock = time.toInt();
-  if (m_current_clock < 0) m_current_clock = -1;
+  if (m_current_clock < 0)
+    m_current_clock = -1;
   qInfo() << QString("Clock time changed to %1").arg(m_current_clock);
 
   ui_vp_clock->hide();
@@ -624,7 +632,8 @@ void Courtroom::list_music()
     DRAudiotrackMetadata l_track(i_song);
     QListWidgetItem *l_item = new QListWidgetItem(l_track.title(), ui_music_list);
     l_item->setData(Qt::UserRole, l_track.filename());
-    if (l_track.title() != l_track.filename()) l_item->setToolTip(l_track.filename());
+    if (l_track.title() != l_track.filename())
+      l_item->setToolTip(l_track.filename());
     const QString l_song_path = ao_app->find_asset_path({ao_app->get_music_path(i_song)}, audio_extensions());
     l_item->setBackground(l_song_path.isEmpty() ? l_missing_song_brush : l_song_brush);
   }
@@ -665,12 +674,14 @@ void Courtroom::list_note_files()
     QString line = in.readLine().trimmed();
 
     QStringList f_contents = line.split("=");
-    if (f_contents.size() < 2) continue;
+    if (f_contents.size() < 2)
+      continue;
 
     int f_index = f_contents.at(0).toInt();
     f_filestring = f_filename = f_contents.at(1).trimmed();
 
-    if (f_contents.size() > 2) f_filename = f_contents.at(2).trimmed();
+    if (f_contents.size() > 2)
+      f_filename = f_contents.at(2).trimmed();
 
     while (f_index >= f_layout->count())
       on_add_button_clicked();
@@ -687,7 +698,8 @@ void Courtroom::load_note()
   // that notepad text is kept in client if the user has decided not to choose a
   // file to save to. Of course, this is ephimeral storage, it will be erased
   // after the client closes or when the user decides to load a file.
-  if (current_file.isEmpty()) return;
+  if (current_file.isEmpty())
+    return;
   QString f_text = ao_app->read_note(current_file);
   ui_vp_notepad->setText(f_text);
 }
@@ -709,7 +721,8 @@ void Courtroom::save_textlog(QString p_text)
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message)
 {
   ui_ooc_chatlog->append_chatmessage(p_name, p_message);
-  if (ao_config->log_is_recording_enabled()) save_textlog("(OOC)" + p_name + ": " + p_message);
+  if (ao_config->log_is_recording_enabled())
+    save_textlog("(OOC)" + p_name + ": " + p_message);
 }
 
 void Courtroom::ignore_next_showname()
@@ -760,9 +773,11 @@ void Courtroom::on_character_ini_changed()
 
 void Courtroom::on_ic_message_return_pressed()
 {
-  if (ui_ic_chat_message_field->text() == "") return;
+  if (ui_ic_chat_message_field->text() == "")
+    return;
 
-  if ((anim_state < 3 || text_state < 2) && m_shout_state == 0) return;
+  if ((anim_state < 3 || text_state < 2) && m_shout_state == 0)
+    return;
 
   // MS
   // deskmod
@@ -1057,19 +1072,19 @@ void Courtroom::handle_chatmessage()
   const int l_emote_mod = m_chatmessage[CMEmoteModifier].toInt();
   switch (l_emote_mod)
   {
-    case IdleEmoteMod:
-    default:
-      break;
-    case PreEmoteMod:
-      m_play_pre = true;
-      break;
-    case ZoomEmoteMod:
-      m_play_zoom = true;
-      break;
-    case PreZoomEmoteMod:
-      m_play_pre = true;
-      m_play_zoom = true;
-      break;
+  case IdleEmoteMod:
+  default:
+    break;
+  case PreEmoteMod:
+    m_play_pre = true;
+    break;
+  case ZoomEmoteMod:
+    m_play_zoom = true;
+    break;
+  case PreZoomEmoteMod:
+    m_play_pre = true;
+    m_play_zoom = true;
+    break;
   }
 
   m_speaker_chr_id = m_chatmessage[CMChrId].toInt();
@@ -1255,7 +1270,8 @@ void Courtroom::handle_chatmessage_3()
     // idle
     f_anim_state = 3;
 
-  if (f_anim_state <= anim_state) return;
+  if (f_anim_state <= anim_state)
+    return;
 
   ui_vp_player_char->stop();
   const QString f_char = m_chatmessage[CMChrName];
@@ -1296,25 +1312,25 @@ void Courtroom::handle_chatmessage_3()
   }
   switch (f_anim_state)
   {
-    case 2:
-      if (!m_hide_character && !m_msg_is_first_person)
-      {
-        swap_viewport_reader(ui_vp_player_char, ViewportCharacterTalk);
-        ui_vp_player_char->start();
-      }
-      anim_state = 2;
-      break;
-    default:
-      qDebug() << "W: invalid anim_state: " << f_anim_state;
-      [[fallthrough]];
-    case 3:
-      if (!m_hide_character && !m_msg_is_first_person)
-      {
-        swap_viewport_reader(ui_vp_player_char, ViewportCharacterIdle);
-        ui_vp_player_char->start();
-      }
-      anim_state = 3;
-      break;
+  case 2:
+    if (!m_hide_character && !m_msg_is_first_person)
+    {
+      swap_viewport_reader(ui_vp_player_char, ViewportCharacterTalk);
+      ui_vp_player_char->start();
+    }
+    anim_state = 2;
+    break;
+  default:
+    qDebug() << "W: invalid anim_state: " << f_anim_state;
+    [[fallthrough]];
+  case 3:
+    if (!m_hide_character && !m_msg_is_first_person)
+    {
+      swap_viewport_reader(ui_vp_player_char, ViewportCharacterIdle);
+      ui_vp_player_char->start();
+    }
+    anim_state = 3;
+    break;
   }
 
   {
@@ -1337,10 +1353,12 @@ void Courtroom::handle_chatmessage_3()
         QString overlay_name = overlay.at(0);
         QString overlay_sfx = overlay.at(1);
 
-        if (overlay_sfx == "") overlay_sfx = ao_app->get_sfx(s_eff);
+        if (overlay_sfx == "")
+          overlay_sfx = ao_app->get_sfx(s_eff);
         m_effects_player->play_effect(overlay_sfx);
 
-        if (overlay_name == "") overlay_name = s_eff;
+        if (overlay_name == "")
+          overlay_name = s_eff;
         ui_vp_effect->set_play_once(once);
         swap_viewport_reader(ui_vp_effect, ViewportEffect);
         ui_vp_effect->start();
@@ -1361,7 +1379,8 @@ void Courtroom::handle_chatmessage_3()
       const QString message =
           ui_vp_showname->toPlainText() + " has called you via your callword \"" + word + "\": \"" + f_message + "\"";
       ui_ooc_chatlog->append_chatmessage(name, message);
-      if (ao_config->log_is_recording_enabled()) save_textlog("(OOC)" + name + ": " + message);
+      if (ao_config->log_is_recording_enabled())
+        save_textlog("(OOC)" + name + ": " + message);
       break;
     }
   }
@@ -1396,7 +1415,8 @@ void Courtroom::load_ic_text_format()
   set_format_color("showname", m_ic_log_format.name);
 
   m_ic_log_format.selfname = m_ic_log_format.name;
-  if (ao_config->log_display_self_highlight_enabled()) set_format_color("selfname", m_ic_log_format.selfname);
+  if (ao_config->log_display_self_highlight_enabled())
+    set_format_color("selfname", m_ic_log_format.selfname);
 
   m_ic_log_format.message = m_ic_log_format.base;
   set_format_color("message", m_ic_log_format.message);
@@ -1447,9 +1467,11 @@ void Courtroom::update_ic_log(bool p_reset_log)
     const DRChatRecord l_record = m_ic_record_queue.takeFirst();
     m_ic_record_list.append(l_record);
 
-    if (!ao_config->log_display_empty_messages_enabled() && l_record.get_message().trimmed().isEmpty()) continue;
+    if (!ao_config->log_display_empty_messages_enabled() && l_record.get_message().trimmed().isEmpty())
+      continue;
 
-    if (!ao_config->log_display_music_switch_enabled() && l_record.is_music()) continue;
+    if (!ao_config->log_display_music_switch_enabled() && l_record.is_music())
+      continue;
 
     l_cursor.movePosition(move_type);
 
@@ -1458,7 +1480,8 @@ void Courtroom::update_ic_log(bool p_reset_log)
       l_cursor.insertText(l_linefeed + QString(l_use_newline ? l_linefeed : nullptr), l_message_format);
     l_log_is_empty = false;
 
-    if (!l_topdown_orientation) l_cursor.movePosition(move_type);
+    if (!l_topdown_orientation)
+      l_cursor.movePosition(move_type);
 
     // self-highlight check
     const QTextCharFormat &l_target_name_format =
@@ -1550,9 +1573,11 @@ void Courtroom::on_ic_chatlog_scroll_bottomup_clicked()
 void Courtroom::append_ic_text(QString p_name, QString p_line, bool p_system, bool p_music, int p_client_id,
                                bool p_self)
 {
-  if (p_name.trimmed().isEmpty()) p_name = "Anonymous";
+  if (p_name.trimmed().isEmpty())
+    p_name = "Anonymous";
 
-  if (p_line.trimmed().isEmpty()) p_line = p_line.trimmed();
+  if (p_line.trimmed().isEmpty())
+    p_line = p_line.trimmed();
 
   DRChatRecord new_record(p_name, p_line);
   new_record.set_system(p_system);
@@ -1622,7 +1647,8 @@ void Courtroom::setup_chat()
   m_rainbow_step = 0;
   // we need to ensure that the text isn't already ticking because this function
   // can be called by two logic paths
-  if (text_state != 0) return;
+  if (text_state != 0)
+    return;
 
   if (chatmessage_is_empty)
   {
@@ -1668,7 +1694,8 @@ void Courtroom::stop_chat_timer()
 void Courtroom::calculate_chat_tick_interval()
 {
   double l_tick_rate = ao_config->chat_tick_interval();
-  if (m_server_tick_rate.has_value()) l_tick_rate = qMax(m_server_tick_rate.value(), 0);
+  if (m_server_tick_rate.has_value())
+    l_tick_rate = qMax(m_server_tick_rate.value(), 0);
   l_tick_rate = qBound(0.0, l_tick_rate * (1.0 - qBound(-1.0, 0.4 * m_tick_speed, 1.0)), l_tick_rate * 2.0);
   m_tick_timer->setInterval(l_tick_rate);
 }
@@ -1717,21 +1744,21 @@ void Courtroom::next_chat_letter()
 
     switch (m_rainbow_step)
     {
-      case 0:
-        html_color = "#BA1518";
-        break;
-      case 1:
-        html_color = "#D55900";
-        break;
-      case 2:
-        html_color = "#E7CE4E";
-        break;
-      case 3:
-        html_color = "#65C856";
-        break;
-      default:
-        html_color = "#1596C8";
-        m_rainbow_step = -1;
+    case 0:
+      html_color = "#BA1518";
+      break;
+    case 1:
+      html_color = "#D55900";
+      break;
+    case 2:
+      html_color = "#E7CE4E";
+      break;
+    case 3:
+      html_color = "#65C856";
+      break;
+    default:
+      html_color = "#1596C8";
+      m_rainbow_step = -1;
     }
 
     ++m_rainbow_step;
@@ -1749,7 +1776,8 @@ void Courtroom::next_chat_letter()
     // render_character should only be false if the character is a highlight
     // character specifically marked as a character that should not be
     // rendered.
-    if (m_message_color_stack.isEmpty()) m_message_color_stack.push("");
+    if (m_message_color_stack.isEmpty())
+      m_message_color_stack.push("");
 
     if (!is_ignore_next_letter)
     {
@@ -1784,7 +1812,8 @@ void Courtroom::next_chat_letter()
       {
         if (f_character == col[0][1])
         {
-          if (m_message_color_stack.size() > 1) m_message_color_stack.pop();
+          if (m_message_color_stack.size() > 1)
+            m_message_color_stack.pop();
           m_future_string_color = m_message_color_stack.top();
           render_character = (col[2] != "0");
           break;
@@ -1792,7 +1821,8 @@ void Courtroom::next_chat_letter()
       }
     }
 
-    if (render_character) ui_vp_message->textCursor().insertText(f_character, vp_message_format);
+    if (render_character)
+      ui_vp_message->textCursor().insertText(f_character, vp_message_format);
 
     m_message_color_name = m_future_string_color;
   }
@@ -1848,7 +1878,8 @@ void Courtroom::post_chatmessage()
 void Courtroom::play_sfx()
 {
   const QString l_effect = m_chatmessage[CMSoundName];
-  if (l_effect.isEmpty() || l_effect == "0" || l_effect == "1") return;
+  if (l_effect.isEmpty() || l_effect == "0" || l_effect == "1")
+    return;
   const QString l_chr = m_chatmessage[CMChrName];
   m_effects_player->play_character_effect(l_chr, l_effect);
 }
@@ -1869,7 +1900,8 @@ void Courtroom::set_text_color()
 
 void Courtroom::set_ban(int p_cid)
 {
-  if (p_cid != m_chr_id && p_cid != SpectatorId) return;
+  if (p_cid != m_chr_id && p_cid != SpectatorId)
+    return;
 
   call_notice("You have been banned.");
 
@@ -1879,7 +1911,8 @@ void Courtroom::set_ban(int p_cid)
 
 void Courtroom::handle_song(QStringList p_contents)
 {
-  if (p_contents.size() < 4) return;
+  if (p_contents.size() < 4)
+    return;
 
   QString l_song = p_contents.at(0);
   for (auto &i_extension : audio_extensions())
@@ -1899,7 +1932,8 @@ void Courtroom::handle_song(QStringList p_contents)
 
   {
     const bool l_restart = p_contents.at(3).toInt();
-    if (m_current_song == l_song && !l_restart) return;
+    if (m_current_song == l_song && !l_restart)
+      return;
   }
   m_current_song = l_song;
 
@@ -1941,7 +1975,8 @@ void Courtroom::handle_wtce(QString p_wtce)
 
 void Courtroom::set_hp_bar(int p_bar, int p_state)
 {
-  if (p_state < 0 || p_state > 10) return;
+  if (p_state < 0 || p_state > 10)
+    return;
 
   if (p_bar == 1)
   {
@@ -1958,7 +1993,8 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
 void Courtroom::set_character_position(QString p_pos)
 {
   int index = ui_pos_dropdown->findData(p_pos);
-  if (index != -1) ui_pos_dropdown->setCurrentIndex(index);
+  if (index != -1)
+    ui_pos_dropdown->setCurrentIndex(index);
 
   // enable judge mechanics if appropriate
   set_judge_enabled(p_pos == "jud");
@@ -2002,7 +2038,8 @@ void Courtroom::mod_called(QString p_ip)
   {
     m_system_player->play(ao_app->get_sfx("mod_call"));
     ao_app->alert(this);
-    if (ao_config->log_is_recording_enabled()) save_textlog("(OOC)(MOD CALL)" + p_ip);
+    if (ao_config->log_is_recording_enabled())
+      save_textlog("(OOC)(MOD CALL)" + p_ip);
   }
 }
 
@@ -2074,7 +2111,8 @@ void Courtroom::on_ooc_message_return_pressed()
 
     // Note arguments[0] == "/ts", so every index (and thus length) is off by
     // one.
-    if (size > 5) return;
+    if (size > 5)
+      return;
 
     int timer_id = (size > 1 ? arguments[1].toInt() : 0);
     int new_time = (size > 2 ? arguments[2].toInt() : 300) * 1000;
@@ -2107,35 +2145,37 @@ void Courtroom::on_pos_dropdown_changed(int p_index)
 {
   ui_ic_chat_message_field->setFocus();
 
-  if (p_index < 0 || p_index > 5) return;
+  if (p_index < 0 || p_index > 5)
+    return;
 
   QString f_pos;
 
   switch (p_index)
   {
-    case 0:
-      f_pos = "wit";
-      break;
-    case 1:
-      f_pos = "def";
-      break;
-    case 2:
-      f_pos = "pro";
-      break;
-    case 3:
-      f_pos = "jud";
-      break;
-    case 4:
-      f_pos = "hld";
-      break;
-    case 5:
-      f_pos = "hlp";
-      break;
-    default:
-      f_pos = "";
+  case 0:
+    f_pos = "wit";
+    break;
+  case 1:
+    f_pos = "def";
+    break;
+  case 2:
+    f_pos = "pro";
+    break;
+  case 3:
+    f_pos = "jud";
+    break;
+  case 4:
+    f_pos = "hld";
+    break;
+  case 5:
+    f_pos = "hlp";
+    break;
+  default:
+    f_pos = "";
   }
 
-  if (f_pos == "" || ao_config->username() == "") return;
+  if (f_pos == "" || ao_config->username() == "")
+    return;
 
   set_judge_enabled(f_pos == "jud");
 
@@ -2219,7 +2259,8 @@ void Courtroom::on_music_search_edited()
 
 void Courtroom::send_mc_packet(QString p_song)
 {
-  if (is_client_muted) return;
+  if (is_client_muted)
+    return;
   ao_app->send_server_packet(DRPacket("MC", {p_song, QString::number(m_chr_id)}));
 }
 
@@ -2240,16 +2281,19 @@ void Courtroom::reset_shout_buttons()
 void Courtroom::on_shout_button_clicked(const bool p_checked)
 {
   AOButton *l_button = dynamic_cast<AOButton *>(sender());
-  if (l_button == nullptr) return;
+  if (l_button == nullptr)
+    return;
 
   bool l_ok = false;
   const int l_id = l_button->property("shout_id").toInt(&l_ok);
-  if (!l_ok) return;
+  if (!l_ok)
+    return;
 
   // disable all other buttons
   for (AOButton *i_button : qAsConst(ui_shouts))
   {
-    if (i_button == l_button) continue;
+    if (i_button == l_button)
+      continue;
     i_button->setChecked(false);
   }
   m_shout_state = p_checked ? l_id : 0;
@@ -2260,14 +2304,17 @@ void Courtroom::on_shout_button_clicked(const bool p_checked)
 void Courtroom::on_shout_button_toggled(const bool p_checked)
 {
   AOButton *l_button = dynamic_cast<AOButton *>(sender());
-  if (l_button == nullptr) return;
+  if (l_button == nullptr)
+    return;
 
   const QString l_name = l_button->property("shout_name").toString();
-  if (l_name.isEmpty()) return;
+  if (l_name.isEmpty())
+    return;
 
   const QString l_image_name(QString("%1%2.png").arg(l_name, QString(p_checked ? "_selected" : nullptr)));
   l_button->set_image(l_image_name);
-  if (!l_button->has_image()) l_button->setText(l_name);
+  if (!l_button->has_image())
+    l_button->setText(l_name);
 }
 
 void Courtroom::on_cycle_clicked()
@@ -2277,26 +2324,26 @@ void Courtroom::on_cycle_clicked()
 
   switch (f_cycle_id)
   {
-    case 5:
-      cycle_wtce(-1);
-      break;
-    case 4:
-      cycle_wtce(1);
-      break;
-    case 3:
-      cycle_effect(-1);
-      break;
-    case 2:
-      cycle_effect(1);
-      break;
-    case 1:
-      cycle_shout(-1);
-      break;
-    case 0:
-      cycle_shout(1);
-      break;
-    default:
-      break;
+  case 5:
+    cycle_wtce(-1);
+    break;
+  case 4:
+    cycle_wtce(1);
+    break;
+  case 3:
+    cycle_effect(-1);
+    break;
+  case 2:
+    cycle_effect(1);
+    break;
+  case 1:
+    cycle_shout(-1);
+    break;
+  case 0:
+    cycle_shout(1);
+    break;
+  default:
+    break;
   }
 
   if (ao_app->read_theme_ini_bool("enable_cycle_ding", COURTROOM_CONFIG_INI))
@@ -2359,16 +2406,19 @@ void Courtroom::reset_effect_buttons()
 void Courtroom::on_effect_button_clicked(const bool p_checked)
 {
   AOButton *l_button = dynamic_cast<AOButton *>(sender());
-  if (l_button == nullptr) return;
+  if (l_button == nullptr)
+    return;
 
   bool l_ok = false;
   const int l_id = l_button->property("effect_id").toInt(&l_ok);
-  if (!l_ok) return;
+  if (!l_ok)
+    return;
 
   // disable all other buttons
   for (AOButton *i_button : qAsConst(ui_effects))
   {
-    if (i_button == l_button) continue;
+    if (i_button == l_button)
+      continue;
     i_button->setChecked(false);
   }
 
@@ -2379,42 +2429,49 @@ void Courtroom::on_effect_button_clicked(const bool p_checked)
 void Courtroom::on_effect_button_toggled(const bool p_checked)
 {
   AOButton *l_button = dynamic_cast<AOButton *>(sender());
-  if (l_button == nullptr) return;
+  if (l_button == nullptr)
+    return;
 
   const QString l_name = l_button->property("effect_name").toString();
-  if (l_name.isEmpty()) return;
+  if (l_name.isEmpty())
+    return;
 
   const QString l_image_name(QString("%1%2.png").arg(l_name, QString(p_checked ? "_pressed" : nullptr)));
   l_button->set_image(l_image_name);
-  if (!l_button->has_image()) l_button->setText(l_name);
+  if (!l_button->has_image())
+    l_button->setText(l_name);
 }
 
 void Courtroom::on_defense_minus_clicked()
 {
   int f_state = defense_bar_state - 1;
 
-  if (f_state >= 0) ao_app->send_server_packet(DRPacket("HP", {QString::number(1), QString::number(f_state)}));
+  if (f_state >= 0)
+    ao_app->send_server_packet(DRPacket("HP", {QString::number(1), QString::number(f_state)}));
 }
 
 void Courtroom::on_defense_plus_clicked()
 {
   int f_state = defense_bar_state + 1;
 
-  if (f_state <= 10) ao_app->send_server_packet(DRPacket("HP", {QString::number(1), QString::number(f_state)}));
+  if (f_state <= 10)
+    ao_app->send_server_packet(DRPacket("HP", {QString::number(1), QString::number(f_state)}));
 }
 
 void Courtroom::on_prosecution_minus_clicked()
 {
   int f_state = prosecution_bar_state - 1;
 
-  if (f_state >= 0) ao_app->send_server_packet(DRPacket("HP", {QString::number(2), QString::number(f_state)}));
+  if (f_state >= 0)
+    ao_app->send_server_packet(DRPacket("HP", {QString::number(2), QString::number(f_state)}));
 }
 
 void Courtroom::on_prosecution_plus_clicked()
 {
   int f_state = prosecution_bar_state + 1;
 
-  if (f_state <= 10) ao_app->send_server_packet(DRPacket("HP", {QString::number(2), QString::number(f_state)}));
+  if (f_state <= 10)
+    ao_app->send_server_packet(DRPacket("HP", {QString::number(2), QString::number(f_state)}));
 }
 
 void Courtroom::on_text_color_changed(int p_color)
@@ -2451,7 +2508,8 @@ void Courtroom::reset_wtce_buttons()
 void Courtroom::on_wtce_clicked()
 {
   //  qDebug() << "AA: wtce clicked!";
-  if (is_client_muted) return;
+  if (is_client_muted)
+    return;
 
   AOButton *f_sig = static_cast<AOButton *>(sender());
   QString id = f_sig->property("wtce_id").toString();
@@ -2499,7 +2557,8 @@ void Courtroom::load_audiotracks()
 
 void Courtroom::on_back_to_lobby_clicked()
 {
-  if (m_back_to_lobby_clicked) return;
+  if (m_back_to_lobby_clicked)
+    return;
   m_back_to_lobby_clicked = true;
 
   // hide so we don't get the 'disconnected from server' prompt
@@ -2534,7 +2593,8 @@ void Courtroom::on_call_mod_clicked()
 
 void Courtroom::on_switch_area_music_clicked()
 {
-  if (is_area_music_list_separated()) return;
+  if (is_area_music_list_separated())
+    return;
 
   if (ui_area_list->isHidden())
   {
@@ -2609,7 +2669,8 @@ void Courtroom::changeEvent(QEvent *event)
   if (event->type() == QEvent::WindowStateChange)
   {
     m_is_maximized = windowState().testFlag(Qt::WindowMaximized);
-    if (!m_is_maximized) resize(m_default_size);
+    if (!m_is_maximized)
+      resize(m_default_size);
   }
 }
 
@@ -2629,35 +2690,40 @@ void Courtroom::on_set_notes_clicked()
 
 void Courtroom::resume_timer(int p_id)
 {
-  if (p_id < 0 || p_id >= ui_timers.length()) return;
+  if (p_id < 0 || p_id >= ui_timers.length())
+    return;
   AOTimer *l_timer = ui_timers.at(p_id);
   l_timer->resume();
 }
 
 void Courtroom::set_timer_time(int p_id, int new_time)
 {
-  if (p_id < 0 || p_id >= ui_timers.length()) return;
+  if (p_id < 0 || p_id >= ui_timers.length())
+    return;
   AOTimer *l_timer = ui_timers.at(p_id);
   l_timer->set_time(QTime(0, 0).addMSecs(new_time));
 }
 
 void Courtroom::set_timer_timestep(int p_id, int timestep_length)
 {
-  if (p_id < 0 || p_id >= ui_timers.length()) return;
+  if (p_id < 0 || p_id >= ui_timers.length())
+    return;
   AOTimer *l_timer = ui_timers.at(p_id);
   l_timer->set_timestep_length(timestep_length);
 }
 
 void Courtroom::set_timer_firing(int p_id, int firing_interval)
 {
-  if (p_id < 0 || p_id >= ui_timers.length()) return;
+  if (p_id < 0 || p_id >= ui_timers.length())
+    return;
   AOTimer *l_timer = ui_timers.at(p_id);
   l_timer->set_firing_interval(firing_interval);
 }
 
 void Courtroom::pause_timer(int p_id)
 {
-  if (p_id < 0 || p_id >= ui_timers.length()) return;
+  if (p_id < 0 || p_id >= ui_timers.length())
+    return;
   AOTimer *l_timer = ui_timers.at(p_id);
   l_timer->pause();
 }

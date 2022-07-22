@@ -3,7 +3,8 @@
 #include <QDebug>
 #include <QTimer>
 
-AOTimer::AOTimer(QWidget *p_parent) : DRTextEdit(p_parent)
+AOTimer::AOTimer(QWidget *p_parent)
+    : DRTextEdit(p_parent)
 {
   // Adapted from:
   // https://stackoverflow.com/questions/36679708/how-to-make-a-chronometer-in-qt-c

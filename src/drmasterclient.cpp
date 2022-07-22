@@ -8,7 +8,9 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 
-DRMasterClient::DRMasterClient(QObject *parent) : QObject(parent), m_network(new QNetworkAccessManager(this))
+DRMasterClient::DRMasterClient(QObject *parent)
+    : QObject(parent)
+    , m_network(new QNetworkAccessManager(this))
 {}
 
 DRMasterClient::~DRMasterClient()

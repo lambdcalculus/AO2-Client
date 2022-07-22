@@ -9,7 +9,8 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y) : QPushButton(p_parent)
+AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y)
+    : QPushButton(p_parent)
 {
   ao_app = p_ao_app;
 

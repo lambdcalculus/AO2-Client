@@ -68,25 +68,25 @@ void DRServerSocket::_p_update_state(QAbstractSocket::SocketState p_state)
 {
   switch (p_state)
   {
-    case QAbstractSocket::ConnectingState:
-      m_connecting_timer->start();
-      Q_EMIT connecting_to_server();
-      break;
+  case QAbstractSocket::ConnectingState:
+    m_connecting_timer->start();
+    Q_EMIT connecting_to_server();
+    break;
 
-    case QAbstractSocket::ConnectedState:
-      m_connecting_timer->stop();
-      m_connected = true;
-      Q_EMIT connected_to_server();
-      break;
+  case QAbstractSocket::ConnectedState:
+    m_connecting_timer->stop();
+    m_connected = true;
+    Q_EMIT connected_to_server();
+    break;
 
-    case QAbstractSocket::UnconnectedState:
-      m_connecting_timer->stop();
-      m_connected = false;
-      Q_EMIT disconnected_from_server();
-      break;
+  case QAbstractSocket::UnconnectedState:
+    m_connecting_timer->stop();
+    m_connected = false;
+    Q_EMIT disconnected_from_server();
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 }
 

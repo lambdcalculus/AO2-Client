@@ -13,7 +13,9 @@
 #include <QGuiApplication>
 #include <QTimer>
 
-DRAudioEnginePrivate::DRAudioEnginePrivate() : QObject(nullptr), update_timer(new QTimer(this))
+DRAudioEnginePrivate::DRAudioEnginePrivate()
+    : QObject(nullptr)
+    , update_timer(new QTimer(this))
 {
   BASS_SetConfig(BASS_CONFIG_DEV_DEFAULT, FALSE);
 }

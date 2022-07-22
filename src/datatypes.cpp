@@ -53,7 +53,9 @@ VersionNumber::VersionNumber()
 {}
 
 VersionNumber::VersionNumber(int p_release, int p_major, int p_minor)
-    : release(p_release), major(p_major), minor(p_minor)
+    : release(p_release)
+    , major(p_major)
+    , minor(p_minor)
 {}
 
 QString VersionNumber::to_string() const

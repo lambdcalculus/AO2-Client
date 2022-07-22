@@ -14,7 +14,8 @@
 #include <QTextStream>
 #include <QVBoxLayout>
 
-AONoteArea::AONoteArea(QWidget *p_parent, AOApplication *p_ao_app) : AOImageDisplay(p_parent, p_ao_app)
+AONoteArea::AONoteArea(QWidget *p_parent, AOApplication *p_ao_app)
+    : AOImageDisplay(p_parent, p_ao_app)
 {
   ao_app = p_ao_app;
 }
