@@ -20,6 +20,8 @@ public:
   bool get_bool(QString p_name, bool p_default = false) const;
   int get_number(QString p_name, int p_default = 0) const;
 
+  bool first_launch() const;
+
   // getters
   bool autosave() const;
   bool display_notification(QString message) const;

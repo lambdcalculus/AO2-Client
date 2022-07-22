@@ -32,7 +32,7 @@
    <item>
     <widget class="QTabWidget" name="tab_widget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -892,10 +892,10 @@
       <attribute name="title">
        <string>Theme</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_7">
+      <layout class="QVBoxLayout" name="verticalLayout_9">
        <item>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="4" column="3" rowspan="2">
+         <item row="5" column="3" rowspan="2">
           <widget class="QCheckBox" name="manual_timeofday_selection">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -908,20 +908,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0" rowspan="2">
-          <widget class="QLabel" name="gamemode_label">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Gamemode:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0" rowspan="2">
+         <item row="5" column="0" rowspan="2">
           <widget class="QLabel" name="timeofday_label">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -934,23 +921,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="3" rowspan="2">
-          <widget class="QCheckBox" name="manual_gamemode_selection">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allows you to manually switch to a gamemode interface.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Manual</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
+         <item row="1" column="0">
           <widget class="QLabel" name="theme_label">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -963,7 +934,55 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1" rowspan="2" colspan="2">
+         <item row="3" column="0" rowspan="2">
+          <widget class="QLabel" name="gamemode_label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Gamemode:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1" rowspan="2" colspan="2">
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QLineEdit" name="timeofday">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <italic>true</italic>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600; color:#0000ff;&quot;&gt;currently active&lt;/span&gt; time of day.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>&lt;default&gt;</string>
+             </property>
+             <property name="frame">
+              <bool>false</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="manual_timeofday">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600; color:#0000ff;&quot;&gt;current manually selected&lt;/span&gt; time of day.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="3" column="1" rowspan="2" colspan="2">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
             <widget class="QLineEdit" name="gamemode">
@@ -1001,56 +1020,54 @@
            </item>
           </layout>
          </item>
-         <item row="4" column="1" rowspan="2" colspan="2">
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="QLineEdit" name="timeofday">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="font">
-              <font>
-               <italic>true</italic>
-              </font>
-             </property>
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600; color:#0000ff;&quot;&gt;currently active&lt;/span&gt; time of day.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>&lt;default&gt;</string>
-             </property>
-             <property name="frame">
-              <bool>false</bool>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="manual_timeofday">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600; color:#0000ff;&quot;&gt;current manually selected&lt;/span&gt; time of day.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="0" column="1" colspan="2">
+         <item row="1" column="1" colspan="2">
           <widget class="QComboBox" name="theme"/>
          </item>
-         <item row="0" column="3">
-          <widget class="QPushButton" name="theme_reload">
+         <item row="3" column="3" rowspan="2">
+          <widget class="QCheckBox" name="manual_gamemode_selection">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allows you to manually switch to a gamemode interface.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
-            <string>Reload</string>
+            <string>Manual</string>
            </property>
           </widget>
+         </item>
+         <item row="1" column="3">
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QPushButton" name="switch_theme">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Switch</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="reload_theme">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Reload</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>

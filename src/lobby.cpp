@@ -10,7 +10,6 @@
 #include "drchatlog.h"
 #include "drmasterclient.h"
 #include "drpacket.h"
-#include "drpather.h"
 #include "drtextedit.h"
 #include "theme.h"
 #include "version.h"
@@ -73,6 +72,7 @@ Lobby::Lobby(AOApplication *p_ao_app)
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(update_widgets()));
+  connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(update_widgets()));
   connect(ao_config, SIGNAL(server_advertiser_changed(QString)), m_master_client, SLOT(set_address(QString)));
   connect(m_master_client, SIGNAL(address_changed()), this, SLOT(request_advertiser_update()));
   connect(m_master_client, SIGNAL(motd_changed()), this, SLOT(update_motd()));
@@ -117,26 +117,11 @@ DRServerInfoList Lobby::get_combined_server_list()
 void Lobby::update_widgets()
 {
   pos_size_type f_lobby = ao_app->get_element_dimensions("lobby", LOBBY_DESIGN_INI);
-
   if (f_lobby.width < 0 || f_lobby.height < 0)
   {
     qWarning() << "W: did not find lobby width or height in " << LOBBY_DESIGN_INI;
     f_lobby.width = 517;
     f_lobby.height = 666;
-
-    // Most common symptom of bad config files, missing assets, or misnamed
-    // theme folder
-    call_notice("It doesn't look like your client is set up correctly. This can be "
-                "due to the following reasons: \n"
-                "1. Check you downloaded and extracted the resources correctly from "
-                "the DRO Discord including the large 'base' folder.\n"
-                "2. If you did, check that the base folder is in the same folder "
-                "where you launched Danganronpa Online from: " +
-                DRPather::get_application_path() +
-                "\n"
-                "3. If it is there, check that your current theme folder exists in "
-                "base/themes. According to base/config.ini, your current theme is " +
-                ao_config->theme());
   }
   setWindowState(Qt::WindowNoState);
   resize(f_lobby.width, f_lobby.height);

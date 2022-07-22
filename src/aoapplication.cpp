@@ -7,6 +7,7 @@
 #include "drdiscord.h"
 #include "drmasterclient.h"
 #include "drpacket.h"
+#include "drpather.h"
 #include "drserversocket.h"
 #include "file_functions.h"
 #include "lobby.h"
@@ -14,6 +15,7 @@
 #include "version.h"
 
 #include <QDir>
+#include <QFileInfo>
 #include <QFontDatabase>
 #include <QRegularExpression>
 
@@ -52,6 +54,8 @@ AOApplication::AOApplication(int &argc, char **argv)
   connect(m_server_socket, SIGNAL(disconnected_from_server()), this, SLOT(_p_handle_server_disconnection()));
   connect(m_server_socket, SIGNAL(disconnected_from_server()), this, SIGNAL(disconnected_from_server()));
   connect(m_server_socket, SIGNAL(packet_received(DRPacket)), this, SLOT(_p_handle_server_packet(DRPacket)));
+
+  resolve_current_theme();
 }
 
 AOApplication::~AOApplication()
@@ -420,6 +424,52 @@ void AOApplication::on_courtroom_closing()
 void AOApplication::on_courtroom_destroyed()
 {
   ao_config_panel->hide();
+}
+
+void AOApplication::resolve_current_theme()
+{
+  const QString l_theme_dir = get_case_sensitive_path(get_base_file_path("themes"));
+  if (l_theme_dir.isEmpty())
+  {
+    call_warning("It doesn't look like your client is set up correctly. This can be "
+                 "due to the following reasons: \n"
+                 "1. Check you downloaded and extracted the resources correctly from "
+                 "the DRO Discord including the large 'base' folder.\n"
+                 "2. If you did, check that the base folder is in the same folder "
+                 "where you launched Danganronpa Online from: " +
+                 DRPather::get_application_path() +
+                 "\n"
+                 "3. If it is there, check that your current theme folder exists in "
+                 "base/themes. ");
+  }
+
+  const QString l_current_theme = ao_config->theme();
+  std::optional<QString> l_target_theme;
+  const QList<QFileInfo> l_info_list = QDir(l_theme_dir).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+  for (const QFileInfo &i_info : l_info_list)
+  {
+    const QString l_theme = i_info.fileName();
+    if (l_theme == l_current_theme)
+    {
+      l_target_theme.reset();
+      break;
+    }
+
+    // target theme is always the first
+    if (!l_target_theme.has_value())
+    {
+      l_target_theme = l_theme;
+    }
+  }
+
+  if (l_target_theme.has_value())
+  {
+    if (!ao_config->first_launch())
+    {
+      call_warning(tr("Your previous theme [%1] is missing; the current theme has been reset.\n\nTo select a different theme, go to the config panel.").arg(l_current_theme));
+    }
+    ao_config->set_theme(l_target_theme.value());
+  }
 }
 
 bool AOApplication::notify(QObject *receiver, QEvent *event)

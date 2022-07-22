@@ -9,6 +9,8 @@
 // qt
 #include <QApplication>
 #include <QDebug>
+#include <QDir>
+#include <QFileInfo>
 #include <QMap>
 #include <QSettings>
 #include <QSharedPointer>
@@ -47,6 +49,7 @@ private:
   QVector<QObject *> children;
 
   // data
+  bool first_launch;
   bool autosave;
   QStringList notification_filter;
   QString username;
@@ -114,8 +117,7 @@ AOConfigPrivate::AOConfigPrivate()
     , audio_engine(new DRAudioEngine(this))
 {
   Q_ASSERT_X(qApp, "initialization", "QGuiApplication is required");
-  connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), this,
-          SLOT(on_application_state_changed(Qt::ApplicationState)));
+  connect(qApp, SIGNAL(applicationStateChanged(Qt::ApplicationState)), this, SLOT(on_application_state_changed(Qt::ApplicationState)));
 
   load_file();
 }
@@ -125,6 +127,14 @@ AOConfigPrivate::~AOConfigPrivate()
 
 void AOConfigPrivate::load_file()
 {
+  first_launch = cfg.value("first_launch", true).toBool();
+
+  if (first_launch)
+  {
+    cfg.setValue("first_launch", false);
+    cfg.sync();
+  }
+
   autosave = cfg.value("autosave", true).toBool();
 
   { // notifications
@@ -392,6 +402,11 @@ bool AOConfig::get_bool(QString p_name, bool p_default) const
 int AOConfig::get_number(QString p_name, int p_default) const
 {
   return d->cfg.value(p_name, p_default).toInt();
+}
+
+bool AOConfig::first_launch() const
+{
+  return d->first_launch;
 }
 
 bool AOConfig::autosave() const

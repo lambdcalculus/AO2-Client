@@ -58,7 +58,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
 
   // game
   ui_theme = AO_GUI_WIDGET(QComboBox, "theme");
-  ui_reload_theme = AO_GUI_WIDGET(QPushButton, "theme_reload");
+  ui_switch_theme = AO_GUI_WIDGET(QPushButton, "switch_theme");
+  ui_reload_theme = AO_GUI_WIDGET(QPushButton, "reload_theme");
   ui_gamemode = AO_GUI_WIDGET(QLineEdit, "gamemode");
   ui_manual_gamemode = AO_GUI_WIDGET(QComboBox, "manual_gamemode");
   ui_manual_gamemode_selection = AO_GUI_WIDGET(QCheckBox, "manual_gamemode_selection");
@@ -162,15 +163,12 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(theme_changed(QString)), this, SLOT(on_theme_changed(QString)));
   connect(m_config, SIGNAL(gamemode_changed(QString)), this, SLOT(on_gamemode_changed(QString)));
   connect(m_config, SIGNAL(manual_gamemode_changed(QString)), this, SLOT(on_manual_gamemode_changed(QString)));
-  connect(m_config, SIGNAL(manual_gamemode_selection_changed(bool)), this,
-          SLOT(on_manual_gamemode_selection_changed(bool)));
+  connect(m_config, SIGNAL(manual_gamemode_selection_changed(bool)), this, SLOT(on_manual_gamemode_selection_changed(bool)));
   connect(m_config, SIGNAL(timeofday_changed(QString)), this, SLOT(on_timeofday_changed(QString)));
   connect(m_config, SIGNAL(manual_timeofday_changed(QString)), this, SLOT(on_manual_timeofday_changed(QString)));
-  connect(m_config, SIGNAL(manual_timeofday_selection_changed(bool)), this,
-          SLOT(on_manual_timeofday_selection_changed(bool)));
+  connect(m_config, SIGNAL(manual_timeofday_selection_changed(bool)), this, SLOT(on_manual_timeofday_selection_changed(bool)));
   connect(m_config, SIGNAL(showname_changed(QString)), ui_showname, SLOT(setText(QString)));
-  connect(m_config, SIGNAL(showname_placeholder_changed(QString)), this,
-          SLOT(on_showname_placeholder_changed(QString)));
+  connect(m_config, SIGNAL(showname_placeholder_changed(QString)), this, SLOT(on_showname_placeholder_changed(QString)));
   connect(m_config, SIGNAL(searchable_iniswap_changed(bool)), ui_searchable_iniswap, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(always_pre_changed(bool)), ui_always_pre, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(chat_tick_interval_changed(int)), ui_chat_tick_interval, SLOT(setValue(int)));
@@ -181,40 +179,31 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(log_max_lines_changed(int)), ui_log_max_lines, SLOT(setValue(int)));
   connect(m_config, SIGNAL(log_display_timestamp_changed(bool)), ui_log_display_timestamp, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_display_client_id_changed(bool)), ui_log_display_client_id, SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(log_display_self_highlight_changed(bool)), ui_log_display_self_highlight,
-          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_display_self_highlight_changed(bool)), ui_log_display_self_highlight, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_format_use_newline_changed(bool)), ui_log_format_use_newline, SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(log_display_empty_messages_changed(bool)), ui_log_display_empty_messages,
-          SLOT(setChecked(bool)));
-  connect(m_config, SIGNAL(log_display_music_switch_changed(bool)), ui_log_display_music_switch,
-          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_display_empty_messages_changed(bool)), ui_log_display_empty_messages, SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(log_display_music_switch_changed(bool)), ui_log_display_music_switch, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(log_is_topdown_changed(bool)), this, SLOT(on_log_is_topdown_changed(bool)));
   connect(m_config, SIGNAL(log_is_recording_changed(bool)), ui_log_is_recording, SLOT(setChecked(bool)));
 
   // audio
   connect(m_config, SIGNAL(master_volume_changed(int)), ui_master, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(suppress_background_audio_changed(bool)), ui_suppress_background_audio,
-          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(suppress_background_audio_changed(bool)), ui_suppress_background_audio, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(system_volume_changed(int)), ui_system, SLOT(setValue(int)));
   connect(m_config, SIGNAL(effect_volume_changed(int)), ui_effect, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(effect_ignore_suppression_changed(bool)), ui_effect_ignore_suppression,
-          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(effect_ignore_suppression_changed(bool)), ui_effect_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(music_volume_changed(int)), ui_music, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(music_ignore_suppression_changed(bool)), ui_music_ignore_suppression,
-          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(music_ignore_suppression_changed(bool)), ui_music_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(video_volume_changed(int)), ui_video, SLOT(setValue(int)));
-  connect(m_config, SIGNAL(video_ignore_suppression_changed(bool)), ui_video_ignore_suppression,
-          SLOT(setChecked(bool)));
+  connect(m_config, SIGNAL(video_ignore_suppression_changed(bool)), ui_video_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_volume_changed(int)), ui_blip, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blip_ignore_suppression_changed(bool)), ui_blip_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_rate_changed(int)), ui_blip_rate, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blank_blips_changed(bool)), ui_blank_blips, SLOT(setChecked(bool)));
 
   connect(m_engine, SIGNAL(current_device_changed(DRAudioDevice)), this, SLOT(on_audio_device_changed(DRAudioDevice)));
-  connect(m_engine, SIGNAL(device_list_changed(QVector<DRAudioDevice>)), this,
-          SLOT(on_audio_device_list_changed(QVector<DRAudioDevice>)));
-  connect(m_engine, SIGNAL(favorite_device_changed(DRAudioDevice)), this,
-          SLOT(on_favorite_audio_device_changed(DRAudioDevice)));
+  connect(m_engine, SIGNAL(device_list_changed(QVector<DRAudioDevice>)), this, SLOT(on_audio_device_list_changed(QVector<DRAudioDevice>)));
+  connect(m_engine, SIGNAL(favorite_device_changed(DRAudioDevice)), this, SLOT(on_favorite_audio_device_changed(DRAudioDevice)));
 
   // meta
   connect(ui_close, SIGNAL(clicked()), this, SLOT(close()));
@@ -231,18 +220,15 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_discord_hide_character, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_hide_character(const bool)));
 
   // game
-  connect(ui_theme, SIGNAL(currentIndexChanged(QString)), m_config, SLOT(set_theme(QString)));
+  connect(ui_theme, SIGNAL(currentTextChanged(QString)), this, SLOT(update_theme_controls()));
+  connect(ui_switch_theme, SIGNAL(clicked()), this, SLOT(on_switch_theme_clicked()));
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
   connect(ui_reload_character, SIGNAL(clicked()), this, SLOT(on_reload_character_clicked()));
   connect(ui_reload_audiotracks, SIGNAL(clicked()), this, SLOT(on_reload_audiotracks_clicked()));
-  connect(ui_manual_gamemode, SIGNAL(currentIndexChanged(QString)), this,
-          SLOT(on_manual_gamemode_index_changed(QString)));
-  connect(ui_manual_gamemode_selection, SIGNAL(toggled(bool)), m_config,
-          SLOT(set_manual_gamemode_selection_enabled(bool)));
-  connect(ui_manual_timeofday, SIGNAL(currentIndexChanged(QString)), this,
-          SLOT(on_manual_timeofday_index_changed(QString)));
-  connect(ui_manual_timeofday_selection, SIGNAL(toggled(bool)), m_config,
-          SLOT(set_manual_timeofday_selection_enabled(bool)));
+  connect(ui_manual_gamemode, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_manual_gamemode_index_changed(QString)));
+  connect(ui_manual_gamemode_selection, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_gamemode_selection_enabled(bool)));
+  connect(ui_manual_timeofday, SIGNAL(currentIndexChanged(QString)), this, SLOT(on_manual_timeofday_index_changed(QString)));
+  connect(ui_manual_timeofday_selection, SIGNAL(toggled(bool)), m_config, SLOT(set_manual_timeofday_selection_enabled(bool)));
   connect(ui_showname, SIGNAL(editingFinished()), this, SLOT(showname_editing_finished()));
   connect(ui_searchable_iniswap, SIGNAL(toggled(bool)), m_config, SLOT(set_searchable_iniswap(bool)));
   connect(ui_always_pre, SIGNAL(toggled(bool)), m_config, SLOT(set_always_pre(bool)));
@@ -393,21 +379,27 @@ void AOConfigPanel::showEvent(QShowEvent *event)
 
 void AOConfigPanel::refresh_theme_list()
 {
-  ui_theme->blockSignals(true);
-  ui_theme->clear();
+  const QString l_current_theme = ui_theme->currentText();
 
-  // themes
-  const QString path = DRPather::get_application_path() + "/base/themes";
-  for (const QString &i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
+  ui_theme->clear();
+  std::optional<int> l_theme_index;
+  const QString l_theme_dir = DRPather::get_application_path() + "/base/themes";
+  for (const QFileInfo &i_info : QDir(ao_app->get_case_sensitive_path(l_theme_dir)).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot))
   {
-    if (i_folder == "." || i_folder == "..")
-      continue;
-    ui_theme->addItem(i_folder);
+    const QString l_theme = i_info.fileName();
+    if (l_theme == l_current_theme)
+    {
+      l_theme_index = ui_theme->count();
+    }
+    ui_theme->addItem(l_theme);
   }
 
-  // restore previous selection
-  ui_theme->setCurrentText(m_config->theme());
-  ui_theme->blockSignals(false);
+  if (l_theme_index.has_value())
+  {
+    ui_theme->setCurrentIndex(l_theme_index.value());
+  }
+
+  update_theme_controls();
 }
 
 void AOConfigPanel::refresh_gamemode_list()
@@ -498,6 +490,18 @@ void AOConfigPanel::update_audio_device_list()
       ui_device->setItemData(l_item_index, QColor(Qt::green), Qt::BackgroundRole);
   }
   ui_device->setCurrentIndex(l_prev_driver_index.value_or(l_current_driver_index.value_or(0)));
+}
+
+void AOConfigPanel::update_theme_controls()
+{
+  const bool l_different_theme = ui_theme->currentText() != m_config->theme();
+  ui_switch_theme->setVisible(l_different_theme);
+  ui_reload_theme->setHidden(l_different_theme);
+}
+
+void AOConfigPanel::on_switch_theme_clicked()
+{
+  m_config->set_theme(ui_theme->currentText());
 }
 
 void AOConfigPanel::on_reload_theme_clicked()

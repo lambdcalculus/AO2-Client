@@ -50,7 +50,6 @@ int main(int argc, char *argv[])
   int l_exit_code = 0;
   {
     AOConfig l_config;
-    l_config.load_file();
 
     DRMediaTester tester;
 

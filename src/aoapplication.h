@@ -228,6 +228,7 @@ private slots:
   void _p_handle_server_packet(DRPacket);
   void on_courtroom_closing();
   void on_courtroom_destroyed();
+  void resolve_current_theme();
   void handle_theme_modification();
   void handle_character_reloading();
   void handle_audiotracks_reloading();

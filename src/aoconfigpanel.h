@@ -46,6 +46,8 @@ private:
   void update_audio_device_list();
 
 private slots:
+  void update_theme_controls();
+  void on_switch_theme_clicked();
   void on_reload_theme_clicked();
   void on_reload_character_clicked();
   void on_reload_audiotracks_clicked();
@@ -121,6 +123,7 @@ private:
 
   // game
   QComboBox *ui_theme = nullptr;
+  QPushButton *ui_switch_theme = nullptr;
   QPushButton *ui_reload_theme = nullptr;
   QLineEdit *ui_gamemode = nullptr;
   QComboBox *ui_manual_gamemode = nullptr;
