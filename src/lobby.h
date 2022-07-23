@@ -3,6 +3,11 @@
 
 #include "datatypes.h"
 
+#include <QMainWindow>
+#include <QModelIndex>
+
+#include <optional>
+
 class AOApplication;
 class AOButton;
 class AOConfig;
@@ -11,14 +16,10 @@ class DRChatLog;
 class DRMasterClient;
 class DRTextEdit;
 
-#include <QMainWindow>
-#include <QModelIndex>
-
 class QListWidget;
 class QLineEdit;
 class QProgressBar;
 class QTextBrowser;
-
 class Lobby : public QMainWindow
 {
   Q_OBJECT
@@ -89,6 +90,12 @@ private:
   QProgressBar *ui_progress_bar = nullptr;
   AOButton *ui_cancel = nullptr;
 
+  QMenu *ui_server_menu;
+  std::optional<int> m_server_list_index;
+  QAction *ui_create_server;
+  QAction *ui_modify_server;
+  QAction *ui_delete_server;
+
   void load_settings();
   void save_settings();
 
@@ -122,6 +129,10 @@ private slots:
   void on_config_pressed();
   void on_config_released();
   void connect_to_server(int row);
+
+  void show_server_context_menu(QPoint);
+  void prompt_server_info_editor();
+  void prompt_delete_server();
 
   void _p_on_connecting_to_server();
   void _p_on_connected_to_server();

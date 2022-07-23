@@ -10,10 +10,12 @@
 #include "drchatlog.h"
 #include "drmasterclient.h"
 #include "drpacket.h"
+#include "drserverinfoeditor.h"
 #include "drtextedit.h"
 #include "theme.h"
 #include "version.h"
 
+#include <QAction>
 #include <QCollator>
 #include <QDebug>
 #include <QFile>
@@ -22,6 +24,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPixmap>
 #include <QProgressBar>
@@ -51,6 +54,14 @@ Lobby::Lobby(AOApplication *p_ao_app)
   ui_version->setReadOnly(true);
   ui_config_panel = new AOButton(this, ao_app);
   ui_server_list = new QListWidget(this);
+  ui_server_list->setContextMenuPolicy(Qt::CustomContextMenu);
+
+  ui_server_menu = new QMenu(this);
+  ui_server_menu->addSection(tr("Server"));
+  ui_create_server = ui_server_menu->addAction(tr("Add"));
+  ui_modify_server = ui_server_menu->addAction(tr("Edit"));
+  ui_delete_server = ui_server_menu->addAction(tr("Remove"));
+
   ui_player_count = new DRTextEdit(this);
   ui_player_count->setFrameStyle(QFrame::NoFrame);
   ui_player_count->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -72,28 +83,41 @@ Lobby::Lobby(AOApplication *p_ao_app)
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(update_widgets()));
-  connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(update_widgets()));
-  connect(ao_config, SIGNAL(server_advertiser_changed(QString)), m_master_client, SLOT(set_address(QString)));
-  connect(m_master_client, SIGNAL(address_changed()), this, SLOT(request_advertiser_update()));
-  connect(m_master_client, SIGNAL(motd_changed()), this, SLOT(update_motd()));
-  connect(m_master_client, SIGNAL(server_list_changed()), this, SLOT(update_server_list()));
-
   connect(ao_app, SIGNAL(connecting_to_server()), this, SLOT(_p_on_connecting_to_server()));
   connect(ao_app, SIGNAL(connected_to_server()), this, SLOT(_p_on_connected_to_server()));
   connect(ao_app, SIGNAL(closed_connection_to_server()), this, SLOT(_p_on_closed_connection_to_server()));
   connect(ao_app, SIGNAL(disconnected_from_server()), this, SLOT(_p_on_disconnected_from_server()));
 
+  connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(update_widgets()));
+  connect(ao_config, SIGNAL(server_advertiser_changed(QString)), m_master_client, SLOT(set_address(QString)));
+
+  connect(m_master_client, SIGNAL(address_changed()), this, SLOT(request_advertiser_update()));
+  connect(m_master_client, SIGNAL(motd_changed()), this, SLOT(update_motd()));
+  connect(m_master_client, SIGNAL(server_list_changed()), this, SLOT(update_server_list()));
+
   connect(ui_public_server_filter, SIGNAL(clicked()), this, SLOT(toggle_public_server_filter()));
+
   connect(ui_favorite_server_filter, SIGNAL(clicked()), this, SLOT(toggle_favorite_server_filter()));
+
   connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
   connect(ui_refresh, SIGNAL(released()), this, SLOT(on_refresh_released()));
+
   connect(ui_toggle_favorite, SIGNAL(pressed()), this, SLOT(on_add_to_fav_pressed()));
   connect(ui_toggle_favorite, SIGNAL(released()), this, SLOT(on_add_to_fav_released()));
+
   connect(ui_connect, SIGNAL(pressed()), this, SLOT(on_connect_pressed()));
   connect(ui_connect, SIGNAL(released()), this, SLOT(on_connect_released()));
+
   connect(ui_config_panel, SIGNAL(pressed()), this, SLOT(on_config_pressed()));
   connect(ui_config_panel, SIGNAL(released()), this, SLOT(on_config_released()));
+
   connect(ui_server_list, SIGNAL(currentRowChanged(int)), this, SLOT(connect_to_server(int)));
+  connect(ui_server_list, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(show_server_context_menu(QPoint)));
+
+  connect(ui_create_server, SIGNAL(triggered(bool)), this, SLOT(prompt_server_info_editor()));
+  connect(ui_modify_server, SIGNAL(triggered(bool)), this, SLOT(prompt_server_info_editor()));
+  connect(ui_delete_server, SIGNAL(triggered(bool)), this, SLOT(prompt_delete_server()));
+
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
   load_settings();
@@ -131,8 +155,7 @@ void Lobby::update_widgets()
   ui_background->set_theme_image("lobbybackground.png");
 
   set_size_and_pos(ui_public_server_filter, "public_servers", LOBBY_DESIGN_INI, ao_app);
-  ui_public_server_filter->set_image(m_server_filter == PublicOnly ? "publicservers_selected.png"
-                                                                   : "publicservers.png");
+  ui_public_server_filter->set_image(m_server_filter == PublicOnly ? "publicservers_selected.png" : "publicservers.png");
 
   set_size_and_pos(ui_favorite_server_filter, "favorites", LOBBY_DESIGN_INI, ao_app);
   ui_favorite_server_filter->set_image(m_server_filter == FavoriteOnly ? "favorites_selected.png" : "favorites.png");
@@ -300,9 +323,9 @@ void Lobby::load_favorite_server_list()
     l_ini.beginGroup(i_group);
     DRServerInfo l_server;
     l_server.name = l_ini.value("name").toString();
+    l_server.description = l_ini.value("description").toString();
     l_server.address = l_ini.value("address").toString();
     l_server.port = l_ini.value("port").toInt();
-    l_server.favorite = true;
     l_server_list.append(std::move(l_server));
     l_ini.endGroup();
   }
@@ -325,9 +348,9 @@ void Lobby::load_legacy_favorite_server_list()
       f_server.address = l_contents.at(0);
       f_server.port = l_contents.at(1).toInt();
       f_server.name = l_contents.at(2);
-      f_server.favorite = true;
       l_server_list.append(std::move(f_server));
     }
+    l_file.remove();
   }
   set_favorite_server_list(l_server_list);
 }
@@ -343,6 +366,7 @@ void Lobby::save_favorite_server_list()
     const DRServerInfo &i_server = m_favorite_server_list.at(i);
     l_ini.beginGroup(QString::number(i));
     l_ini.setValue("name", i_server.name);
+    l_ini.setValue("description", i_server.description);
     l_ini.setValue("address", i_server.address);
     l_ini.setValue("port", i_server.port);
     l_ini.endGroup();
@@ -377,6 +401,7 @@ void Lobby::update_server_list()
 void Lobby::set_favorite_server_list(DRServerInfoList p_server_list)
 {
   m_favorite_server_list = p_server_list;
+  save_favorite_server_list();
   update_combined_server_list();
   emit favorite_server_list_changed();
 }
@@ -392,15 +417,18 @@ void Lobby::update_server_listing()
   ui_server_list->clear();
   const QIcon l_favorite_icon = QPixmap(ao_app->find_theme_asset_path("favorite_server.png"));
   const QBrush l_favorite_color = ao_app->get_color("favorite_server_color", LOBBY_DESIGN_INI);
-  for (const DRServerInfo &l_server : qAsConst(m_combined_server_list))
+  for (int i = 0; i < m_combined_server_list.length(); ++i)
   {
+    const DRServerInfo &l_server = m_combined_server_list.at(i);
     QListWidgetItem *l_server_item = new QListWidgetItem;
     ui_server_list->addItem(l_server_item);
     l_server_item->setText(l_server.name);
-    if (l_server.favorite)
+    l_server_item->setData(Qt::UserRole, false);
+    if (i < m_favorite_server_list.length())
     {
       l_server_item->setIcon(l_favorite_icon);
       l_server_item->setBackground(l_favorite_color);
+      l_server_item->setData(Qt::UserRole, true);
     }
   }
   filter_server_listing();
@@ -411,7 +439,7 @@ void Lobby::filter_server_listing()
   for (int i = 0; i < ui_server_list->count(); ++i)
   {
     QListWidgetItem *l_server_item = ui_server_list->item(i);
-    l_server_item->setHidden(m_server_filter == (m_combined_server_list.at(i).favorite ? PublicOnly : FavoriteOnly));
+    l_server_item->setHidden(m_server_filter == (l_server_item->data(Qt::UserRole).toBool() ? PublicOnly : FavoriteOnly));
   }
   select_current_server();
 }
@@ -445,8 +473,7 @@ void Lobby::toggle_favorite_server_filter()
 
 void Lobby::update_server_filter_buttons()
 {
-  ui_public_server_filter->set_image(m_server_filter == PublicOnly ? "publicservers_selected.png"
-                                                                   : "publicservers.png");
+  ui_public_server_filter->set_image(m_server_filter == PublicOnly ? "publicservers_selected.png" : "publicservers.png");
   ui_favorite_server_filter->set_image(m_server_filter == FavoriteOnly ? "favorites_selected.png" : "favorites.png");
   filter_server_listing();
 }
@@ -471,24 +498,16 @@ void Lobby::on_add_to_fav_pressed()
 void Lobby::on_add_to_fav_released()
 {
   ui_toggle_favorite->set_image("addtofav.png");
-  DRServerInfoList l_new_list = m_favorite_server_list;
-  if (m_current_server.favorite)
+  DRServerInfoList l_server_info_list = m_favorite_server_list;
+  if (m_favorite_server_list.contains(m_current_server))
   {
-    l_new_list.removeAll(m_current_server);
+    l_server_info_list.removeAll(m_current_server);
   }
-  else if (!m_favorite_server_list.contains(m_current_server))
+  else
   {
-    m_current_server.favorite = true;
-
-    const QString l_new_name =
-        QInputDialog::getText(this, windowTitle(), "Name", QLineEdit::Normal, m_current_server.name);
-    if (!l_new_name.isEmpty())
-      m_current_server.name = l_new_name;
-
-    l_new_list.append(m_current_server);
+    l_server_info_list.append(m_current_server);
   }
-  set_favorite_server_list(l_new_list);
-  save_favorite_server_list();
+  set_favorite_server_list(l_server_info_list);
 }
 
 void Lobby::on_connect_pressed()
@@ -508,12 +527,10 @@ void Lobby::on_connect_released()
       l_reason = "The server did not report any client version.";
       break;
     case VersionStatus::ServerOutdated:
-      l_reason = QString("The server is outdated.<br />(Server version: <b>%1</b>, expected version: <b>%2</b>)")
-                     .arg(ao_app->get_server_client_version().to_string(), get_version_number().to_string());
+      l_reason = QString("The server is outdated.<br />(Server version: <b>%1</b>, expected version: <b>%2</b>)").arg(ao_app->get_server_client_version().to_string(), get_version_number().to_string());
       break;
     case VersionStatus::ClientOutdated:
-      l_reason = QString("Your client is outdated.<br />(Client version: <b>%1</b>, expected version: <b>%2</b>)")
-                     .arg(get_version_number().to_string(), ao_app->get_server_client_version().to_string());
+      l_reason = QString("Your client is outdated.<br />(Client version: <b>%1</b>, expected version: <b>%2</b>)").arg(get_version_number().to_string(), ao_app->get_server_client_version().to_string());
       break;
     default:
       break;
@@ -550,6 +567,65 @@ void Lobby::connect_to_server(int p_row)
   {
     ui_player_count->setText(nullptr);
     ao_app->connect_to_server(m_current_server);
+  }
+}
+
+void Lobby::show_server_context_menu(QPoint p_point)
+{
+  const QPoint l_global_point = ui_server_list->viewport()->mapToGlobal(p_point);
+
+  m_server_list_index.reset();
+  const auto l_item = ui_server_list->indexAt(p_point);
+  ui_create_server->setEnabled(true);
+  ui_modify_server->setDisabled(true);
+  ui_delete_server->setDisabled(true);
+  if (l_item.isValid())
+  {
+    m_server_list_index = l_item.row();
+
+    if (l_item.row() < m_favorite_server_list.length())
+    {
+      ui_create_server->setDisabled(true);
+      ui_modify_server->setEnabled(true);
+      ui_delete_server->setEnabled(true);
+    }
+  }
+  ui_server_menu->popup(l_global_point);
+}
+
+void Lobby::prompt_server_info_editor()
+{
+  DRServerInfoEditor l_editor(this);
+  l_editor.setWindowTitle(tr("Add server"));
+  if (m_server_list_index.has_value())
+  {
+    l_editor.set_server_info(m_combined_server_list.at(m_server_list_index.value()));
+  }
+  if (l_editor.exec())
+  {
+    auto l_server_info = l_editor.get_server_info();
+    auto l_server_info_list = m_favorite_server_list;
+    if (m_server_list_index.has_value() && m_server_list_index.value() < l_server_info_list.length())
+    {
+      l_server_info_list.replace(m_server_list_index.value(), l_server_info);
+    }
+    else
+    {
+      l_server_info_list.append(l_server_info);
+    }
+    set_favorite_server_list(l_server_info_list);
+  }
+}
+
+void Lobby::prompt_delete_server()
+{
+  const auto l_server_index = m_server_list_index.value();
+  const auto l_server = m_combined_server_list.at(l_server_index);
+  if (prompt_warning(tr("Are you sure you wish to remove the server %1?").arg(l_server.name)))
+  {
+    auto l_server_list = m_favorite_server_list;
+    l_server_list.remove(l_server_index);
+    set_favorite_server_list(l_server_list);
   }
 }
 

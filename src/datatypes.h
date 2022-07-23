@@ -119,7 +119,6 @@ public:
   QString description;
   QString address;
   int port;
-  bool favorite = false;
 
   QString to_info() const;
   QString to_address() const;

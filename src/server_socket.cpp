@@ -127,19 +127,6 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     is_courtroom_loaded = false;
 
     DRServerInfo l_current_server = m_lobby->get_selected_server();
-    if (l_current_server.favorite)
-    {
-      const QString l_current_server_address = l_current_server.to_address();
-      const DRServerInfoList l_server_list = m_lobby->get_combined_server_list();
-      for (const DRServerInfo &i_server : qAsConst(l_server_list))
-      {
-        if (l_current_server_address != i_server.to_address())
-          continue;
-        l_current_server.name = i_server.name;
-        break;
-      }
-    }
-
     QString l_window_title = "Danganronpa Online (" + get_version_string() + ")";
     if (!l_current_server.name.isEmpty())
       l_window_title = l_window_title + ": " + l_current_server.to_info();
@@ -162,8 +149,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     QVector<char_type> l_chr_list = m_courtroom->get_character_list();
     if (l_content.length() != l_chr_list.length())
     {
-      qWarning() << "Server sent a character list of length " << l_content.length()
-                 << "which is different from the expected length " << l_chr_list.length() << "so ignoring it.";
+      qWarning() << "Server sent a character list of length " << l_content.length() << "which is different from the expected length " << l_chr_list.length() << "so ignoring it.";
       return;
     }
 
@@ -182,8 +168,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       char_type l_chr;
       l_chr.name = i_chr_name;
       l_chr_list.append(std::move(l_chr));
-      m_lobby->set_loading_text("Loading chars:\n" + QString::number(++m_loaded_characters) + "/" +
-                                QString::number(m_character_count));
+      m_lobby->set_loading_text("Loading chars:\n" + QString::number(++m_loaded_characters) + "/" + QString::number(m_character_count));
     }
     m_courtroom->set_character_list(l_chr_list);
 
@@ -226,11 +211,9 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     m_courtroom->set_music_list(l_music_list);
 
     m_loaded_music = m_music_count;
-    m_lobby->set_loading_text("Loading music:\n" + QString::number(m_loaded_music) + "/" +
-                              QString::number(m_music_count));
+    m_lobby->set_loading_text("Loading music:\n" + QString::number(m_loaded_music) + "/" + QString::number(m_music_count));
     int total_loading_size = m_character_count + m_evidence_count + m_music_count;
-    int loading_value =
-        ((m_loaded_characters + m_loaded_evidence + m_loaded_music) / static_cast<double>(total_loading_size)) * 100;
+    int loading_value = ((m_loaded_characters + m_loaded_evidence + m_loaded_music) / static_cast<double>(total_loading_size)) * 100;
     m_lobby->set_loading_value(loading_value);
     send_server_packet(DRPacket("RD"));
   }

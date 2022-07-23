@@ -57,6 +57,7 @@ HEADERS += \
   src/drpather.h \
   src/drposition.h \
   src/drscenemovie.h \
+  src/drserverinfoeditor.h \
   src/drserversocket.h \
   src/drshoutmovie.h \
   src/drsplashmovie.h \
@@ -131,6 +132,7 @@ SOURCES += \
   src/drpather.cpp \
   src/drposition.cpp \
   src/drscenemovie.cpp \
+  src/drserverinfoeditor.cpp \
   src/drserversocket.cpp \
   src/drshoutmovie.cpp \
   src/drsplashmovie.cpp \
@@ -175,7 +177,8 @@ RESOURCES += \
 DISTFILES +=
 
 FORMS += \
-  res/ui/config_panel.ui
+  res/ui/config_panel.ui \
+  src/drserverinfoeditor.ui
 
 # Mac stuff
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.13
