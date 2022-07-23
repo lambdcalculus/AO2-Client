@@ -10,6 +10,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QRegExp>
 
 // Copied over from Vanilla.
 // As said in the comments there, this is a *super broad* definition.
@@ -92,12 +93,25 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
     return p_file;
   }
 
-  QFileInfo l_file_info(p_file);
-  const QDir l_dir(l_file_info.absolutePath());
-  const QString l_file_name = l_file_info.fileName();
-  const QStringList l_file_list = l_dir.entryList();
-  const QRegExp l_regex = QRegExp(l_file_name, Qt::CaseInsensitive, QRegExp::FixedString);
-  return l_file_list.value(l_file_list.indexOf(l_regex), l_file_name);
+  const auto l_dir_path = get_case_sensitive_path(QFileInfo(p_file).absolutePath());
+  if (l_dir_path.isEmpty())
+  {
+    return p_file;
+  }
+
+  const QDir l_dir(l_dir_path);
+  const auto l_file_list = l_dir.entryList(QDir::Files);
+  const auto l_regex = QRegExp(p_file, Qt::CaseInsensitive, QRegExp::FixedString);
+  for (auto &i_file : l_file_list)
+  {
+    const QString l_file_path = l_dir.absoluteFilePath(i_file);
+    if (l_regex.exactMatch(l_file_path))
+    {
+      p_file = l_file_path;
+      break;
+    }
+  }
+  return p_file;
 }
 #endif
 
