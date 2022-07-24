@@ -2129,7 +2129,9 @@ void Courtroom::on_ooc_message_return_pressed()
 
 void Courtroom::on_pos_dropdown_changed()
 {
-  set_judge_enabled(get_current_position() == "jud");
+  const QString l_pos = get_current_position();
+  set_judge_enabled(l_pos == "jud");
+  send_ooc_packet("/pos " + l_pos);
   ui_ic_chat_message_field->setFocus();
 }
 
