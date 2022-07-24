@@ -95,6 +95,9 @@ private:
   QAction *ui_create_server;
   QAction *ui_modify_server;
   QAction *ui_delete_server;
+  QMenu *ui_swap_with;
+  QAction *ui_move_up_server;
+  QAction *ui_move_down_server;
 
   void load_settings();
   void save_settings();
@@ -133,6 +136,8 @@ private slots:
   void show_server_context_menu(QPoint);
   void prompt_server_info_editor();
   void prompt_delete_server();
+  void move_up_server();
+  void move_down_server();
 
   void _p_on_connecting_to_server();
   void _p_on_connected_to_server();

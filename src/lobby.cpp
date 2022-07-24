@@ -60,6 +60,8 @@ Lobby::Lobby(AOApplication *p_ao_app)
   ui_server_menu->addSection(tr("Server"));
   ui_create_server = ui_server_menu->addAction(tr("Add"));
   ui_modify_server = ui_server_menu->addAction(tr("Edit"));
+  ui_move_up_server = ui_server_menu->addAction(tr("Move up"));
+  ui_move_down_server = ui_server_menu->addAction(tr("Move down"));
   ui_delete_server = ui_server_menu->addAction(tr("Remove"));
 
   ui_player_count = new DRTextEdit(this);
@@ -117,6 +119,8 @@ Lobby::Lobby(AOApplication *p_ao_app)
   connect(ui_create_server, SIGNAL(triggered(bool)), this, SLOT(prompt_server_info_editor()));
   connect(ui_modify_server, SIGNAL(triggered(bool)), this, SLOT(prompt_server_info_editor()));
   connect(ui_delete_server, SIGNAL(triggered(bool)), this, SLOT(prompt_delete_server()));
+  connect(ui_move_up_server, SIGNAL(triggered(bool)), this, SLOT(move_up_server()));
+  connect(ui_move_down_server, SIGNAL(triggered(bool)), this, SLOT(move_down_server()));
 
   connect(ui_cancel, SIGNAL(clicked()), ao_app, SLOT(loading_cancelled()));
 
@@ -579,15 +583,19 @@ void Lobby::show_server_context_menu(QPoint p_point)
   ui_create_server->setEnabled(true);
   ui_modify_server->setDisabled(true);
   ui_delete_server->setDisabled(true);
+  ui_move_up_server->setDisabled(true);
+  ui_move_down_server->setDisabled(true);
   if (l_item.isValid())
   {
-    m_server_list_index = l_item.row();
-
-    if (l_item.row() < m_favorite_server_list.length())
+    const int l_item_row = l_item.row();
+    m_server_list_index = l_item_row;
+    if (l_item_row < m_favorite_server_list.length())
     {
       ui_create_server->setDisabled(true);
       ui_modify_server->setEnabled(true);
       ui_delete_server->setEnabled(true);
+      ui_move_up_server->setEnabled(l_item_row - 1 >= 0);
+      ui_move_down_server->setEnabled(l_item_row + 1 < m_favorite_server_list.length());
     }
   }
   ui_server_menu->popup(l_global_point);
@@ -627,6 +635,20 @@ void Lobby::prompt_delete_server()
     l_server_list.remove(l_server_index);
     set_favorite_server_list(l_server_list);
   }
+}
+
+void Lobby::move_up_server()
+{
+  auto l_server_list = m_favorite_server_list;
+  l_server_list.swapItemsAt(m_server_list_index.value(), m_server_list_index.value() - 1);
+  set_favorite_server_list(l_server_list);
+}
+
+void Lobby::move_down_server()
+{
+  auto l_server_list = m_favorite_server_list;
+  l_server_list.swapItemsAt(m_server_list_index.value(), m_server_list_index.value() + 1);
+  set_favorite_server_list(l_server_list);
 }
 
 void Lobby::_p_on_connecting_to_server()
