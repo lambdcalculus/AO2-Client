@@ -31,6 +31,8 @@
 #include <QScopedPointer>
 #include <QSettings>
 
+#include <utility>
+
 Lobby::Lobby(AOApplication *p_ao_app)
     : QMainWindow()
     , m_connection_state(NotConnectedState)
@@ -640,14 +642,16 @@ void Lobby::prompt_delete_server()
 void Lobby::move_up_server()
 {
   auto l_server_list = m_favorite_server_list;
-  l_server_list.swapItemsAt(m_server_list_index.value(), m_server_list_index.value() - 1);
+  const int l_server_index = m_server_list_index.value();
+  std::swap(l_server_list.begin()[l_server_index], l_server_list.begin()[l_server_index - 1]);
   set_favorite_server_list(l_server_list);
 }
 
 void Lobby::move_down_server()
 {
   auto l_server_list = m_favorite_server_list;
-  l_server_list.swapItemsAt(m_server_list_index.value(), m_server_list_index.value() + 1);
+  const int l_server_index = m_server_list_index.value();
+  std::swap(l_server_list.begin()[l_server_index], l_server_list.begin()[l_server_index + 1]);
   set_favorite_server_list(l_server_list);
 }
 
