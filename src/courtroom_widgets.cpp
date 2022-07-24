@@ -313,11 +313,10 @@ void Courtroom::connect_widgets()
 
   connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
   connect(ui_iniswap_dropdown, SIGNAL(activated(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
-  connect(ui_pos_dropdown, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed(int)));
+  connect(ui_pos_dropdown, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed()));
 
   connect(ao_config, SIGNAL(showname_changed(QString)), this, SLOT(on_showname_changed(QString)));
-  connect(ao_config, SIGNAL(showname_placeholder_changed(QString)), this,
-          SLOT(on_showname_placeholder_changed(QString)));
+  connect(ao_config, SIGNAL(showname_placeholder_changed(QString)), this, SLOT(on_showname_placeholder_changed(QString)));
   connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(on_character_ini_changed()));
   connect(ui_ic_chat_showname, SIGNAL(editingFinished()), this, SLOT(on_ic_showname_editing_finished()));
   connect(ui_ic_chat_message_field, SIGNAL(returnPressed()), this, SLOT(on_ic_message_return_pressed()));
@@ -332,8 +331,7 @@ void Courtroom::connect_widgets()
 
   connect(ui_music_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_music_list_clicked()));
   connect(ui_music_list, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(on_music_list_double_clicked(QModelIndex)));
-  connect(ui_music_list, SIGNAL(customContextMenuRequested(QPoint)), this,
-          SLOT(on_music_list_context_menu_requested(QPoint)));
+  connect(ui_music_list, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_music_list_context_menu_requested(QPoint)));
 
   connect(ui_music_menu_play, SIGNAL(triggered()), this, SLOT(on_music_menu_play_triggered()));
   connect(ui_music_menu_insert_ooc, SIGNAL(triggered()), this, SLOT(on_music_menu_insert_ooc_triggered()));
@@ -387,10 +385,8 @@ void Courtroom::connect_widgets()
   connect(ui_flip, SIGNAL(clicked()), this, SLOT(on_flip_clicked()));
   connect(ui_hide_character, SIGNAL(clicked()), this, SLOT(on_hidden_clicked()));
 
-  connect(ui_sfx_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this,
-          SLOT(on_sfx_list_current_item_changed(QListWidgetItem *, QListWidgetItem *)));
-  connect(ui_sfx_list, SIGNAL(customContextMenuRequested(QPoint)), this,
-          SLOT(on_sfx_list_context_menu_requested(QPoint)));
+  connect(ui_sfx_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(on_sfx_list_current_item_changed(QListWidgetItem *, QListWidgetItem *)));
+  connect(ui_sfx_list, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_sfx_list_context_menu_requested(QPoint)));
 
   connect(ui_sfx_menu_preview, SIGNAL(triggered()), this, SLOT(on_sfx_menu_preview_triggered()));
   connect(ui_sfx_menu_insert_ooc, SIGNAL(triggered()), this, SLOT(on_sfx_menu_insert_ooc_triggered()));
@@ -833,8 +829,7 @@ void Courtroom::set_widgets()
   ui_effect_down->set_image("effectdown.png");
   ui_effect_down->hide();
 
-  if (ao_app->read_theme_ini_bool("enable_single_effect", COURTROOM_CONFIG_INI) &&
-      ui_effects.size() > 0) // check to prevent crashing
+  if (ao_app->read_theme_ini_bool("enable_single_effect", COURTROOM_CONFIG_INI) && ui_effects.size() > 0) // check to prevent crashing
   {
     for (auto &effect : ui_effects)
       move_widget(effect, "effect");
@@ -925,8 +920,7 @@ void Courtroom::set_widgets()
   // be moved to 0, 0 A similar behavior will occur if the button is resized to 0, 0 due to 'config_panel' not being
   // found in courtroom_design.ini This is to assist with people who switch to incompatible and/or smaller themes and
   // have the button disappear
-  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() || ui_config_panel->width() <= 0 ||
-      ui_config_panel->height() <= 0)
+  if (ui_config_panel->x() > width() || ui_config_panel->y() > height() || ui_config_panel->width() <= 0 || ui_config_panel->height() <= 0)
   {
     ui_config_panel->setVisible(true);
     ui_config_panel->move(0, 0);
@@ -1140,8 +1134,7 @@ void Courtroom::check_effects()
 
   for (int i = 0; i < ui_effects.size(); ++i)
   {
-    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), effect_names.at(i))},
-                                           animated_extensions());
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), effect_names.at(i))}, animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(effect_names.at(i), animated_extensions());
     effects_enabled[i] = (!path.isEmpty());
@@ -1159,8 +1152,7 @@ void Courtroom::check_shouts()
 
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
-    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), shout_names.at(i))},
-                                           animated_extensions());
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), shout_names.at(i))}, animated_extensions());
 
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(shout_names.at(i), animated_extensions());
@@ -1180,8 +1172,7 @@ void Courtroom::check_wtce()
 
   for (int i = 0; i < ui_wtce.size(); ++i)
   {
-    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), wtce_names.at(i))},
-                                           animated_extensions());
+    QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), wtce_names.at(i))}, animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(wtce_names.at(i), animated_extensions());
     wtce_enabled[i] = (!path.isEmpty());

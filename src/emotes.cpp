@@ -39,12 +39,13 @@ void Courtroom::construct_emotes()
 
   ui_emote_dropdown = new QComboBox(this);
   ui_pos_dropdown = new QComboBox(this);
-  ui_pos_dropdown->addItem("wit", "wit");
-  ui_pos_dropdown->addItem("def", "def");
-  ui_pos_dropdown->addItem("pro", "pro");
-  ui_pos_dropdown->addItem("jud", "jud");
-  ui_pos_dropdown->addItem("hld", "hld");
-  ui_pos_dropdown->addItem("hlp", "hlp");
+  ui_pos_dropdown->addItem("Default");
+  ui_pos_dropdown->addItem("Witness", "wit");
+  ui_pos_dropdown->addItem("Defense", "def");
+  ui_pos_dropdown->addItem("Prosecutor", "pro");
+  ui_pos_dropdown->addItem("Judge", "jud");
+  ui_pos_dropdown->addItem("Defense Assistant", "hld");
+  ui_pos_dropdown->addItem("Prosecutor Assistant", "hlp");
 
   construct_emote_page_layout();
 }
@@ -121,15 +122,13 @@ void Courtroom::refresh_emote_page(const bool p_scroll_to_current_emote)
     return;
 
   const int l_emote_count = m_emote_list.length();
-  const int l_page_count =
-      qFloor(l_emote_count / m_page_max_emote_count) + bool(l_emote_count % m_page_max_emote_count);
+  const int l_page_count = qFloor(l_emote_count / m_page_max_emote_count) + bool(l_emote_count % m_page_max_emote_count);
 
   if (p_scroll_to_current_emote)
     m_current_emote_page = m_emote_id / m_page_max_emote_count;
   m_current_emote_page = qBound(0, m_current_emote_page, l_page_count - 1);
 
-  const int l_current_page_emote_count =
-      qBound(0, l_emote_count - m_current_emote_page * m_page_max_emote_count, m_page_max_emote_count);
+  const int l_current_page_emote_count = qBound(0, l_emote_count - m_current_emote_page * m_page_max_emote_count, m_page_max_emote_count);
 
   if (m_current_emote_page + 1 < l_page_count)
     ui_emote_right->show();

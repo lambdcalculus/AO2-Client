@@ -452,6 +452,11 @@ private:
 
   QComboBox *ui_emote_dropdown = nullptr;
   QComboBox *ui_iniswap_dropdown = nullptr;
+
+  enum PositionIndex
+  {
+    DefaultPositionIndex,
+  };
   QComboBox *ui_pos_dropdown = nullptr;
 
   AOImageDisplay *ui_defense_bar = nullptr;
@@ -561,6 +566,7 @@ private:
   void fill_emote_dropdown();
   DREmote get_emote(const int id);
   DREmote get_current_emote();
+  QString get_current_position();
 
   void load_note();
   void save_note();
@@ -635,7 +641,7 @@ private slots:
   void on_emote_dropdown_changed(int p_index);
   void on_iniswap_dropdown_changed(int p_index);
   void update_iniswap_dropdown_searchable();
-  void on_pos_dropdown_changed(int p_index);
+  void on_pos_dropdown_changed();
 
   void on_cycle_clicked();
 
