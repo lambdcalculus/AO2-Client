@@ -92,15 +92,12 @@
      <property name="maximum">
       <number>65535</number>
      </property>
-     <property name="value">
-      <number>50000</number>
-     </property>
     </widget>
    </item>
    <item row="4" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="button_box">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
      </property>
     </widget>
    </item>

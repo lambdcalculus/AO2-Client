@@ -20,10 +20,9 @@ public:
 
 public slots:
   void set_server_info(DRServerInfo p_server_info);
+  void clear_server_info();
 
 private:
-  DRServerInfo m_server_info;
-
   QLineEdit *ui_name;
   QPlainTextEdit *ui_description;
   QLineEdit *ui_address;

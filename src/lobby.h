@@ -91,7 +91,13 @@ private:
   AOButton *ui_cancel = nullptr;
 
   QMenu *ui_server_menu;
-  std::optional<int> m_server_list_index;
+  std::optional<int> m_server_index;
+  enum ServerType
+  {
+    NoServerType,
+    FavoriteServer,
+  };
+  ServerType m_server_index_type = NoServerType;
   QAction *ui_create_server;
   QAction *ui_modify_server;
   QAction *ui_delete_server;
@@ -135,6 +141,8 @@ private slots:
 
   void show_server_context_menu(QPoint);
   void prompt_server_info_editor();
+  void create_server_info();
+  void modify_server_info();
   void prompt_delete_server();
   void move_up_server();
   void move_down_server();

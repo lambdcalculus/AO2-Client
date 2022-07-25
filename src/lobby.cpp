@@ -118,8 +118,8 @@ Lobby::Lobby(AOApplication *p_ao_app)
   connect(ui_server_list, SIGNAL(currentRowChanged(int)), this, SLOT(connect_to_server(int)));
   connect(ui_server_list, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(show_server_context_menu(QPoint)));
 
-  connect(ui_create_server, SIGNAL(triggered(bool)), this, SLOT(prompt_server_info_editor()));
-  connect(ui_modify_server, SIGNAL(triggered(bool)), this, SLOT(prompt_server_info_editor()));
+  connect(ui_create_server, SIGNAL(triggered(bool)), this, SLOT(create_server_info()));
+  connect(ui_modify_server, SIGNAL(triggered(bool)), this, SLOT(modify_server_info()));
   connect(ui_delete_server, SIGNAL(triggered(bool)), this, SLOT(prompt_delete_server()));
   connect(ui_move_up_server, SIGNAL(triggered(bool)), this, SLOT(move_up_server()));
   connect(ui_move_down_server, SIGNAL(triggered(bool)), this, SLOT(move_down_server()));
@@ -580,7 +580,8 @@ void Lobby::show_server_context_menu(QPoint p_point)
 {
   const QPoint l_global_point = ui_server_list->viewport()->mapToGlobal(p_point);
 
-  m_server_list_index.reset();
+  m_server_index.reset();
+  m_server_index_type = NoServerType;
   const auto l_item = ui_server_list->indexAt(p_point);
   ui_create_server->setEnabled(true);
   ui_modify_server->setDisabled(true);
@@ -590,10 +591,10 @@ void Lobby::show_server_context_menu(QPoint p_point)
   if (l_item.isValid())
   {
     const int l_item_row = l_item.row();
-    m_server_list_index = l_item_row;
+    m_server_index = l_item_row;
     if (l_item_row < m_favorite_server_list.length())
     {
-      ui_create_server->setDisabled(true);
+      m_server_index_type = FavoriteServer;
       ui_modify_server->setEnabled(true);
       ui_delete_server->setEnabled(true);
       ui_move_up_server->setEnabled(l_item_row - 1 >= 0);
@@ -606,18 +607,18 @@ void Lobby::show_server_context_menu(QPoint p_point)
 void Lobby::prompt_server_info_editor()
 {
   DRServerInfoEditor l_editor(this);
-  l_editor.setWindowTitle(tr("Add server"));
-  if (m_server_list_index.has_value())
+  l_editor.setWindowTitle(tr("Server Info Editor"));
+  if (m_server_index.has_value())
   {
-    l_editor.set_server_info(m_combined_server_list.at(m_server_list_index.value()));
+    l_editor.set_server_info(m_combined_server_list.at(m_server_index.value()));
   }
   if (l_editor.exec())
   {
     auto l_server_info = l_editor.get_server_info();
     auto l_server_info_list = m_favorite_server_list;
-    if (m_server_list_index.has_value() && m_server_list_index.value() < l_server_info_list.length())
+    if (m_server_index.has_value() && m_server_index.value() < l_server_info_list.length())
     {
-      l_server_info_list.replace(m_server_list_index.value(), l_server_info);
+      l_server_info_list.replace(m_server_index.value(), l_server_info);
     }
     else
     {
@@ -627,9 +628,23 @@ void Lobby::prompt_server_info_editor()
   }
 }
 
+void Lobby::create_server_info()
+{
+  if (m_server_index_type == FavoriteServer)
+  {
+    m_server_index.reset();
+  }
+  prompt_server_info_editor();
+}
+
+void Lobby::modify_server_info()
+{
+  prompt_server_info_editor();
+}
+
 void Lobby::prompt_delete_server()
 {
-  const auto l_server_index = m_server_list_index.value();
+  const auto l_server_index = m_server_index.value();
   const auto l_server = m_combined_server_list.at(l_server_index);
   if (prompt_warning(tr("Are you sure you wish to remove the server %1?").arg(l_server.name)))
   {
@@ -642,7 +657,7 @@ void Lobby::prompt_delete_server()
 void Lobby::move_up_server()
 {
   auto l_server_list = m_favorite_server_list;
-  const int l_server_index = m_server_list_index.value();
+  const int l_server_index = m_server_index.value();
   std::swap(l_server_list.begin()[l_server_index], l_server_list.begin()[l_server_index - 1]);
   set_favorite_server_list(l_server_list);
 }
@@ -650,7 +665,7 @@ void Lobby::move_up_server()
 void Lobby::move_down_server()
 {
   auto l_server_list = m_favorite_server_list;
-  const int l_server_index = m_server_list_index.value();
+  const int l_server_index = m_server_index.value();
   std::swap(l_server_list.begin()[l_server_index], l_server_list.begin()[l_server_index + 1]);
   set_favorite_server_list(l_server_list);
 }
