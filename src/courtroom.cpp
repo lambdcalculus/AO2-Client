@@ -1015,7 +1015,7 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
   l_file_list.insert(ViewportCharacterTalk, ao_app->get_character_sprite_talk_path(l_character, l_emote));
 
   // shouts
-  l_file_list.insert(ViewportShout, ao_app->get_theme_sprite_path(get_shout_name(l_shout_id), l_character));
+  l_file_list.insert(ViewportShout, ao_app->get_shout_sprite_path(l_character, get_shout_name(l_shout_id)));
 
   // effects
   l_file_list.insert(ViewportEffect, ao_app->get_theme_sprite_path(get_effect_name(l_effect_id)));

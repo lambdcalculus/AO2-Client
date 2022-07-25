@@ -5,7 +5,6 @@
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
-#include "drmasterclient.h"
 #include "drpacket.h"
 #include "drpather.h"
 #include "drserversocket.h"
@@ -284,8 +283,7 @@ QString AOApplication::get_character_sprite_talk_path(QString character, QString
 
 QString AOApplication::get_background_sprite_path(QString p_background_name, QString p_image)
 {
-  const QString l_target_filename =
-      find_asset_path(get_background_path(p_background_name) + "/" + p_image);
+  const QString l_target_filename = find_asset_path(get_background_path(p_background_name) + "/" + p_image);
   return l_target_filename;
 }
 
@@ -306,22 +304,24 @@ QString AOApplication::get_background_sfx_path(QString p_background, QString p_a
 
 QString AOApplication::get_shout_sprite_path(QString p_character, QString p_shout)
 {
-  QString l_file_name = find_asset_path(
-      {get_character_path(p_character, p_shout), get_character_path(p_character, p_shout + "_bubble")},
-      animated_extensions());
+  QStringList l_filepath_list{
+      get_character_path(p_character, p_shout),
+      get_character_path(p_character, p_shout + "_bubble"),
+  };
 
-  if (l_file_name.isEmpty())
+  QString l_filename = find_asset_path(l_filepath_list, animated_extensions());
+  if (l_filename.isEmpty())
   {
-    l_file_name = find_theme_asset_path(p_shout, animated_extensions());
+    l_filename = find_theme_asset_path(p_shout, animated_extensions());
   }
 
-  if (l_file_name.isEmpty())
+  if (l_filename.isEmpty())
   {
     qWarning() << "error: shout not found"
                << "character:" << p_character << "shout:" << p_shout;
   }
 
-  return l_file_name;
+  return l_filename;
 }
 
 QString AOApplication::get_theme_sprite_path(QString p_file_name, QString p_character)
