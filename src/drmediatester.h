@@ -11,7 +11,8 @@ public:
   DRMediaTester(QObject *parent = nullptr);
   ~DRMediaTester();
 
-private slots:
+signals:
+  void done();
 
 private:
   QMediaPlayer m_player;

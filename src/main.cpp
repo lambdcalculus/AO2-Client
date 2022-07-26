@@ -48,7 +48,8 @@ int main(int argc, char *argv[])
   {
     AOConfig l_config;
 
-    DRMediaTester tester;
+    DRMediaTester *l_media_tester = new DRMediaTester(&app);
+    QObject::connect(l_media_tester, SIGNAL(done()), l_media_tester, SLOT(deleteLater()));
 
     app.load_fonts();
     app.construct_lobby();
