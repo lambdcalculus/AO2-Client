@@ -1595,7 +1595,6 @@ void Courtroom::play_preanim()
 {
   // set state
   anim_state = 1;
-  ui_vp_player_char->show();
 
   if (m_msg_is_first_person)
   {
