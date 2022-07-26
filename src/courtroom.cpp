@@ -1135,6 +1135,12 @@ void Courtroom::handle_chatmessage()
   ui_vp_effect->stop();
   ui_vp_effect->hide();
 
+  ui_vp_message->clear();
+  ui_vp_chatbox->hide();
+  ui_vp_showname->hide();
+  ui_vp_showname_image->hide();
+  ui_vp_showname->setText(m_speaker_showname);
+
   /**
    * WARNING No check prior to changing will cause an unrecoverable
    * exception. You have been warned!
@@ -1218,12 +1224,6 @@ void Courtroom::handle_chatmessage_2() // handles IC
     m_shout_reload_theme = false;
     load_theme();
   }
-
-  ui_vp_message->clear();
-  ui_vp_chatbox->hide();
-  ui_vp_showname->hide();
-  ui_vp_showname_image->hide();
-  ui_vp_showname->setText(m_speaker_showname);
 
   const QString l_chatbox_name = ao_app->get_chat(m_chatmessage[CMChrName]);
   const bool l_is_self = (ao_config->log_display_self_highlight_enabled() && m_speaker_chr_id == m_chr_id);
