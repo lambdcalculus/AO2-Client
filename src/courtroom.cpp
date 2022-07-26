@@ -935,14 +935,7 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
   QString l_showname = p_chatmessage[CMShowName];
   if (l_showname.isEmpty() && !l_system_speaking)
   {
-    if (!m_chr_list.isEmpty())
-    {
-      l_showname = ao_app->get_showname(m_chr_list.at(l_message_chr_id).name);
-    }
-    else
-    {
-      l_showname = tr("???");
-    }
+    l_showname = ao_app->get_showname(p_chatmessage[CMChrName]);
   }
 
   const QString l_message = QString(p_chatmessage[CMMessage]).remove(QRegularExpression("(?<!\\\\)(\\{|\\})")).replace(QRegularExpression("\\\\(\\{|\\})"), "\\1");
@@ -1116,7 +1109,7 @@ void Courtroom::handle_chatmessage()
   QString f_showname = m_chatmessage[CMShowName];
   if (f_showname.isEmpty() && !is_system_speaking)
   {
-    f_showname = ao_app->get_showname(m_chr_list.at(m_speaker_chr_id).name);
+    f_showname = ao_app->get_showname(m_chatmessage[CMChrName]);
   }
   m_speaker_showname = f_showname;
 
