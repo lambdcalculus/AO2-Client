@@ -1970,9 +1970,18 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
 
 void Courtroom::set_character_position(QString p_pos)
 {
-  int index = ui_pos_dropdown->findData(p_pos);
-  if (index != -1)
-    ui_pos_dropdown->setCurrentIndex(index);
+  const bool l_is_default_pos = p_pos == ao_app->get_char_side(get_character_ini());
+
+  int l_pos_index = ui_pos_dropdown->currentIndex();
+  if (!l_is_default_pos)
+  {
+    const int l_new_pos_index = ui_pos_dropdown->findData(p_pos);
+    if (l_new_pos_index != -1)
+    {
+      l_pos_index = l_new_pos_index;
+    }
+  }
+  ui_pos_dropdown->setCurrentIndex(l_pos_index);
 
   // enable judge mechanics if appropriate
   set_judge_enabled(p_pos == "jud");
@@ -2122,7 +2131,6 @@ void Courtroom::on_ooc_message_return_pressed()
 void Courtroom::on_pos_dropdown_changed()
 {
   const QString l_pos = get_current_position();
-  set_judge_enabled(l_pos == "jud");
   send_ooc_packet("/pos " + l_pos);
   ui_ic_chat_message_field->setFocus();
 }
