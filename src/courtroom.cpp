@@ -406,14 +406,14 @@ void Courtroom::set_ambient(QString p_ambient_sfx)
 
 void Courtroom::play_ambient()
 {
-  QString l_filepath = ao_app->get_sfx_path(m_ambient_sfx);
-
-  if (l_filepath.isEmpty())
+  QString l_ambient = m_ambient_sfx;
+  if (l_ambient.isDetached())
   {
     DRPosition l_position = m_position_map.get_position(m_chatmessage[CMPosition]);
-    l_filepath = ao_app->get_background_sfx_path(m_background_name, l_position.get_ambient_sfx());
+    l_ambient = l_position.get_ambient_sfx();
   }
 
+  QString l_filepath = ao_app->get_ambient_sfx_path(l_ambient);
   m_effects_player->play_ambient(l_filepath);
 }
 

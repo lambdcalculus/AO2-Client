@@ -237,13 +237,13 @@ public:
   QString get_sfx_dir_path();
   QString get_sfx_path(QString sfx);
   QString get_sfx_noext_path(QString p_file);
+  QString get_ambient_sfx_path(QString p_file);
   QString get_character_sprite_path(QString character, QString emote, QString prefix, bool use_placeholder);
   QString get_character_sprite_pre_path(QString character, QString emote);
   QString get_character_sprite_idle_path(QString character, QString emote);
   QString get_character_sprite_talk_path(QString character, QString emote);
   QString get_background_sprite_path(QString background, QString image);
   QString get_background_sprite_noext_path(QString background, QString image);
-  QString get_background_sfx_path(QString background, QString ambient);
   QString get_shout_sprite_path(QString character, QString shout);
   QString get_theme_sprite_path(QString file_name, QString character);
   QString get_theme_sprite_path(QString file_name);

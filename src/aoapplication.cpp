@@ -202,6 +202,11 @@ QString AOApplication::get_sfx_noext_path(QString p_file)
   return find_asset_path(get_sfx_dir_path() + "/" + p_file, audio_extensions());
 }
 
+QString AOApplication::get_ambient_sfx_path(QString p_file)
+{
+  return find_asset_path(get_sfx_dir_path() + "/ambient/" + p_file);
+}
+
 QString AOApplication::get_character_sprite_path(QString p_character, QString p_emote, QString p_prefix, bool p_use_placeholder)
 {
   bool l_valid = true;
@@ -290,16 +295,6 @@ QString AOApplication::get_background_sprite_path(QString p_background_name, QSt
 QString AOApplication::get_background_sprite_noext_path(QString background, QString image)
 {
   return find_asset_path(get_background_path(background) + "/" + image, animated_or_static_extensions());
-}
-
-QString AOApplication::get_background_sfx_path(QString p_background, QString p_ambient)
-{
-  const QStringList l_filelist{
-      get_background_path(p_background) + "/" + p_ambient,
-      get_sfx_path(p_ambient),
-  };
-
-  return find_asset_path(l_filelist);
 }
 
 QString AOApplication::get_shout_sprite_path(QString p_character, QString p_shout)
