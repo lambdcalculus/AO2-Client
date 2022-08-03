@@ -244,10 +244,14 @@ void SpritePlayer::fetch_next_frame()
 
   if (!is_valid())
   {
-    if (m_running && m_play_once)
+    if (m_running)
     {
       m_running = false;
-      emit finished();
+
+      if (m_play_once)
+      {
+        emit finished();
+      }
     }
 
     return;

@@ -1850,7 +1850,7 @@ void Courtroom::post_chatmessage()
 
   if (ui_vp_chatbox->isVisible())
   {
-    ui_vp_chat_arrow->start();
+    ui_vp_chat_arrow->restart();
     ui_vp_chat_arrow->show();
   }
 }
