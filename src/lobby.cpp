@@ -452,6 +452,11 @@ void Lobby::filter_server_listing()
 
 void Lobby::select_current_server()
 {
+  if (m_current_server.name.isEmpty())
+  {
+    return;
+  }
+
   for (int i = 0; i < ui_server_list->count(); ++i)
   {
     QListWidgetItem *l_item = ui_server_list->item(i);

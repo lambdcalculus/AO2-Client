@@ -244,14 +244,10 @@ void SpritePlayer::fetch_next_frame()
 
   if (!is_valid())
   {
-    if (m_running)
+    if (m_play_once && m_running)
     {
       m_running = false;
-
-      if (m_play_once)
-      {
-        emit finished();
-      }
+      emit finished();
     }
 
     return;
@@ -285,8 +281,8 @@ void SpritePlayer::fetch_next_frame()
   m_current_frame = m_reader->get_frame(l_current_frame_number);
   m_frame_number++;
 
-  const int l_next_delay = m_current_frame.delay - l_timer.elapsed();
-  m_frame_timer.start(qMax(0, l_next_delay));
+  const int l_next_delay = qMax(0, int(m_current_frame.delay - l_timer.elapsed()));
+  m_frame_timer.start(l_next_delay);
 
   scale_current_frame();
 }
