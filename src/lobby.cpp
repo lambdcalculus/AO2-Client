@@ -509,16 +509,22 @@ void Lobby::on_add_to_fav_pressed()
 void Lobby::on_add_to_fav_released()
 {
   ui_toggle_favorite->set_image("addtofav.png");
-  DRServerInfoList l_server_info_list = m_favorite_server_list;
-  if (m_favorite_server_list.contains(m_current_server))
+  const auto l_index = ui_server_list->currentIndex();
+  if (!l_index.isValid() || l_index.row() < m_favorite_server_list.length())
   {
-    l_server_info_list.removeAll(m_current_server);
+    return;
+  }
+  const auto l_selected_server = m_combined_server_list.at(l_index.row());
+  DRServerInfoList l_server_list = m_favorite_server_list;
+  if (m_favorite_server_list.contains(l_selected_server))
+  {
+    l_server_list.removeAll(m_current_server);
   }
   else
   {
-    l_server_info_list.append(m_current_server);
+    l_server_list.append(m_current_server);
   }
-  set_favorite_server_list(l_server_info_list);
+  set_favorite_server_list(l_server_list);
 }
 
 void Lobby::on_connect_pressed()
