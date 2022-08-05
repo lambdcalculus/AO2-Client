@@ -287,10 +287,16 @@ void SpritePlayer::fetch_next_frame()
   if (l_next_delay == 0 && m_frame_count == 1)
   {
     m_running = false;
-    emit finished();
-    return;
+
+    if (m_play_once)
+    {
+      emit finished();
+    }
   }
-  m_frame_timer.start(l_next_delay);
+  else
+  {
+    m_frame_timer.start(l_next_delay);
+  }
 }
 
 void SpritePlayer::scale_current_frame()
