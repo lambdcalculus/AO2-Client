@@ -74,6 +74,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   m_chatmessage[CMPosition] = "wit";
 
   setup_courtroom();
+  map_viewport_viewers();
+  map_viewport_readers();
   set_char_select();
   load_audiotracks();
   reset_viewport();
@@ -119,8 +121,6 @@ void Courtroom::setup_courtroom()
   load_sfx_list_theme();
 
   map_viewers();
-  map_viewport_viewers();
-  map_viewport_readers();
   assign_readers_for_all_viewers();
 
   m_shout_state = 0;
