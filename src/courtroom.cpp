@@ -60,7 +60,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   m_preloader_sync = new mk2::SpriteReaderSynchronizer(this);
   m_preloader_sync->set_threshold(ao_config->caching_threshold());
 
-  connect(ao_app, SIGNAL(reload_theme()), this, SLOT(load_theme()));
+  connect(ao_app, SIGNAL(reload_theme()), this, SLOT(reload_theme()));
   connect(ao_app, SIGNAL(reload_character()), this, SLOT(load_character()));
   connect(ao_app, SIGNAL(reload_audiotracks()), this, SLOT(load_audiotracks()));
 
@@ -955,6 +955,15 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
     }
   }
 
+  { // clear interface if required
+    bool l_ok;
+    const int l_client_id = p_chatmessage[CMClientId].toInt(&l_ok);
+    if (l_ok && l_client_id == ao_app->get_client_id())
+    {
+      handle_acknowledged_ms();
+    }
+  }
+
   preload_chatmessage(p_chatmessage);
 }
 
@@ -979,15 +988,7 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
   cleanup_preload_readers();
   m_loading_timer->stop();
   m_pre_chatmessage = p_contents;
-
-  {
-    bool l_ok;
-    const int l_client_id = m_pre_chatmessage[CMClientId].toInt(&l_ok);
-    if (l_ok && l_client_id == ao_app->get_client_id())
-    {
-      handle_acknowledged_ms();
-    }
-  }
+  m_game_state = PreloadingState;
 
   QMap<ViewportSprite, QString> l_file_list;
   const QString l_position_id = m_pre_chatmessage[CMPosition];
@@ -1054,6 +1055,7 @@ void Courtroom::start_chatmessage()
 
   m_tick_timer->stop();
   m_chatmessage = m_pre_chatmessage;
+  m_game_state = ProcessingState;
 
   handle_chatmessage();
 }
@@ -1215,9 +1217,9 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
   if (m_shout_reload_theme)
   {
-    m_shout_reload_theme = false;
     load_theme();
   }
+  m_shout_reload_theme = false;
 
   const QString l_chatbox_name = ao_app->get_chat(m_chatmessage[CMChrName]);
   const bool l_is_self = (ao_config->log_display_self_highlight_enabled() && m_speaker_chr_id == m_chr_id);
@@ -1836,6 +1838,10 @@ void Courtroom::next_chat_letter()
 void Courtroom::post_chatmessage()
 {
   m_tick_timer->stop();
+  if (m_game_state != PreloadingState)
+  {
+    m_game_state = FinishedState;
+  }
   text_state = 2;
   anim_state = 3;
 
@@ -2484,14 +2490,19 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::load_theme()
 {
-  if (ui_vp_objection->is_running())
+  setup_courtroom();
+  update_background_scene();
+}
+
+void Courtroom::reload_theme()
+{
+  if (m_game_state == PreloadingState || ui_vp_objection->is_running())
   {
     m_shout_reload_theme = true;
     return;
   }
 
-  setup_courtroom();
-  update_background_scene();
+  load_theme();
 }
 
 void Courtroom::load_character()

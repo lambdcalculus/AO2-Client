@@ -1410,7 +1410,9 @@ void Courtroom::set_judge_wtce()
 void Courtroom::set_fonts()
 {
   set_drtextedit_font(ui_vp_showname, "showname", COURTROOM_FONTS_INI, ao_app);
+  ui_vp_showname->setPlainText(ui_vp_showname->toPlainText());
   set_drtextedit_font(ui_vp_message, "message", COURTROOM_FONTS_INI, ao_app);
+  ui_vp_message->setPlainText(ui_vp_message->toPlainText());
   set_drtextedit_font(ui_ic_chatlog, "ic_chatlog", COURTROOM_FONTS_INI, ao_app);
 
   // Chatlog does not support drtextedit because html
@@ -1421,7 +1423,9 @@ void Courtroom::set_fonts()
   set_font(ui_area_list, "area_list", COURTROOM_FONTS_INI, ao_app);
   set_font(ui_sfx_list, "sfx_list", COURTROOM_FONTS_INI, ao_app);
   set_drtextedit_font(ui_vp_music_name, "music_name", COURTROOM_FONTS_INI, ao_app);
+  ui_vp_music_name->setPlainText(ui_vp_music_name->toPlainText());
   set_drtextedit_font(ui_vp_notepad, "notepad", COURTROOM_FONTS_INI, ao_app);
+  ui_vp_notepad->setPlainText(ui_vp_notepad->toPlainText());
 
   for (int i = 0; i < ui_timers.length(); ++i)
   {

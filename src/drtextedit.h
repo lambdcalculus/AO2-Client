@@ -6,8 +6,8 @@
 class DRTextEdit : public QTextEdit
 {
   Q_OBJECT
-  Q_PROPERTY(
-      Qt::Alignment text_alignment READ get_text_alignment WRITE set_text_alignment NOTIFY text_alignment_changed)
+
+  Q_PROPERTY(Qt::Alignment text_alignment READ get_text_alignment WRITE set_text_alignment NOTIFY text_alignment_changed)
 
 public:
   DRTextEdit(QWidget *p_parent = nullptr);

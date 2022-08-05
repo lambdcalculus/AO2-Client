@@ -286,6 +286,13 @@ private:
   static const int MINIMUM_MESSAGE_SIZE = 15;
   static const int OPTIMAL_MESSAGE_SIZE = 19;
   QStringList m_pre_chatmessage;
+  enum GameState
+  {
+    PreloadingState,
+    ProcessingState,
+    FinishedState,
+  };
+  GameState m_game_state = FinishedState;
   QTimer *m_loading_timer;
   mk2::SpriteReaderSynchronizer *m_preloader_sync;
   QStringList m_chatmessage;
@@ -681,6 +688,7 @@ private slots:
 
   void on_change_character_clicked();
   void load_theme();
+  void reload_theme();
   void load_character();
   void load_audiotracks();
   void on_call_mod_clicked();
