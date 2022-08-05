@@ -439,7 +439,8 @@ private:
   QColor m_sfx_color_missing;
   QMenu *ui_sfx_menu = nullptr;
   QAction *ui_sfx_menu_preview = nullptr;
-  QAction *ui_sfx_menu_insert_ooc = nullptr;
+  QAction *ui_sfx_menu_insert_file_name = nullptr;
+  QAction *ui_sfx_menu_insert_caption = nullptr;
 
   QLineEdit *ui_ic_chat_showname = nullptr;
   QWidget *ui_ic_chat_message = nullptr;
@@ -766,7 +767,8 @@ private slots:
   void on_sfx_list_current_item_changed(QListWidgetItem *current_item, QListWidgetItem *previous_item);
   void on_sfx_list_context_menu_requested(QPoint point);
   void on_sfx_menu_preview_triggered();
-  void on_sfx_menu_insert_ooc_triggered();
+  void on_sfx_menu_insert_file_name_triggered();
+  void on_sfx_menu_insert_caption_triggered();
 
   /*!
    * =============================================================================

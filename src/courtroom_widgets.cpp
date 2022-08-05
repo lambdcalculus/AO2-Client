@@ -174,7 +174,8 @@ void Courtroom::create_widgets()
   ui_sfx_search->setFrame(false);
   ui_sfx_menu = new QMenu(this);
   ui_sfx_menu_preview = ui_sfx_menu->addAction(tr("Preview"));
-  ui_sfx_menu_insert_ooc = ui_sfx_menu->addAction(tr("Insert to OOC"));
+  ui_sfx_menu_insert_file_name = ui_sfx_menu->addAction(tr("Insert filename"));
+  ui_sfx_menu_insert_caption = ui_sfx_menu->addAction("Insert caption");
 
   ui_ic_chat_message = new QWidget(this);
 
@@ -389,7 +390,8 @@ void Courtroom::connect_widgets()
   connect(ui_sfx_list, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_sfx_list_context_menu_requested(QPoint)));
 
   connect(ui_sfx_menu_preview, SIGNAL(triggered()), this, SLOT(on_sfx_menu_preview_triggered()));
-  connect(ui_sfx_menu_insert_ooc, SIGNAL(triggered()), this, SLOT(on_sfx_menu_insert_ooc_triggered()));
+  connect(ui_sfx_menu_insert_file_name, SIGNAL(triggered()), this, SLOT(on_sfx_menu_insert_file_name_triggered()));
+  connect(ui_sfx_menu_insert_caption, SIGNAL(triggered()), this, SLOT(on_sfx_menu_insert_caption_triggered()));
 
   connect(ui_note_area->add_button, SIGNAL(clicked(bool)), this, SLOT(on_add_button_clicked()));
   connect(ui_set_notes, SIGNAL(clicked(bool)), this, SLOT(on_set_notes_clicked()));

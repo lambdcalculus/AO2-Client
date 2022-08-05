@@ -10,6 +10,8 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMenu>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 
 #include <optional>
 
@@ -143,8 +145,23 @@ void Courtroom::on_sfx_menu_preview_triggered()
   m_effects_player->play_effect(current_sfx_file());
 }
 
-void Courtroom::on_sfx_menu_insert_ooc_triggered()
+void Courtroom::on_sfx_menu_insert_file_name_triggered()
 {
   ui_ooc_chat_message->insert(current_sfx_file());
   ui_ooc_chat_message->setFocus();
+}
+
+void Courtroom::on_sfx_menu_insert_caption_triggered()
+{
+  const std::optional<DRSfx> l_sfx = current_sfx();
+  if (l_sfx.has_value())
+  {
+    QString l_caption = l_sfx->name;
+    static const QRegularExpression l_regex("\"(.+)\"");
+    if (const auto l_match = l_regex.match(l_caption); l_match.hasMatch())
+    {
+      l_caption = l_match.captured(1);
+    }
+    ui_ic_chat_message_field->insert(l_caption);
+  }
 }
