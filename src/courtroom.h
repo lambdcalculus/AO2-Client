@@ -63,6 +63,14 @@ class Courtroom : public QWidget
   Q_OBJECT
 
 public:
+  enum class GameState
+  {
+    Preloading,
+    Processing,
+    Finished,
+  };
+  Q_ENUM(GameState)
+
   static const int DEFAULT_WIDTH;
   static const int DEFAULT_HEIGHT;
 
@@ -286,13 +294,6 @@ private:
   static const int MINIMUM_MESSAGE_SIZE = 15;
   static const int OPTIMAL_MESSAGE_SIZE = 19;
   QStringList m_pre_chatmessage;
-  enum class GameState
-  {
-    Preloading,
-    Processing,
-    Finished,
-  };
-  Q_ENUM(GameState)
   GameState m_game_state = GameState::Finished;
   QTimer *m_loading_timer;
   mk2::SpriteReaderSynchronizer *m_preloader_sync;
