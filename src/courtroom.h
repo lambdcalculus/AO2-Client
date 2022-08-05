@@ -286,13 +286,14 @@ private:
   static const int MINIMUM_MESSAGE_SIZE = 15;
   static const int OPTIMAL_MESSAGE_SIZE = 19;
   QStringList m_pre_chatmessage;
-  enum GameState
+  enum class GameState
   {
-    PreloadingState,
-    ProcessingState,
-    FinishedState,
+    Preloading,
+    Processing,
+    Finished,
   };
-  GameState m_game_state = FinishedState;
+  Q_ENUM(GameState)
+  GameState m_game_state = GameState::Finished;
   QTimer *m_loading_timer;
   mk2::SpriteReaderSynchronizer *m_preloader_sync;
   QStringList m_chatmessage;

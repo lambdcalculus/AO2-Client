@@ -988,7 +988,7 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
   cleanup_preload_readers();
   m_loading_timer->stop();
   m_pre_chatmessage = p_contents;
-  m_game_state = PreloadingState;
+  m_game_state = GameState::Preloading;
 
   QMap<ViewportSprite, QString> l_file_list;
   const QString l_position_id = m_pre_chatmessage[CMPosition];
@@ -1055,7 +1055,7 @@ void Courtroom::start_chatmessage()
 
   m_tick_timer->stop();
   m_chatmessage = m_pre_chatmessage;
-  m_game_state = ProcessingState;
+  m_game_state = GameState::Processing;
 
   handle_chatmessage();
 }
@@ -1838,9 +1838,9 @@ void Courtroom::next_chat_letter()
 void Courtroom::post_chatmessage()
 {
   m_tick_timer->stop();
-  if (m_game_state != PreloadingState)
+  if (m_game_state != GameState::Preloading)
   {
-    m_game_state = FinishedState;
+    m_game_state = GameState::Finished;
   }
   text_state = 2;
   anim_state = 3;
@@ -2496,7 +2496,7 @@ void Courtroom::load_theme()
 
 void Courtroom::reload_theme()
 {
-  if (m_game_state == PreloadingState || ui_vp_objection->is_running())
+  if (m_game_state == GameState::Preloading || ui_vp_objection->is_running())
   {
     m_shout_reload_theme = true;
     return;
