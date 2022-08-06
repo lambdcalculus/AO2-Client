@@ -60,8 +60,7 @@ void DRAudioStream::play()
     return;
   if (!BASS_ChannelPlay(m_hstream, FALSE))
   {
-    qWarning()
-        << QString("error: failed to play file: %1 (file: \"%1\")").arg(DRAudio::get_last_bass_error(), m_filename);
+    qWarning() << QString("error: failed to play file: %1 (file: \"%1\")").arg(DRAudio::get_last_bass_error(), m_filename);
     Q_EMIT finished();
   }
 }
@@ -80,7 +79,7 @@ std::optional<DRAudioError> DRAudioStream::set_file_name(QString p_file_name)
   m_init_state = InitNotDone;
   if (!ensure_init())
   {
-    return DRAudioError("failed to set file");
+    return DRAudioError("failed to set file: " + p_file_name);
   }
   emit file_name_changed(m_filename);
   return std::nullopt;
@@ -202,8 +201,7 @@ bool DRAudioStream::ensure_init()
   if (m_filename.endsWith("opus", Qt::CaseInsensitive))
     l_hstream = BASS_OPUS_StreamCreateFile(FALSE, m_filename.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
   else
-    l_hstream =
-        BASS_StreamCreateFile(FALSE, m_filename.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE | BASS_STREAM_PRESCAN);
+    l_hstream = BASS_StreamCreateFile(FALSE, m_filename.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE | BASS_STREAM_PRESCAN);
 
   if (!l_hstream)
   {
