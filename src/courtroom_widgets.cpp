@@ -667,8 +667,8 @@ void Courtroom::set_widgets()
     const bool l_visible = ui_vp_loading->isVisible();
     set_size_and_pos(ui_vp_loading, "loading", COURTROOM_DESIGN_INI, ao_app);
     ui_vp_loading->set_theme_image("loading");
-    ui_vp_loading->setVisible(l_visible);
     ui_vp_loading->start();
+    ui_vp_loading->setVisible(l_visible);
   }
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog", COURTROOM_DESIGN_INI, ao_app);
