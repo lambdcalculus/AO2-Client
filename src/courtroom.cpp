@@ -407,7 +407,7 @@ void Courtroom::set_ambient(QString p_ambient_sfx)
 void Courtroom::play_ambient()
 {
   QString l_ambient = m_ambient_sfx;
-  if (l_ambient.isDetached())
+  if (l_ambient.isEmpty())
   {
     DRPosition l_position = m_position_map.get_position(m_chatmessage[CMPosition]);
     l_ambient = l_position.get_ambient_sfx();
