@@ -227,7 +227,7 @@ void DRVideoScreen::update_audio_output()
     for (const QString &i_device_name : l_device_name_list)
     {
       const QString l_device_description = l_control->outputDescription(i_device_name);
-      if (l_device_description == l_target_device->get_name() || l_device_description == l_target_device->get_driver())
+      if (i_device_name == l_target_device->get_name() || i_device_name == l_target_device->get_driver() || l_device_description == l_target_device->get_name() || l_device_description == l_target_device->get_driver())
       {
         qDebug() << "Media player changed audio device to" << l_target_device->get_name();
         l_control->setActiveOutput(i_device_name);
