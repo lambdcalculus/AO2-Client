@@ -21,7 +21,6 @@
 
 #include "aoapplication.h"
 #include "aoconfig.h"
-#include "draudiodevice.h"
 #include "draudioengine.h"
 #include "draudiostreamfamily.h"
 
@@ -59,8 +58,6 @@ private:
 
   DRAudioEngine *m_engine;
 
-  DRAudioDevice m_device;
-
   DRAudioStreamFamily::ptr m_family;
 
   QString m_file_name;
@@ -83,8 +80,6 @@ private slots:
   void check_status(QMediaPlayer::MediaStatus);
 
   void check_state(QMediaPlayer::State);
-
-  void update_audio_device(DRAudioDevice);
 
   void update_audio_output();
 
