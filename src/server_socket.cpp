@@ -168,15 +168,19 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       char_type l_chr;
       l_chr.name = i_chr_name;
       l_chr_list.append(std::move(l_chr));
-      m_lobby->set_loading_text("Loading chars:\n" + QString::number(++m_loaded_characters) + "/" + QString::number(m_character_count));
     }
     m_courtroom->set_character_list(l_chr_list);
+    m_loaded_characters = m_character_count;
 
-    int total_loading_size = m_character_count + m_evidence_count + m_music_count;
-    int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;
-    m_lobby->set_loading_value(loading_value);
+    if (is_lobby_constructed)
+    {
+      m_lobby->set_loading_text("Loading chars:\n" + QString::number(m_loaded_characters) + "/" + QString::number(m_character_count));
+      int total_loading_size = m_character_count + m_evidence_count + m_music_count;
+      int loading_value = (m_loaded_characters / static_cast<double>(total_loading_size)) * 100;
+      m_lobby->set_loading_value(loading_value);
 
-    send_server_packet(DRPacket("RM"));
+      send_server_packet(DRPacket("RM"));
+    }
   }
   else if (l_header == "SM") // TODO remove block for 1.2.0+
   {
