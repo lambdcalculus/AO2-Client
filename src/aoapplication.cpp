@@ -48,10 +48,7 @@ AOApplication::AOApplication(int &argc, char **argv)
   connect(ao_config, SIGNAL(discord_hide_server_changed(bool)), dr_discord, SLOT(set_hide_server(bool)));
   connect(ao_config, SIGNAL(discord_hide_character_changed(bool)), dr_discord, SLOT(set_hide_character(bool)));
 
-  connect(m_server_socket, SIGNAL(connecting_to_server()), this, SIGNAL(connecting_to_server()));
-  connect(m_server_socket, SIGNAL(connected_to_server()), this, SIGNAL(connected_to_server()));
-  connect(m_server_socket, SIGNAL(disconnected_from_server()), this, SLOT(_p_handle_server_disconnection()));
-  connect(m_server_socket, SIGNAL(disconnected_from_server()), this, SIGNAL(disconnected_from_server()));
+  connect(m_server_socket, &DRServerSocket::connection_state_changed, this, &AOApplication::_p_handle_server_state_update);
   connect(m_server_socket, SIGNAL(packet_received(DRPacket)), this, SLOT(_p_handle_server_packet(DRPacket)));
 
   resolve_current_theme();
@@ -72,6 +69,12 @@ int AOApplication::get_client_id() const
 void AOApplication::set_client_id(int id)
 {
   m_client_id = id;
+}
+
+void AOApplication::leave_server()
+{
+  m_server_status = NotConnected;
+  m_server_socket->disconnect_from_server();
 }
 
 Lobby *AOApplication::get_lobby() const
@@ -141,13 +144,6 @@ void AOApplication::destruct_courtroom()
   else
   {
     qDebug() << "W: courtroom was attempted destructed when it did not exist";
-  }
-
-  // gracefully close our connection to the current server
-  if (m_server_socket->is_connected())
-  {
-    m_server_socket->disconnect_from_server();
-    emit closed_connection_to_server();
   }
 }
 

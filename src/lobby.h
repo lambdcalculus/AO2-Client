@@ -56,15 +56,6 @@ private:
   DRServerInfoList m_combined_server_list;
   DRServerInfo m_current_server;
 
-  enum ConnectionState
-  {
-    NotConnectedState,
-    ConnectingState,
-    ConnectedState,
-    LostConnectionState,
-  };
-  ConnectionState m_connection_state;
-
   // ui
   AOImageDisplay *ui_background = nullptr;
   AOButton *ui_public_server_filter = nullptr;
@@ -112,8 +103,6 @@ private:
   void load_legacy_favorite_server_list();
   void save_favorite_server_list();
 
-  void set_connection_state(ConnectionState state);
-
 private slots:
   void update_widgets();
 
@@ -146,11 +135,6 @@ private slots:
   void prompt_delete_server();
   void move_up_server();
   void move_down_server();
-
-  void _p_on_connecting_to_server();
-  void _p_on_connected_to_server();
-  void _p_on_closed_connection_to_server();
-  void _p_on_disconnected_from_server();
 
   void _p_update_description();
 };

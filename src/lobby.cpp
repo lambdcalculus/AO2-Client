@@ -35,7 +35,6 @@
 
 Lobby::Lobby(AOApplication *p_ao_app)
     : QMainWindow()
-    , m_connection_state(NotConnectedState)
 {
   ao_app = p_ao_app;
   ao_config = new AOConfig(this);
@@ -87,10 +86,7 @@ Lobby::Lobby(AOApplication *p_ao_app)
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(update_widgets()));
-  connect(ao_app, SIGNAL(connecting_to_server()), this, SLOT(_p_on_connecting_to_server()));
-  connect(ao_app, SIGNAL(connected_to_server()), this, SLOT(_p_on_connected_to_server()));
-  connect(ao_app, SIGNAL(closed_connection_to_server()), this, SLOT(_p_on_closed_connection_to_server()));
-  connect(ao_app, SIGNAL(disconnected_from_server()), this, SLOT(_p_on_disconnected_from_server()));
+  connect(ao_app, &AOApplication::server_status_changed, this, &Lobby::_p_update_description);
 
   connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(update_widgets()));
   connect(ao_config, SIGNAL(server_advertiser_changed(QString)), m_master_client, SLOT(set_address(QString)));
@@ -378,12 +374,6 @@ void Lobby::save_favorite_server_list()
     l_ini.endGroup();
   }
   l_ini.sync();
-}
-
-void Lobby::set_connection_state(ConnectionState p_connection_state)
-{
-  m_connection_state = p_connection_state;
-  _p_update_description();
 }
 
 void Lobby::request_advertiser_update()
@@ -681,64 +671,43 @@ void Lobby::move_down_server()
   set_favorite_server_list(l_server_list);
 }
 
-void Lobby::_p_on_connecting_to_server()
-{
-  set_connection_state(ConnectingState);
-}
-
-void Lobby::_p_on_connected_to_server()
-{
-  set_connection_state(ConnectedState);
-}
-
-void Lobby::_p_on_closed_connection_to_server()
-{
-  set_connection_state(NotConnectedState);
-}
-
-void Lobby::_p_on_disconnected_from_server()
-{
-  set_connection_state(LostConnectionState);
-}
-
 void Lobby::_p_update_description()
 {
-  QString l_message;
+  QMap<AOApplication::ServerStatus, QString> l_report_map{
+      {AOApplication::NotConnected, tr("Choose a server.")},
+      {AOApplication::Connecting, tr("Connecting to server.")},
+      {AOApplication::Connected, tr("Connected to server.")},
+      {AOApplication::Joined, tr("Joined server.")},
+      {AOApplication::TimedOut, tr("Failed to connect to server.")},
+      {AOApplication::Disconnected, tr("Choose a server.")},
+  };
+
+  QString l_message = l_report_map[ao_app->last_server_status()];
+
+  if (!m_current_server.name.isEmpty())
   {
-    const QString l_format = QMap<ConnectionState, QString>{
-        {
-            NotConnectedState,
-            tr("Choose a server."),
-        },
-        {
-            ConnectingState,
-            tr("Connecting to server (%1)..."),
-        },
-        {
-            ConnectedState,
-            tr("Connected to server (%1)."),
-        },
-        {
-            LostConnectionState,
-            tr("Failed to connect to server (%1)."),
-        },
-    }[m_connection_state];
-    l_message = QString(l_format).arg(m_current_server.name.toHtmlEscaped());
+    l_message = QString("%1\n\n"
+                        "==== STATUS ====\n"
+                        "%2")
+                    .arg(m_current_server.name.toHtmlEscaped())
+                    .arg(l_message);
   }
 
-  if (m_connection_state == ConnectedState)
+  if (!m_current_server.description.isEmpty())
   {
-    l_message += "\n\n" + m_current_server.description.toHtmlEscaped();
-
+    QString l_description = m_current_server.description.toHtmlEscaped();
     const QRegExp l_regex("(https?://[^\\s/$.?#].[^\\s]*)");
-    if (l_message.contains(l_regex))
+    if (l_description.contains(l_regex))
     {
-      l_message.replace(l_regex, "<a href=\"\\1\">\\1</a>");
+      l_description.replace(l_regex, "<a href=\"\\1\">\\1</a>");
     }
-
-    l_message.replace("\n", "<br />");
+    l_message = QString("%1\n\n"
+                        "==== DESCRIPTION ====\n"
+                        "%2")
+                    .arg(l_description);
   }
-  ui_description->setHtml(l_message);
+
+  ui_description->setHtml(l_message.replace("\n", "<br />"));
 }
 
 void Lobby::set_choose_a_server()

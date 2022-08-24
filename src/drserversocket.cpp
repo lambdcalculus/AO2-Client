@@ -19,17 +19,16 @@ DRServerSocket::DRServerSocket(QObject *p_parent)
     : QObject(p_parent)
 {
   m_socket = new QTcpSocket(this);
-  m_connecting_timer = new QTimer(this);
+  m_connecting_timeout = new QTimer(this);
 
-  m_connecting_timer->setSingleShot(true);
-  m_connecting_timer->setInterval(CONNECTING_DELAY);
+  m_connecting_timeout->setSingleShot(true);
+  m_connecting_timeout->setInterval(CONNECTING_DELAY);
 
   connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_p_check_socket_error()));
-  connect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this,
-          SLOT(_p_update_state(QAbstractSocket::SocketState)));
+  connect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(_p_update_state(QAbstractSocket::SocketState)));
   connect(m_socket, SIGNAL(readyRead()), this, SLOT(_p_read_socket()));
 
-  connect(m_connecting_timer, SIGNAL(timeout()), this, SLOT(disconnect_from_server()));
+  connect(m_connecting_timeout, SIGNAL(timeout()), this, SLOT(disconnect_from_server()));
   m_socket->close();
 }
 
@@ -57,8 +56,7 @@ void DRServerSocket::send_packet(DRPacket p_packet)
   if (!is_connected())
   {
     const QString l_server_info = m_server.to_info();
-    qWarning().noquote()
-        << QString("Failed to send packet; not connected to server%1").arg(drFormatServerInfo(m_server));
+    qWarning().noquote() << QString("Failed to send packet; not connected to server%1").arg(drFormatServerInfo(m_server));
     return;
   }
   m_socket->write(p_packet.to_string(true).toUtf8());
@@ -66,27 +64,32 @@ void DRServerSocket::send_packet(DRPacket p_packet)
 
 void DRServerSocket::_p_update_state(QAbstractSocket::SocketState p_state)
 {
+  bool l_state_changed = true;
   switch (p_state)
   {
   case QAbstractSocket::ConnectingState:
-    m_connecting_timer->start();
-    Q_EMIT connecting_to_server();
+    m_connecting_timeout->start();
+    m_state = Connecting;
     break;
 
   case QAbstractSocket::ConnectedState:
-    m_connecting_timer->stop();
-    m_connected = true;
-    Q_EMIT connected_to_server();
+    m_connecting_timeout->stop();
+    m_state = Connected;
     break;
 
   case QAbstractSocket::UnconnectedState:
-    m_connecting_timer->stop();
-    m_connected = false;
-    Q_EMIT disconnected_from_server();
+    m_connecting_timeout->stop();
+    m_state = NotConnected;
     break;
 
   default:
+    l_state_changed = false;
     break;
+  }
+
+  if (l_state_changed)
+  {
+    emit connection_state_changed(m_state);
   }
 }
 

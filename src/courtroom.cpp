@@ -2525,6 +2525,7 @@ void Courtroom::on_back_to_lobby_clicked()
 
   // hide so we don't get the 'disconnected from server' prompt
   hide();
+  ao_app->leave_server();
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();
 }

@@ -29,14 +29,58 @@ void AOApplication::send_server_packet(DRPacket p_packet)
   m_server_socket->send_packet(p_packet);
 }
 
-void AOApplication::_p_handle_server_disconnection()
+AOApplication::ServerStatus AOApplication::last_server_status()
 {
-  if (!is_courtroom_constructed)
-    return;
-  m_courtroom->stop_all_audio();
-  call_notice("Disconnected from server.");
-  construct_lobby();
-  destruct_courtroom();
+  return m_server_status;
+}
+
+bool AOApplication::joined_server()
+{
+  return m_server_status == Joined;
+}
+
+void AOApplication::_p_handle_server_state_update(DRServerSocket::ConnectionState p_state)
+{
+  const ServerStatus l_previous_status = m_server_status;
+  switch (p_state)
+  {
+  case DRServerSocket::NotConnected:
+    switch (l_previous_status)
+    {
+    case Connecting:
+      m_server_status = TimedOut;
+      break;
+
+    case Joined:
+      m_server_status = Disconnected;
+      if (is_courtroom_constructed)
+      {
+        m_courtroom->stop_all_audio();
+        call_notice("Disconnected from server.");
+        construct_lobby();
+        destruct_courtroom();
+      }
+      break;
+
+    default:
+      m_server_status = NotConnected;
+      break;
+    }
+    break;
+
+  case DRServerSocket::Connecting:
+    m_server_status = Connecting;
+    break;
+
+  case DRServerSocket::Connected:
+    m_server_status = Connected;
+    break;
+  }
+
+  if (m_server_status != l_previous_status)
+  {
+    emit server_status_changed(m_server_status);
+  }
 }
 
 void AOApplication::_p_handle_server_packet(DRPacket p_packet)
@@ -123,8 +167,6 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     m_loaded_area_list = false;
 
     construct_courtroom();
-
-    is_courtroom_loaded = false;
 
     DRServerInfo l_current_server = m_lobby->get_selected_server();
     QString l_window_title = "Danganronpa Online (" + get_version_string() + ")";
@@ -252,8 +294,8 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       return;
 
     m_courtroom->done_received();
-
-    is_courtroom_loaded = true;
+    m_server_status = Joined;
+    emit server_status_changed(m_server_status);
 
     destruct_lobby();
   }
@@ -316,17 +358,17 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   }
   else if (l_header == "MS")
   {
-    if (is_courtroom_constructed && is_courtroom_loaded)
+    if (is_courtroom_constructed && joined_server())
       m_courtroom->next_chatmessage(l_content);
   }
   else if (l_header == "ackMS")
   {
-    if (is_courtroom_constructed && is_courtroom_loaded)
+    if (is_courtroom_constructed && joined_server())
       m_courtroom->handle_acknowledged_ms();
   }
   else if (l_header == "MC")
   {
-    if (is_courtroom_constructed && is_courtroom_loaded)
+    if (is_courtroom_constructed && joined_server())
       m_courtroom->handle_song(l_content);
   }
   else if (l_header == "RT")
@@ -352,6 +394,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
         return;
 
       call_notice("You have been kicked.");
+      leave_server();
       construct_lobby();
       destruct_courtroom();
     }

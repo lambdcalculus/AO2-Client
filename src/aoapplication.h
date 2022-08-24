@@ -3,13 +3,13 @@
 
 #include "datatypes.h"
 #include "drpacket.h"
+#include "drserversocket.h"
 
 class AOConfig;
 class AOConfigPanel;
 class Courtroom;
 class DRDiscord;
 class DRMasterClient;
-class DRServerSocket;
 class Lobby;
 
 #include <QApplication>
@@ -22,14 +22,27 @@ class AOApplication : public QApplication
   Q_OBJECT
 
 public:
+  enum ServerStatus
+  {
+    NotConnected,
+    Connecting,
+    Connected,
+    Joined,
+    TimedOut,
+    Disconnected,
+  };
+
   AOApplication(int &argc, char **argv);
   ~AOApplication();
 
   int get_client_id() const;
   void set_client_id(int id);
 
+  void leave_server();
   void connect_to_server(DRServerInfo server);
   void send_server_packet(DRPacket packet);
+  ServerStatus last_server_status();
+  bool joined_server();
 
   Lobby *get_lobby() const;
   void construct_lobby();
@@ -183,11 +196,7 @@ signals:
   void reload_theme();
   void reload_character();
   void reload_audiotracks();
-
-  void connecting_to_server();
-  void connected_to_server();
-  void closed_connection_to_server();
-  void disconnected_from_server();
+  void server_status_changed(ServerStatus);
 
 private:
   AOConfig *ao_config = nullptr;
@@ -195,13 +204,13 @@ private:
   DRDiscord *dr_discord = nullptr;
 
   DRServerSocket *m_server_socket = nullptr;
+  ServerStatus m_server_status = NotConnected;
 
   Lobby *m_lobby = nullptr;
   bool is_lobby_constructed = false;
 
   Courtroom *m_courtroom = nullptr;
   bool is_courtroom_constructed = false;
-  bool is_courtroom_loaded = false;
 
   ///////////////server metadata////////////////
 
@@ -224,7 +233,7 @@ private:
   bool m_loaded_area_list = false;
 
 private slots:
-  void _p_handle_server_disconnection();
+  void _p_handle_server_state_update(DRServerSocket::ConnectionState);
   void _p_handle_server_packet(DRPacket);
   void on_courtroom_closing();
   void on_courtroom_destroyed();

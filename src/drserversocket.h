@@ -14,6 +14,13 @@ class DRServerSocket : public QObject
   Q_OBJECT
 
 public:
+  enum ConnectionState
+  {
+    NotConnected,
+    Connecting,
+    Connected,
+  };
+
   DRServerSocket(QObject *parent = nullptr);
 
   bool is_connected() const;
@@ -26,9 +33,7 @@ public slots:
   void send_packet(DRPacket packet);
 
 signals:
-  void connected_to_server();
-  void connecting_to_server();
-  void disconnected_from_server();
+  void connection_state_changed(ConnectionState);
   void packet_received(DRPacket);
   void socket_error(QString);
 
@@ -37,8 +42,8 @@ private:
 
   DRServerInfo m_server;
   QTcpSocket *m_socket = nullptr;
-  QTimer *m_connecting_timer = nullptr;
-  bool m_connected = false;
+  QTimer *m_connecting_timeout = nullptr;
+  ConnectionState m_state = NotConnected;
   QString m_buffer;
 
 private slots:
