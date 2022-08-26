@@ -187,7 +187,7 @@ void Courtroom::create_widgets()
   ui_ooc_chat_message = new QLineEdit(this);
   ui_ooc_chat_message->setFrame(false);
   ui_ooc_chat_message->setPlaceholderText(tr("Say something out-of-character."));
-  ui_ooc_chat_message->setMaxLength(8000);
+  ui_ooc_chat_message->setMaxLength(1023);
 
   ui_ic_chat_message_counter = new QLabel(ui_ic_chat_message);
   ui_ic_chat_message_counter->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
