@@ -263,6 +263,21 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     m_lobby->set_loading_value(loading_value);
     send_server_packet(DRPacket("RD"));
   }
+  else if (l_header == "LP")
+  {
+    m_courtroom->m_player_data_list.clear();
+    int player_count = l_content.size() / 3;
+
+    for(int i = 0; i < player_count; i++)
+    {
+       DrPlayer* drp = new DrPlayer(l_content.at((i * 3) + 0).toInt(), l_content.at((i * 3)  + 1), l_content.at((i * 3) + 2));
+       m_courtroom->m_player_data_list.append(*drp);
+
+    }
+
+
+    m_courtroom->construct_playerlist_layout();
+  }
   else if (l_header == "FA")
   {
     if (!is_courtroom_constructed)

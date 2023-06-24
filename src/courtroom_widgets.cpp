@@ -249,6 +249,12 @@ void Courtroom::create_widgets()
   ui_config_panel = new AOButton(this, ao_app);
   ui_note_button = new AOButton(this, ao_app);
 
+
+
+  ui_gm_toggle_button = new AOButton(this, ao_app);
+  ui_area_toggle_button = new AOButton(this, ao_app);
+  ui_chat_toggle_button = new AOButton(this, ao_app);
+
   ui_label_images.resize(label_images.size());
   for (int i = 0; i < ui_label_images.size(); ++i)
   {
@@ -283,6 +289,13 @@ void Courtroom::create_widgets()
   ui_text_color->addItem("Yellow");
   ui_text_color->addItem("Purple");
   ui_text_color->addItem("Pink");
+
+  ui_chat_type_dropdown = new QComboBox(this);
+  ui_chat_type_dropdown->addItem("Talk");
+  ui_chat_type_dropdown->addItem("Shout");
+  ui_chat_type_dropdown->addItem("Think");
+
+
   ui_vp_notepad_image = new AOImageDisplay(this, ao_app);
   ui_vp_notepad = new DRTextEdit(this);
   ui_vp_notepad->setFrameStyle(QFrame::NoFrame);
@@ -290,7 +303,11 @@ void Courtroom::create_widgets()
   ui_timers.resize(1);
   ui_timers[0] = new AOTimer(this);
 
+  construct_playerlist();
+
   construct_char_select();
+
+
 }
 
 void Courtroom::connect_widgets()
@@ -358,6 +375,9 @@ void Courtroom::connect_widgets()
 
   connect(ui_text_color, SIGNAL(currentIndexChanged(int)), this, SLOT(on_text_color_changed(int)));
 
+
+  connect(ui_chat_type_dropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(on_chat_type_changed(int)));
+
   connect(this, SIGNAL(loaded_theme()), this, SLOT(on_chat_config_changed()));
   connect(ao_config, SIGNAL(log_max_lines_changed(int)), this, SLOT(on_chat_config_changed()));
   connect(ao_config, SIGNAL(log_display_timestamp_changed(bool)), this, SLOT(on_chat_config_changed()));
@@ -375,10 +395,17 @@ void Courtroom::connect_widgets()
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
 
+
+
   connect(ui_switch_area_music, SIGNAL(clicked()), this, SLOT(on_switch_area_music_clicked()));
 
   connect(ui_config_panel, SIGNAL(clicked()), this, SLOT(on_config_panel_clicked()));
   connect(ui_note_button, SIGNAL(clicked()), this, SLOT(on_note_button_clicked()));
+
+
+  connect(ui_area_toggle_button, SIGNAL(clicked()), this, SLOT(on_area_toggle_clicked()));
+  connect(ui_chat_toggle_button, SIGNAL(clicked()), this, SLOT(on_chat_toggle_clicked()));
+  connect(ui_gm_toggle_button, SIGNAL(clicked()), this, SLOT(on_gm_toggle_clicked()));
 
   connect(ui_vp_notepad, SIGNAL(textChanged()), this, SLOT(on_note_text_changed()));
 
@@ -464,6 +491,10 @@ void Courtroom::reset_widget_names()
       {"switch_area_music", ui_switch_area_music},
       {"config_panel", ui_config_panel},
       {"note_button", ui_note_button},
+      //The Toggles
+      {"gm_toggle", ui_gm_toggle_button},
+      {"area_toggle", ui_area_toggle_button},
+      {"chat_toggle", ui_chat_toggle_button},
       // Each ui_label_images[i]
       {"pre", ui_pre},
       {"flip", ui_flip},
@@ -473,6 +504,7 @@ void Courtroom::reset_widget_names()
       {"prosecution_plus", ui_prosecution_plus},
       {"prosecution_minus", ui_prosecution_minus},
       {"text_color", ui_text_color},
+      {"chat_type", ui_chat_type_dropdown},
       {"notepad_image", ui_vp_notepad_image},
       {"notepad", ui_vp_notepad},
       // Each ui_timers[i]
@@ -482,6 +514,7 @@ void Courtroom::reset_widget_names()
       {"char_select_left", ui_chr_select_left},
       {"char_select_right", ui_chr_select_right},
       {"spectator", ui_spectator},
+      {"player_list", ui_player_list},
   };
 }
 
@@ -881,17 +914,28 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_switch_area_music, "switch_area_music", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_config_panel, "config_panel", COURTROOM_DESIGN_INI, ao_app);
 
+
+  set_size_and_pos(ui_area_toggle_button, "area_toggle", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_chat_toggle_button, "chat_toggle", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_gm_toggle_button, "gm_toggle", COURTROOM_DESIGN_INI, ao_app);
+
   ui_change_character->setText("");
   ui_call_mod->setText("");
   ui_switch_area_music->setText("");
   ui_config_panel->setText("");
   ui_note_button->setText("");
+  ui_area_toggle_button->setText("");
+  ui_chat_toggle_button->setText("");
+  ui_gm_toggle_button->setText("");
 
   ui_change_character->setStyleSheet("");
   ui_call_mod->setStyleSheet("");
   ui_switch_area_music->setStyleSheet("");
   ui_config_panel->setStyleSheet("");
   ui_note_button->setStyleSheet("");
+  ui_area_toggle_button->setStyleSheet("");
+  ui_chat_toggle_button->setStyleSheet("");
+  ui_gm_toggle_button->setStyleSheet("");
 
   if (ao_app->read_theme_ini_bool("enable_button_images", COURTROOM_CONFIG_INI))
   {
@@ -917,6 +961,18 @@ void Courtroom::set_widgets()
     ui_note_button->set_image("notebutton.png");
     if (ui_note_button->get_image().isEmpty())
       ui_note_button->setText("Notes");
+
+    ui_area_toggle_button->set_image("area_toggle.png");
+    if (ui_area_toggle_button->get_image().isEmpty())
+      ui_area_toggle_button->setText("Area");
+
+    ui_chat_toggle_button->set_image("chat_toggle.png");
+    if (ui_chat_toggle_button->get_image().isEmpty())
+      ui_chat_toggle_button->setText("Chat");
+
+    ui_gm_toggle_button->set_image("gm_toggle.png");
+    if (ui_gm_toggle_button->get_image().isEmpty())
+      ui_gm_toggle_button->setText("GM");
   }
 
   // The config panel has a special property. If it is displayed beyond the right or lower limit of the window, it will
@@ -1001,6 +1057,11 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_text_color, "text_color", COURTROOM_DESIGN_INI, ao_app);
   set_stylesheet(ui_text_color, "[TEXT COLOR]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
+
+  set_size_and_pos(ui_chat_type_dropdown, "chat_type", COURTROOM_DESIGN_INI, ao_app);
+  set_stylesheet(ui_chat_type_dropdown, "[CHAT TYPE]", COURTROOM_STYLESHEETS_CSS, ao_app);
+
+
   ui_char_button_selector->set_theme_image("char_selector.png");
   ui_char_button_selector->hide();
 
@@ -1032,6 +1093,11 @@ void Courtroom::set_widgets()
   ui_note_area->setLayout(ui_note_area->m_layout);
   ui_note_area->show();
   ui_note_scroll_area->hide();
+
+
+
+  set_size_and_pos(ui_player_list, "player_list", COURTROOM_DESIGN_INI, ao_app);
+  construct_emote_page_layout();
 
   list_note_files();
 

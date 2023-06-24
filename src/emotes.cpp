@@ -16,6 +16,8 @@
 #include <QScreen>
 #include <QtMath>
 
+
+
 void Courtroom::construct_emotes()
 {
   ui_emotes = new QWidget(this);

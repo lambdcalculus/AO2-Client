@@ -55,6 +55,7 @@ HEADERS += \
   src/drmovie.h \
   src/drpacket.h \
   src/drpather.h \
+  src/drplayerlistentry.h \
   src/drposition.h \
   src/drscenemovie.h \
   src/drserverinfoeditor.h \
@@ -69,6 +70,7 @@ HEADERS += \
   src/lobby.h \
   src/logger.h \
   src/misc_functions.h \
+  src/mk2/drplayer.h \
   src/mk2/graphicsspriteitem.h \
   src/mk2/graphicsvideoscreen.h \
   src/mk2/spritecachingreader.h \
@@ -130,6 +132,7 @@ SOURCES += \
   src/drmovie.cpp \
   src/drpacket.cpp \
   src/drpather.cpp \
+  src/drplayerlistentry.cpp \
   src/drposition.cpp \
   src/drscenemovie.cpp \
   src/drserverinfoeditor.cpp \
@@ -147,6 +150,7 @@ SOURCES += \
   src/logger.cpp \
   src/main.cpp \
   src/misc_functions.cpp \
+  src/mk2/drplayer.cpp \
   src/mk2/graphicsspriteitem.cpp \
   src/mk2/graphicsvideoscreen.cpp \
   src/mk2/spritecachingreader.cpp \

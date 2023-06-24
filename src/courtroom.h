@@ -35,7 +35,6 @@ class DRShoutMovie;
 class DRSplashMovie;
 class DRStickerViewer;
 class DRTextEdit;
-
 #include <QMainWindow>
 #include <QMap>
 #include <QModelIndex>
@@ -57,6 +56,9 @@ class QSignalMapper;
 class QLabel;
 
 #include <optional>
+#include "drplayerlistentry.h"
+
+#include <mk2/drplayer.h>
 
 class Courtroom : public QWidget
 {
@@ -69,6 +71,23 @@ public:
     Processing,
     Finished,
   };
+
+  enum class ToggleState
+  {
+    Chat,
+    Area,
+    GM,
+  };
+
+  enum class ChatTypes
+  {
+    Talk,
+    Shout,
+    Think,
+    Whisper,
+    Party
+  };
+
   Q_ENUM(GameState)
 
   static const int DEFAULT_WIDTH;
@@ -138,6 +157,7 @@ public:
   void update_default_iniswap_item();
   void select_base_character_iniswap();
   void refresh_character_content_url();
+  void construct_playerlist_layout();
 
   // Set the showname of the client
   void set_showname(QString p_showname);
@@ -239,10 +259,13 @@ public:
 
   template <typename T>
   int adapt_numbered_items(QVector<T *> &item_vector, QString config_item_number, QString item_name);
+  QVector<DrPlayer> m_player_data_list;
 
 signals:
   void loaded_theme();
   void closing();
+
+
 
 private:
   bool m_first_theme_loading = true;
@@ -295,6 +318,12 @@ private:
   static const int OPTIMAL_MESSAGE_SIZE = 19;
   QStringList m_pre_chatmessage;
   GameState m_game_state = GameState::Finished;
+
+  ToggleState m_toggle_state = ToggleState::Chat;
+
+
+  ChatTypes m_current_chat_type = ChatTypes::Talk;
+
   QTimer *m_loading_timer;
   mk2::SpriteReaderSynchronizer *m_preloader_sync;
   QStringList m_chatmessage;
@@ -453,6 +482,11 @@ private:
   QLineEdit *ui_sfx_search = nullptr;
 
   QWidget *ui_emotes = nullptr;
+
+
+  QWidget * ui_player_list = nullptr;
+
+
   QVector<AOEmoteButton *> ui_emote_list;
   AOButton *ui_emote_left = nullptr;
   AOButton *ui_emote_right = nullptr;
@@ -462,6 +496,8 @@ private:
 
   QComboBox *ui_emote_dropdown = nullptr;
   QComboBox *ui_iniswap_dropdown = nullptr;
+
+  QComboBox *ui_chat_type_dropdown = nullptr;
 
   enum PositionIndex
   {
@@ -536,6 +572,11 @@ private:
 
   AOButton *ui_note_button = nullptr;
 
+
+  AOButton *ui_area_toggle_button = nullptr;
+  AOButton *ui_chat_toggle_button = nullptr;
+  AOButton *ui_gm_toggle_button = nullptr;
+
   AOImageDisplay *ui_char_select_background = nullptr;
 
   // abstract widget to hold char buttons
@@ -552,6 +593,15 @@ private:
   AOButton *ui_spectator = nullptr;
 
   QHash<QString, QWidget *> widget_names;
+
+
+
+  QVector<DrPlayerListEntry *> m_player_list;
+  int m_player_id = 0;
+  int m_current_player_page = 0;
+  int player_columns = 5;
+  int player_rows = 1;
+  int m_page_max_player_count = 10;
 
   void create_widgets();
   void connect_widgets();
@@ -571,6 +621,10 @@ private:
 
   void construct_emotes();
   void construct_emote_page_layout();
+
+  void construct_playerlist();
+
+
   void reset_emote_page();
   void refresh_emote_page(const bool scroll_to_current_emote = false);
   void fill_emote_dropdown();
@@ -686,6 +740,8 @@ private slots:
 
   void on_text_color_changed(int p_color);
 
+  void on_chat_type_changed(int p_type);
+
   void reset_wtce_buttons();
   void on_wtce_clicked();
 
@@ -700,6 +756,13 @@ private slots:
 
   void on_config_panel_clicked();
   void on_note_button_clicked();
+
+  //toggles
+
+  void on_gm_toggle_clicked();
+  void on_chat_toggle_clicked();
+  void toggle_to_chat();
+  void on_area_toggle_clicked();
 
   void on_set_notes_clicked();
 
@@ -734,6 +797,8 @@ public:
   {
     SpectatorId = -1,
   };
+
+
 
   int get_character_id();
 public slots:
