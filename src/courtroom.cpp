@@ -2627,6 +2627,7 @@ void Courtroom::on_config_panel_clicked()
 
 void Courtroom::on_area_toggle_clicked()
 {
+    ui_ic_chat_message_field->setFocus();
     QString l_bg_image = ao_app->find_theme_asset_path("courtroombackground_area.png");
     if (!l_bg_image.isEmpty())
     {
@@ -2661,6 +2662,7 @@ void Courtroom::on_area_toggle_clicked()
 void Courtroom::on_chat_toggle_clicked()
 {
     toggle_to_chat();
+    ui_ic_chat_message_field->setFocus();
 }
 
 void Courtroom::toggle_to_chat()
@@ -2697,6 +2699,7 @@ void Courtroom::toggle_to_chat()
 
 void Courtroom::on_gm_toggle_clicked()
 {
+    ui_ic_chat_message_field->setFocus();
     QString l_bg_image = ao_app->find_theme_asset_path("courtroombackground_gm.png");
     if (!l_bg_image.isEmpty())
     {
