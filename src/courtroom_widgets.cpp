@@ -431,6 +431,44 @@ void Courtroom::connect_widgets()
   connect(m_loading_timer, SIGNAL(timeout()), ui_vp_loading, SLOT(show()));
 }
 
+
+void Courtroom::reset_widget_toggles()
+{
+    widget_toggles = { };
+
+    const QString l_ini_path = ao_app->find_theme_asset_path(COURTROOM_TOGGLES_INI);
+    QFile l_toggle_ini(l_ini_path);
+
+
+    if (!l_toggle_ini.open(QIODevice::ReadOnly))
+        return;
+
+
+    QTextStream in(&l_toggle_ini);
+
+    QString l_parent_name = "Chat";
+
+
+    while (!in.atEnd())
+    {
+        QString l_line = in.readLine().trimmed();
+
+        if (l_line.isEmpty()) { continue; }
+
+        if (l_line.startsWith("["))
+        {
+            l_parent_name = l_line.remove(0, 1).chopped(1).trimmed();
+        }
+        else
+        {
+            QStringList line_elements = l_line.split("=");
+
+            if(line_elements.count() <= 2) widget_toggles[line_elements.at(0).trimmed()] = l_parent_name;
+
+        }
+    }
+}
+
 void Courtroom::reset_widget_names()
 {
   // Assign names to the default widgets

@@ -74,6 +74,7 @@ public:
 
   enum class ToggleState
   {
+    All,
     Chat,
     Area,
     GM,
@@ -319,7 +320,7 @@ private:
   QStringList m_pre_chatmessage;
   GameState m_game_state = GameState::Finished;
 
-  ToggleState m_toggle_state = ToggleState::Chat;
+  ToggleState m_toggle_state = ToggleState::All;
 
 
   ChatTypes m_current_chat_type = ChatTypes::Talk;
@@ -593,6 +594,7 @@ private:
   AOButton *ui_spectator = nullptr;
 
   QHash<QString, QWidget *> widget_names;
+  QHash<QString, QString> widget_toggles;
 
 
 
@@ -612,6 +614,9 @@ private:
   template <typename T>
   void insert_widget_names(QVector<QString> &p_widget_names, QVector<T *> &p_widgets);
   void set_widget_layers();
+
+  void reset_widget_toggles();
+
 
   void construct_char_select();
   void reconstruct_char_select();
@@ -761,7 +766,7 @@ private slots:
 
   void on_gm_toggle_clicked();
   void on_chat_toggle_clicked();
-  void toggle_to_chat();
+  void switch_toggle(ToggleState state);
   void on_area_toggle_clicked();
 
   void on_set_notes_clicked();

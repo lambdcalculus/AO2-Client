@@ -79,7 +79,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   map_viewport_viewers();
   map_viewport_readers();
   if (ao_app->read_theme_ini_bool("use_toggles", COURTROOM_CONFIG_INI))
-    toggle_to_chat();
+    switch_toggle(ToggleState::Chat);
 
   set_char_select();
   load_audiotracks();
@@ -160,6 +160,7 @@ void Courtroom::setup_courtroom()
   set_widget_names();
   set_widgets();
   set_widget_layers();
+  reset_widget_toggles();
 
   // char select
   reconstruct_char_select();
@@ -2520,7 +2521,7 @@ void Courtroom::load_theme()
   update_background_scene();
 
   if (ao_app->read_theme_ini_bool("use_toggles", COURTROOM_CONFIG_INI))
-    toggle_to_chat();
+      switch_toggle(ToggleState::Chat);
 }
 
 void Courtroom::reload_theme()
@@ -2530,7 +2531,7 @@ void Courtroom::reload_theme()
     m_shout_reload_theme = true;
     return;
   }
-
+  switch_toggle(ToggleState::All);
   load_theme();
 }
 
@@ -2627,111 +2628,84 @@ void Courtroom::on_config_panel_clicked()
 
 void Courtroom::on_area_toggle_clicked()
 {
+    switch_toggle(ToggleState::Area);
     ui_ic_chat_message_field->setFocus();
-    QString l_bg_image = ao_app->find_theme_asset_path("courtroombackground_area.png");
-    if (!l_bg_image.isEmpty())
-    {
-        ui_background->set_theme_image("courtroombackground_area.png");
-    }
-    else
-    {
-        ui_background->set_theme_image("courtroombackground.png");
-    }
-
-    //Show
-    ui_area_list->show();
-    ui_area_search->show();
-    ui_pos_dropdown->show();
-    ui_player_list->show();
-
-    //Hide
-    ui_ic_chatlog->hide();
-    ui_music_list->hide();
-    ui_music_search->hide();
-    ui_ooc_chatlog->hide();
-    ui_ooc_chat_message->hide();
-    ui_ooc_chat_name->hide();
-    ui_defense_bar->hide();
-    ui_prosecution_bar->hide();
-    ui_defense_plus->hide();
-    ui_defense_minus->hide();
-    ui_prosecution_plus->hide();
-    ui_prosecution_minus->hide();
 }
 
 void Courtroom::on_chat_toggle_clicked()
 {
-    toggle_to_chat();
+    switch_toggle(ToggleState::Chat);
     ui_ic_chat_message_field->setFocus();
 }
 
-void Courtroom::toggle_to_chat()
+void Courtroom::switch_toggle(ToggleState state)
 {
-    QString l_bg_image = ao_app->find_theme_asset_path("courtroombackground_chat.png");
+    m_toggle_state = state;
+
+    if(state == ToggleState::All)
+    {
+        for (const QString &widget_toggle: widget_toggles.keys())
+        {
+            if(widget_names.contains(widget_toggle))
+            {
+                widget_names[widget_toggle]->show();
+            }
+
+        }
+
+        return;
+    }
+
+    QString state_name = "";
+    switch(state)
+    {
+        case ToggleState::Chat: state_name = "chat"; break;
+        case ToggleState::GM: state_name = "gm"; break;
+        case ToggleState::Area: state_name = "area"; break;
+        default: state_name = "unknown"; break;
+
+    };
+
+
+    QString l_bg_image = ao_app->find_theme_asset_path("courtroombackground_" + state_name + ".png");
     if (!l_bg_image.isEmpty())
     {
-        ui_background->set_theme_image("courtroombackground_chat.png");
+        ui_background->set_theme_image("courtroombackground_" + state_name + ".png");
     }
     else
     {
         ui_background->set_theme_image("courtroombackground.png");
     }
 
-    ui_ic_chatlog->show();
-    ui_ooc_chatlog->show();
-    ui_ooc_chat_message->show();
-    ui_ooc_chat_name->show();
-    ui_pos_dropdown->hide();
 
-    //Hide
-    ui_area_list->hide();
-    ui_music_list->hide();
-    ui_music_search->hide();
-    ui_area_search->hide();
-    ui_defense_bar->hide();
-    ui_prosecution_bar->hide();
-    ui_defense_plus->hide();
-    ui_defense_minus->hide();
-    ui_prosecution_plus->hide();
-    ui_prosecution_minus->hide();
-    ui_player_list->hide();
+    for (const QString &widget_toggle: widget_toggles.keys())
+    {
+        if(widget_toggles[widget_toggle].toLower() == state_name)
+        {
+
+            if(widget_names.contains(widget_toggle))
+            {
+                widget_names[widget_toggle]->show();
+
+            }
+
+        }
+        else
+        {
+            if(widget_names.contains(widget_toggle))
+            {
+               widget_names[widget_toggle]->hide();
+            }
+
+        }
+
+    }
 }
 
 void Courtroom::on_gm_toggle_clicked()
 {
+    switch_toggle(ToggleState::GM);
     ui_ic_chat_message_field->setFocus();
-    QString l_bg_image = ao_app->find_theme_asset_path("courtroombackground_gm.png");
-    if (!l_bg_image.isEmpty())
-    {
-        ui_background->set_theme_image("courtroombackground_gm.png");
-    }
-    else
-    {
-        ui_background->set_theme_image("courtroombackground.png");
-    }
-
-
-
-    //Show
-    ui_music_list->show();
-    ui_music_search->show();
-    ui_defense_bar->show();
-    ui_defense_plus->show();
-    ui_defense_minus->show();
-    ui_prosecution_bar->show();
-    ui_prosecution_plus->show();
-    ui_prosecution_minus->show();
-
-
-    //Hide
-    ui_area_list->hide();
-    ui_ic_chatlog->hide();
-    ui_area_search->hide();
-    ui_ooc_chatlog->hide();
-    ui_ooc_chat_message->hide();
-    ui_ooc_chat_name->hide();
-    ui_pos_dropdown->hide();
-    ui_player_list->hide();
 }
 
 void Courtroom::on_note_button_clicked()

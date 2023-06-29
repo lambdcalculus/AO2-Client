@@ -17,6 +17,7 @@ const QString COURTROOM_CONFIG_INI = "courtroom_config.ini";
 const QString COURTROOM_DESIGN_INI = "courtroom_design.ini";
 const QString COURTROOM_FONTS_INI = "courtroom_fonts.ini";
 const QString COURTROOM_LAYERS_INI = "courtroom_layers.ini";
+const QString COURTROOM_TOGGLES_INI = "courtroom_toggles.ini";
 const QString COURTROOM_SOUNDS_INI = "courtroom_sounds.ini";
 const QString COURTROOM_TEXT_COLOR_INI = "courtroom_text_colors.ini";
 const QString COURTROOM_STYLESHEETS_CSS = "courtroom_stylesheets.css";
