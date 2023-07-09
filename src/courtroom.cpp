@@ -1699,6 +1699,11 @@ void Courtroom::calculate_chat_tick_interval()
   if (m_server_tick_rate.has_value())
     l_tick_rate = qMax(m_server_tick_rate.value(), 0);
   l_tick_rate = qBound(0.0, l_tick_rate * (1.0 - qBound(-1.0, 0.4 * m_tick_speed, 1.0)), l_tick_rate * 2.0);
+  if(is_delay_next_letter)
+  {
+      m_tick_timer->setInterval(l_tick_rate + m_delay_time);
+      return;
+  }
   m_tick_timer->setInterval(l_tick_rate);
 }
 
@@ -1720,6 +1725,24 @@ void Courtroom::next_chat_letter()
     vp_message_format.setTextOutline(Qt::NoPen);
 
   const QChar f_character = f_message.at(m_tick_step);
+
+  if (f_character == Qt::Key_Period || f_character == Qt::Key_Exclam || f_character == Qt::Key_Question || f_character == Qt::Key_Comma)
+  {
+    if(!is_delay_next_letter)
+    {
+        is_delay_next_letter = true;
+        calculate_chat_tick_interval();
+    }
+  }
+  else if(is_delay_next_letter)
+  {
+      is_delay_next_letter = false;
+      calculate_chat_tick_interval();
+  }
+
+
+
+
   if (!is_ignore_next_letter && f_character == Qt::Key_Backslash)
   {
     ++m_tick_step;
@@ -1734,6 +1757,14 @@ void Courtroom::next_chat_letter()
     m_tick_speed = qBound(-3, m_tick_speed + (is_positive ? 1 : -1), 3);
     calculate_chat_tick_interval();
     next_chat_letter();
+    return;
+  }
+  else if (is_ignore_next_letter && f_character == Qt::Key_S)
+  {
+    ++m_tick_step;
+    viewport_anim->start();
+    next_chat_letter();
+
     return;
   }
   else if (f_character == Qt::Key_Space)

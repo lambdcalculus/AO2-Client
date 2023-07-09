@@ -68,6 +68,18 @@ void Courtroom::create_widgets()
   ui_background = new AOImageDisplay(this, ao_app);
 
   ui_viewport = new DRGraphicsView(this);
+  viewport_anim = new QPropertyAnimation(ui_viewport, "geometry", this);
+
+
+  pos_size_type res_b = ao_app->get_element_dimensions("viewport", COURTROOM_DESIGN_INI);
+
+  viewport_anim->setLoopCount(6);
+  viewport_anim->setDuration(40);
+  viewport_anim->setStartValue(QRect(res_b.x + 25, res_b.y + 20, res_b.width, res_b.height));
+  viewport_anim->setKeyValueAt(0.30, QRect(res_b.x, res_b.y, res_b.width, res_b.height));
+  viewport_anim->setKeyValueAt(0.60, QRect(res_b.x + -25, res_b.y + 20, res_b.width, res_b.height));
+  viewport_anim->setEndValue(QRect(res_b.x, res_b.y, res_b.width, res_b.height));
+
 
   { // populate scene
     auto *l_scene = ui_viewport->scene();

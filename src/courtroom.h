@@ -292,7 +292,9 @@ private:
   int m_tick_speed = 0;
   // which tick position(character in chat message) we are at
   int m_tick_step = 0;
+  int m_delay_time = 150;
   bool is_ignore_next_letter = false;
+  bool is_delay_next_letter = false;
   // used to determine how often blips sound
   int m_blip_step = 0;
   int m_rainbow_step = 0;
@@ -401,6 +403,8 @@ private:
   AOImageDisplay *ui_background = nullptr;
 
   DRGraphicsView *ui_viewport = nullptr;
+  QPropertyAnimation *viewport_anim = nullptr;
+
   DRVideoScreen *ui_video = nullptr;
   DRSceneMovie *ui_vp_background = nullptr;
   DRCharacterMovie *ui_vp_player_char = nullptr;
