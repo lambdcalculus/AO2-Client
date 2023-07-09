@@ -292,7 +292,6 @@ private:
   int m_tick_speed = 0;
   // which tick position(character in chat message) we are at
   int m_tick_step = 0;
-  int m_delay_time = 150;
   bool is_ignore_next_letter = false;
   bool is_delay_next_letter = false;
   // used to determine how often blips sound

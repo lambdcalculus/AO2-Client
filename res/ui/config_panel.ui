@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>487</width>
-    <height>514</height>
+    <height>558</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,7 +32,7 @@
    <item>
     <widget class="QTabWidget" name="tab_widget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -1355,6 +1355,26 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="punctuation_delay">
+            <property name="suffix">
+             <string> ms</string>
+            </property>
+            <property name="maximum">
+             <number>1000</number>
+            </property>
+            <property name="value">
+             <number>150</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="punctuation_delay_label">
+            <property name="text">
+             <string>Punctuation Delay:</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

@@ -133,6 +133,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_blip_value = AO_GUI_WIDGET(QLabel, "blip_value");
   ui_blip_rate = AO_GUI_WIDGET(QSpinBox, "blip_rate");
   ui_blank_blips = AO_GUI_WIDGET(QCheckBox, "blank_blips");
+  ui_punctuation_delay = AO_GUI_WIDGET(QSpinBox, "punctuation_delay");
   ui_reload_audiotracks = AO_GUI_WIDGET(QPushButton, "reload_audiotracks");
 
   // about
@@ -199,6 +200,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(blip_volume_changed(int)), ui_blip, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blip_ignore_suppression_changed(bool)), ui_blip_ignore_suppression, SLOT(setChecked(bool)));
   connect(m_config, SIGNAL(blip_rate_changed(int)), ui_blip_rate, SLOT(setValue(int)));
+  connect(m_config, SIGNAL(punctuation_delay_changed(int)), ui_punctuation_delay, SLOT(setValue(int)));
   connect(m_config, SIGNAL(blank_blips_changed(bool)), ui_blank_blips, SLOT(setChecked(bool)));
 
   connect(m_engine, SIGNAL(current_device_changed(DRAudioDevice)), this, SLOT(on_audio_device_changed(DRAudioDevice)));
@@ -270,6 +272,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_blip, SIGNAL(valueChanged(int)), this, SLOT(on_blip_value_changed(int)));
   connect(ui_blip_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_blip_ignore_suppression(bool)));
   connect(ui_blip_rate, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_rate(int)));
+  connect(ui_punctuation_delay, SIGNAL(valueChanged(int)), m_config, SLOT(set_punctuation_delay(int)));
   connect(ui_blank_blips, SIGNAL(toggled(bool)), m_config, SLOT(set_blank_blips(bool)));
 
   // set values
@@ -359,6 +362,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_blip->setValue(m_config->blip_volume());
   ui_blip_ignore_suppression->setChecked(m_config->blip_ignore_suppression());
   ui_blip_rate->setValue(m_config->blip_rate());
+  ui_punctuation_delay->setValue(m_config->punctuation_delay());
   ui_blank_blips->setChecked(m_config->blank_blips_enabled());
 
   on_manual_gamemode_selection_changed(m_config->is_manual_gamemode_selection_enabled());

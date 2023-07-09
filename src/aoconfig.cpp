@@ -105,6 +105,7 @@ private:
   int blip_volume;
   bool blip_ignore_suppression;
   int blip_rate;
+  int punctuation_delay;
   bool blank_blips;
 
   // audio sync
@@ -217,6 +218,7 @@ void AOConfigPrivate::load_file()
   blip_volume = cfg.value("default_blip", 50).toInt();
   blip_ignore_suppression = cfg.value("blip_ignore_suppression", false).toBool();
   blip_rate = cfg.value("blip_rate", 1000000000).toInt();
+  punctuation_delay = cfg.value("punctuation_delay", 150).toInt();
   blank_blips = cfg.value("blank_blips").toBool();
 
   // audio update
@@ -324,6 +326,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("default_blip", blip_volume);
   cfg.setValue("blip_ignore_suppression", blip_ignore_suppression);
   cfg.setValue("blip_rate", blip_rate);
+  cfg.setValue("punctuation_delay", punctuation_delay);
   cfg.setValue("blank_blips", blank_blips);
 
   cfg.remove("character_ini");
@@ -699,6 +702,11 @@ bool AOConfig::blip_ignore_suppression() const
 int AOConfig::blip_rate() const
 {
   return d->blip_rate;
+}
+
+int AOConfig::punctuation_delay() const
+{
+  return d->punctuation_delay;
 }
 
 bool AOConfig::blank_blips_enabled() const
@@ -1157,6 +1165,14 @@ void AOConfig::set_blip_rate(int p_number)
     return;
   d->blip_rate = p_number;
   d->invoke_signal("blip_rate_changed", Q_ARG(int, p_number));
+}
+
+void AOConfig::set_punctuation_delay(int p_number)
+{
+  if (d->punctuation_delay == p_number)
+    return;
+  d->punctuation_delay = p_number;
+  d->invoke_signal("punctuation_delay_changed", Q_ARG(int, p_number));
 }
 
 void AOConfig::set_blank_blips(bool p_enabled)

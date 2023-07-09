@@ -1701,7 +1701,7 @@ void Courtroom::calculate_chat_tick_interval()
   l_tick_rate = qBound(0.0, l_tick_rate * (1.0 - qBound(-1.0, 0.4 * m_tick_speed, 1.0)), l_tick_rate * 2.0);
   if(is_delay_next_letter)
   {
-      m_tick_timer->setInterval(l_tick_rate + m_delay_time);
+    m_tick_timer->setInterval(l_tick_rate + ao_config->punctuation_delay());
       return;
   }
   m_tick_timer->setInterval(l_tick_rate);
