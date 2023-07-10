@@ -1033,6 +1033,8 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
   l_file_list.insert(ViewportShout, ao_app->get_shout_sprite_path(l_character, get_shout_name(l_shout_id)));
 
   // effects
+  if(l_effect_id == 8) viewport_anim->start();
+
   l_file_list.insert(ViewportEffect, ao_app->get_theme_sprite_path(get_effect_name(l_effect_id)));
 
   for (auto it = l_file_list.cbegin(); it != l_file_list.cend(); ++it)
@@ -2551,8 +2553,7 @@ void Courtroom::load_theme()
   setup_courtroom();
   update_background_scene();
 
-  if (ao_app->read_theme_ini_bool("use_toggles", COURTROOM_CONFIG_INI))
-      switch_toggle(ToggleState::Chat);
+  if (ao_app->read_theme_ini_bool("use_toggles", COURTROOM_CONFIG_INI)) switch_toggle(ToggleState::Chat);
 }
 
 void Courtroom::reload_theme()
