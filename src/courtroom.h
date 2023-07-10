@@ -402,7 +402,10 @@ private:
   AOImageDisplay *ui_background = nullptr;
 
   DRGraphicsView *ui_viewport = nullptr;
-  QPropertyAnimation *viewport_anim = nullptr;
+  QPropertyAnimation *background_anim = nullptr;
+
+  QPropertyAnimation *chatbox_anim = nullptr;
+  QPropertyAnimation *player_sprite_anim = nullptr;
 
   DRVideoScreen *ui_video = nullptr;
   DRSceneMovie *ui_vp_background = nullptr;
@@ -431,6 +434,8 @@ private:
   void map_viewers();
   void map_viewport_viewers();
   void map_viewport_readers();
+  void setup_screenshake_anim();
+  void play_screenshake_anim();
   mk2::SpriteReader::ptr get_viewport_reader(ViewportSprite type) const;
   void assign_readers_for_all_viewers();
   void swap_viewport_reader(DRMovie *viewer, ViewportSprite type);

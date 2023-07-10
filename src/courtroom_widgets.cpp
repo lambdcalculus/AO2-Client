@@ -68,26 +68,18 @@ void Courtroom::create_widgets()
   ui_background = new AOImageDisplay(this, ao_app);
 
   ui_viewport = new DRGraphicsView(this);
-  viewport_anim = new QPropertyAnimation(ui_viewport, "geometry", this);
-
-
-  pos_size_type res_b = ao_app->get_element_dimensions("viewport", COURTROOM_DESIGN_INI);
-
-  viewport_anim->setLoopCount(6);
-  viewport_anim->setDuration(40);
-  viewport_anim->setStartValue(QRect(res_b.x + 25, res_b.y + 20, res_b.width, res_b.height));
-  viewport_anim->setKeyValueAt(0.30, QRect(res_b.x, res_b.y, res_b.width, res_b.height));
-  viewport_anim->setKeyValueAt(0.60, QRect(res_b.x + -25, res_b.y + 20, res_b.width, res_b.height));
-  viewport_anim->setEndValue(QRect(res_b.x, res_b.y, res_b.width, res_b.height));
 
 
   { // populate scene
     auto *l_scene = ui_viewport->scene();
 
     ui_vp_background = new DRSceneMovie(ao_app);
+
+    background_anim = new QPropertyAnimation(ui_vp_background, "pos", this);
     l_scene->addItem(ui_vp_background);
 
     ui_vp_player_char = new DRCharacterMovie(ao_app);
+    player_sprite_anim = new QPropertyAnimation(ui_vp_player_char, "pos", this);
     l_scene->addItem(ui_vp_player_char);
 
     ui_vp_desk = new DRSceneMovie(ao_app);
@@ -126,6 +118,7 @@ void Courtroom::create_widgets()
   ui_vp_clock = new DRStickerViewer(ao_app, this);
 
   ui_vp_chatbox = new AOImageDisplay(this, ao_app);
+  chatbox_anim = new QPropertyAnimation(ui_vp_chatbox, "pos", this);
   ui_vp_showname = new DRTextEdit(ui_vp_chatbox);
   ui_vp_showname->setFrameStyle(QFrame::NoFrame);
   ui_vp_showname->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -314,6 +307,8 @@ void Courtroom::create_widgets()
 
   ui_timers.resize(1);
   ui_timers[0] = new AOTimer(this);
+
+  setup_screenshake_anim();
 
   construct_playerlist();
 
@@ -1551,4 +1546,40 @@ void Courtroom::set_fonts()
     AOTimer *i_timer = ui_timers.at(i);
     set_drtextedit_font(i_timer, QString("timer_%1").arg(i), COURTROOM_FONTS_INI, ao_app);
   }
+}
+
+void Courtroom::setup_screenshake_anim()
+{
+  pos_size_type chatbox_res = ao_app->get_element_dimensions("ao2_chatbox", COURTROOM_DESIGN_INI);
+
+  background_anim->setLoopCount(5);
+  background_anim->setDuration(50);
+  background_anim->setStartValue(QPoint(0 + 25, 0 + 20));
+  background_anim->setKeyValueAt(0.30, QPoint(0, 0));
+  background_anim->setKeyValueAt(0.60, QPoint(0 + -25, 0 + 20));
+  background_anim->setEndValue(QPoint(0, 0));
+
+  chatbox_anim->setLoopCount(5);
+  chatbox_anim->setDuration(50);
+  chatbox_anim->setStartValue(QPoint(chatbox_res.x + 25, chatbox_res.y + 20));
+  chatbox_anim->setKeyValueAt(0.30, QPoint(chatbox_res.x, chatbox_res.y));
+  chatbox_anim->setKeyValueAt(0.60, QPoint(chatbox_res.x + -25, chatbox_res.y + 20));
+  chatbox_anim->setEndValue(QPoint(chatbox_res.x, chatbox_res.y));
+
+  player_sprite_anim->setLoopCount(5);
+  player_sprite_anim->setDuration(50);
+  player_sprite_anim->setStartValue(QPoint(0 - 25, 0 + 20));
+  player_sprite_anim->setKeyValueAt(0.30, QPoint(0, 0));
+  player_sprite_anim->setKeyValueAt(0.60, QPoint(0 + 25, 0 + 20));
+  player_sprite_anim->setEndValue(QPoint(0, 0));
+
+}
+
+void Courtroom::play_screenshake_anim()
+{
+
+  chatbox_anim->start();
+  background_anim->start();
+  player_sprite_anim->start();
+
 }

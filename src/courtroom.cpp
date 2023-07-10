@@ -1033,7 +1033,7 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
   l_file_list.insert(ViewportShout, ao_app->get_shout_sprite_path(l_character, get_shout_name(l_shout_id)));
 
   // effects
-  if(l_effect_id == 8) viewport_anim->start();
+  if(l_effect_id == 8) play_screenshake_anim();
 
   l_file_list.insert(ViewportEffect, ao_app->get_theme_sprite_path(get_effect_name(l_effect_id)));
 
@@ -1764,7 +1764,7 @@ void Courtroom::next_chat_letter()
   else if (is_ignore_next_letter && f_character == 's')
   {
     ++m_tick_step;
-    viewport_anim->start();
+    play_screenshake_anim();
     next_chat_letter();
 
     return;
@@ -2551,6 +2551,7 @@ void Courtroom::on_change_character_clicked()
 void Courtroom::load_theme()
 {
   setup_courtroom();
+  setup_screenshake_anim();
   update_background_scene();
 
   if (ao_app->read_theme_ini_bool("use_toggles", COURTROOM_CONFIG_INI)) switch_toggle(ToggleState::Chat);
@@ -2860,7 +2861,7 @@ void Courtroom::construct_playerlist_layout()
     {
 
         int x_pos = 1;
-        int y_pos = (50 + 5) * n;
+        int y_pos = (47) * n;
         DrPlayerListEntry* ui_playername = new DrPlayerListEntry(ui_player_list, ao_app, x_pos, y_pos);
 
         ui_playername->set_character(m_player_data_list.at(n).m_character);
