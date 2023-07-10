@@ -218,7 +218,7 @@ void AOConfigPrivate::load_file()
   blip_volume = cfg.value("default_blip", 50).toInt();
   blip_ignore_suppression = cfg.value("blip_ignore_suppression", false).toBool();
   blip_rate = cfg.value("blip_rate", 1000000000).toInt();
-  punctuation_delay = cfg.value("punctuation_delay", 150).toInt();
+  punctuation_delay = cfg.value("punctuation_delay", 0).toInt();
   blank_blips = cfg.value("blank_blips").toBool();
 
   // audio update

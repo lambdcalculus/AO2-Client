@@ -1761,7 +1761,7 @@ void Courtroom::next_chat_letter()
     next_chat_letter();
     return;
   }
-  else if (is_ignore_next_letter && f_character == Qt::Key_S)
+  else if (is_ignore_next_letter && f_character == 's')
   {
     ++m_tick_step;
     viewport_anim->start();
