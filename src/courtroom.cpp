@@ -1712,7 +1712,8 @@ void Courtroom::calculate_chat_tick_interval()
 void Courtroom::next_chat_letter()
 {
   const QString &f_message = m_chatmessage[CMMessage];
-  if (m_tick_step >= f_message.length() || ui_vp_chatbox->isHidden())
+  int message_length = f_message.length();
+  if (m_tick_step >= message_length || ui_vp_chatbox->isHidden())
   {
     post_chatmessage();
     return;
@@ -1728,7 +1729,7 @@ void Courtroom::next_chat_letter()
 
   const QChar f_character = f_message.at(m_tick_step);
 
-  if (f_character == Qt::Key_Period || f_character == Qt::Key_Exclam || f_character == Qt::Key_Question || f_character == Qt::Key_Comma)
+  if ((f_character == Qt::Key_Period || f_character == Qt::Key_Exclam || f_character == Qt::Key_Question || f_character == Qt::Key_Comma) && m_tick_step != message_length - 1)
   {
     if(!is_delay_next_letter)
     {
