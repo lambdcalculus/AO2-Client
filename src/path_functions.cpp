@@ -85,12 +85,18 @@ QString AOApplication::get_character_path(QString p_chr, QString p_file)
 
 QString AOApplication::get_music_folder_path()
 {
-  const QString l_path = get_package_or_base_path("sounds/music/");
+  const QString l_path = get_base_path() + "sounds/music/";
   return get_case_sensitive_path(l_path);
 }
 
 QString AOApplication::get_music_path(QString p_song)
 {
+  for (int i=0; i< package_names.size(); i++)
+  {
+    QString package_path = get_package_path(package_names.at(i))  + p_song;
+    if(file_exists(package_path)) return get_case_sensitive_path(package_path);
+  }
+
   const QString l_path = get_music_folder_path() + p_song;
   return get_case_sensitive_path(l_path);
 }
