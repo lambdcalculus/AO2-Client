@@ -51,6 +51,7 @@ AOApplication::AOApplication(int &argc, char **argv)
   connect(m_server_socket, &DRServerSocket::connection_state_changed, this, &AOApplication::_p_handle_server_state_update);
   connect(m_server_socket, SIGNAL(packet_received(DRPacket)), this, SLOT(_p_handle_server_packet(DRPacket)));
 
+  reload_packages();
   resolve_current_theme();
 }
 

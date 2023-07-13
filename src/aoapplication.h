@@ -64,7 +64,11 @@ public:
   QString get_current_char();
 
   // implementation in path_functions.cpp
+  QVector<QString> package_names;
+  void reload_packages();
   QString get_base_path();
+  QString get_package_path(QString p_package);
+  QString get_package_or_base_path(QString p_path);
   QString get_base_file_path(QString file);
   QString get_character_folder_path(QString character);
   QString get_character_path(QString p_character, QString p_file);

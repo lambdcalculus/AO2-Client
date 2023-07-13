@@ -22,19 +22,60 @@
 #define CASE_SENSITIVE_FILESYSTEM
 #endif
 
+void AOApplication::reload_packages()
+{
+  package_names = {};
+  QString packages_path = DRPather::get_application_path() + "/packages/";
+  QDir packages_directory(packages_path);
+
+  QList<QFileInfo> packages_fileinfo= packages_directory.entryInfoList();
+
+
+  for (int i=0; i< packages_fileinfo.size(); i++)
+  {
+    if (packages_fileinfo.at(i).isDir())
+    {
+      package_names.append(packages_fileinfo.at(i).baseName());
+    }
+  }
+
+}
+
 QString AOApplication::get_base_path()
 {
   return DRPather::get_application_path() + "/base/";
 }
 
+QString AOApplication::get_package_path(QString p_package)
+{
+  return DRPather::get_application_path() + "/packages/" + p_package + "/";
+}
+
+QString AOApplication::get_package_or_base_path(QString p_path)
+{
+
+  for (int i=0; i< package_names.size(); i++)
+  {
+    QString package_path = get_package_path(package_names.at(i))  + p_path;
+    if(dir_exists(package_path))
+    {
+      return package_path;
+    }
+  }
+
+  return get_base_path() + p_path;
+}
+
+
+
 QString AOApplication::get_base_file_path(QString p_file)
 {
-  return get_base_path() + p_file;
+  return get_package_or_base_path(p_file);
 }
 
 QString AOApplication::get_character_folder_path(QString p_chr)
 {
-  return get_base_path() + "characters/" + p_chr;
+  return get_package_or_base_path("characters/" + p_chr);
 }
 
 QString AOApplication::get_character_path(QString p_chr, QString p_file)
@@ -44,7 +85,7 @@ QString AOApplication::get_character_path(QString p_chr, QString p_file)
 
 QString AOApplication::get_music_folder_path()
 {
-  const QString l_path = get_base_path() + "sounds/music/";
+  const QString l_path = get_package_or_base_path("sounds/music/");
   return get_case_sensitive_path(l_path);
 }
 
@@ -56,7 +97,7 @@ QString AOApplication::get_music_path(QString p_song)
 
 QString AOApplication::get_background_path(QString p_identifier)
 {
-  return get_base_path() + "background/" + p_identifier;
+  return get_package_or_base_path("background/" + p_identifier);
 }
 
 QString AOApplication::get_background_dir_path(QString p_identifier)
