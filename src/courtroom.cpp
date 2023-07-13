@@ -2571,6 +2571,7 @@ void Courtroom::reload_theme()
 
 void Courtroom::load_character()
 {
+  ao_app->reload_packages();
   update_iniswap_list();
   enter_courtroom(get_character_id());
 }

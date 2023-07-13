@@ -78,14 +78,27 @@ void Courtroom::update_iniswap_list()
     ui_iniswap_dropdown->clear();
 
     QStringList l_name_list{"Default"};
-    const QString l_path = ao_app->get_base_path() + "/characters";
-    const QFileInfoList l_info_list = QDir(l_path).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
-    for (const QFileInfo &i_info : l_info_list)
+
+    QStringList l_package_folders{};
+
+    for (int i=0; i< ao_app->package_names.size(); i++)
     {
-      const QString l_name = i_info.fileName();
-      if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)))
-        continue;
-      l_name_list.append(l_name);
+      const QString l_path = ao_app->get_package_path(ao_app->package_names.at(i)) + "/characters";
+      if(dir_exists(l_path)) l_package_folders.append(l_path);
+    }
+
+    l_package_folders.append(ao_app->get_base_path() + "/characters");
+
+    for (int i = 0; i < l_package_folders.length(); ++i)
+    {
+      const QFileInfoList l_info_list = QDir(l_package_folders.at(i)).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+      for (const QFileInfo &i_info : l_info_list)
+      {
+        const QString l_name = i_info.fileName();
+        if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)))
+          continue;
+        if(!l_name_list.contains(l_name)) l_name_list.append(l_name);
+      }
     }
 
     for (int i = 0; i < l_name_list.length(); ++i)
