@@ -15,12 +15,12 @@ int get_release_version()
 
 int get_major_version()
 {
-  return 2;
+  return 5;
 }
 
 int get_minor_version()
 {
-  return 4;
+  return 0;
 }
 
 VersionNumber get_version_number()
@@ -30,7 +30,7 @@ VersionNumber get_version_number()
 
 QString get_post_version()
 {
-  return "";
+  return "beta1";
 }
 
 QString get_version_string()
