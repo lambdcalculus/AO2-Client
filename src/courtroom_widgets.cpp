@@ -308,6 +308,10 @@ void Courtroom::create_widgets()
   ui_timers.resize(1);
   ui_timers[0] = new AOTimer(this);
 
+
+  ui_player_list_left = new AOButton(this, ao_app);
+  ui_player_list_right = new AOButton(this, ao_app);
+
   setup_screenshake_anim();
 
   construct_playerlist();
@@ -436,6 +440,12 @@ void Courtroom::connect_widgets()
   connect(m_preloader_sync, SIGNAL(finished()), this, SLOT(start_chatmessage()));
   connect(ao_config, SIGNAL(loading_bar_delay_changed(int)), this, SLOT(on_loading_bar_delay_changed(int)));
   connect(m_loading_timer, SIGNAL(timeout()), ui_vp_loading, SLOT(show()));
+
+
+  //Player List
+  connect(ui_player_list_left, SIGNAL(clicked()), this, SLOT(on_player_list_left_clicked()));
+  connect(ui_player_list_right, SIGNAL(clicked()), this, SLOT(on_player_list_right_clicked()));
+
 }
 
 
@@ -560,6 +570,8 @@ void Courtroom::reset_widget_names()
       {"char_select_right", ui_chr_select_right},
       {"spectator", ui_spectator},
       {"player_list", ui_player_list},
+      {"player_list_left", ui_player_list_left},
+      {"player_list_right", ui_player_list_right},
   };
 }
 
@@ -959,6 +971,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_switch_area_music, "switch_area_music", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_config_panel, "config_panel", COURTROOM_DESIGN_INI, ao_app);
 
+  set_size_and_pos(ui_player_list_left, "player_list_left", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_player_list_right, "player_list_right", COURTROOM_DESIGN_INI, ao_app);
+
 
   set_size_and_pos(ui_area_toggle_button, "area_toggle", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_chat_toggle_button, "chat_toggle", COURTROOM_DESIGN_INI, ao_app);
@@ -973,6 +988,9 @@ void Courtroom::set_widgets()
   ui_chat_toggle_button->setText("");
   ui_gm_toggle_button->setText("");
 
+  ui_player_list_left->setText("");
+  ui_player_list_right->setText("");
+
   ui_change_character->setStyleSheet("");
   ui_call_mod->setStyleSheet("");
   ui_switch_area_music->setStyleSheet("");
@@ -981,6 +999,8 @@ void Courtroom::set_widgets()
   ui_area_toggle_button->setStyleSheet("");
   ui_chat_toggle_button->setStyleSheet("");
   ui_gm_toggle_button->setStyleSheet("");
+  ui_player_list_left->setStyleSheet("");
+  ui_player_list_right->setStyleSheet("");
 
   if (ao_app->read_theme_ini_bool("enable_button_images", COURTROOM_CONFIG_INI))
   {
@@ -990,6 +1010,15 @@ void Courtroom::set_widgets()
     ui_change_character->set_image("changecharacter.png");
     if (ui_change_character->get_image().isEmpty())
       ui_change_character->setText("Change Character");
+
+    ui_player_list_left->set_image("arrow_left.png");
+    if (ui_player_list_left->get_image().isEmpty())
+      ui_player_list_left->setText("<-");
+
+    ui_player_list_right->set_image("arrow_right.png");
+    if (ui_player_list_right->get_image().isEmpty())
+      ui_player_list_right->setText("->");
+
 
     ui_call_mod->set_image("callmod.png");
     if (ui_call_mod->get_image().isEmpty())

@@ -606,12 +606,16 @@ private:
 
 
 
+  AOButton *ui_player_list_left = nullptr;
+  AOButton *ui_player_list_right = nullptr;
+
+
   QVector<DrPlayerListEntry *> m_player_list;
   int m_player_id = 0;
   int m_current_player_page = 0;
   int player_columns = 5;
-  int player_rows = 1;
   int m_page_max_player_count = 10;
+  int m_page_player_list = 0;
 
   void create_widgets();
   void connect_widgets();
@@ -795,6 +799,11 @@ private slots:
   void char_mouse_left();
 
   void on_spectator_clicked();
+
+  //Player List
+
+  void on_player_list_left_clicked();
+  void on_player_list_right_clicked();
 
   void ping_server();
 

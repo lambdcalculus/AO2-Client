@@ -2847,31 +2847,75 @@ void Courtroom::construct_playerlist()
 void Courtroom::construct_playerlist_layout()
 {
 
-    while (!m_player_list.isEmpty())
-      delete m_player_list.takeLast();
 
-    set_size_and_pos(ui_player_list, "player_list", COURTROOM_DESIGN_INI, ao_app);
 
-    const int button_width = 200;
-    int y_mod_count = 0;
+  while (!m_player_list.isEmpty())
+    delete m_player_list.takeLast();
 
-    player_columns = ((ui_emotes->width() - button_width) / (20 + button_width)) + 1;
-    player_rows = 1;
+  QPoint f_spacing = ao_app->get_button_spacing("player_list_spacing", COURTROOM_DESIGN_INI);
 
-    m_page_max_player_count = qMax(1, player_columns * player_rows);
-    for (int n = 0; n < m_player_data_list.count(); ++n)
-    {
+  set_size_and_pos(ui_player_list, "player_list", COURTROOM_DESIGN_INI, ao_app);
 
-        int x_pos = 1;
-        int y_pos = (47) * n;
-        DrPlayerListEntry* ui_playername = new DrPlayerListEntry(ui_player_list, ao_app, x_pos, y_pos);
+  int player_height = 40;
+  int y_spacing = f_spacing.y();
+  int max_pages = ceil((m_player_data_list.count() - 1) / m_page_max_player_count);
 
-        ui_playername->set_character(m_player_data_list.at(n).m_character);
-        ui_playername->set_name(m_player_data_list.at(n).m_showname);
+  player_columns = ((ui_player_list->height() - player_height) / (y_spacing + player_height)) + 1;
 
-        m_player_list.append(ui_playername);
-        ui_playername->show();
+  m_page_max_player_count = qMax(1, player_columns);
 
-    }
+  //Manage Arrows (Right)
+  ui_player_list_right->hide();
+  if(m_page_player_list < max_pages)
+  {
+    ui_player_list_right->show();
+  }
+  else if(m_page_player_list > max_pages)
+  {
+    m_page_player_list = max_pages;
+  }
+
+  //Manage Arrows (Left)
+  if(m_page_player_list <= 0)
+  {
+    m_page_player_list = 0;
+    ui_player_list_left->hide();
+  }
+  else ui_player_list_left->show();
+
+
+  int starting_index = (m_page_player_list * m_page_max_player_count);
+
+  for (int n = starting_index; n < m_player_data_list.count(); ++n)
+  {
+    int y_pos = (40 + y_spacing) * (n - starting_index);
+    DrPlayerListEntry* ui_playername = new DrPlayerListEntry(ui_player_list, ao_app, 1, y_pos);
+
+    ui_playername->set_character(m_player_data_list.at(n).m_character);
+    ui_playername->set_name(m_player_data_list.at(n).m_showname);
+
+    m_player_list.append(ui_playername);
+    ui_playername->show();
+
+    if(n == (starting_index + m_page_max_player_count)) break;
+  }
+}
+
+void Courtroom::on_player_list_left_clicked()
+{
+    --m_page_player_list;
+
+    construct_playerlist_layout();
+
+    ui_ic_chat_message_field->setFocus();
+}
+
+void Courtroom::on_player_list_right_clicked()
+{
+    ++m_page_player_list;
+
+    construct_playerlist_layout();
+
+    ui_ic_chat_message_field->setFocus();
 }
 
