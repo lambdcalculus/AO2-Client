@@ -1358,7 +1358,7 @@ void Courtroom::handle_chatmessage_3()
       if (!l_effect_name.isEmpty()) // check to prevent crashing
       {
         QStringList offset = ao_app->get_effect_offset(f_char, l_effect_index);
-        ui_vp_effect->setPos(ui_viewport->x() + offset.at(0).toInt(), ui_viewport->y() + offset.at(1).toInt());
+        ui_vp_effect->setPos(offset.at(0).toInt(), offset.at(1).toInt());
 
         QString s_eff = effect_names.at(l_effect_index - 1);
         QStringList f_eff = ao_app->get_effect(l_effect_index);
