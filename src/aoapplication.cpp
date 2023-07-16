@@ -406,8 +406,13 @@ bool AOApplication::get_first_person_enabled()
 void AOApplication::load_fonts()
 {
   QFontDatabase l_database;
-  for (const QFileInfo &fileInfo : QDir(get_case_sensitive_path(get_base_path() + "fonts")).entryInfoList())
-    l_database.addApplicationFont(fileInfo.absoluteFilePath());
+  QVector<QString> l_font_paths = get_all_package_and_base_paths("fonts");
+
+  for (QString &l_font_path : l_font_paths)
+  {
+    for (const QFileInfo &fileInfo : QDir(get_case_sensitive_path(l_font_path)).entryInfoList())
+      l_database.addApplicationFont(fileInfo.absoluteFilePath());
+  }
 }
 
 void AOApplication::loading_cancelled()

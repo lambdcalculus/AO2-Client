@@ -1764,10 +1764,10 @@ void Courtroom::next_chat_letter()
   }
   else if (is_ignore_next_letter && f_character == 's')
   {
+    is_ignore_next_letter = false;
     ++m_tick_step;
     play_screenshake_anim();
     next_chat_letter();
-
     return;
   }
   else if (f_character == Qt::Key_Space)
