@@ -2560,7 +2560,6 @@ void Courtroom::load_theme()
 
 void Courtroom::reload_theme()
 {
-
   if (m_game_state == GameState::Preloading || ui_vp_objection->is_running())
   {
     m_shout_reload_theme = true;
