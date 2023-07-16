@@ -2560,6 +2560,7 @@ void Courtroom::load_theme()
 
 void Courtroom::reload_theme()
 {
+
   if (m_game_state == GameState::Preloading || ui_vp_objection->is_running())
   {
     m_shout_reload_theme = true;
@@ -2677,6 +2678,10 @@ void Courtroom::switch_toggle(ToggleState state)
 {
     m_toggle_state = state;
 
+    ui_chat_toggle_button->set_image("chat_toggle.png");
+    ui_area_toggle_button->set_image("area_toggle.png");
+    ui_gm_toggle_button->set_image("gm_toggle.png");
+
     if(state == ToggleState::All)
     {
         for (const QString &widget_toggle: widget_toggles.keys())
@@ -2694,10 +2699,24 @@ void Courtroom::switch_toggle(ToggleState state)
     QString state_name = "";
     switch(state)
     {
-        case ToggleState::Chat: state_name = "chat"; break;
-        case ToggleState::GM: state_name = "gm"; break;
-        case ToggleState::Area: state_name = "area"; break;
-        default: state_name = "unknown"; break;
+        case ToggleState::Chat:
+          state_name = "chat";
+          ui_chat_toggle_button->set_image("chat_toggle_active.png");
+          break;
+
+        case ToggleState::GM:
+          state_name = "gm";
+          ui_gm_toggle_button->set_image("gm_toggle_active.png");
+          break;
+
+        case ToggleState::Area:
+          state_name = "area";
+          ui_area_toggle_button->set_image("area_toggle_active.png");
+          break;
+
+        default:
+          state_name = "unknown";
+          break;
 
     };
 
