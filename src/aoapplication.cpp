@@ -420,8 +420,9 @@ void AOApplication::on_courtroom_destroyed()
 
 void AOApplication::resolve_current_theme()
 {
-  const QString l_theme_dir = get_case_sensitive_path(get_base_file_path("themes"));
-  if (l_theme_dir.isEmpty())
+  QVector<QString> l_theme_directories = get_all_package_and_base_paths("themes");
+
+  if (l_theme_directories.isEmpty())
   {
     call_warning("It doesn't look like your client is set up correctly. This can be "
                  "due to the following reasons: \n"
@@ -437,22 +438,34 @@ void AOApplication::resolve_current_theme()
 
   const QString l_current_theme = ao_config->theme();
   std::optional<QString> l_target_theme;
-  const QList<QFileInfo> l_info_list = QDir(l_theme_dir).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-  for (const QFileInfo &i_info : l_info_list)
+
+
+  for (QString &l_theme_dir : l_theme_directories)
   {
-    const QString l_theme = i_info.fileName();
-    if (l_theme == l_current_theme)
+    bool l_theme_found = false;
+    //Grab file info from directory.
+    const QList<QFileInfo> l_info_list = QDir(l_theme_dir).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    for (const QFileInfo &i_info : l_info_list)
     {
-      l_target_theme.reset();
-      break;
+      const QString l_theme = i_info.fileName();
+      if (l_theme == l_current_theme)
+      {
+        l_target_theme.reset();
+        l_theme_found = true;
+        break;
+      }
+
+      // target theme is always the first
+      if (!l_target_theme.has_value())
+      {
+        l_target_theme = l_theme;
+      }
     }
 
-    // target theme is always the first
-    if (!l_target_theme.has_value())
-    {
-      l_target_theme = l_theme;
-    }
+    if (l_theme_found) break;
   }
+
 
   if (l_target_theme.has_value())
   {

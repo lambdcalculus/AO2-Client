@@ -66,12 +66,48 @@ QString AOApplication::get_package_or_base_path(QString p_path)
   return get_base_path() + p_path;
 }
 
+QString AOApplication::get_package_or_base_file(QString p_filepath)
+{
+
+  for (int i=0; i< package_names.size(); i++)
+  {
+    QString package_path = get_package_path(package_names.at(i))  + p_filepath;
+    if(file_exists(package_path))
+    {
+      return package_path;
+    }
+  }
+
+  return get_base_path() + p_filepath;
+}
+
 
 
 QString AOApplication::get_base_file_path(QString p_file)
 {
   return get_package_or_base_path(p_file);
 }
+
+QVector<QString> AOApplication::get_all_package_and_base_paths(QString p_path)
+{
+  QVector<QString> found_paths;
+
+  for (int i=0; i< package_names.size(); i++)
+  {
+    QString package_path = get_package_path(package_names.at(i))  + p_path;
+    if(dir_exists(package_path))
+    {
+      found_paths.append(package_path);
+    }
+  }
+
+  found_paths.append(get_base_path() + p_path);
+
+
+  return found_paths;
+}
+
+
 
 QString AOApplication::get_character_folder_path(QString p_chr)
 {
@@ -91,14 +127,7 @@ QString AOApplication::get_music_folder_path()
 
 QString AOApplication::get_music_path(QString p_song)
 {
-  for (int i=0; i< package_names.size(); i++)
-  {
-    QString package_path = get_package_path(package_names.at(i))  + p_song;
-    if(file_exists(package_path)) return get_case_sensitive_path(package_path);
-  }
-
-  const QString l_path = get_music_folder_path() + p_song;
-  return get_case_sensitive_path(l_path);
+  return get_case_sensitive_path(get_package_or_base_file("sounds/music/" + p_song));
 }
 
 QString AOApplication::get_background_path(QString p_identifier)
@@ -241,7 +270,7 @@ QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_exten
       ao_config->is_manual_gamemode_selection_enabled() ? ao_config->manual_gamemode() : ao_config->gamemode();
   const QString l_timeofday =
       ao_config->is_manual_timeofday_selection_enabled() ? ao_config->manual_timeofday() : ao_config->timeofday();
-  const QString l_theme_root = get_base_path() + "themes/" + ao_config->theme();
+  const QString l_theme_root = get_package_or_base_path("themes/" + ao_config->theme());
 
   if (!l_gamemode.isEmpty())
   {

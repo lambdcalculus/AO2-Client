@@ -387,15 +387,20 @@ void AOConfigPanel::refresh_theme_list()
 
   ui_theme->clear();
   std::optional<int> l_theme_index;
-  const QString l_theme_dir = DRPather::get_application_path() + "/base/themes";
-  for (const QFileInfo &i_info : QDir(ao_app->get_case_sensitive_path(l_theme_dir)).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot))
+
+  QVector<QString> l_theme_directories = ao_app->get_all_package_and_base_paths("themes");
+
+  for (QString &l_theme_dir : l_theme_directories)
   {
-    const QString l_theme = i_info.fileName();
-    if (l_theme == l_current_theme)
+    for (const QFileInfo &i_info : QDir(ao_app->get_case_sensitive_path(l_theme_dir)).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot))
     {
-      l_theme_index = ui_theme->count();
+      const QString l_theme = i_info.fileName();
+      if (l_theme == l_current_theme)
+      {
+        l_theme_index = ui_theme->count();
+      }
+      ui_theme->addItem(l_theme);
     }
-    ui_theme->addItem(l_theme);
   }
 
   if (l_theme_index.has_value())
