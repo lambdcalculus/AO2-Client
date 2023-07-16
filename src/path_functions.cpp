@@ -68,7 +68,6 @@ QString AOApplication::get_package_or_base_path(QString p_path)
 
 QString AOApplication::get_package_or_base_file(QString p_filepath)
 {
-
   for (int i=0; i< package_names.size(); i++)
   {
     QString package_path = get_package_path(package_names.at(i))  + p_filepath;

@@ -186,22 +186,31 @@ void AOApplication::handle_audiotracks_reloading()
 
 QString AOApplication::get_sfx_dir_path()
 {
-  return get_base_path() + "sounds/general";
+  return "sounds/general";
 }
 
 QString AOApplication::get_sfx_path(QString p_sfx)
 {
-  return find_asset_path(get_sfx_dir_path() + "/" + p_sfx);
+  return find_asset_path(get_package_or_base_file(get_sfx_dir_path() + "/" + p_sfx));
 }
 
 QString AOApplication::get_sfx_noext_path(QString p_file)
 {
-  return find_asset_path(get_sfx_dir_path() + "/" + p_file, audio_extensions());
+  QString l_asset_path = nullptr;
+  QVector<QString> l_sfx_paths = get_all_package_and_base_paths(get_sfx_dir_path());
+  for(QString &l_sfx_path : l_sfx_paths)
+  {
+    l_asset_path = find_asset_path(l_sfx_path + "/" + p_file, audio_extensions());
+    if(l_asset_path != nullptr) break;
+  }
+
+  return l_asset_path;
+
 }
 
 QString AOApplication::get_ambient_sfx_path(QString p_file)
 {
-  return find_asset_path(get_base_path() + "sounds/ambient/" + p_file);
+  return find_asset_path(get_package_or_base_file("sounds/ambient/" + p_file));
 }
 
 QString AOApplication::get_character_sprite_path(QString p_character, QString p_emote, QString p_prefix, bool p_use_placeholder)
