@@ -2551,6 +2551,7 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::load_theme()
 {
+  switch_toggle(ToggleState::All);
   setup_courtroom();
   setup_screenshake_anim();
   update_background_scene();
@@ -2565,7 +2566,6 @@ void Courtroom::reload_theme()
     m_shout_reload_theme = true;
     return;
   }
-  switch_toggle(ToggleState::All);
   load_theme();
 }
 
@@ -2737,22 +2737,53 @@ void Courtroom::switch_toggle(ToggleState state)
         {
 
             if(widget_names.contains(widget_toggle))
-            {
-                widget_names[widget_toggle]->show();
-
-            }
+              widget_names[widget_toggle]->show();
 
         }
         else
         {
             if(widget_names.contains(widget_toggle))
-            {
-               widget_names[widget_toggle]->hide();
-            }
+              widget_names[widget_toggle]->hide();
 
         }
-
     }
+
+    set_judge_enabled(is_judge);
+}
+
+bool Courtroom::ui_in_current_toggle(QString p_ui_name)
+{
+    if(m_toggle_state == ToggleState::All) return true;
+    QString state_name = "";
+    switch(m_toggle_state)
+    {
+    case ToggleState::Chat:
+        state_name = "chat";
+        break;
+
+    case ToggleState::GM:
+        state_name = "gm";
+        break;
+
+    case ToggleState::Area:
+        state_name = "area";
+        break;
+
+    default:
+        state_name = "unknown";
+        break;
+
+    };
+
+    if(widget_toggles.contains(p_ui_name))
+    {
+        if(widget_toggles[p_ui_name].toLower() != state_name)
+        {
+            return false;
+        }
+    }
+
+  return true;
 }
 
 void Courtroom::on_gm_toggle_clicked()

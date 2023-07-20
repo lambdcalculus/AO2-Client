@@ -1527,10 +1527,10 @@ void Courtroom::set_judge_enabled(bool p_enabled)
   is_judge = p_enabled;
 
   // set judge button visibility
-  ui_defense_plus->setVisible(is_judge);
-  ui_defense_minus->setVisible(is_judge);
-  ui_prosecution_plus->setVisible(is_judge);
-  ui_prosecution_minus->setVisible(is_judge);
+  ui_defense_plus->setVisible(is_judge && ui_in_current_toggle("defense_plus"));
+  ui_defense_minus->setVisible(is_judge && ui_in_current_toggle("defense_minus"));
+  ui_prosecution_plus->setVisible(is_judge && ui_in_current_toggle("prosecution_plus"));
+  ui_prosecution_minus->setVisible(is_judge && ui_in_current_toggle("prosecution_minus"));
 
   set_judge_wtce();
 }
@@ -1549,11 +1549,11 @@ void Courtroom::set_judge_wtce()
   const bool is_single_wtce = ao_app->read_theme_ini_bool("enable_single_wtce", COURTROOM_CONFIG_INI);
 
   // update visibility for next/previous
-  ui_wtce_up->setVisible(is_judge && is_single_wtce);
-  ui_wtce_down->setVisible(is_judge && is_single_wtce);
+  ui_wtce_up->setVisible(is_judge && is_single_wtce && ui_in_current_toggle("wtce_up"));
+  ui_wtce_down->setVisible(is_judge && is_single_wtce && ui_in_current_toggle("wtce_down"));
 
   // prevent going ahead if we have no wtce
-  if (!is_judge || ui_wtce.length() == 0)
+  if (!is_judge || ui_wtce.length() == 0 || !ui_in_current_toggle("wtce"))
     return;
 
   // set visibility based off parameter
