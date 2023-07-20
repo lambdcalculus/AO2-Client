@@ -262,6 +262,7 @@ public:
   QString get_shout_sprite_path(QString character, QString shout);
   QString get_theme_sprite_path(QString file_name, QString character);
   QString get_theme_sprite_path(QString file_name);
+  QString get_effect_anim_path(QString file_name);
 
 public:
   bool notify(QObject *receiver, QEvent *event) override;

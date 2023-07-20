@@ -1298,6 +1298,10 @@ void Courtroom::check_effects()
     QString path = ao_app->find_asset_path({ao_app->get_character_path(get_character_ini(), effect_names.at(i))}, animated_extensions());
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(effect_names.at(i), animated_extensions());
+
+    if (path.isEmpty())
+      path = ao_app->find_asset_path(ao_app->get_base_path() + "effects/default/" + effect_names.at(i), animated_extensions());
+
     effects_enabled[i] = (!path.isEmpty());
   }
 }
@@ -1309,6 +1313,8 @@ void Courtroom::check_shouts()
   // `shout_names.at(i)` + extensions in `exts` in order
   // 2. In the theme folder (gamemode-timeofday/main/default), look for
   // `shout_names.at(i)` + extensions in `exts` in order
+  // 3. In the shouts folder (base/shouts), look for
+  // `shout_names.at(i)` + extensions in `exts` in order
   // Only enable buttons where a file was found
 
   for (int i = 0; i < ui_shouts.size(); ++i)
@@ -1317,6 +1323,9 @@ void Courtroom::check_shouts()
 
     if (path.isEmpty())
       path = ao_app->find_theme_asset_path(shout_names.at(i), animated_extensions());
+
+    if (path.isEmpty())
+      path = ao_app->find_asset_path(ao_app->get_base_path() + "shouts/default/" + shout_names.at(i), animated_extensions());
 
     shouts_enabled[i] = (!path.isEmpty());
   }

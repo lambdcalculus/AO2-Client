@@ -1035,7 +1035,7 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
   // effects
   if(l_effect_id == 8) play_screenshake_anim();
 
-  l_file_list.insert(ViewportEffect, ao_app->get_theme_sprite_path(get_effect_name(l_effect_id)));
+  l_file_list.insert(ViewportEffect, ao_app->get_effect_anim_path(get_effect_name(l_effect_id)));
 
   for (auto it = l_file_list.cbegin(); it != l_file_list.cend(); ++it)
   {

@@ -318,6 +318,11 @@ QString AOApplication::get_shout_sprite_path(QString p_character, QString p_shou
 
   if (l_filename.isEmpty())
   {
+    l_filename = find_asset_path(get_package_or_base_path("shouts/default/") + p_shout, animated_extensions());
+  }
+
+  if (l_filename.isEmpty())
+  {
     qWarning() << "error: shout not found"
                << "character:" << p_character << "shout:" << p_shout;
   }
@@ -359,6 +364,28 @@ QString AOApplication::get_theme_sprite_path(QString file_name)
 {
   return get_theme_sprite_path(file_name, QString{});
 }
+
+QString AOApplication::get_effect_anim_path(QString file_name)
+{
+  QString l_file_path;
+
+  l_file_path = find_theme_asset_path(file_name, animated_extensions());
+
+  if (l_file_path.isEmpty())
+  {
+    l_file_path = find_asset_path(get_base_path() + "effects/default/" + file_name, animated_extensions());
+  }
+
+  if (l_file_path.isEmpty())
+  {
+    l_file_path = find_theme_asset_path("placeholder", animated_extensions());
+  }
+
+
+
+  return l_file_path;
+}
+
 
 QString AOApplication::get_current_char()
 {
