@@ -2924,7 +2924,7 @@ void Courtroom::construct_playerlist_layout()
     switch(m_current_reportcard_reason)
     {
       case ReportCardReason::Blackout:
-        prompt_reason->set_reason("The can't see anyone nearby as the lights are currently turned off.");
+        prompt_reason->set_reason("You can't see anyone as the lights are currently off..");
         break;
 
       case ReportCardReason::PendingLook:
