@@ -2864,12 +2864,11 @@ void Courtroom::construct_playerlist()
 
 void Courtroom::construct_playerlist_layout()
 {
-
-
-
+  //Clear Player List Entries
   while (!m_player_list.isEmpty())
     delete m_player_list.takeLast();
 
+  //Setup Player list
   QPoint f_spacing = ao_app->get_button_spacing("player_list_spacing", COURTROOM_DESIGN_INI);
 
   set_size_and_pos(ui_player_list, "player_list", COURTROOM_DESIGN_INI, ao_app);
@@ -2880,7 +2879,38 @@ void Courtroom::construct_playerlist_layout()
 
   player_columns = ((ui_player_list->height() - player_height) / (y_spacing + player_height)) + 1;
 
+
+  if(m_current_reportcard_reason != ReportCardReason::None)
+  {
+    m_page_player_list = 0;
+    ui_player_list_right->hide();
+    ui_player_list_left->hide();
+    DrPlayerListEntry* prompt_reason = new DrPlayerListEntry(ui_player_list, ao_app, 1, 0);
+
+    prompt_reason->show();
+
+    m_player_list.append(prompt_reason);
+    switch(m_current_reportcard_reason)
+    {
+      case ReportCardReason::Blackout:
+        prompt_reason->set_reason("The can't see anyone nearby as the lights are currently turned off.");
+        break;
+
+      case ReportCardReason::PendingLook:
+        prompt_reason->set_reason("There appears to be people in the area.");
+        break;
+
+      default:
+        break;
+    }
+
+
+    return;
+  }
   m_page_max_player_count = qMax(1, player_columns);
+
+
+
 
   //Manage Arrows (Right)
   ui_player_list_right->hide();
@@ -2936,4 +2966,38 @@ void Courtroom::on_player_list_right_clicked()
 
     ui_ic_chat_message_field->setFocus();
 }
+
+void Courtroom::on_area_look_clicked()
+{
+  if(m_current_reportcard_reason == ReportCardReason::PendingLook)
+  {
+    m_current_reportcard_reason = ReportCardReason::None;
+    construct_playerlist_layout();
+  }
+}
+
+void Courtroom::write_area_desc()
+{
+  ui_area_desc->ensurePolished();
+  QTextCharFormat formatting = QTextCharFormat();
+
+  //Set the color
+  const std::optional<QColor> l_color = ao_app->maybe_color(QString("area_desc_color"), COURTROOM_FONTS_INI);
+  if(l_color.has_value())
+  {
+    formatting.setForeground(l_color.value());
+  }
+
+  //Set the bold
+  if (ao_app->get_font_property(QString("area_desc_bold"), COURTROOM_FONTS_INI))
+    formatting.setFontWeight(QFont::Bold);
+
+  //Clear the text
+  ui_area_desc->clear();
+  QTextCursor l_cursor = ui_area_desc->textCursor();
+  l_cursor.insertText(m_area_description, formatting);
+
+
+}
+
 

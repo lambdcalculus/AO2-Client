@@ -278,6 +278,16 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
 
     m_courtroom->construct_playerlist_layout();
   }
+  else if (l_header == "LIST_REASON")
+  {
+    int prompt = l_content.at(0).toInt();
+    m_courtroom->m_current_reportcard_reason = Courtroom::ReportCardReason(prompt);
+
+    m_courtroom->m_area_description = l_content.at(1);
+
+    m_courtroom->write_area_desc();
+    m_courtroom->construct_playerlist_layout();
+  }
   else if (l_header == "FA")
   {
     if (!is_courtroom_constructed)

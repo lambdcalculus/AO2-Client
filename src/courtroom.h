@@ -89,6 +89,13 @@ public:
     Party
   };
 
+  enum class ReportCardReason
+  {
+    None = 0,
+    Blackout,
+    PendingLook
+  };
+
   Q_ENUM(GameState)
 
   static const int DEFAULT_WIDTH;
@@ -159,6 +166,7 @@ public:
   void select_base_character_iniswap();
   void refresh_character_content_url();
   void construct_playerlist_layout();
+  void write_area_desc();
 
   // Set the showname of the client
   void set_showname(QString p_showname);
@@ -261,6 +269,8 @@ public:
   template <typename T>
   int adapt_numbered_items(QVector<T *> &item_vector, QString config_item_number, QString item_name);
   QVector<DrPlayer> m_player_data_list;
+  ReportCardReason m_current_reportcard_reason = ReportCardReason::None;
+  QString m_area_description = "";
 
 signals:
   void loaded_theme();
@@ -608,6 +618,8 @@ private:
 
   AOButton *ui_player_list_left = nullptr;
   AOButton *ui_player_list_right = nullptr;
+  AOButton *ui_area_look = nullptr;
+  DRTextEdit *ui_area_desc = nullptr;
 
 
   QVector<DrPlayerListEntry *> m_player_list;
@@ -804,6 +816,7 @@ private slots:
 
   void on_player_list_left_clicked();
   void on_player_list_right_clicked();
+  void on_area_look_clicked();
 
   void ping_server();
 

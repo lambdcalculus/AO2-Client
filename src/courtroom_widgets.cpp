@@ -155,6 +155,11 @@ void Courtroom::create_widgets()
   ui_ic_chatlog_scroll_topdown = new AOButton(this, ao_app);
   ui_ic_chatlog_scroll_bottomup = new AOButton(this, ao_app);
 
+
+  ui_area_desc = new DRTextEdit(this);
+  ui_area_desc->setReadOnly(true);
+  ui_area_desc->set_auto_align(false);
+
   ui_ooc_chatlog = new DRChatLog(this);
   ui_ooc_chatlog->setReadOnly(true);
   ui_ooc_chatlog->setOpenExternalLinks(true);
@@ -311,6 +316,7 @@ void Courtroom::create_widgets()
 
   ui_player_list_left = new AOButton(this, ao_app);
   ui_player_list_right = new AOButton(this, ao_app);
+  ui_area_look = new AOButton(this, ao_app);
 
   setup_screenshake_anim();
 
@@ -445,6 +451,7 @@ void Courtroom::connect_widgets()
   //Player List
   connect(ui_player_list_left, SIGNAL(clicked()), this, SLOT(on_player_list_left_clicked()));
   connect(ui_player_list_right, SIGNAL(clicked()), this, SLOT(on_player_list_right_clicked()));
+  connect(ui_area_look, SIGNAL(clicked()), this, SLOT(on_area_look_clicked()));
 
 }
 
@@ -572,6 +579,8 @@ void Courtroom::reset_widget_names()
       {"player_list", ui_player_list},
       {"player_list_left", ui_player_list_left},
       {"player_list_right", ui_player_list_right},
+      {"area_look", ui_area_look},
+      {"area_desc", ui_area_desc},
   };
 }
 
@@ -768,6 +777,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_ic_chatlog_scroll_bottomup, "ic_chatlog_scroll_bottomup", COURTROOM_DESIGN_INI, ao_app);
   ui_ic_chatlog_scroll_bottomup->set_image("ic_chatlog_scroll_bottomup.png");
   ui_ic_chatlog_scroll_bottomup->hide();
+
+  set_size_and_pos(ui_area_desc, "area_desc", COURTROOM_DESIGN_INI, ao_app);
+
 
   set_size_and_pos(ui_ooc_chatlog, "server_chatlog", COURTROOM_DESIGN_INI, ao_app);
 
@@ -973,6 +985,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_player_list_left, "player_list_left", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_player_list_right, "player_list_right", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(ui_area_look, "area_look", COURTROOM_DESIGN_INI, ao_app);
 
 
   set_size_and_pos(ui_area_toggle_button, "area_toggle", COURTROOM_DESIGN_INI, ao_app);
@@ -990,6 +1003,7 @@ void Courtroom::set_widgets()
 
   ui_player_list_left->setText("");
   ui_player_list_right->setText("");
+  ui_area_look->setText("");
 
   ui_change_character->setStyleSheet("");
   ui_call_mod->setStyleSheet("");
@@ -1001,6 +1015,7 @@ void Courtroom::set_widgets()
   ui_gm_toggle_button->setStyleSheet("");
   ui_player_list_left->setStyleSheet("");
   ui_player_list_right->setStyleSheet("");
+  ui_area_look->setStyleSheet("");
 
   if (ao_app->read_theme_ini_bool("enable_button_images", COURTROOM_CONFIG_INI))
   {
@@ -1019,6 +1034,9 @@ void Courtroom::set_widgets()
     if (ui_player_list_right->get_image().isEmpty())
       ui_player_list_right->setText("->");
 
+    ui_area_look->set_image("area_look.png");
+    if (ui_area_look->get_image().isEmpty())
+      ui_area_look->setText("Look");
 
     ui_call_mod->set_image("callmod.png");
     if (ui_call_mod->get_image().isEmpty())
@@ -1558,8 +1576,12 @@ void Courtroom::set_fonts()
   ui_vp_message->setPlainText(ui_vp_message->toPlainText());
   set_drtextedit_font(ui_ic_chatlog, "ic_chatlog", COURTROOM_FONTS_INI, ao_app);
 
+  set_drtextedit_font(ui_area_desc, "area_desc", COURTROOM_FONTS_INI, ao_app);
+  ui_area_desc->setPlainText(ui_area_desc->toPlainText());
+
   // Chatlog does not support drtextedit because html
   set_font(ui_ooc_chatlog, "server_chatlog", COURTROOM_FONTS_INI, ao_app);
+
   ui_ooc_chatlog->reset_message_format();
 
   set_font(ui_music_list, "music_list", COURTROOM_FONTS_INI, ao_app);
