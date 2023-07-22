@@ -65,7 +65,10 @@ public:
 
   // implementation in path_functions.cpp
   QVector<QString> package_names;
+  QVector<QString> m_disabled_packages = {};
   void reload_packages();
+  void save_disabled_packages_ini();
+  void read_disabled_packages_ini();
   QString get_base_path();
   QString get_package_path(QString p_package);
   QString get_package_or_base_path(QString p_path);

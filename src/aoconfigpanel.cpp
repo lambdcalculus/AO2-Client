@@ -139,6 +139,11 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // about
   ui_about = AO_GUI_WIDGET(QLabel, "about_label");
 
+  // packages
+  ui_packages_list = AO_GUI_WIDGET(QListWidget, "packages_list");
+  ui_load_new_packages = AO_GUI_WIDGET(QPushButton, "load_new_packages");
+  refresh_packages_list();
+
   // themes
   refresh_theme_list();
   refresh_gamemode_list();
@@ -237,6 +242,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_chat_tick_interval, SIGNAL(valueChanged(int)), m_config, SLOT(set_chat_tick_interval(int)));
   connect(ui_emote_preview, SIGNAL(toggled(bool)), m_config, SLOT(set_emote_preview(bool)));
   connect(ui_sticky_sfx, SIGNAL(toggled(bool)), m_config, SLOT(set_sticky_sfx(bool)));
+
+  //packages
+  connect(ui_load_new_packages, SIGNAL(clicked()), this, SLOT(on_load_packages_clicked()));
 
   // ic message
   connect(m_config, SIGNAL(message_length_threshold_changed(int)), ui_length_threshold, SLOT(setValue(int)));
@@ -378,7 +386,28 @@ void AOConfigPanel::showEvent(QShowEvent *event)
   if (isVisible())
   {
     refresh_theme_list();
+    refresh_packages_list();
   }
+}
+
+void AOConfigPanel::refresh_packages_list()
+{
+  ui_packages_list->clear();
+
+  for (int i=0; i< ao_app->package_names.size(); i++)
+  {
+    QListWidgetItem* item = new QListWidgetItem(ao_app->package_names.at(i), ui_packages_list);
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+    if(!ao_app->m_disabled_packages.contains(ao_app-> package_names.at(i)))
+    {
+      item->setCheckState(Qt::Checked);
+    }
+    else
+    {
+      item->setCheckState(Qt::Unchecked);
+    }
+  }
+
 }
 
 void AOConfigPanel::refresh_theme_list()
@@ -511,6 +540,22 @@ void AOConfigPanel::update_theme_controls()
 void AOConfigPanel::on_switch_theme_clicked()
 {
   m_config->set_theme(ui_theme->currentText());
+}
+
+void AOConfigPanel::on_load_packages_clicked()
+{
+  ao_app->m_disabled_packages = {};
+  for(int i = 0; i < ui_packages_list->count(); ++i)
+  {
+    QListWidgetItem* item = ui_packages_list->item(i);
+    if(item->checkState() == Qt::Unchecked)
+    {
+      ao_app->m_disabled_packages.append(item->text());
+    }
+  }
+  ao_app->save_disabled_packages_ini();
+  ao_app->reload_packages();
+  refresh_packages_list();
 }
 
 void AOConfigPanel::on_reload_theme_clicked()

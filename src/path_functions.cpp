@@ -25,6 +25,7 @@
 void AOApplication::reload_packages()
 {
   package_names = {};
+
   QString packages_path = DRPather::get_application_path() + "/packages/";
   QDir packages_directory(packages_path);
 
@@ -35,10 +36,47 @@ void AOApplication::reload_packages()
   {
     if (packages_fileinfo.at(i).isDir())
     {
-      package_names.append(packages_fileinfo.at(i).baseName());
+      if(!packages_fileinfo.at(i).baseName().isEmpty())package_names.append(packages_fileinfo.at(i).baseName());
     }
   }
 
+  read_disabled_packages_ini();
+}
+
+
+void AOApplication::save_disabled_packages_ini()
+{
+  const QString l_ini_path = get_base_path() + BASE_PACKAGES_INI;
+  QFile l_packages_ini(l_ini_path);
+  l_packages_ini.open(QIODevice::WriteOnly);
+  QTextStream out(&l_packages_ini);
+
+  l_packages_ini.resize(0);
+
+  for (int i=0; i< m_disabled_packages.size(); i++)
+  {
+    out << m_disabled_packages[i] << "\r\n";
+  }
+
+  l_packages_ini.close();
+
+
+}
+void AOApplication::read_disabled_packages_ini()
+{
+  m_disabled_packages = {};
+
+  const QString l_ini_path = get_base_path() + BASE_PACKAGES_INI;
+  QFile l_packages_ini(l_ini_path);
+  if (l_packages_ini.open(QFile::ReadOnly))
+  {
+    QTextStream in(&l_packages_ini);
+    while (!in.atEnd())
+    {
+      QString l_line = in.readLine().trimmed();
+      if(package_names.contains(l_line)) m_disabled_packages.append(l_line);
+    }
+  }
 }
 
 QString AOApplication::get_base_path()
@@ -56,11 +94,15 @@ QString AOApplication::get_package_or_base_path(QString p_path)
 
   for (int i=0; i< package_names.size(); i++)
   {
-    QString package_path = get_package_path(package_names.at(i))  + p_path;
-    if(dir_exists(package_path))
+    if(!m_disabled_packages.contains(package_names.at(i)))
     {
-      return package_path;
+      QString package_path = get_package_path(package_names.at(i))  + p_path;
+      if(dir_exists(package_path))
+      {
+        return package_path;
+      }
     }
+
   }
 
   return get_base_path() + p_path;
@@ -70,10 +112,13 @@ QString AOApplication::get_package_or_base_file(QString p_filepath)
 {
   for (int i=0; i< package_names.size(); i++)
   {
-    QString package_path = get_package_path(package_names.at(i))  + p_filepath;
-    if(file_exists(package_path))
+    if(!m_disabled_packages.contains(package_names.at(i)))
     {
-      return package_path;
+      QString package_path = get_package_path(package_names.at(i))  + p_filepath;
+      if(file_exists(package_path))
+      {
+        return package_path;
+      }
     }
   }
 
@@ -93,10 +138,13 @@ QVector<QString> AOApplication::get_all_package_and_base_paths(QString p_path)
 
   for (int i=0; i< package_names.size(); i++)
   {
-    QString package_path = get_package_path(package_names.at(i))  + p_path;
-    if(dir_exists(package_path))
+    if(!m_disabled_packages.contains(package_names.at(i)))
     {
-      found_paths.append(package_path);
+      QString package_path = get_package_path(package_names.at(i))  + p_path;
+      if(dir_exists(package_path))
+      {
+        found_paths.append(package_path);
+      }
     }
   }
 

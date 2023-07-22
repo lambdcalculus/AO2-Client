@@ -83,8 +83,11 @@ void Courtroom::update_iniswap_list()
 
     for (int i=0; i< ao_app->package_names.size(); i++)
     {
-      const QString l_path = ao_app->get_package_path(ao_app->package_names.at(i)) + "/characters";
-      if(dir_exists(l_path)) l_package_folders.append(l_path);
+      if(!ao_app->m_disabled_packages.contains(ao_app-> package_names.at(i)))
+      {
+        const QString l_path = ao_app->get_package_path(ao_app->package_names.at(i)) + "/characters";
+        if(dir_exists(l_path)) l_package_folders.append(l_path);
+      }
     }
 
     l_package_folders.append(ao_app->get_base_path() + "/characters");
