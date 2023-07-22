@@ -15,7 +15,7 @@ DRSplashMovie::~DRSplashMovie()
 
 void DRSplashMovie::play(QString p_file_name, QString p_character)
 {
-  set_file_name(ao_app->get_theme_sprite_path(p_file_name, p_character));
+  set_file_name(ao_app->get_wtce_anim_path(p_file_name));
   start();
 }
 

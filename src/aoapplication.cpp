@@ -386,6 +386,26 @@ QString AOApplication::get_effect_anim_path(QString file_name)
   return l_file_path;
 }
 
+QString AOApplication::get_wtce_anim_path(QString file_name)
+{
+  QString l_file_path;
+
+  l_file_path = find_theme_asset_path(file_name, animated_extensions());
+
+  if (l_file_path.isEmpty())
+  {
+    l_file_path = find_asset_path(get_base_path() + "shouts/default/" + file_name, animated_extensions());
+  }
+
+  if (l_file_path.isEmpty())
+  {
+    l_file_path = find_theme_asset_path("placeholder", animated_extensions());
+  }
+
+
+
+  return l_file_path;
+}
 
 QString AOApplication::get_current_char()
 {
