@@ -1101,7 +1101,7 @@
        <item>
         <widget class="QPushButton" name="load_new_packages">
          <property name="text">
-          <string>Save Changes / Reload Packages</string>
+          <string>Save Changes / Add New Packages</string>
          </property>
         </widget>
        </item>
