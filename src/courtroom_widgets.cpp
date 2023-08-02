@@ -273,11 +273,16 @@ void Courtroom::create_widgets()
 
   ui_pre = new QCheckBox(this);
   ui_pre->setText("Pre");
+  ui_pre->setToolTip("Enables pre-animations and sound effects.");
+
   ui_flip = new QCheckBox(this);
   ui_flip->setText("Flip");
+  ui_flip->setToolTip("Flips the character sprite when you send a message.");
   ui_flip->hide();
+
   ui_hide_character = new QCheckBox(this);
   ui_hide_character->setText("Hidden");
+  ui_hide_character->setToolTip("Hides the character sprite when you send a message.");
 
   // filling vectors with existing label/checkbox pointers
   ui_checks.push_back(ui_pre);
@@ -841,8 +846,11 @@ void Courtroom::set_widgets()
   set_text_alignment(ui_sfx_search, "sfx_search", COURTROOM_FONTS_INI, ao_app);
 
   set_size_and_pos(ui_music_list, "music_list", COURTROOM_DESIGN_INI, ao_app);
+  set_stylesheet(ui_music_list, "[music_list]", COURTROOM_STYLESHEETS_CSS, ao_app);
+
   set_size_and_pos(ui_music_search, "music_search", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_music_search, "music_search", COURTROOM_FONTS_INI, ao_app);
+  set_stylesheet(ui_music_search, "[MUSIC SEARCH]", COURTROOM_STYLESHEETS_CSS, ao_app);
   ui_music_list->show();
   ui_music_search->show();
 
@@ -853,6 +861,7 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_area_list, p_area_identifier + "_list", COURTROOM_DESIGN_INI, ao_app);
     set_size_and_pos(ui_area_search, p_area_identifier + "_search", COURTROOM_DESIGN_INI, ao_app);
     set_text_alignment(ui_area_search, p_area_identifier + "_search", COURTROOM_FONTS_INI, ao_app);
+    set_stylesheet(ui_area_search, "[AREA SEARCH]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
     ui_area_list->setVisible(l_is_area_music_list_separated);
     ui_area_search->setVisible(l_is_area_music_list_separated);

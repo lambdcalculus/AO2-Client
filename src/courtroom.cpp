@@ -2567,6 +2567,7 @@ void Courtroom::reload_theme()
     return;
   }
   load_theme();
+  construct_playerlist_layout();
 }
 
 void Courtroom::load_character()
