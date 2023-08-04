@@ -193,6 +193,27 @@ void SpritePlayer::stop()
   m_frame_number = 0;
 }
 
+void SpritePlayer::start(int p_start_frame)
+{
+  if(m_frame_count >= p_start_frame) m_frame_number = p_start_frame;
+  m_running = true;
+  m_elapsed_timer.start();
+  emit started();
+  resolve_scaling_mode();
+  fetch_next_frame();
+}
+
+void SpritePlayer::restart(int p_start_frame)
+{
+  stop();
+  start(p_start_frame);
+}
+
+int SpritePlayer::get_frame()
+{
+  return m_frame_number;
+}
+
 void SpritePlayer::resolve_scaling_mode()
 {
   m_resolved_scaling_mode = m_scaling_mode;

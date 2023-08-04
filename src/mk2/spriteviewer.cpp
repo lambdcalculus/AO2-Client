@@ -123,6 +123,23 @@ void SpriteViewer::stop()
   m_player->stop();
 }
 
+void SpriteViewer::restart(int p_start_frame)
+{
+  stop();
+  start(p_start_frame);
+}
+
+void SpriteViewer::start(int p_start_frame)
+{
+  m_player->start(p_start_frame);
+}
+
+
+int SpriteViewer::get_frame()
+{
+  return m_player->get_frame();
+}
+
 void SpriteViewer::resizeEvent(QResizeEvent *p_event)
 {
   QLabel::resizeEvent(p_event);

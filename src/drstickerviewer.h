@@ -18,6 +18,8 @@ public:
 
   void set_theme_image(QString p_file_name);
 
+  void set_chatbox_image(QString p_chatbox_name, bool p_is_self, bool chatmessage_is_empty);
+
 private:
   AOApplication *ao_app = nullptr;
 

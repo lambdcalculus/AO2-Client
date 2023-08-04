@@ -117,7 +117,7 @@ void Courtroom::create_widgets()
 
   ui_vp_clock = new DRStickerViewer(ao_app, this);
 
-  ui_vp_chatbox = new AOImageDisplay(this, ao_app);
+  ui_vp_chatbox = new DRStickerViewer(ao_app, this);
   chatbox_anim = new QPropertyAnimation(ui_vp_chatbox, "pos", this);
   ui_vp_showname = new DRTextEdit(ui_vp_chatbox);
   ui_vp_showname->setFrameStyle(QFrame::NoFrame);
@@ -807,6 +807,7 @@ void Courtroom::set_widgets()
   ui_ic_chat_message_counter->setStyleSheet(ui_ic_chat_message->styleSheet());
 
   set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", COURTROOM_DESIGN_INI, ao_app);
+  set_sticker_play_once(ui_vp_chatbox, "ao2_chatbox", COURTROOM_CONFIG_INI, ao_app);
 
   set_size_and_pos(ui_vp_music_area, "music_area", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_music_area->show();
@@ -825,7 +826,7 @@ void Courtroom::set_widgets()
     ui_vp_clock->hide();
   set_sticker_play_once(ui_vp_clock, "clock", COURTROOM_CONFIG_INI, ao_app);
 
-  ui_vp_chatbox->set_theme_image("chatmed.png");
+  ui_vp_chatbox->set_theme_image("chatmed");
   ui_vp_chatbox->hide();
 
   set_size_and_pos(ui_ooc_chat_name, "ooc_chat_name", COURTROOM_DESIGN_INI, ao_app);

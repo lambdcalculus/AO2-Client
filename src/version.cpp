@@ -30,7 +30,7 @@ VersionNumber get_version_number()
 
 QString get_post_version()
 {
-  return "beta4";
+  return "beta5";
 }
 
 QString get_version_string()

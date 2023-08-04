@@ -66,6 +66,8 @@ public:
 
   bool is_running() const;
 
+  int get_frame();
+
 public slots:
   void set_play_once(bool enabled);
 
@@ -85,6 +87,8 @@ public slots:
   void restart();
   void stop();
 
+  void start(int p_start_frame);
+  void restart(int p_start_frame);
 signals:
   void current_frame_changed();
 

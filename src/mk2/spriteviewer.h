@@ -52,6 +52,8 @@ public:
 
   bool is_running() const;
 
+  int get_frame();
+
 public slots:
   void set_scaling_mode(SpritePlayer::ScalingMode scaling_mode);
 
@@ -68,6 +70,9 @@ public slots:
   void start();
   void restart();
   void stop();
+
+  void restart(int p_start_frame);
+  void start(int p_start_frame);
 
 signals:
   void file_name_changed(QString);

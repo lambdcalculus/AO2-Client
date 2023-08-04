@@ -179,6 +179,7 @@ void Courtroom::map_viewers()
   // general ui elements
   m_mapped_viewer_list[SpriteGUI].append({
       ui_vp_chat_arrow->get_player(),
+      ui_vp_chatbox->get_player(),
       ui_vp_clock->get_player(),
   });
 
@@ -1245,7 +1246,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
   const QString l_chatbox_name = ao_app->get_chat(m_chatmessage[CMChrName]);
   const bool l_is_self = (ao_config->log_display_self_highlight_enabled() && m_speaker_chr_id == m_chr_id);
-  ui_vp_chatbox->set_chatbox_image(l_chatbox_name, l_is_self);
+  ui_vp_chatbox->set_chatbox_image(l_chatbox_name, l_is_self, chatmessage_is_empty);
 
   if (!m_msg_is_first_person)
   {

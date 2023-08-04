@@ -427,7 +427,7 @@ private:
   AOImageDisplay *ui_vp_notepad_image = nullptr;
   DRTextEdit *ui_vp_notepad = nullptr;
 
-  AOImageDisplay *ui_vp_chatbox = nullptr;
+  DRStickerViewer *ui_vp_chatbox = nullptr;
   DRTextEdit *ui_vp_showname = nullptr;
   DRTextEdit *ui_vp_message = nullptr;
   DREffectMovie *ui_vp_effect = nullptr;
