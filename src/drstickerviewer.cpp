@@ -1,6 +1,7 @@
 #include "drstickerviewer.h"
 
 #include "aoapplication.h"
+#include "drtheme.h"
 #include "file_functions.h"
 
 DRStickerViewer::DRStickerViewer(AOApplication *ao_app, QWidget *parent)
@@ -67,5 +68,8 @@ void DRStickerViewer::set_chatbox_image(QString p_chatbox_name, bool p_is_self, 
   int current_frame = get_frame();
   set_file_name(l_target_file);
   restart(current_frame);
+
+  DRTheme* drtheme = new DRTheme(ao_app);
+  drtheme->LoadJson();
 
 }

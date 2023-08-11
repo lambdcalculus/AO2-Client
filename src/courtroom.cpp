@@ -19,6 +19,7 @@
 #include "drcharactermovie.h"
 #include "drchatlog.h"
 #include "drdiscord.h"
+#include "drtheme.h"
 #include "dreffectmovie.h"
 #include "drpacket.h"
 #include "drscenemovie.h"
@@ -78,7 +79,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   setup_courtroom();
   map_viewport_viewers();
   map_viewport_readers();
-  if (ao_app->read_theme_ini_bool("use_toggles", COURTROOM_CONFIG_INI))
+  if (ao_app->current_theme->read_config_bool("use_toggles"))
     switch_toggle(ToggleState::Chat);
 
   set_char_select();
@@ -573,7 +574,7 @@ void Courtroom::update_music_text_anim()
   QFont f_font = ui_vp_music_name->font();
   QFontMetrics fm(f_font);
   int dist;
-  if (ao_app->read_theme_ini_bool("enable_const_music_speed", COURTROOM_CONFIG_INI))
+  if (ao_app->current_theme->read_config_bool("enable_const_music_speed"))
     dist = res_b.width;
   else
     dist = fm.horizontalAdvance(ui_vp_music_name->toPlainText());
@@ -625,7 +626,7 @@ void Courtroom::filter_list_widget(QListWidget *p_list_widget, QString p_filter)
 
 bool Courtroom::is_area_music_list_separated()
 {
-  return ao_app->read_theme_ini_bool("enable_music_and_area_list_separation", COURTROOM_CONFIG_INI);
+  return ao_app->current_theme->read_config_bool("enable_music_and_area_list_separation");
 }
 
 void Courtroom::list_music()
@@ -1298,7 +1299,7 @@ void Courtroom::handle_chatmessage_3()
   if (!chatmessage_is_empty)
   {
     QString l_showname_image;
-    if (ao_app->read_theme_ini_bool("enable_showname_image", COURTROOM_CONFIG_INI))
+    if (ao_app->current_theme->read_config_bool("enable_showname_image"))
     {
       l_showname_image = ao_app->find_theme_asset_path("characters/" + f_char + "/showname", static_extensions());
       if (l_showname_image.isEmpty())
@@ -1671,7 +1672,7 @@ void Courtroom::setup_chat()
 
   // Cache these so chat_tick performs better
   m_chatbox_message_outline = (ao_app->get_font_property("message_outline", COURTROOM_FONTS_INI) == 1);
-  m_chatbox_message_enable_highlighting = (ao_app->read_theme_ini_bool("enable_highlighting", COURTROOM_CONFIG_INI));
+  m_chatbox_message_enable_highlighting = (ao_app->current_theme->read_config_bool("enable_highlighting"));
   m_chatbox_message_highlight_colors = ao_app->get_highlight_colors();
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CMChrName]);
@@ -2358,7 +2359,7 @@ void Courtroom::on_cycle_clicked()
     break;
   }
 
-  if (ao_app->read_theme_ini_bool("enable_cycle_ding", COURTROOM_CONFIG_INI))
+  if (ao_app->current_theme->read_config_bool("enable_cycle_ding"))
     m_system_player->play(ao_app->get_sfx("cycle"));
 
   set_shouts();
@@ -2552,12 +2553,13 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::load_theme()
 {
+  ao_app->current_theme->LoadJson();
   switch_toggle(ToggleState::All);
   setup_courtroom();
   setup_screenshake_anim();
   update_background_scene();
 
-  if (ao_app->read_theme_ini_bool("use_toggles", COURTROOM_CONFIG_INI)) switch_toggle(ToggleState::Chat);
+  if (ao_app->current_theme->read_config_bool("use_toggles")) switch_toggle(ToggleState::Chat);
 }
 
 void Courtroom::reload_theme()

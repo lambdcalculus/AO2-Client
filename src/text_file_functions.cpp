@@ -7,6 +7,7 @@
 #include <QTextStream>
 
 #include "aoconfig.h"
+#include "drtheme.h"
 #include "commondefs.h"
 #include "file_functions.h"
 #include "utils.h"
@@ -291,6 +292,11 @@ QVector<QStringList> AOApplication::get_highlight_colors()
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
   // COURTROOM_INI_CONFIG.
+
+  if(current_theme->m_jsonLoaded)
+  {
+    return current_theme->get_highlight_characters();
+  }
 
   QString path = find_theme_asset_path(COURTROOM_CONFIG_INI);
   if (path.isEmpty())

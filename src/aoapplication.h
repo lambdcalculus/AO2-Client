@@ -9,6 +9,7 @@ class AOConfig;
 class AOConfigPanel;
 class Courtroom;
 class DRDiscord;
+class DRTheme;
 class DRMasterClient;
 class Lobby;
 
@@ -53,6 +54,8 @@ public:
   void destruct_courtroom();
 
   DRDiscord *get_discord() const;
+
+  DRTheme *current_theme = nullptr;
 
   VersionNumber get_server_client_version() const;
   VersionStatus get_server_client_version_status() const;

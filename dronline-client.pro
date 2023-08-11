@@ -64,6 +64,7 @@ HEADERS += \
   src/drsplashmovie.h \
   src/drstickerviewer.h \
   src/drtextedit.h \
+  src/drtheme.h \
   src/drthememovie.h \
   src/file_functions.h \
   src/hardware_functions.h \
@@ -142,6 +143,7 @@ SOURCES += \
   src/drstickerviewer.cpp \
   src/drtextedit.cpp \
   src/drdiscord.cpp \
+  src/drtheme.cpp \
   src/drthememovie.cpp \
   src/emotes.cpp \
   src/file_functions.cpp \

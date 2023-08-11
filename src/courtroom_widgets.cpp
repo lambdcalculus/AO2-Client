@@ -17,6 +17,7 @@
 #include "commondefs.h"
 #include "drcharactermovie.h"
 #include "drchatlog.h"
+#include "drtheme.h"
 #include "dreffectmovie.h"
 #include "drscenemovie.h"
 #include "drshoutmovie.h"
@@ -920,7 +921,7 @@ void Courtroom::set_widgets()
   ui_shout_down->hide();
 
   // courtroom_config.ini necessary + check for crash
-  if (ao_app->read_theme_ini_bool("enable_single_shout", COURTROOM_CONFIG_INI) && ui_shouts.size() > 0)
+  if (ao_app->current_theme->read_config_bool("enable_single_shout") && ui_shouts.size() > 0)
   {
     for (auto &shout : ui_shouts)
       move_widget(shout, "bullet");
@@ -944,7 +945,7 @@ void Courtroom::set_widgets()
   ui_effect_down->set_image("effectdown.png");
   ui_effect_down->hide();
 
-  if (ao_app->read_theme_ini_bool("enable_single_effect", COURTROOM_CONFIG_INI) && ui_effects.size() > 0) // check to prevent crashing
+  if (ao_app->current_theme->read_config_bool("enable_single_effect")  && ui_effects.size() > 0 ) // check to prevent crashing
   {
     for (auto &effect : ui_effects)
       move_widget(effect, "effect");
@@ -967,7 +968,7 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_wtce[i], wtce_names[i], COURTROOM_DESIGN_INI, ao_app);
   }
 
-  if (ao_app->read_theme_ini_bool("enable_single_wtce", COURTROOM_CONFIG_INI)) // courtroom_config.ini necessary
+  if (ao_app->current_theme->read_config_bool("enable_single_wtce")) // courtroom_config.ini necessary
   {
     for (auto &wtce : ui_wtce)
       move_widget(wtce, "wtce");
@@ -1027,7 +1028,7 @@ void Courtroom::set_widgets()
   ui_player_list_right->setStyleSheet("");
   ui_area_look->setStyleSheet("");
 
-  if (ao_app->read_theme_ini_bool("enable_button_images", COURTROOM_CONFIG_INI))
+  if (ao_app->current_theme->read_config_bool("enable_button_images"))
   {
     // Set files, ask questions later
     // set_image first tries the gamemode-timeofday folder, then the theme
@@ -1103,7 +1104,7 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_label_images[i], label_images[i].toLower() + "_image", COURTROOM_DESIGN_INI, ao_app);
   }
 
-  if (ao_app->read_theme_ini_bool("enable_label_images", COURTROOM_CONFIG_INI))
+  if (ao_app->current_theme->read_config_bool("enable_label_images"))
   {
     for (int i = 0; i < ui_checks.size(); ++i) // loop through checks
     {
@@ -1565,7 +1566,7 @@ void Courtroom::set_judge_wtce()
     wtce->hide();
 
   // check if we use a single wtce or multiple
-  const bool is_single_wtce = ao_app->read_theme_ini_bool("enable_single_wtce", COURTROOM_CONFIG_INI);
+  const bool is_single_wtce = ao_app->current_theme->read_config_bool("enable_single_wtce");
 
   // update visibility for next/previous
   ui_wtce_up->setVisible(is_judge && is_single_wtce && ui_in_current_toggle("wtce_up"));
