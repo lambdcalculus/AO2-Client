@@ -66,6 +66,6 @@ void DRStickerViewer::set_chatbox_image(QString p_chatbox_name, bool p_is_self, 
   QString old_filename = get_file_name();
   int current_frame = get_frame();
   set_file_name(l_target_file);
-  if(old_filename != l_target_file) restart(current_frame);
+  restart(current_frame);
 
 }
