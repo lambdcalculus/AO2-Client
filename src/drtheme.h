@@ -20,6 +20,12 @@ public:
   void LoadJson();
   bool read_config_bool(QString p_setting_name);
   QVector<QStringList> get_highlight_characters();
+  pos_size_type get_element_dimensions(QString p_identifier, QString p_scene);
+
+
+  QString get_widget_image(QString p_identifier, QString p_fallback, QString p_scene);
+
+
   bool m_jsonLoaded = false;
 
 private:

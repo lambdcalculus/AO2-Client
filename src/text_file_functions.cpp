@@ -121,6 +121,20 @@ QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 
 pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QString p_file)
 {
+
+  if(current_theme->m_jsonLoaded)
+  {
+    pos_size_type json_pos;
+
+    if(p_file == COURTROOM_DESIGN_INI) json_pos = current_theme->get_element_dimensions(p_identifier, "courtroom");
+    else if(p_file == LOBBY_DESIGN_INI) json_pos = current_theme->get_element_dimensions(p_identifier, "lobby");
+
+    if(json_pos.width != -1)
+    {
+      return json_pos;
+    }
+
+  }
   pos_size_type return_value;
   return_value.x = 0;
   return_value.y = 0;

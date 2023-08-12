@@ -739,12 +739,12 @@ void Courtroom::set_widgets()
 
   ui_background->move(0, 0);
   ui_background->resize(m_default_size);
-  ui_background->set_theme_image("courtroombackground.png");
+  ui_background->set_theme_image(ao_app->current_theme->get_widget_image("courtroom", "courtroombackground.png", "courtroom"));
 
   set_size_and_pos(ui_viewport, "viewport", COURTROOM_DESIGN_INI, ao_app);
 
   set_size_and_pos(ui_vp_notepad_image, "notepad_image", COURTROOM_DESIGN_INI, ao_app);
-  ui_vp_notepad_image->set_theme_image("notepad_image.png");
+  ui_vp_notepad_image->set_theme_image(ao_app->current_theme->get_widget_image("notepad_image", "notepad_image.png", "courtroom"));
   ui_vp_notepad_image->hide();
 
   set_size_and_pos(ui_vp_notepad, "notepad", COURTROOM_DESIGN_INI, ao_app);
@@ -1033,47 +1033,48 @@ void Courtroom::set_widgets()
     // Set files, ask questions later
     // set_image first tries the gamemode-timeofday folder, then the theme
     // folder, then falls back to the default theme
-    ui_change_character->set_image("changecharacter.png");
+    ui_change_character->set_image(ao_app->current_theme->get_widget_image("change_character", "changecharacter.png", "courtroom"));
     if (ui_change_character->get_image().isEmpty())
       ui_change_character->setText("Change Character");
 
-    ui_player_list_left->set_image("arrow_left.png");
+    ui_player_list_left->set_image(ao_app->current_theme->get_widget_image("player_list_left", "arrow_left.png", "courtroom"));
     if (ui_player_list_left->get_image().isEmpty())
       ui_player_list_left->setText("<-");
 
-    ui_player_list_right->set_image("arrow_right.png");
+    ui_player_list_right->set_image(ao_app->current_theme->get_widget_image("player_list_right", "arrow_right.png", "courtroom"));
     if (ui_player_list_right->get_image().isEmpty())
       ui_player_list_right->setText("->");
 
-    ui_area_look->set_image("area_look.png");
+    ui_area_look->set_image(ao_app->current_theme->get_widget_image("area_look", "area_look.png", "courtroom"));
     if (ui_area_look->get_image().isEmpty())
       ui_area_look->setText("Look");
 
-    ui_call_mod->set_image("callmod.png");
+    ui_call_mod->set_image(ao_app->current_theme->get_widget_image("call_mod", "callmod.png", "courtroom"));
     if (ui_call_mod->get_image().isEmpty())
       ui_call_mod->setText("Call Mod");
 
-    ui_switch_area_music->set_image("switch_area_music.png");
+    ui_switch_area_music->set_image(ao_app->current_theme->get_widget_image("switch_area_music", "switch_area_music.png", "courtroom"));
     if (ui_switch_area_music->get_image().isEmpty())
       ui_switch_area_music->setText("A/M");
 
-    ui_config_panel->set_image("config_panel.png");
+    ui_config_panel->set_image(ao_app->current_theme->get_widget_image("config_panel", "config_panel.png", "courtroom"));
     if (ui_config_panel->get_image().isEmpty())
       ui_config_panel->setText("Config");
 
-    ui_note_button->set_image("notebutton.png");
+    ui_note_button->set_image(ao_app->current_theme->get_widget_image("note_button", "notebutton.png", "courtroom"));
     if (ui_note_button->get_image().isEmpty())
       ui_note_button->setText("Notes");
 
-    ui_area_toggle_button->set_image("area_toggle.png");
+    ui_gm_toggle_button->set_image(ao_app->current_theme->get_widget_image("area_toggle", "area_toggle.png", "courtroom"));
     if (ui_area_toggle_button->get_image().isEmpty())
       ui_area_toggle_button->setText("Area");
 
-    ui_chat_toggle_button->set_image("chat_toggle.png");
+    ui_gm_toggle_button->set_image(ao_app->current_theme->get_widget_image("chat_toggle", "chat_toggle.png", "courtroom"));
     if (ui_chat_toggle_button->get_image().isEmpty())
       ui_chat_toggle_button->setText("Chat");
 
-    ui_gm_toggle_button->set_image("gm_toggle.png");
+
+    ui_gm_toggle_button->set_image(ao_app->current_theme->get_widget_image("gm_toggle", "gm_toggle.png", "courtroom"));
     if (ui_gm_toggle_button->get_image().isEmpty())
       ui_gm_toggle_button->setText("GM");
   }

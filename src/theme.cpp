@@ -81,6 +81,10 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
   bool is_bold = ao_app->get_font_property(p_identifier + "_bold", ini_file) == 1;
   l_font.setBold(is_bold);
 
+  bool is_antialias = ao_app->get_font_property(p_identifier + "_sharp", ini_file) == 1;
+  if(is_antialias) l_font.setStyleStrategy(QFont::NoAntialias);
+  else{l_font.setStyleStrategy(QFont::PreferDefault);}
+
   p_widget->setFont(l_font);
 
   const QColor l_font_color = ao_app->get_color(p_identifier + "_color", ini_file);

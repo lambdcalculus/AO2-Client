@@ -67,3 +67,49 @@ QVector<QStringList>DRTheme::get_highlight_characters()
 
   return f_vec;
 }
+
+pos_size_type DRTheme::get_element_dimensions(QString p_identifier, QString p_scene)
+{
+  pos_size_type return_value;
+  return_value.x = 0;
+  return_value.y = 0;
+  return_value.width = -1;
+  return_value.height = -1;
+
+
+  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
+  QJsonObject item = value.toObject();
+  QJsonObject element_position = item[p_identifier].toObject();
+
+  if(!element_position.contains("position"))
+  {
+    return return_value;
+  }
+
+  return_value.x = element_position["position"].toObject()["x"].toInt();
+  return_value.y = element_position["position"].toObject()["y"].toInt();
+  return_value.width = element_position["position"].toObject()["width"].toInt();
+  return_value.height = element_position["position"].toObject()["height"].toInt();
+
+  return return_value;
+}
+
+QString DRTheme::get_widget_image(QString p_identifier, QString p_fallback, QString p_scene)
+{
+  if(!m_jsonLoaded)
+  {
+    return p_fallback;
+  }
+
+  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
+  QJsonObject item = value.toObject();
+  QJsonObject element_image = item[p_identifier].toObject();
+
+  qDebug() << element_image;
+  {
+    return p_fallback;
+  }
+
+  return element_image["image"].toString();
+
+};
