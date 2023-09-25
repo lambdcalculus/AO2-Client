@@ -5,6 +5,7 @@
 #include "aoguiloader.h"
 #include "datatypes.h"
 #include "drpather.h"
+#include "drtheme.h"
 #include "mk2/spritedynamicreader.h"
 #include "version.h"
 
@@ -448,7 +449,8 @@ void AOConfigPanel::refresh_gamemode_list()
   // add empty entry indicating no gamemode chosen
   ui_manual_gamemode->addItem("<default>");
   // gamemodes
-  QString path = DRPather::get_application_path() + "/base/themes/" + m_config->theme() + "/gamemodes/";
+  QString path = ao_app->find_current_theme_path() + "/gamemodes/";
+
   for (const QString &i_folder : QDir(ao_app->get_case_sensitive_path(path)).entryList(QDir::Dirs))
   {
     if (i_folder == "." || i_folder == "..")
@@ -477,10 +479,10 @@ void AOConfigPanel::refresh_timeofday_list()
   QString l_timeofday_path;
 
   if (l_gamemode.isEmpty())
-    l_timeofday_path = DRPather::get_application_path() + "/base/themes/" + l_theme + "/times/";
+    l_timeofday_path = ao_app->find_current_theme_path() + "/times/";
   else
     l_timeofday_path =
-        DRPather::get_application_path() + "/base/themes/" + l_theme + "/gamemodes/" + l_gamemode + "/times/";
+        ao_app->find_current_theme_path() + "/gamemodes/" + l_gamemode + "/times/";
 
   // times of day
   for (const QString &i_folder : QDir(ao_app->get_case_sensitive_path(l_timeofday_path)).entryList(QDir::Dirs))

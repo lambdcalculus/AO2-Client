@@ -195,7 +195,14 @@ void SpritePlayer::stop()
 
 void SpritePlayer::start(int p_start_frame)
 {
-  if(m_frame_count >= p_start_frame) m_frame_number = p_start_frame;
+  if(m_frame_count > p_start_frame)
+  {
+    m_frame_number = p_start_frame;
+  }
+  else
+  {
+    m_frame_number = 0;
+  }
   m_running = true;
   m_elapsed_timer.start();
   emit started();

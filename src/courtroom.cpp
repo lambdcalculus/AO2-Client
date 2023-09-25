@@ -19,6 +19,7 @@
 #include "drcharactermovie.h"
 #include "drchatlog.h"
 #include "drdiscord.h"
+#include "drtheme.h"
 #include "dreffectmovie.h"
 #include "drpacket.h"
 #include "drscenemovie.h"
@@ -78,7 +79,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   setup_courtroom();
   map_viewport_viewers();
   map_viewport_readers();
-  if (ao_app->read_theme_ini_bool("use_toggles", COURTROOM_CONFIG_INI))
+  if (ao_app->current_theme->read_config_bool("use_toggles"))
     switch_toggle(ToggleState::Chat);
 
   set_char_select();
@@ -568,12 +569,13 @@ void Courtroom::update_music_text_anim()
 {
   pos_size_type res_a = ao_app->get_element_dimensions("music_name", COURTROOM_DESIGN_INI);
   pos_size_type res_b = ao_app->get_element_dimensions("music_area", COURTROOM_DESIGN_INI);
-  float speed = static_cast<float>(ao_app->get_font_property("music_name_speed", COURTROOM_FONTS_INI));
+
+  float speed = static_cast<float>(ao_app->current_theme->get_music_name_speed());
 
   QFont f_font = ui_vp_music_name->font();
   QFontMetrics fm(f_font);
   int dist;
-  if (ao_app->read_theme_ini_bool("enable_const_music_speed", COURTROOM_CONFIG_INI))
+  if (ao_app->current_theme->read_config_bool("enable_const_music_speed"))
     dist = res_b.width;
   else
     dist = fm.horizontalAdvance(ui_vp_music_name->toPlainText());
@@ -625,13 +627,15 @@ void Courtroom::filter_list_widget(QListWidget *p_list_widget, QString p_filter)
 
 bool Courtroom::is_area_music_list_separated()
 {
-  return ao_app->read_theme_ini_bool("enable_music_and_area_list_separation", COURTROOM_CONFIG_INI);
+  return ao_app->current_theme->read_config_bool("enable_music_and_area_list_separation");
 }
 
 void Courtroom::list_music()
 {
-  const QBrush l_song_brush(ao_app->get_color("found_song_color", COURTROOM_DESIGN_INI));
-  const QBrush l_missing_song_brush(ao_app->get_color("missing_song_color", COURTROOM_DESIGN_INI));
+
+  const QBrush l_song_brush = ao_app->current_theme->get_widget_settings_color("music_list", "courtroom", "found_song", "found_song_color");
+  const QBrush l_missing_song_brush = ao_app->current_theme->get_widget_settings_color("music_list", "courtroom", "missing_song", "missing_song_color");
+
   ui_music_list->clear();
   for (const QString &i_song : qAsConst(m_music_list))
   {
@@ -648,7 +652,8 @@ void Courtroom::list_music()
 
 void Courtroom::list_areas()
 {
-  const QBrush l_area_brush(ao_app->get_color("area_free_color", COURTROOM_DESIGN_INI));
+
+  const QBrush l_area_brush = ao_app->current_theme->get_widget_settings_color("area_list", "courtroom", "area_free", "area_free_color");
   ui_area_list->clear();
   for (const QString &i_item_name : qAsConst(m_area_list))
   {
@@ -1298,7 +1303,7 @@ void Courtroom::handle_chatmessage_3()
   if (!chatmessage_is_empty)
   {
     QString l_showname_image;
-    if (ao_app->read_theme_ini_bool("enable_showname_image", COURTROOM_CONFIG_INI))
+    if (ao_app->current_theme->read_config_bool("enable_showname_image"))
     {
       l_showname_image = ao_app->find_theme_asset_path("characters/" + f_char + "/showname", static_extensions());
       if (l_showname_image.isEmpty())
@@ -1418,11 +1423,26 @@ void Courtroom::load_ic_text_format()
   m_ic_log_format.base.setForeground(ui_ic_chatlog->palette().color(ui_ic_chatlog->foregroundRole()));
 
   auto set_format_color = [this](const QString &f_identifier, QTextCharFormat &f_format) {
-    if (const std::optional<QColor> l_color = ao_app->maybe_color(QString("ic_chatlog_%1_color").arg(f_identifier), COURTROOM_FONTS_INI); l_color.has_value())
-      f_format.setForeground(l_color.value());
 
-    if (ao_app->get_font_property(QString("ic_chatlog_%1_bold").arg(f_identifier), COURTROOM_FONTS_INI))
-      f_format.setFontWeight(QFont::Bold);
+    if(ao_app->current_theme->m_jsonLoaded)
+    {
+      if (const std::optional<QColor> l_color = ao_app->current_theme->get_widget_font_color("ic_chatlog", "courtroom", f_identifier); l_color.has_value())
+        f_format.setForeground(l_color.value());
+
+      if (ao_app->current_theme->get_widget_font_bool("ic_chatlog", "courtroom", "bold", f_identifier))
+        f_format.setFontWeight(QFont::Bold);
+      ;
+    }
+    else
+    {
+      if (const std::optional<QColor> l_color = ao_app->maybe_color(QString("ic_chatlog_%1_color").arg(f_identifier), COURTROOM_FONTS_INI); l_color.has_value())
+        f_format.setForeground(l_color.value());
+      if (ao_app->get_font_property(QString("ic_chatlog_%1_bold").arg(f_identifier), COURTROOM_FONTS_INI))
+        f_format.setFontWeight(QFont::Bold);
+    }
+
+
+
   };
 
   m_ic_log_format.name = m_ic_log_format.base;
@@ -1671,7 +1691,7 @@ void Courtroom::setup_chat()
 
   // Cache these so chat_tick performs better
   m_chatbox_message_outline = (ao_app->get_font_property("message_outline", COURTROOM_FONTS_INI) == 1);
-  m_chatbox_message_enable_highlighting = (ao_app->read_theme_ini_bool("enable_highlighting", COURTROOM_CONFIG_INI));
+  m_chatbox_message_enable_highlighting = (ao_app->current_theme->read_config_bool("enable_highlighting"));
   m_chatbox_message_highlight_colors = ao_app->get_highlight_colors();
 
   QString f_gender = ao_app->get_gender(m_chatmessage[CMChrName]);
@@ -2358,7 +2378,7 @@ void Courtroom::on_cycle_clicked()
     break;
   }
 
-  if (ao_app->read_theme_ini_bool("enable_cycle_ding", COURTROOM_CONFIG_INI))
+  if (ao_app->current_theme->read_config_bool("enable_cycle_ding"))
     m_system_player->play(ao_app->get_sfx("cycle"));
 
   set_shouts();
@@ -2552,12 +2572,13 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::load_theme()
 {
+  ao_app->current_theme->InitTheme();
   switch_toggle(ToggleState::All);
   setup_courtroom();
   setup_screenshake_anim();
   update_background_scene();
 
-  if (ao_app->read_theme_ini_bool("use_toggles", COURTROOM_CONFIG_INI)) switch_toggle(ToggleState::Chat);
+  if (ao_app->current_theme->read_config_bool("use_toggles")) switch_toggle(ToggleState::Chat);
 }
 
 void Courtroom::reload_theme()
@@ -2732,22 +2753,44 @@ void Courtroom::switch_toggle(ToggleState state)
     }
 
 
-    for (const QString &widget_toggle: widget_toggles.keys())
+    if(ao_app->current_theme->m_jsonLoaded)
     {
+        QStringList toggle_widgets = ao_app->current_theme->get_tab_widgets(state_name);
+        QStringList disable_widgets = ao_app->current_theme->get_tab_widgets_disable(state_name);
+
+        for (const QString widget_off: disable_widgets)
+        {
+            if(widget_names.contains(widget_off))
+                widget_names[widget_off]->hide();
+        }
+
+        for (const QString widget_on: toggle_widgets)
+        {
+            if(widget_names.contains(widget_on))
+                widget_names[widget_on]->show();
+        }
+
+    }
+    else
+    {
+      for (const QString &widget_toggle: widget_toggles.keys())
+      {
         if(widget_toggles[widget_toggle].toLower() == state_name)
         {
 
-            if(widget_names.contains(widget_toggle))
-              widget_names[widget_toggle]->show();
+          if(widget_names.contains(widget_toggle))
+          widget_names[widget_toggle]->show();
 
         }
         else
         {
             if(widget_names.contains(widget_toggle))
-              widget_names[widget_toggle]->hide();
+          widget_names[widget_toggle]->hide();
 
         }
+      }
     }
+
 
     set_judge_enabled(is_judge);
 }
@@ -2901,7 +2944,7 @@ void Courtroom::construct_playerlist_layout()
     delete m_player_list.takeLast();
 
   //Setup Player list
-  QPoint f_spacing = ao_app->get_button_spacing("player_list_spacing", COURTROOM_DESIGN_INI);
+  QPoint f_spacing = ao_app->current_theme->get_widget_settings_spacing("player_list", "courtroom", "player_list_spacing");
 
   set_size_and_pos(ui_player_list, "player_list", COURTROOM_DESIGN_INI, ao_app);
 
@@ -3010,19 +3053,33 @@ void Courtroom::on_area_look_clicked()
 
 void Courtroom::write_area_desc()
 {
+  std::optional<QColor> l_color;
+  bool is_bold = false;
+
+  if(ao_app->current_theme->m_jsonLoaded)
+  {
+    l_color = ao_app->current_theme->get_widget_font_color("area_desc", "courtroom");
+    is_bold = ao_app->current_theme->get_widget_font_bool("area_desc", "courtroom", "bold");
+  }
+  else
+  {
+    l_color = ao_app->maybe_color(QString("area_desc_color"), COURTROOM_FONTS_INI);
+    is_bold = ao_app->get_font_property(QString("area_desc_bold"), COURTROOM_FONTS_INI);
+  }
+
+
   ui_area_desc->ensurePolished();
   QTextCharFormat formatting = QTextCharFormat();
 
   //Set the color
-  const std::optional<QColor> l_color = ao_app->maybe_color(QString("area_desc_color"), COURTROOM_FONTS_INI);
+
   if(l_color.has_value())
   {
     formatting.setForeground(l_color.value());
   }
 
   //Set the bold
-  if (ao_app->get_font_property(QString("area_desc_bold"), COURTROOM_FONTS_INI))
-    formatting.setFontWeight(QFont::Bold);
+  if (is_bold) formatting.setFontWeight(QFont::Bold);
 
   //Clear the text
   ui_area_desc->clear();

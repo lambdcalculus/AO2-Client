@@ -11,6 +11,7 @@
 #include "file_functions.h"
 #include "lobby.h"
 #include "theme.h"
+#include "drtheme.h"
 #include "version.h"
 
 #include <QDir>
@@ -536,6 +537,9 @@ void AOApplication::resolve_current_theme()
     }
     ao_config->set_theme(l_target_theme.value());
   }
+
+  current_theme = new DRTheme(this);
+  current_theme->InitTheme();
 }
 
 bool AOApplication::notify(QObject *receiver, QEvent *event)

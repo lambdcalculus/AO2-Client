@@ -9,6 +9,7 @@ class AOConfig;
 class AOConfigPanel;
 class Courtroom;
 class DRDiscord;
+class DRTheme;
 class DRMasterClient;
 class Lobby;
 
@@ -54,6 +55,8 @@ public:
 
   DRDiscord *get_discord() const;
 
+  DRTheme *current_theme = nullptr;
+
   VersionNumber get_server_client_version() const;
   VersionStatus get_server_client_version_status() const;
   bool is_server_client_version_compatible() const;
@@ -92,6 +95,7 @@ public:
   QString find_asset_path(QString p_file);
   QString find_theme_asset_path(QString file, QStringList extension_list);
   QString find_theme_asset_path(QString file);
+  QString find_current_theme_path();
 
   QString get_case_sensitive_path(QString p_file);
 

@@ -25,3 +25,6 @@ const QString COURTROOM_STYLESHEETS_CSS = "courtroom_stylesheets.css";
 
 const QString LOBBY_DESIGN_INI = "lobby_design.ini";
 const QString LOBBY_FONTS_INI = "lobby_fonts.ini";
+
+
+const QString THEME_JSON = "theme.json";

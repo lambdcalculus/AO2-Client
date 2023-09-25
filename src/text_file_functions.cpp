@@ -7,6 +7,7 @@
 #include <QTextStream>
 
 #include "aoconfig.h"
+#include "drtheme.h"
 #include "commondefs.h"
 #include "file_functions.h"
 #include "utils.h"
@@ -120,6 +121,20 @@ QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
 
 pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QString p_file)
 {
+
+  if(current_theme->m_jsonLoaded)
+  {
+    pos_size_type json_pos;
+
+    if(p_file == COURTROOM_DESIGN_INI) json_pos = current_theme->get_element_dimensions(p_identifier, "courtroom");
+    else if(p_file == LOBBY_DESIGN_INI) json_pos = current_theme->get_element_dimensions(p_identifier, "lobby");
+
+    if(json_pos.width != -1)
+    {
+      return json_pos;
+    }
+
+  }
   pos_size_type return_value;
   return_value.x = 0;
   return_value.y = 0;
@@ -190,7 +205,7 @@ QString AOApplication::get_font_name(QString p_identifier, QString p_file)
 
 QString AOApplication::get_sfx(QString p_identifier)
 {
-  return read_theme_ini(p_identifier, COURTROOM_SOUNDS_INI);
+  return current_theme->get_sfx_file(p_identifier);
 }
 
 QString AOApplication::get_stylesheet(QString target_tag, QString p_file)
@@ -238,6 +253,11 @@ QMap<DR::Color, DR::ColorInfo> AOApplication::get_chatmessage_colors()
 
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default)
+
+  if(current_theme->m_jsonLoaded)
+  {
+    return current_theme->get_chat_colors();
+  }
 
   QString path = find_theme_asset_path(COURTROOM_TEXT_COLOR_INI);
   if (path.isEmpty())
@@ -291,6 +311,11 @@ QVector<QStringList> AOApplication::get_highlight_colors()
   // File lookup order
   // 1. In the theme folder (gamemode-timeofday/main/default), look for
   // COURTROOM_INI_CONFIG.
+
+  if(current_theme->m_jsonLoaded)
+  {
+    return current_theme->get_highlight_characters();
+  }
 
   QString path = find_theme_asset_path(COURTROOM_CONFIG_INI);
   if (path.isEmpty())
@@ -382,48 +407,7 @@ QString AOApplication::get_spbutton(QString p_tag, int index)
 
 QStringList AOApplication::get_effect(int index)
 {
-  // File lookup order
-  // 1. In the theme folder (gamemode-timeofday/main/default), look for
-  // COURTROOM_INI_CONFIG.
-
-  QString path = find_theme_asset_path(COURTROOM_CONFIG_INI);
-  if (path.isEmpty())
-    return QStringList();
-
-  QFile design_ini(path);
-  if (!design_ini.open(QIODevice::ReadOnly))
-    return QStringList();
-
-  QTextStream in(&design_ini);
-  bool tag_found = false;
-  QStringList res;
-
-  while (!in.atEnd())
-  {
-    QString line = in.readLine();
-
-    if (line.startsWith("[EFFECTS]", Qt::CaseInsensitive))
-    {
-      tag_found = true;
-      continue;
-    }
-
-    if (tag_found)
-    {
-      if ((line.startsWith("[") && line.endsWith("]")))
-        break;
-
-      QStringList line_contents = line.split("=");
-      if (line_contents.at(0).trimmed() == QString::number(index))
-        res = line_contents.at(1).split(",");
-
-      if (res.size() == 1)
-        res.append("1");
-    }
-  }
-
-  design_ini.close();
-  return res;
+  return current_theme->get_effect(index);
 }
 
 QStringList AOApplication::get_sfx_list()
