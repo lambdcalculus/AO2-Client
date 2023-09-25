@@ -636,6 +636,76 @@ void Courtroom::set_widget_names()
 
 void Courtroom::set_widget_layers()
 {
+
+  if(!ao_app->current_theme->m_jsonLoaded)
+  {
+    set_widget_layers_legacy();
+    return;
+  }
+  QStringList l_widget_records;
+
+
+  for(QStringList widget_layers : ao_app->current_theme->widget_layers)
+  {
+    int count = 0;
+    QString l_parent_name = objectName();
+    for(QString l_child_name : widget_layers)
+    {
+      qDebug() << "Widget Parent: " + l_parent_name + " Child: " + l_child_name;
+      if(count != 0)
+      {
+        l_parent_name = widget_layers[0];
+      }
+      else
+      {
+        QString l_parent_name = objectName();
+      }
+
+      count += 1;
+
+      if (l_widget_records.contains(l_child_name))
+      {
+        qWarning() << "error: widget already recorded:" << l_child_name;
+        continue;
+      }
+      l_widget_records.append(l_child_name);
+
+      if (!widget_names.contains(l_child_name))
+      {
+        qWarning() << "widget does not exist:" << l_child_name;
+        continue;
+      }
+      QWidget *l_widget = widget_names.value(l_child_name);
+      QWidget *l_parent = widget_names.value(l_parent_name, this);
+
+      qDebug() << "attaching widget" << l_widget->objectName() << "to parent" << l_parent->objectName();
+
+      const bool l_visible = l_widget->isVisible();
+
+      l_widget->setParent(l_parent);
+
+      if (l_visible) l_widget->setVisible(l_visible);
+      l_widget->raise();
+
+
+    }
+  }
+
+
+         // do special logic if config panel was not found in courtroom_layers. In
+         // particular, make it visible and raise it in front of all assets. This can
+         // help assist a theme designer who accidentally missed config_panel and would
+         // have become unable to reload themes had they closed the config panel
+  if (!l_widget_records.contains("config_panel"))
+  {
+    ui_config_panel->setParent(this);
+    ui_config_panel->setVisible(true);
+    ui_config_panel->raise();
+  }
+}
+
+void Courtroom::set_widget_layers_legacy()
+{
   QStringList l_widget_records;
 
   const QString l_ini_path = ao_app->find_theme_asset_path(COURTROOM_LAYERS_INI);
@@ -1253,7 +1323,10 @@ int Courtroom::adapt_numbered_items(QVector<T *> &item_vector, QString config_it
   // &item_vector must be a vector of size at least 1!
 
   // Redraw the new correct number of items.
-  int new_item_number = ao_app->read_theme_ini_int(config_item_number, COURTROOM_CONFIG_INI);
+  int new_item_number = ao_app->current_theme->read_config_int(config_item_number);
+
+
+
   int current_item_number = item_vector.size();
   // Note we use the fact that, if config_item_number is not there,
   // read_theme_ini returns an empty string, which .toInt() would fail to
@@ -1387,7 +1460,7 @@ void Courtroom::load_effects()
     delete_widget(widget);
 
   // And create new effects
-  int effect_number = ao_app->read_theme_ini_int("effect_number", COURTROOM_CONFIG_INI);
+  int effect_number = ao_app->current_theme->get_effects_count();
   effects_enabled.resize(effect_number);
   ui_effects.resize(effect_number);
 
@@ -1426,10 +1499,19 @@ void Courtroom::load_free_blocks()
     delete_widget(widget);
 
   ui_free_blocks.clear();
-  const int l_block_count = ao_app->read_theme_ini_int("free_block_number", COURTROOM_CONFIG_INI);
+  const int l_block_count = ao_app->current_theme->get_free_block_count();
   for (int i = 0; i < l_block_count; ++i)
   {
-    const QString l_name = ao_app->get_spbutton("[FREE BLOCKS]", i + 1).trimmed();
+
+    QString l_name = "";
+    if(ao_app->current_theme->m_jsonLoaded)
+    {
+      l_name = ao_app->current_theme->get_free_block(i);
+    }
+    else
+    {
+      l_name = ao_app->get_spbutton("[FREE BLOCKS]", i + 1).trimmed();
+    }
     if (l_name.isEmpty())
     {
       qWarning() << "error: block index" << i << "has no block name.";
@@ -1449,10 +1531,11 @@ void Courtroom::load_shouts()
     delete_widget(widget);
 
   // And create new shouts
-  int shout_number = ao_app->read_theme_ini_int("shout_number", COURTROOM_CONFIG_INI);
+  int shout_number = ao_app->current_theme->get_shouts_count();
   shouts_enabled.resize(shout_number);
   ui_shouts.resize(shout_number);
 
+  shout_names.clear();
   for (int i = 0; i < ui_shouts.size(); ++i)
   {
     AOButton *l_button = new AOButton(this, ao_app);
@@ -1464,23 +1547,20 @@ void Courtroom::load_shouts()
 
     connect(l_button, SIGNAL(clicked(bool)), this, SLOT(on_shout_button_clicked(bool)));
     connect(l_button, SIGNAL(toggled(bool)), this, SLOT(on_shout_button_toggled(bool)));
-  }
 
-  // And add names
-  shout_names.clear();
-  for (int i = 1; i <= ui_shouts.size(); ++i)
-  {
-    QString name = ao_app->get_spbutton("[SHOUTS]", i).trimmed();
-    if (!name.isEmpty())
+    QString shout_name = ao_app->current_theme->get_shout(i + 1);
+
+    if(!shout_name.isEmpty())
     {
-      shout_names.append(name);
-      AOButton *l_button = ui_shouts.at(i - 1);
-      widget_names.insert(name, l_button);
-      l_button->setObjectName(name);
-      l_button->setProperty("shout_name", name);
+      shout_names.append(shout_name);
+      AOButton *l_button = ui_shouts.at(i);
+      widget_names.insert(shout_name, l_button);
+      l_button->setObjectName(shout_name);
+      l_button->setProperty("shout_name", shout_name);
       Q_EMIT l_button->toggled(l_button->isChecked());
     }
   }
+
 }
 
 void Courtroom::load_wtce()
@@ -1489,10 +1569,11 @@ void Courtroom::load_wtce()
     delete_widget(widget);
 
   // And create new wtce buttons
-  const int l_wtce_count = ao_app->read_theme_ini_int("wtce_number", COURTROOM_CONFIG_INI);
+  const int l_wtce_count = ao_app->current_theme->get_wtce_count();
   wtce_enabled.resize(l_wtce_count);
 
   ui_wtce.clear();
+  wtce_names.clear();
   for (int i = 0; i < l_wtce_count; ++i)
   {
     AOButton *l_button = new AOButton(this, ao_app);
@@ -1501,20 +1582,18 @@ void Courtroom::load_wtce()
     l_button->stackUnder(ui_wtce_up);
     l_button->stackUnder(ui_wtce_down);
     connect(l_button, SIGNAL(clicked(bool)), this, SLOT(on_wtce_clicked()));
+
+    QString wtce_name = ao_app->current_theme->get_wtce(i + 1);
+
+    if(!wtce_name.isEmpty())
+    {
+      wtce_names.append(wtce_name);
+      widget_names[wtce_name] = ui_wtce[i];
+      ui_wtce[i]->setObjectName(wtce_name);
+    }
+
   }
 
-  // And add names
-  wtce_names.clear();
-  for (int i = 1; i <= ui_wtce.size(); ++i)
-  {
-    QString name = ao_app->get_spbutton("[WTCE]", i).trimmed();
-    if (!name.isEmpty())
-    {
-      wtce_names.append(name);
-      widget_names[name] = ui_wtce[i - 1];
-      ui_wtce[i - 1]->setObjectName(name);
-    }
-  }
 }
 
 /**

@@ -4,6 +4,7 @@
 #include "aosfxplayer.h"
 #include "commondefs.h"
 #include "file_functions.h"
+#include "drtheme.h"
 
 #include <QCheckBox>
 #include <QColor>
@@ -35,8 +36,9 @@ QString Courtroom::current_sfx_file()
 
 void Courtroom::load_sfx_list_theme()
 {
-  m_sfx_color_found = ao_app->get_color("found_song_color", COURTROOM_DESIGN_INI);
-  m_sfx_color_missing = ao_app->get_color("missing_song_color", COURTROOM_DESIGN_INI);
+
+  m_sfx_color_found = ao_app->current_theme->get_widget_settings_color("sfx_list", "courtroom", "found_sfx", "found_song_color");
+  m_sfx_color_missing = ao_app->current_theme->get_widget_settings_color("sfx_list", "courtroom", "missing_sfx", "found_song_color");
   update_all_sfx_item_color();
 }
 

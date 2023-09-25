@@ -539,7 +539,7 @@ void AOApplication::resolve_current_theme()
   }
 
   current_theme = new DRTheme(this);
-  current_theme->LoadJson();
+  current_theme->InitTheme();
 }
 
 bool AOApplication::notify(QObject *receiver, QEvent *event)

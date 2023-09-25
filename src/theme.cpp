@@ -10,9 +10,11 @@
 
 // src
 #include "aoapplication.h"
+#include "commondefs.h"
 #include "datatypes.h"
 #include "drstickerviewer.h"
 #include "drtextedit.h"
+#include "drtheme.h"
 
 void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
 {
@@ -57,6 +59,11 @@ void set_text_alignment(QWidget *p_widget, QString p_identifier, QString p_ini_f
 
 void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOApplication *ao_app)
 {
+
+  QString l_scene = "lobby";
+  if(ini_file == COURTROOM_FONTS_INI) l_scene = "courtroom";
+
+
   QString class_name = p_widget->metaObject()->className();
 
   QFont l_font;
@@ -65,7 +72,30 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
   // 2. "font_default"
   // 3. System font
   QFontDatabase font_database;
-  QString font_name = ao_app->get_font_name("font_" + p_identifier, ini_file);
+
+  QString font_name = "";
+  int f_weight = 1;
+  bool is_bold = false;
+  bool is_antialias = false;
+  QColor l_font_color;
+
+  if(ao_app->current_theme->m_jsonLoaded)
+  {
+    font_name = ao_app->current_theme->get_widget_font_name(p_identifier, l_scene);
+    is_bold = ao_app->current_theme->get_widget_font_bool(p_identifier, l_scene, "bold");
+    is_antialias = ao_app->current_theme->get_widget_font_bool(p_identifier, l_scene, "sharp");
+    f_weight = ao_app->current_theme->get_widget_font_int(p_identifier, l_scene, "size");
+    l_font_color = ao_app->current_theme->get_widget_font_color(p_identifier, l_scene);
+  }
+  else
+  {
+    font_name = ao_app->get_font_name("font_" + p_identifier, ini_file);
+    f_weight = ao_app->get_font_property(p_identifier, ini_file);
+    is_bold = ao_app->get_font_property(p_identifier + "_bold", ini_file) == 1;
+    is_antialias = ao_app->get_font_property(p_identifier + "_sharp", ini_file) == 1;
+    l_font_color = ao_app->get_color(p_identifier + "_color", ini_file);
+  }
+
   if (!font_database.families().contains(font_name))
   {
     font_name = ao_app->get_font_name("font_default", ini_file);
@@ -75,19 +105,15 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
     l_font.setFamily(font_name);
   }
 
-  int f_weight = ao_app->get_font_property(p_identifier, ini_file);
-  l_font.setPointSize(f_weight);
 
-  bool is_bold = ao_app->get_font_property(p_identifier + "_bold", ini_file) == 1;
+  l_font.setPointSize(f_weight);
   l_font.setBold(is_bold);
 
-  bool is_antialias = ao_app->get_font_property(p_identifier + "_sharp", ini_file) == 1;
   if(is_antialias) l_font.setStyleStrategy(QFont::NoAntialias);
   else{l_font.setStyleStrategy(QFont::PreferDefault);}
 
   p_widget->setFont(l_font);
 
-  const QColor l_font_color = ao_app->get_color(p_identifier + "_color", ini_file);
   QString style_sheet_string = class_name + " { " + "background-color: rgba(0, 0, 0, 0);\n" +
                                "color: " + l_font_color.name(QColor::HexArgb) + ";\n" + (is_bold ? "font: bold;" : "") +
                                "}";
@@ -96,10 +122,22 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
 
 void set_drtextedit_font(DRTextEdit *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
 {
+  QString l_scene = "lobby";
+  if(p_ini_file == COURTROOM_FONTS_INI) l_scene = "courtroom";
+
   set_font(p_widget, p_identifier, p_ini_file, ao_app);
 
   // Do outlines
-  bool outline = (ao_app->get_font_property(p_identifier + "_outline", p_ini_file) == 1);
+  bool outline;
+
+  if(ao_app->current_theme->m_jsonLoaded)
+  {
+    outline = ao_app->current_theme->get_widget_font_bool(p_identifier, l_scene, "outline");
+  }
+  else
+  {
+    outline = (ao_app->get_font_property(p_identifier + "_outline", p_ini_file) == 1);
+  }
   p_widget->set_outline(outline);
 
   // alignment

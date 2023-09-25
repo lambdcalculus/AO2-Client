@@ -344,3 +344,8 @@ QString AOApplication::find_theme_asset_path(QString p_file)
 {
   return find_theme_asset_path(p_file, QStringList{""});
 }
+
+QString AOApplication::find_current_theme_path()
+{
+  return get_package_or_base_path("themes/" + ao_config->theme());
+}

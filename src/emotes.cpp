@@ -9,6 +9,7 @@
 #include "drcharactermovie.h"
 #include "drgraphicscene.h"
 #include "theme.h"
+#include "drtheme.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -61,7 +62,7 @@ void Courtroom::construct_emote_page_layout()
   // resize and move
   set_size_and_pos(ui_emotes, "emotes", COURTROOM_DESIGN_INI, ao_app);
 
-  QPoint f_spacing = ao_app->get_button_spacing("emote_button_spacing", COURTROOM_DESIGN_INI);
+  QPoint f_spacing = ao_app->current_theme->get_widget_settings_spacing("emotes", "courtroom", "emote_button_spacing");
 
   const int button_width = 40;
   int x_spacing = f_spacing.x();

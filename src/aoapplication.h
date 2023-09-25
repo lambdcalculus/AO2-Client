@@ -95,6 +95,7 @@ public:
   QString find_asset_path(QString p_file);
   QString find_theme_asset_path(QString file, QStringList extension_list);
   QString find_theme_asset_path(QString file);
+  QString find_current_theme_path();
 
   QString get_case_sensitive_path(QString p_file);
 

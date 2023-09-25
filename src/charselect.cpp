@@ -11,6 +11,7 @@
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "theme.h"
+#include "drtheme.h"
 
 #include <QDebug>
 #include <QSignalMapper>
@@ -51,7 +52,7 @@ void Courtroom::reconstruct_char_select()
 {
   qDeleteAll(ui_char_button_list.begin(), ui_char_button_list.end());
 
-  QPoint f_spacing = ao_app->get_button_spacing("char_button_spacing", COURTROOM_DESIGN_INI);
+  QPoint f_spacing = ao_app->current_theme->get_widget_settings_spacing("char_buttons", "courtroom", "char_button_spacing");
 
   const int button_width = 60;
   int x_spacing = f_spacing.x();
