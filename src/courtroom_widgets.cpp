@@ -651,7 +651,6 @@ void Courtroom::set_widget_layers()
     QString l_parent_name = objectName();
     for(QString l_child_name : widget_layers)
     {
-      qDebug() << "Widget Parent: " + l_parent_name + " Child: " + l_child_name;
       if(count != 0)
       {
         l_parent_name = widget_layers[0];
@@ -847,6 +846,8 @@ void Courtroom::set_widgets()
   }
 
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog", COURTROOM_DESIGN_INI, ao_app);
+
+  if(ao_app->current_theme->get_widget_settings_bool("ic_chatlog", "courtroom", "hide_frame")) ui_ic_chatlog->setFrameStyle(QFrame::NoFrame);
   set_size_and_pos(ui_ic_chatlog_scroll_topdown, "ic_chatlog_scroll_topdown", COURTROOM_DESIGN_INI, ao_app);
   ui_ic_chatlog_scroll_topdown->set_image("ic_chatlog_scroll_topdown.png");
   ui_ic_chatlog_scroll_topdown->hide();
@@ -856,8 +857,15 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_area_desc, "area_desc", COURTROOM_DESIGN_INI, ao_app);
 
+  if(ao_app->current_theme->get_widget_settings_bool("area_desc", "courtroom", "hide_frame")) ui_area_desc->setFrameStyle(QFrame::NoFrame);
+
 
   set_size_and_pos(ui_ooc_chatlog, "server_chatlog", COURTROOM_DESIGN_INI, ao_app);
+
+  if(ao_app->current_theme->get_widget_settings_bool("server_chatlog", "courtroom", "hide_frame"))
+  {
+    ui_ooc_chatlog->setFrameStyle(QFrame::NoFrame);
+  }
 
   set_size_and_pos(ui_sfx_list, "sfx_list", COURTROOM_DESIGN_INI, ao_app);
 

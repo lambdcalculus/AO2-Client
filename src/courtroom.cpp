@@ -1039,9 +1039,17 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
   l_file_list.insert(ViewportShout, ao_app->get_shout_sprite_path(l_character, get_shout_name(l_shout_id)));
 
   // effects
-  if(l_effect_id == 8) play_screenshake_anim();
+  QString effect_name = get_effect_name(l_effect_id);
+  if(effect_name == "effect_shake")
+  {
+    play_screenshake_anim();
+  }
+  else
+  {
+    l_file_list.insert(ViewportEffect, ao_app->get_effect_anim_path(effect_name));
+  }
 
-  l_file_list.insert(ViewportEffect, ao_app->get_effect_anim_path(get_effect_name(l_effect_id)));
+
 
   for (auto it = l_file_list.cbegin(); it != l_file_list.cend(); ++it)
   {
@@ -1361,7 +1369,7 @@ void Courtroom::handle_chatmessage_3()
     if (l_effect_index_result)
     {
       const QString l_effect_name = get_effect_name(l_effect_index);
-      if (!l_effect_name.isEmpty()) // check to prevent crashing
+      if (!l_effect_name.isEmpty() && l_effect_name != "effect_shake") // check to prevent crashing
       {
         QStringList offset = ao_app->get_effect_offset(f_char, l_effect_index);
         ui_vp_effect->setPos(offset.at(0).toInt(), offset.at(1).toInt());

@@ -37,6 +37,8 @@ public:
   QColor get_widget_settings_color(QString p_identifier, QString p_scene, QString p_type, QString ini_fallback);
   QPoint get_widget_settings_spacing(QString p_identifier, QString p_scene, QString ini_fallback);
   int get_widget_settings_int(QString p_identifier, QString p_scene, QString p_setting);
+  bool get_widget_settings_bool(QString p_identifier, QString p_scene, QString p_setting);
+
 
   //Font Functions
   QString get_widget_font_name(QString p_identifier, QString p_scene);

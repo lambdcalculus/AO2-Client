@@ -437,6 +437,30 @@ int DRTheme::get_widget_settings_int(QString p_identifier, QString p_scene, QStr
 
 }
 
+bool DRTheme::get_widget_settings_bool(QString p_identifier, QString p_scene, QString p_setting)
+{
+
+  bool return_value = false;
+  if(!m_jsonLoaded)
+  {
+    return return_value;
+  }
+
+  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
+  QJsonObject item = value.toObject();
+  QJsonObject widget_object = item[p_identifier].toObject();
+
+
+  if(!widget_object["settings"].toObject().contains(p_setting))
+  {
+    return return_value;
+  }
+
+  return_value = widget_object["settings"].toObject()[p_setting].toBool();
+
+  return return_value;
+}
+
 QColor DRTheme::get_widget_settings_color(QString p_identifier, QString p_scene, QString p_type, QString ini_fallback)
 {
 

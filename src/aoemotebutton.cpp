@@ -46,29 +46,32 @@ void AOEmoteButton::set_image(DREmote p_emote, bool p_enabled)
   // nested ifs are okay
   if (p_enabled)
   {
-    const QString l_enabled_texture =
-        ao_app->get_character_path(p_emote.character, QString("emotions/button%1_on.png").arg(p_emote.key));
 
-    if (file_exists(l_enabled_texture))
+    const QString l_selected_texture = ao_app->get_character_path(p_emote.character, "emotions/selected.png");
+
+
+
+    if (file_exists(l_selected_texture))
     {
-      l_texture = l_enabled_texture;
+      ui_selected->setStyleSheet(QString("border-image: url(\"%1\")").arg(l_selected_texture));
+      ui_selected->show();
     }
     else
     {
-      const QString l_selected_texture = ao_app->get_character_path(p_emote.character, "emotions/selected.png");
+      const QString l_enabled_texture = ao_app->get_character_path(p_emote.character, QString("emotions/button%1_on.png").arg(p_emote.key));
 
-      if (file_exists(l_selected_texture))
+      if (file_exists(l_enabled_texture))
       {
-        ui_selected->setStyleSheet(QString("border-image: url(\"%1\")").arg(l_selected_texture));
+        l_texture = l_enabled_texture;
       }
       else
       {
         ui_selected->setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, "
                                    "y2:1, stop:0 rgba(0, 0, 0, 0), stop:1 rgba(0, 0, 0, 127)); }");
+        ui_selected->show();
       }
-
-      ui_selected->show();
     }
+
   }
 
   m_texture.load(l_texture);
