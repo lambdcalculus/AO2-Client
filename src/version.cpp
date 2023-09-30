@@ -72,7 +72,7 @@ QString get_about_message()
                         "<a href='https://github.com/Chrezm/DRO-Client'>"
                         "https://github.com/Chrezm/DRO-Client</a>"
                         "<p><b>Development:</b><br>"
-                        "Cerapter, Elf, Iuvee, Tricky Leifa, Ziella"
+                        "Cerapter, Elf, Iuvee, Tricky Leifa, Keightiie"
                         "<p>Based on Attorney Online 2:<br>"
                         "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
                         "https://github.com/AttorneyOnline/AO2-Client</a>"
