@@ -3,6 +3,7 @@
 #include "drmediatester.h"
 #include "lobby.h"
 #include "logger.h"
+#include "version.h"
 
 #include <QDebug>
 
@@ -54,6 +55,9 @@ int main(int argc, char *argv[])
     app.load_fonts();
     app.construct_lobby();
     app.get_lobby()->show();
+
+
+    launch_updater_check(check_updater_is_beta(), true);
 
     l_exit_code = app.exec();
 

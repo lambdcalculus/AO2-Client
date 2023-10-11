@@ -54,6 +54,7 @@ private slots:
   void on_reload_character_clicked();
   void on_reload_audiotracks_clicked();
   void on_load_packages_clicked();
+  void on_check_for_updates_clicked();
   void on_theme_changed(QString);
   void on_gamemode_changed(QString);
   void on_manual_gamemode_selection_changed(bool);
@@ -196,6 +197,10 @@ private:
   // packages
   QListWidget *ui_packages_list = nullptr;
   QPushButton *ui_load_new_packages = nullptr;
+
+  //Updates
+  QCheckBox *ui_beta_updates = nullptr;
+  QPushButton *ui_check_updates = nullptr;
 
 private slots:
   void username_editing_finished();

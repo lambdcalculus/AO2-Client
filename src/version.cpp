@@ -3,10 +3,13 @@
 #include <QFile>
 #include <QImageReader>
 #include <QString>
+#include <qprocess.h>
 
 #include <bass/bass.h>
 
 #include "datatypes.h"
+#include "drpather.h"
+#include "file_functions.h"
 
 int get_release_version()
 {
@@ -98,3 +101,47 @@ QString get_about_message()
 
   return msg;
 }
+
+void launch_updater_check(bool is_beta, bool isSilent)
+{
+  qDebug() << "Launching updater...";
+  QString program = "./updater.exe";
+  QString new_program = "./updater.exe.new";
+  if(file_exists(new_program))
+  {
+    QFile::remove(program);
+    QFile::rename(new_program, program);
+  }
+  QStringList arguments;
+  arguments << "--hide" << "--check";
+
+  if(isSilent) arguments << "--silent";
+
+  if(is_beta) arguments << "--beta";
+  else arguments << "--stable";
+
+  QProcess *myProcess = new QProcess();
+  myProcess->startDetached(program, arguments);
+}
+
+bool check_updater_is_beta()
+{
+  QString version = "stable";
+  QString version_file_path = DRPather::get_application_path() + "/base/version";
+  if(file_exists(version_file_path))
+  {
+    QFile inputFile(version_file_path);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+      QTextStream in(&inputFile);
+      if(!in.atEnd())
+      {
+        version = in.readLine();
+      }
+      inputFile.close();
+    }
+  }
+
+  return version.toLower() == "beta";
+}
+

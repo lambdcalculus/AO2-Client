@@ -1088,9 +1088,27 @@
      </widget>
      <widget class="QWidget" name="tab_7">
       <attribute name="title">
-       <string>Packages</string>
+       <string>Content</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <layout class="QFormLayout" name="formLayout_12">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="useBetaUpdates">
+           <property name="text">
+            <string>Use Beta Client</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="checkUpdatesButton">
+           <property name="text">
+            <string>Check for Updates</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="QListWidget" name="packages_list">
          <property name="layoutDirection">
@@ -1101,7 +1119,7 @@
        <item>
         <widget class="QPushButton" name="load_new_packages">
          <property name="text">
-          <string>Save Changes / Add New Packages</string>
+          <string>Save and Refresh Packages</string>
          </property>
         </widget>
        </item>

@@ -385,6 +385,7 @@ void Courtroom::enter_courtroom(int p_cid)
     send_showname_packet(l_showname);
 
   ui_char_select_background->hide();
+  on_pos_dropdown_changed();
 }
 
 void Courtroom::done_received()
