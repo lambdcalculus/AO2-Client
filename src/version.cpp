@@ -112,6 +112,9 @@ void launch_updater_check(bool is_beta, bool isSilent)
     QFile::remove(program);
     QFile::rename(new_program, program);
   }
+
+  if(!file_exists(program)) return;
+
   QStringList arguments;
   arguments << "--hide" << "--check";
 
