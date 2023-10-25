@@ -9,25 +9,37 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
 {
     ao_app = p_ao_app;
     m_entrywidth = p_parent->size().width();
-    this->resize(m_entrywidth, 40);
+    this->resize(m_entrywidth, 50);
 
     this->move(p_x, p_y);
 
     ui_showname = new AOLabel(this, ao_app);
-    ui_showname->move(45, 3);
-    ui_showname->resize(m_entrywidth-45, 16);
+    ui_showname->move(50, 7);
+    ui_showname->resize(m_entrywidth-50, 16);
     set_stylesheet(ui_showname, "[PLAYER NAME]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
     ui_user_image = new AOImageDisplay(this, ao_app);
-    ui_user_image->move(0, 0);
+    ui_user_image->move(5, 5);
     ui_user_image->resize(40, 40);
-    set_stylesheet(ui_user_image, "[PLAYER ICON]", COURTROOM_STYLESHEETS_CSS, ao_app);
+
+
+    pCharacterBorderDisplay = new AOImageDisplay(this, ao_app);
+    pCharacterBorderDisplay->move(0, 0);
+    pCharacterBorderDisplay->resize(50, 50);
+
+    const QString l_selected_texture = ao_app->find_theme_asset_path("char_border.png");
+
+    if (file_exists(l_selected_texture)) pCharacterBorderDisplay->set_image(l_selected_texture);
+
+
+
+    //set_stylesheet(ui_user_image, "[PLAYER ICON]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
 
     //Prompt (For Blackouts / Look)
     m_prompt = new AOLabel(this, ao_app);
     m_prompt->move(0, 0);
-    m_prompt->resize(m_entrywidth, 40);
+    m_prompt->resize(m_entrywidth, 50);
     m_prompt->setWordWrap(true);
     set_stylesheet(m_prompt, "[PLAYER LIST PROMPT]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
@@ -48,6 +60,10 @@ void DrPlayerListEntry::set_character(QString p_character)
   {
       ui_user_image->set_image(l_icon_path);
 
+      const QString l_selected_texture = ao_app->get_character_path(p_character, "char_border.png");
+
+      if (file_exists(l_selected_texture)) pCharacterBorderDisplay->set_image(l_selected_texture);
+
   }
   else
   {
@@ -59,6 +75,7 @@ void DrPlayerListEntry::set_character(QString p_character)
 
   }
   ui_user_image->show();
+  pCharacterBorderDisplay->show();
   m_prompt->hide();
 
 }

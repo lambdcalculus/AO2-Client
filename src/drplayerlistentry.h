@@ -14,6 +14,7 @@ public:
     void set_character(QString p_character);
     void set_name(QString showname);
     void set_reason(QString p_reason);
+    AOImageDisplay *pCharacterBorderDisplay = nullptr;
     AOImageDisplay *ui_user_image = nullptr;
     AOLabel *ui_showname = nullptr;
     AOLabel *m_prompt = nullptr;
