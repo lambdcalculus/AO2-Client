@@ -33,7 +33,7 @@ VersionNumber get_version_number()
 
 QString get_post_version()
 {
-  return "beta6";
+  return "rc1";
 }
 
 QString get_version_string()
@@ -43,7 +43,7 @@ QString get_version_string()
   const QString l_post = get_post_version();
   if (!l_post.isEmpty())
   {
-    l_version += QString("+" + l_post);
+    l_version += l_post;
   }
 
   return l_version;

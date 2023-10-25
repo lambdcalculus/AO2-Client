@@ -466,36 +466,70 @@ void Courtroom::reset_widget_toggles()
 {
     widget_toggles = { };
 
-    const QString l_ini_path = ao_app->find_theme_asset_path(COURTROOM_TOGGLES_INI);
-    QFile l_toggle_ini(l_ini_path);
+    for (const QString widgeToggle : widget_toggles)
+    {
+      if(widget_names.contains(widgeToggle)) widget_names[widgeToggle]->show();
+    }
 
 
-    if (!l_toggle_ini.open(QIODevice::ReadOnly))
+    if(ao_app->current_theme->m_jsonLoaded)
+    {
+      QString l_parent_name = "Chat";
+
+      QStringList chat_tab = ao_app->current_theme->get_tab_widgets("Chat");
+      QStringList area_tab = ao_app->current_theme->get_tab_widgets("Area");
+      QStringList gm_tab = ao_app->current_theme->get_tab_widgets("GM");
+
+
+      for (const QString chatTabWidget : chat_tab)
+      {
+        widget_toggles[chatTabWidget] = "Chat";
+      }
+
+      for (const QString areaTabWidget : area_tab)
+      {
+        widget_toggles[areaTabWidget] = "Area";
+      }
+
+      for (const QString gmTabWidget : gm_tab)
+      {
+        widget_toggles[gmTabWidget] = "GM";
+      }
+
+    }
+    else
+    {
+      const QString l_ini_path = ao_app->find_theme_asset_path(COURTROOM_TOGGLES_INI);
+      QFile l_toggle_ini(l_ini_path);
+
+
+      if (!l_toggle_ini.open(QIODevice::ReadOnly))
         return;
 
 
-    QTextStream in(&l_toggle_ini);
+      QTextStream in(&l_toggle_ini);
 
-    QString l_parent_name = "Chat";
+      QString l_parent_name = "Chat";
 
 
-    while (!in.atEnd())
-    {
+      while (!in.atEnd())
+      {
         QString l_line = in.readLine().trimmed();
 
         if (l_line.isEmpty()) { continue; }
 
         if (l_line.startsWith("["))
         {
-            l_parent_name = l_line.remove(0, 1).chopped(1).trimmed();
+          l_parent_name = l_line.remove(0, 1).chopped(1).trimmed();
         }
         else
         {
-            QStringList line_elements = l_line.split("=");
+          QStringList line_elements = l_line.split("=");
 
-            if(line_elements.count() <= 2) widget_toggles[line_elements.at(0).trimmed()] = l_parent_name;
+          if(line_elements.count() <= 2) widget_toggles[line_elements.at(0).trimmed()] = l_parent_name;
 
         }
+      }
     }
 }
 
@@ -1639,6 +1673,8 @@ void Courtroom::set_judge_enabled(bool p_enabled)
   ui_defense_minus->setVisible(is_judge && ui_in_current_toggle("defense_minus"));
   ui_prosecution_plus->setVisible(is_judge && ui_in_current_toggle("prosecution_plus"));
   ui_prosecution_minus->setVisible(is_judge && ui_in_current_toggle("prosecution_minus"));
+
+  if(ui_in_current_toggle("player_list")) construct_playerlist_layout();
 
   set_judge_wtce();
 }
