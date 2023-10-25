@@ -701,9 +701,8 @@ void Lobby::_p_update_description()
     {
       l_description.replace(l_regex, "<a href=\"\\1\">\\1</a>");
     }
-    l_message = QString("%1\n\n"
-                        "==== DESCRIPTION ====\n"
-                        "%2")
+    l_message = QString("==== DESCRIPTION ====\n"
+                        "%1")
                     .arg(l_description);
   }
 
