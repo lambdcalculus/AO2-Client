@@ -147,9 +147,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   refresh_packages_list();
 
   //updates
-  ui_check_updates = AO_GUI_WIDGET(QPushButton, "checkUpdatesButton");
-  ui_beta_updates = AO_GUI_WIDGET(QCheckBox, "useBetaUpdates");
-  ui_beta_updates->setChecked(check_updater_is_beta());
+  //ui_check_updates = AO_GUI_WIDGET(QPushButton, "checkUpdatesButton");
+  //ui_beta_updates = AO_GUI_WIDGET(QCheckBox, "useBetaUpdates");
+  //ui_beta_updates->setChecked(check_updater_is_beta());
 
   // themes
   refresh_theme_list();
@@ -254,7 +254,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_load_new_packages, SIGNAL(clicked()), this, SLOT(on_load_packages_clicked()));
 
   //packages
-  connect(ui_check_updates, SIGNAL(clicked()), this, SLOT(on_check_for_updates_clicked()));
+  //connect(ui_check_updates, SIGNAL(clicked()), this, SLOT(on_check_for_updates_clicked()));
 
   // ic message
   connect(m_config, SIGNAL(message_length_threshold_changed(int)), ui_length_threshold, SLOT(setValue(int)));

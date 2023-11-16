@@ -71,5 +71,6 @@ void DRStickerViewer::set_chatbox_image(QString p_chatbox_name, bool p_is_self, 
 
   DRTheme* drtheme = new DRTheme(ao_app);
   drtheme->InitTheme();
+  this->hide();
 
 }

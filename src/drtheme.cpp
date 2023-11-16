@@ -323,6 +323,22 @@ bool DRTheme::get_widget_font_bool(QString p_identifier, QString p_scene, QStrin
 
 }
 
+QString DRTheme::get_widget_font_string_setting(QString p_identifier, QString p_param, QString p_scene, QString fallback)
+{
+  if(!m_jsonLoaded)
+  {
+    return ao_app->read_theme_ini(fallback, p_scene);
+  }
+  QString sceneType = "courtroom";
+  if(p_scene == LOBBY_FONTS_INI) sceneType = "lobby";
+  QJsonValue value = m_currentThemeObject.value(QString(sceneType));
+  QJsonObject item = value.toObject();
+  QJsonObject element_font = item[p_identifier].toObject();
+  QString data = element_font["font"].toObject()[p_param].toString();
+  return data;
+
+}
+
 bool DRTheme::get_widget_font_bool(QString p_identifier, QString p_scene, QString p_param, QString p_type)
 {
   if(!m_jsonLoaded)

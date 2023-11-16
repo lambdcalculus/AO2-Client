@@ -38,13 +38,14 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
 
     //Prompt (For Blackouts / Look)
     m_prompt = new AOLabel(this, ao_app);
-    m_prompt->move(0, 0);
+    m_prompt->move(5, 5);
     m_prompt->resize(m_entrywidth, 50);
     m_prompt->setWordWrap(true);
     set_stylesheet(m_prompt, "[PLAYER LIST PROMPT]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
     ui_showname->hide();
     ui_user_image->hide();
+    pCharacterBorderDisplay->hide();
     m_prompt->hide();
 }
 
@@ -93,6 +94,7 @@ void DrPlayerListEntry::set_reason(QString p_reason)
 {
   ui_showname->hide();
   ui_user_image->hide();
+  pCharacterBorderDisplay->hide();
   m_prompt->show();
 
   m_prompt->setText(p_reason);

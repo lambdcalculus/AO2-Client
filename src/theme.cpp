@@ -39,7 +39,7 @@ void set_text_alignment_or_default(QWidget *p_widget, QString p_identifier, QStr
                                    Qt::Alignment p_default_vertical)
 {
   const QStringList l_values =
-      ao_app->read_theme_ini(p_identifier + "_align", p_ini_file).split(",", DR::SkipEmptyParts);
+      ao_app->current_theme->get_widget_font_string_setting(p_identifier, "align", p_ini_file, p_identifier + "_align").split(",", DR::SkipEmptyParts);
   if (!p_widget->property(p_property.c_str()).isValid())
     return;
   p_widget->setProperty(p_property.c_str(),

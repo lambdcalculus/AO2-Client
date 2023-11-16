@@ -81,6 +81,7 @@ public:
   QStringList get_tab_widgets(QString p_tab_name);
   QStringList get_tab_widgets_disable(QString p_tab_name);
 
+  QString get_widget_font_string_setting(QString p_identifier, QString p_param, QString p_scene, QString fallback);
 private:
   AOApplication *ao_app = nullptr;
   QJsonObject *get_font_json_object(QString p_identifier, QString p_scene);
