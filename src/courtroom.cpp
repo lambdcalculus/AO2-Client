@@ -1699,7 +1699,15 @@ void Courtroom::setup_chat()
   m_blip_step = 0;
 
   // Cache these so chat_tick performs better
-  m_chatbox_message_outline = (ao_app->get_font_property("message_outline", COURTROOM_FONTS_INI) == 1);
+  if(ao_app->current_theme->m_jsonLoaded)
+  {
+    m_chatbox_message_outline = ao_app->current_theme->get_widget_font_bool("message", "courtroom", "outline");
+  }
+  else
+  {
+    m_chatbox_message_outline = (ao_app->get_font_property("message_outline", COURTROOM_FONTS_INI) == 1);
+  }
+
   m_chatbox_message_enable_highlighting = (ao_app->current_theme->read_config_bool("enable_highlighting"));
   m_chatbox_message_highlight_colors = ao_app->get_highlight_colors();
 

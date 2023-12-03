@@ -23,13 +23,18 @@ void DRAudiotrackMetadata::update_cache()
 
   QList<QFileInfo> l_ini_list;
   { // fetch ini files
-    const QDir l_dir(ao_app->get_music_folder_path());
-    const QList<QFileInfo> l_file_list = l_dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot, QDir::IgnoreCase);
-    for (const QFileInfo &i_file : l_file_list)
+    QVector<QString> music_paths = ao_app->get_all_package_and_base_paths("sounds/music");
+
+    for (QString package_music_path : music_paths)
     {
-      if (i_file.suffix().toLower() != "ini")
-        continue;
-      l_ini_list.append(i_file);
+      const QDir l_dir(package_music_path);
+      const QList<QFileInfo> l_file_list = l_dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot, QDir::IgnoreCase);
+      for (const QFileInfo &i_file : l_file_list)
+      {
+        if (i_file.suffix().toLower() != "ini")
+          continue;
+        l_ini_list.append(i_file);
+      }
     }
   }
 
