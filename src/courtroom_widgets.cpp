@@ -212,6 +212,8 @@ void Courtroom::create_widgets()
     l_layout->addWidget(ui_ic_chat_message_counter);
   }
 
+  ui_ic_chat_message_counter->hide();
+
   ui_ooc_chat_name = new QLineEdit(this);
   ui_ooc_chat_name->setFrame(false);
   ui_ooc_chat_name->setPlaceholderText("Name");
