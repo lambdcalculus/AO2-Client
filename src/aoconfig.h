@@ -81,6 +81,8 @@ public:
   int punctuation_delay() const;
   bool blank_blips_enabled() const;
 
+  double theme_resize() const;
+
   // io
 public slots:
   void load_file();
@@ -147,6 +149,7 @@ public slots:
   void set_blip_rate(int p_number);
   void set_punctuation_delay(int p_number);
   void set_blank_blips(bool p_enabled);
+  void setThemeResize(double resize);
 
   // signals
 signals:
@@ -217,6 +220,7 @@ signals:
   void blip_rate_changed(int);
   void punctuation_delay_changed(int);
   void blank_blips_changed(bool);
+  void theme_resize_changed(double);
 };
 
 #endif // AOCONFIG_H

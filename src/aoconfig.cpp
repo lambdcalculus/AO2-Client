@@ -16,6 +16,8 @@
 #include <QSharedPointer>
 #include <QVector>
 
+#include <modules/theme/thememanager.h>
+
 /*!
     We have to suffer through a lot of boilerplate code
     but hey, when has ao2 ever cared?
@@ -106,6 +108,7 @@ private:
   bool blip_ignore_suppression;
   int blip_rate;
   int punctuation_delay;
+  double theme_resize;
   bool blank_blips;
 
   // audio sync
@@ -219,6 +222,8 @@ void AOConfigPrivate::load_file()
   blip_ignore_suppression = cfg.value("blip_ignore_suppression", false).toBool();
   blip_rate = cfg.value("blip_rate", 1000000000).toInt();
   punctuation_delay = cfg.value("punctuation_delay", 110).toInt();
+  theme_resize = cfg.value("theme_resize", 1).toDouble();
+  ThemeManager::get().setResize(theme_resize);
   blank_blips = cfg.value("blank_blips").toBool();
 
   // audio update
@@ -327,6 +332,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("blip_ignore_suppression", blip_ignore_suppression);
   cfg.setValue("blip_rate", blip_rate);
   cfg.setValue("punctuation_delay", punctuation_delay);
+  cfg.setValue("theme_resize", theme_resize);
   cfg.setValue("blank_blips", blank_blips);
 
   cfg.remove("character_ini");
@@ -712,6 +718,11 @@ int AOConfig::punctuation_delay() const
 bool AOConfig::blank_blips_enabled() const
 {
   return d->blank_blips;
+}
+
+double AOConfig::theme_resize() const
+{
+  return d->theme_resize;
 }
 
 void AOConfig::load_file()
@@ -1182,6 +1193,15 @@ void AOConfig::set_blank_blips(bool p_enabled)
   d->blank_blips = p_enabled;
   d->audio_engine->get_family(DRAudio::Family::FBlip)->set_ignore_suppression(p_enabled);
   d->invoke_signal("blank_blips_changed", Q_ARG(bool, p_enabled));
+}
+
+void AOConfig::setThemeResize(double resize)
+{
+  if (d->theme_resize == resize)
+    return;
+  d->theme_resize = resize;
+  ThemeManager::get().setResize(resize);
+  d->invoke_signal("theme_resize_changed", Q_ARG(double, resize));
 }
 
 // moc

@@ -1,8 +1,9 @@
 #include "aoemotebutton.h"
 
 #include "aoapplication.h"
+#include "courtroom.h"
 #include "file_functions.h"
-
+#include "modules/theme/thememanager.h"
 #include <QHelpEvent>
 #include <QImage>
 #include <QLabel>
@@ -15,14 +16,14 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x
   ao_app = p_ao_app;
 
   this->move(p_x, p_y);
-  this->resize(40, 40);
+  this->resize((int)((float)40 * ThemeManager::get().getResize()), (int)((float)40 * ThemeManager::get().getResize()));
 
   ui_selected = new QLabel(this);
   ui_selected->resize(size());
   ui_selected->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_selected->hide();
 
-  connect(this, SIGNAL(clicked()), this, SLOT(on_clicked()));
+  connect(this, &QAbstractButton::clicked, this, &AOEmoteButton::on_clicked);
 }
 
 void AOEmoteButton::set_emote_number(int p_emote_number)
@@ -114,4 +115,21 @@ bool AOEmoteButton::event(QEvent *event)
   }
 
   return QPushButton::event(event);
+}
+
+void AOEmoteButton::wheelEvent(QWheelEvent *event)
+{
+    int delta = event->angleDelta().y();
+
+    if (delta > 0)
+    {
+      ao_app->get_courtroom()->on_emote_left_clicked();
+    }
+    else if (delta < 0)
+    {
+      ao_app->get_courtroom()->on_emote_right_clicked();
+    }
+
+    QPushButton::wheelEvent(event);
+
 }

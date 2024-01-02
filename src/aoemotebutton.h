@@ -3,11 +3,13 @@
 
 // src
 #include "datatypes.h"
+#include "qdebug.h"
 
 class AOApplication;
 
 // qt
 #include <QPushButton>
+#include <QWheelEvent>
 
 class QLabel;
 
@@ -30,6 +32,9 @@ signals:
   // QPushButton interface
 protected:
   bool event(QEvent *event) override;
+
+  void wheelEvent(QWheelEvent *event) override;
+
 
 private:
   AOApplication *ao_app = nullptr;

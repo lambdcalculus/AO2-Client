@@ -5,6 +5,7 @@
 #include "aoconfig.h"
 #include <QJsonArray>
 
+#include "modules/theme/thememanager.h"
 
 #include <qcolor.h>
 #include <qfile.h>
@@ -240,12 +241,7 @@ QVector<QStringList>DRTheme::get_highlight_characters()
 
 pos_size_type DRTheme::get_element_dimensions(QString p_identifier, QString p_scene)
 {
-  pos_size_type return_value;
-  return_value.x = 0;
-  return_value.y = 0;
-  return_value.width = -1;
-  return_value.height = -1;
-
+  pos_size_type return_value{0, 0, -1, -1};
 
   QJsonValue value = m_currentThemeObject.value(QString(p_scene));
   QJsonObject item = value.toObject();
@@ -256,10 +252,10 @@ pos_size_type DRTheme::get_element_dimensions(QString p_identifier, QString p_sc
     return return_value;
   }
 
-  return_value.x = element_position["position"].toObject()["x"].toInt();
-  return_value.y = element_position["position"].toObject()["y"].toInt();
-  return_value.width = element_position["position"].toObject()["width"].toInt();
-  return_value.height = element_position["position"].toObject()["height"].toInt();
+  return_value.x =  ((float)element_position["position"].toObject()["x"].toInt() * ThemeManager::get().getResize());
+  return_value.y = ((float)element_position["position"].toObject()["y"].toInt() * ThemeManager::get().getResize());
+  return_value.width = ((float)element_position["position"].toObject()["width"].toInt() * ThemeManager::get().getResize());
+  return_value.height = ((float)element_position["position"].toObject()["height"].toInt() * ThemeManager::get().getResize());
 
   return return_value;
 }
@@ -374,7 +370,7 @@ int DRTheme::get_widget_font_int(QString p_identifier, QString p_scene, QString 
     return 1;
   }
 
-  int l_font_int = element_font["font"].toObject()[p_param].toInt();
+  int l_font_int = (float)element_font["font"].toObject()[p_param].toInt() * ThemeManager::get().getResize();
 
   return l_font_int;
 
@@ -658,6 +654,7 @@ int DRTheme::get_free_block_count()
   }
   return free_block_count;
 }
+
 
 QStringList DRTheme::get_tab_names()
 {

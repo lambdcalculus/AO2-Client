@@ -2,30 +2,34 @@
 #include "aoapplication.h"
 #include "commondefs.h"
 #include "file_functions.h"
+#include "modules/theme/thememanager.h"
 #include "theme.h"
 
 DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y)
     : QWidget(p_parent)
 {
+
+  int resize_height = (int)((float)50 * ThemeManager::get().getResize());
+
     ao_app = p_ao_app;
     m_entrywidth = p_parent->size().width();
-    this->resize(m_entrywidth, 50);
+    this->resize(m_entrywidth, resize_height);
 
     this->move(p_x, p_y);
 
     ui_showname = new AOLabel(this, ao_app);
-    ui_showname->move(50, 7);
-    ui_showname->resize(m_entrywidth-50, 16);
+    ui_showname->move(resize_height, 7);
+    ui_showname->resize(m_entrywidth-resize_height, 16);
     set_stylesheet(ui_showname, "[PLAYER NAME]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
     ui_user_image = new AOImageDisplay(this, ao_app);
     ui_user_image->move(5, 5);
-    ui_user_image->resize(40, 40);
+    ui_user_image->resize((int)((float)40 * ThemeManager::get().getResize()), (int)((float)40 * ThemeManager::get().getResize()));
 
 
     pCharacterBorderDisplay = new AOImageDisplay(this, ao_app);
     pCharacterBorderDisplay->move(0, 0);
-    pCharacterBorderDisplay->resize(50, 50);
+    pCharacterBorderDisplay->resize(resize_height, resize_height);
 
     const QString l_selected_texture = ao_app->find_theme_asset_path("char_border.png");
 
@@ -39,7 +43,7 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
     //Prompt (For Blackouts / Look)
     m_prompt = new AOLabel(this, ao_app);
     m_prompt->move(5, 5);
-    m_prompt->resize(m_entrywidth, 50);
+    m_prompt->resize(m_entrywidth, resize_height);
     m_prompt->setWordWrap(true);
     set_stylesheet(m_prompt, "[PLAYER LIST PROMPT]", COURTROOM_STYLESHEETS_CSS, ao_app);
 

@@ -7,6 +7,7 @@
 class AOApplication;
 class AOConfig;
 
+#include <QDoubleSpinBox>
 #include <QMap>
 #include <QWidget>
 
@@ -201,6 +202,10 @@ private:
   //Updates
   QCheckBox *ui_beta_updates = nullptr;
   QPushButton *ui_check_updates = nullptr;
+
+  //Theme
+  QDoubleSpinBox *ui_theme_resize = nullptr;
+
 
 private slots:
   void username_editing_finished();

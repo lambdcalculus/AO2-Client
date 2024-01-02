@@ -81,6 +81,9 @@ HEADERS += \
   src/mk2/spritereadersynchronizer.h \
   src/mk2/spriteseekingreader.h \
   src/mk2/spriteviewer.h \
+  src/modules/json/json_reader.h \
+  src/modules/json/theme_reader.h \
+  src/modules/theme/thememanager.h \
   src/theme.h \
   src/utils.h \
   src/version.h
@@ -159,6 +162,9 @@ SOURCES += \
   src/mk2/spritedynamicreader.cpp \
   src/mk2/spriteplayer.cpp \
   src/mk2/spriteseekingreader.cpp \
+  src/modules/json/json_reader.cpp \
+  src/modules/json/theme_reader.cpp \
+  src/modules/theme/thememanager.cpp \
   src/path_functions.cpp \
   src/server_socket.cpp \
   src/mk2/spritereader.cpp \

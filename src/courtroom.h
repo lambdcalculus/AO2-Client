@@ -680,6 +680,9 @@ public slots:
 
   void mod_called(QString p_ip);
 
+  void on_emote_left_clicked();
+  void on_emote_right_clicked();
+
 private slots:
   void setup_chat();
   void play_sfx();
@@ -729,8 +732,6 @@ private slots:
   void hide_emote_tooltip(int id);
   void on_emote_preview_toggled(bool);
 
-  void on_emote_left_clicked();
-  void on_emote_right_clicked();
 
   void on_emote_dropdown_changed(int p_index);
   void on_iniswap_dropdown_changed(int p_index);

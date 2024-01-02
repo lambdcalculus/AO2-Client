@@ -1,6 +1,6 @@
 #include "courtroom.h"
 #include "drplayerlistentry.h"
-
+#include "modules/theme/thememanager.h"
 #include "aoapplication.h"
 #include "aoblipplayer.h"
 #include "aobutton.h"
@@ -2965,11 +2965,12 @@ void Courtroom::construct_playerlist_layout()
 
   set_size_and_pos(ui_player_list, "player_list", COURTROOM_DESIGN_INI, ao_app);
 
-  int player_height = 50;
-  int y_spacing = f_spacing.y();
+  float resize = ThemeManager::get().getResize();
+  int player_height = (int)((float)50 * resize);
+  int y_spacing = (int)((float)f_spacing.y() * resize);
   int max_pages = ceil((m_player_data_list.count() - 1) / m_page_max_player_count);
 
-  player_columns = ((ui_player_list->height() - player_height) / (y_spacing + player_height)) + 1;
+  player_columns = (( (int)((float)ui_player_list->height() * resize) - player_height) / (y_spacing + player_height)) + 1;
 
 
   if(m_current_reportcard_reason != ReportCardReason::None)
@@ -3028,7 +3029,7 @@ void Courtroom::construct_playerlist_layout()
 
   for (int n = starting_index; n < m_player_data_list.count(); ++n)
   {
-    int y_pos = (50 + y_spacing) * (n - starting_index);
+    int y_pos = ((int)((float)50 * resize) + y_spacing) * (n - starting_index);
     DrPlayerListEntry* ui_playername = new DrPlayerListEntry(ui_player_list, ao_app, 1, y_pos);
 
     ui_playername->set_character(m_player_data_list.at(n).m_character);

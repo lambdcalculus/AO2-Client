@@ -10,7 +10,7 @@
 #include "drgraphicscene.h"
 #include "theme.h"
 #include "drtheme.h"
-
+#include "modules/theme/thememanager.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
@@ -64,11 +64,12 @@ void Courtroom::construct_emote_page_layout()
 
   QPoint f_spacing = ao_app->current_theme->get_widget_settings_spacing("emotes", "courtroom", "emote_button_spacing");
 
-  const int button_width = 40;
+  int buttonResize = (int)((float)40 * ThemeManager::get().getResize());
+  const int button_width = buttonResize;
   int x_spacing = f_spacing.x();
   int x_mod_count = 0;
 
-  const int button_height = 40;
+  const int button_height = buttonResize;
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
 
