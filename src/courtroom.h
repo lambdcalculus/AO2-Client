@@ -5,6 +5,7 @@
 #include "drgraphicscene.h"
 #include "drposition.h"
 #include "drthememovie.h"
+#include "modules/managers/scene_manager.h"
 #include "mk2/graphicsvideoscreen.h"
 #include "mk2/spriteplayer.h"
 #include "mk2/spritereadersynchronizer.h"

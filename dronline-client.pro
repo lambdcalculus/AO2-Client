@@ -83,6 +83,7 @@ HEADERS += \
   src/mk2/spriteviewer.h \
   src/modules/json/json_reader.h \
   src/modules/json/theme_reader.h \
+  src/modules/managers/scene_manager.h \
   src/modules/theme/thememanager.h \
   src/theme.h \
   src/utils.h \
@@ -164,6 +165,7 @@ SOURCES += \
   src/mk2/spriteseekingreader.cpp \
   src/modules/json/json_reader.cpp \
   src/modules/json/theme_reader.cpp \
+  src/modules/managers/scene_manager.cpp \
   src/modules/theme/thememanager.cpp \
   src/path_functions.cpp \
   src/server_socket.cpp \

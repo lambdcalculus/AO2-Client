@@ -2726,7 +2726,8 @@ void Courtroom::switch_toggle(ToggleState state)
         {
             if(widget_names.contains(widget_toggle))
             {
-                widget_names[widget_toggle]->show();
+              widget_names[widget_toggle]->show();
+              if(widget_toggle == "viewport") widget_names["viewport_transition"]->show();
             }
 
         }

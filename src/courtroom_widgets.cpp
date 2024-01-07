@@ -70,6 +70,7 @@ void Courtroom::create_widgets()
 
   ui_viewport = new DRGraphicsView(this);
 
+  SceneManager::get().CreateTransition(this, ao_app);
 
   { // populate scene
     auto *l_scene = ui_viewport->scene();
@@ -623,6 +624,7 @@ void Courtroom::reset_widget_names()
       {"player_list_right", ui_player_list_right},
       {"area_look", ui_area_look},
       {"area_desc", ui_area_desc},
+      {"viewport_transition", SceneManager::get().GetTransition()},
   };
 }
 
@@ -847,6 +849,7 @@ void Courtroom::set_widgets()
   ui_background->set_theme_image(ao_app->current_theme->get_widget_image("courtroom", "courtroombackground.png", "courtroom"));
 
   set_size_and_pos(ui_viewport, "viewport", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(SceneManager::get().GetTransition(), "viewport", COURTROOM_DESIGN_INI, ao_app);
 
   set_size_and_pos(ui_vp_notepad_image, "notepad_image", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_notepad_image->set_theme_image(ao_app->current_theme->get_widget_image("notepad_image", "notepad_image.png", "courtroom"));
