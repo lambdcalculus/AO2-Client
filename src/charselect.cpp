@@ -27,13 +27,12 @@ void Courtroom::construct_char_select()
   ui_char_button_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_char_button_selector->resize(62, 62);
 
-  ui_back_to_lobby = new AOButton(ui_char_select_background, ao_app);
+  ui_back_to_lobby = setupButtonWidget("back_to_lobby", "lobby_return_image.png", "Back to Lobby", ui_char_select_background);
 
-  ui_chr_select_left = new AOButton(ui_char_select_background, ao_app);
-  ui_chr_select_right = new AOButton(ui_char_select_background, ao_app);
+  ui_chr_select_left = setupButtonWidget("char_select_left", "arrow_left.png", "", ui_char_select_background);
+  ui_chr_select_right = setupButtonWidget("char_select_right", "arrow_right.png", "", ui_char_select_background);
 
-  ui_spectator = new AOButton(ui_char_select_background, ao_app);
-  ui_spectator->setText("Spectator");
+  ui_spectator = setupButtonWidget("spectator", "spectator_image.png", "Spectator", ui_char_select_background);
 
   connect(char_button_mapper, SIGNAL(mapped(int)), this, SLOT(char_clicked(int)));
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));

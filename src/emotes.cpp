@@ -23,8 +23,8 @@ void Courtroom::construct_emotes()
 {
   ui_emotes = new QWidget(this);
 
-  ui_emote_left = new AOButton(this, ao_app);
-  ui_emote_right = new AOButton(this, ao_app);
+  ui_emote_left = setupButtonWidget("emote_left", "arrow_left.png", "");
+  ui_emote_right = setupButtonWidget("emote_right", "arrow_right.png", "");
 
   ui_emote_preview = new DRGraphicsView(nullptr);
   ui_emote_preview->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint | Qt::BypassGraphicsProxyWidget);

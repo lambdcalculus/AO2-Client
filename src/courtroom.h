@@ -112,6 +112,10 @@ public:
 
   // sets position of widgets based on theme ini files
   void set_widgets();
+  void setupWidgetElement(QWidget *widget, QString name, bool visible = true);
+  void setupWidgetElement(AOImageDisplay *widget, QString name, QString image, bool visible = true);
+  void setupWidgetElement(DRTextEdit *widget, QString name, QString defaultText, Qt::TextInteractionFlag flag = Qt::TextEditable, bool visible = true);
+
   // helper function that calls above function on the relevant widgets
   void set_fonts();
 
@@ -613,6 +617,16 @@ private:
   AOButton *ui_spectator = nullptr;
 
   QHash<QString, QWidget *> widget_names;
+
+  QHash<QString, QString> mDefaultWidgetCSS
+  {
+      {"message", "background-color: rgba(0, 0, 0, 0); color: white"},
+      {"ooc_chat_name", "background-color: rgba(100, 100, 100, 255);"},
+      {"ooc_chat_message", "background-color: rgba(100, 100, 100, 255);"},
+      {"ic_chat_name", "background-color: rgba(100, 100, 100, 255);"}
+  };
+
+
   QHash<QString, QString> widget_toggles;
 
 
@@ -631,6 +645,12 @@ private:
   int m_page_player_list = 0;
 
   void create_widgets();
+
+  QComboBox* setupComboBoxWidget(const QStringList& items, QString name, QString cssHeader);
+  AOButton* setupButtonWidget(const QString name, QString image, QString fallback, QWidget* parent = nullptr);
+  QLineEdit* setupLineEditWidget(const QString name, QString image, QString legacy_css, QString text, QWidget* parent = nullptr);
+
+
   void connect_widgets();
   void set_widget_names();
   void reset_widget_names();
