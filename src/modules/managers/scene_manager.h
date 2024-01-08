@@ -19,12 +19,12 @@ public:
 
   void RenderTransition();
   void AnimateTransition();
+  void setFadeDuration(int duration);
 private:
   SceneManager() {}
   static SceneManager s_Instance;
 
-
-
+  int mFadeDuration = 200;
   AOLabel *pUiTransition = nullptr;
   DRGraphicsView *pViewport = nullptr;
 

@@ -5,6 +5,7 @@
 #include "draudioengine.h"
 #include "drpather.h"
 #include "mk2/spritedynamicreader.h"
+#include "modules/managers/scene_manager.h"
 
 // qt
 #include <QApplication>
@@ -109,6 +110,7 @@ private:
   int blip_rate;
   int punctuation_delay;
   double theme_resize;
+  int fade_duration;
   bool blank_blips;
 
   // audio sync
@@ -224,6 +226,8 @@ void AOConfigPrivate::load_file()
   punctuation_delay = cfg.value("punctuation_delay", 110).toInt();
   theme_resize = cfg.value("theme_resize", 1).toDouble();
   ThemeManager::get().setResize(theme_resize);
+  fade_duration = cfg.value("fade_duration", 200).toInt();
+  SceneManager::get().setFadeDuration(fade_duration);
   blank_blips = cfg.value("blank_blips").toBool();
 
   // audio update
@@ -333,6 +337,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("blip_rate", blip_rate);
   cfg.setValue("punctuation_delay", punctuation_delay);
   cfg.setValue("theme_resize", theme_resize);
+  cfg.setValue("fade_duration", fade_duration);
   cfg.setValue("blank_blips", blank_blips);
 
   cfg.remove("character_ini");
@@ -723,6 +728,11 @@ bool AOConfig::blank_blips_enabled() const
 double AOConfig::theme_resize() const
 {
   return d->theme_resize;
+}
+
+int AOConfig::fade_duration() const
+{
+  return d->fade_duration;
 }
 
 void AOConfig::load_file()
@@ -1202,6 +1212,15 @@ void AOConfig::setThemeResize(double resize)
   d->theme_resize = resize;
   ThemeManager::get().setResize(resize);
   d->invoke_signal("theme_resize_changed", Q_ARG(double, resize));
+}
+
+void AOConfig::setFadeDuration(int duration)
+{
+  if (d->fade_duration == duration)
+    return;
+  d->fade_duration = duration;
+  SceneManager::get().setFadeDuration(duration);
+  d->invoke_signal("fade_duration_changed", Q_ARG(int, duration));
 }
 
 // moc

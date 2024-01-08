@@ -990,7 +990,7 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
       handle_acknowledged_ms();
     }
   }
-
+  SceneManager::get().RenderTransition();
   preload_chatmessage(p_chatmessage);
 }
 
@@ -1363,6 +1363,8 @@ void Courtroom::handle_chatmessage_3()
     anim_state = 3;
     break;
   }
+
+  SceneManager::get().AnimateTransition();
 
   {
     bool l_effect_index_result;

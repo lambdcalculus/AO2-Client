@@ -70,7 +70,7 @@ void Courtroom::create_widgets()
 
   ui_viewport = new DRGraphicsView(this);
 
-  SceneManager::get().CreateTransition(this, ao_app);
+  SceneManager::get().CreateTransition(this, ao_app, ui_viewport);
 
   { // populate scene
     auto *l_scene = ui_viewport->scene();
@@ -724,6 +724,12 @@ void Courtroom::set_widget_layers()
       if (l_visible) l_widget->setVisible(l_visible);
       l_widget->raise();
 
+      if(l_child_name == "viewport")
+      {
+        QWidget *transitionWidget = widget_names.value("viewport_transition");
+        transitionWidget->setVisible(true);
+        transitionWidget->raise();
+      }
 
     }
   }
@@ -794,6 +800,7 @@ void Courtroom::set_widget_layers_legacy()
           qWarning() << "widget does not exist:" << l_line;
           continue;
         }
+
         QWidget *l_widget = widget_names.value(l_line);
         QWidget *l_parent = widget_names.value(l_parent_name, this);
 
@@ -806,6 +813,14 @@ void Courtroom::set_widget_layers_legacy()
           l_widget->setVisible(l_visible);
         }
         l_widget->raise();
+
+        if(l_line == "viewport")
+        {
+          QWidget *transitionWidget = widget_names.value("viewport_transition");
+          transitionWidget->setVisible(true);
+          transitionWidget->raise();
+        }
+
       }
     }
   }

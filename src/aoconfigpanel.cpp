@@ -138,6 +138,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_punctuation_delay = AO_GUI_WIDGET(QSpinBox, "punctuation_delay");
   ui_reload_audiotracks = AO_GUI_WIDGET(QPushButton, "reload_audiotracks");
   ui_theme_resize = AO_GUI_WIDGET(QDoubleSpinBox, "themeResizeSpinbox");
+  ui_fade_duration = AO_GUI_WIDGET(QSpinBox, "FadeDurationBox");
 
   // about
   ui_about = AO_GUI_WIDGET(QLabel, "about_label");
@@ -217,6 +218,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(m_config, SIGNAL(blank_blips_changed(bool)), ui_blank_blips, SLOT(setChecked(bool)));
 
   connect(m_config, &AOConfig::theme_resize_changed, ui_theme_resize, &QDoubleSpinBox::setValue);
+  connect(m_config, &AOConfig::fade_duration_changed, ui_fade_duration, &QSpinBox::setValue);
 
   connect(m_engine, SIGNAL(current_device_changed(DRAudioDevice)), this, SLOT(on_audio_device_changed(DRAudioDevice)));
   connect(m_engine, SIGNAL(device_list_changed(QVector<DRAudioDevice>)), this, SLOT(on_audio_device_list_changed(QVector<DRAudioDevice>)));
@@ -297,6 +299,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_blank_blips, SIGNAL(toggled(bool)), m_config, SLOT(set_blank_blips(bool)));
 
   connect(ui_theme_resize, SIGNAL(valueChanged(double)), m_config, SLOT(setThemeResize(double)));
+  connect(ui_fade_duration, SIGNAL(valueChanged(int)), m_config, SLOT(setFadeDuration(int)));
 
   // set values
   // meta
@@ -389,6 +392,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_blank_blips->setChecked(m_config->blank_blips_enabled());
 
   ui_theme_resize->setValue(m_config->theme_resize());
+  ui_fade_duration->setValue(m_config->fade_duration());
 
   on_manual_gamemode_selection_changed(m_config->is_manual_gamemode_selection_enabled());
   on_manual_timeofday_selection_changed(m_config->is_manual_timeofday_selection_enabled());

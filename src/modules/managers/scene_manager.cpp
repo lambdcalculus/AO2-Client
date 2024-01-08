@@ -35,10 +35,15 @@ void SceneManager::AnimateTransition()
   QGraphicsOpacityEffect *eff = new QGraphicsOpacityEffect();
   pUiTransition->setGraphicsEffect(eff);
   QPropertyAnimation *a = new QPropertyAnimation(eff, "opacity");
-  a->setDuration(450);
+  a->setDuration(mFadeDuration);
   a->setStartValue(1);
   a->setEndValue(0);
   a->setEasingCurve(QEasingCurve::OutBack);
   a->start(QPropertyAnimation::DeleteWhenStopped);
+}
+
+void SceneManager::setFadeDuration(int duration)
+{
+  mFadeDuration = duration;
 }
 

@@ -82,6 +82,7 @@ public:
   bool blank_blips_enabled() const;
 
   double theme_resize() const;
+  int fade_duration() const;
 
   // io
 public slots:
@@ -150,6 +151,7 @@ public slots:
   void set_punctuation_delay(int p_number);
   void set_blank_blips(bool p_enabled);
   void setThemeResize(double resize);
+  void setFadeDuration(int duration);
 
   // signals
 signals:
@@ -220,7 +222,10 @@ signals:
   void blip_rate_changed(int);
   void punctuation_delay_changed(int);
   void blank_blips_changed(bool);
+
+  //Theme
   void theme_resize_changed(double);
+  void fade_duration_changed(int);
 };
 
 #endif // AOCONFIG_H
