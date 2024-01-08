@@ -43,6 +43,11 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
+#include <modules/theme/thememanager.h>
+
+#include <modules/theme/widgets/dro_combo_box.h>
+#include <modules/theme/widgets/dro_line_edit.h>
+
 void Courtroom::create_widgets()
 {
   m_keepalive_timer = new QTimer(this);
@@ -322,12 +327,10 @@ void Courtroom::create_widgets()
 
 QComboBox *Courtroom::setupComboBoxWidget(const QStringList& items, QString name, QString cssHeader)
 {
-  QComboBox *comboBox = new QComboBox(this);
+  DROComboBox *comboBox = new DROComboBox(this, ao_app);
   comboBox->addItems(items);
-
-  set_size_and_pos(comboBox, name, COURTROOM_DESIGN_INI, ao_app);
-  set_stylesheet(comboBox, cssHeader, COURTROOM_STYLESHEETS_CSS, ao_app);
-
+  comboBox->setWidgetInfo(name, cssHeader, "courtroom");
+  ThemeManager::get().addComboBox(name, comboBox);
   return comboBox;
 }
 
@@ -337,35 +340,28 @@ AOButton *Courtroom::setupButtonWidget(const QString name, QString image, QStrin
   if(parent == nullptr) button = new AOButton(this, ao_app);
   else button = new AOButton(parent, ao_app);
 
-  set_size_and_pos(button, name, COURTROOM_DESIGN_INI, ao_app);
+  button->set_theme_image(name, image, "courtroom", fallback);
 
-  button->set_image(ao_app->current_theme->get_widget_image(name, image, "courtroom"));
-  if (button->get_image().isEmpty())
-    button->setText(fallback);
-
+  ThemeManager::get().addButton(name, button);
   return button;
 
 }
 
 QLineEdit *Courtroom::setupLineEditWidget(const QString name, QString placeholder, QString legacy_css, QString text,  QWidget *parent)
 {
-  QLineEdit *lineEdit;
+  DROLineEdit *lineEdit;
 
-  if(parent == nullptr) lineEdit = new QLineEdit(this);
-  else lineEdit = new QLineEdit(parent);
+  if(parent == nullptr) lineEdit = new DROLineEdit(this, ao_app);
+  else lineEdit = new DROLineEdit(parent, ao_app);
 
-  set_size_and_pos(lineEdit, name, COURTROOM_DESIGN_INI, ao_app);
-  set_text_alignment(lineEdit, name, COURTROOM_FONTS_INI, ao_app);
-  if (!set_stylesheet(lineEdit, "[" + name + "]", COURTROOM_STYLESHEETS_CSS, ao_app))
-  {
-    if (!set_stylesheet(lineEdit, legacy_css, COURTROOM_STYLESHEETS_CSS, ao_app))
-    {
-      if(mDefaultWidgetCSS.contains(name)) lineEdit->setStyleSheet(mDefaultWidgetCSS[name]);
-    }
-  }
+  lineEdit->set_theme_settings(name, legacy_css, "courtroom");
+
+  if(mDefaultWidgetCSS.contains(name)) lineEdit->setDefaultCSS(mDefaultWidgetCSS[name]);
 
   lineEdit->setPlaceholderText(placeholder);
   lineEdit->setText(text);
+
+  ThemeManager::get().addLineEdit(name, lineEdit);
 
   return lineEdit;
 }
@@ -897,6 +893,10 @@ void Courtroom::set_widgets()
   ui_background->move(0, 0);
   ui_background->resize(m_default_size);
   ui_background->set_theme_image(ao_app->current_theme->get_widget_image("courtroom", "courtroombackground.png", "courtroom"));
+
+  ThemeManager::get().refreshButtons();
+  ThemeManager::get().refreshLineEdit();
+  ThemeManager::get().refreshComboBox();
 
   setupWidgetElement(ui_viewport, "viewport");
   setupWidgetElement(SceneManager::get().GetTransition(), "viewport");

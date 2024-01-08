@@ -1,8 +1,11 @@
 #include "aobutton.h"
 
 #include "aoapplication.h"
+#include "commondefs.h"
 #include "debug_functions.h"
 #include "file_functions.h"
+#include "drtheme.h"
+#include "theme.h"
 
 #include <QDebug>
 
@@ -42,6 +45,24 @@ void AOButton::set_image(QString p_image)
   setText(m_image.isEmpty() ? m_text : nullptr);
 }
 
+void AOButton::set_theme_image(QString widgetName, QString p_image, QString scene, QString fallbackText)
+{
+  fallback_image = p_image;
+  widget_name = widgetName;
+  scene_type = scene;
+  set_image(ao_app->current_theme->get_widget_image(widgetName, p_image, scene));
+  if (get_image().isEmpty()) setText(fallbackText);
+  else setText("");
+  fallback_text = fallbackText;
+}
+
+void AOButton::set_theme_image()
+{
+  set_image(ao_app->current_theme->get_widget_image(widget_name, fallback_image, scene_type));
+  if (get_image().isEmpty()) setText(fallback_text);
+  else setText("");
+}
+
 void AOButton::set_image_and_text(QString p_image, QString p_text)
 {
   m_text = p_text;
@@ -51,4 +72,9 @@ void AOButton::set_image_and_text(QString p_image, QString p_text)
 void AOButton::refresh_image()
 {
   set_image(m_image_stem);
+}
+
+void AOButton::refresh_position()
+{
+  set_size_and_pos(this, widget_name, COURTROOM_DESIGN_INI, ao_app);
 }
