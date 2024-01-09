@@ -38,7 +38,7 @@ void Courtroom::load_sfx_list_theme()
 {
 
   m_sfx_color_found = ao_app->current_theme->get_widget_settings_color("sfx_list", "courtroom", "found_sfx", "found_song_color");
-  m_sfx_color_missing = ao_app->current_theme->get_widget_settings_color("sfx_list", "courtroom", "missing_sfx", "found_song_color");
+  m_sfx_color_missing = ao_app->current_theme->get_widget_settings_color("sfx_list", "courtroom", "missing_sfx", "missing_song_color");
   update_all_sfx_item_color();
 }
 
