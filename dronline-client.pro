@@ -85,8 +85,10 @@ HEADERS += \
   src/modules/json/theme_reader.h \
   src/modules/managers/scene_manager.h \
   src/modules/theme/thememanager.h \
+  src/modules/theme/widgets/characterselectwidget.h \
   src/modules/theme/widgets/dro_combo_box.h \
   src/modules/theme/widgets/dro_line_edit.h \
+  src/modules/theme/widgets/droemotebuttons.h \
   src/theme.h \
   src/utils.h \
   src/version.h
@@ -169,8 +171,10 @@ SOURCES += \
   src/modules/json/theme_reader.cpp \
   src/modules/managers/scene_manager.cpp \
   src/modules/theme/thememanager.cpp \
+  src/modules/theme/widgets/characterselectwidget.cpp \
   src/modules/theme/widgets/dro_combo_box.cpp \
   src/modules/theme/widgets/dro_line_edit.cpp \
+  src/modules/theme/widgets/droemotebuttons.cpp \
   src/path_functions.cpp \
   src/server_socket.cpp \
   src/mk2/spritereader.cpp \

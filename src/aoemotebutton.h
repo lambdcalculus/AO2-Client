@@ -33,8 +33,6 @@ signals:
 protected:
   bool event(QEvent *event) override;
 
-  void wheelEvent(QWheelEvent *event) override;
-
 
 private:
   AOApplication *ao_app = nullptr;

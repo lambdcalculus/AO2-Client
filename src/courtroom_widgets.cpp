@@ -449,6 +449,9 @@ void Courtroom::connect_widgets()
   connect(ui_sfx_search, SIGNAL(textChanged(QString)), this, SLOT(filter_sfx_list(QString)));
 
   connect(ui_change_character, SIGNAL(clicked()), this, SLOT(on_change_character_clicked()));
+  connect(pCharaSelectSearch, SIGNAL(textChanged(QString)), this, SLOT(CharacterSearchUpdated()));
+
+
   connect(ui_call_mod, SIGNAL(clicked()), this, SLOT(on_call_mod_clicked()));
 
 
@@ -648,6 +651,7 @@ void Courtroom::reset_widget_names()
       {"char_buttons", ui_char_buttons},
       {"char_select_left", ui_chr_select_left},
       {"char_select_right", ui_chr_select_right},
+      {"character_search", pCharaSelectSearch},
       {"spectator", ui_spectator},
       {"player_list", ui_player_list},
       {"player_list_left", ui_player_list_left},

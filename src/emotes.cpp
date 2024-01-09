@@ -16,12 +16,13 @@
 #include <QLineEdit>
 #include <QScreen>
 #include <QtMath>
+#include <modules/theme/widgets/droemotebuttons.h>
 
 
 
 void Courtroom::construct_emotes()
 {
-  ui_emotes = new QWidget(this);
+  ui_emotes = new DROEmoteButtons(this, ao_app);
 
   ui_emote_left = setupButtonWidget("emote_left", "arrow_left.png", "");
   ui_emote_right = setupButtonWidget("emote_right", "arrow_right.png", "");

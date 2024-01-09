@@ -117,19 +117,3 @@ bool AOEmoteButton::event(QEvent *event)
   return QPushButton::event(event);
 }
 
-void AOEmoteButton::wheelEvent(QWheelEvent *event)
-{
-    int delta = event->angleDelta().y();
-
-    if (delta > 0)
-    {
-      ao_app->get_courtroom()->on_emote_left_clicked();
-    }
-    else if (delta < 0)
-    {
-      ao_app->get_courtroom()->on_emote_right_clicked();
-    }
-
-    QPushButton::wheelEvent(event);
-
-}

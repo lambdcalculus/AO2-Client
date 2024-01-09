@@ -17,11 +17,13 @@
 #include <QSignalMapper>
 #include <QtMath>
 
+#include <modules/theme/widgets/characterselectwidget.h>
+
 void Courtroom::construct_char_select()
 {
   ui_char_select_background = new AOImageDisplay(this, ao_app);
 
-  ui_char_buttons = new QWidget(ui_char_select_background);
+  ui_char_buttons = new CharacterSelectWidget(ui_char_select_background, ao_app);
 
   ui_char_button_selector = new AOImageDisplay(ui_char_buttons, ao_app);
   ui_char_button_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -33,6 +35,8 @@ void Courtroom::construct_char_select()
   ui_chr_select_right = setupButtonWidget("char_select_right", "arrow_right.png", "", ui_char_select_background);
 
   ui_spectator = setupButtonWidget("spectator", "spectator_image.png", "Spectator", ui_char_select_background);
+
+  pCharaSelectSearch = setupLineEditWidget("character_search", "Search for a Character", "[CHARA SEARCH]", "", ui_char_select_background);
 
   connect(char_button_mapper, SIGNAL(mapped(int)), this, SLOT(char_clicked(int)));
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
@@ -119,10 +123,19 @@ void Courtroom::set_char_select_page()
   ui_chr_select_left->hide();
   ui_chr_select_right->hide();
 
+
+  QVector<char_type> filteredList = {};
+
+
   for (AOCharButton *button : qAsConst(ui_char_button_list))
     button->hide();
 
-  const int l_item_count = m_chr_list.length();
+  for (char_type charaType : m_chr_list)
+  {
+    if(charaType.name.toLower().contains(pCharaSelectSearch->text().toLower())) filteredList.append(charaType);
+
+  }
+  const int l_item_count = filteredList.length();
   const int l_page_count = qFloor(l_item_count / m_page_max_chr_count) + bool(l_item_count % m_page_max_chr_count);
   m_current_chr_page = qBound(0, m_current_chr_page, l_page_count - 1);
   const int l_current_page_emote_count =
@@ -134,15 +147,29 @@ void Courtroom::set_char_select_page()
   if (m_current_chr_page > 0)
     ui_chr_select_left->show();
 
+  int yOffset = 0;
+  int xOffset = 0;
+
+
   // show all buttons for this page
   for (int i = 0; i < l_current_page_emote_count; ++i)
   {
-    int l_real_i = i + m_current_chr_page * m_page_max_chr_count;
-    AOCharButton *l_button = ui_char_button_list.at(i);
-    const QString l_base_chr = m_chr_list.at(l_real_i).name;
+
+  int l_real_i = i + m_current_chr_page * m_page_max_chr_count;
+  AOCharButton *l_button = ui_char_button_list.at(i);
+    const QString l_base_chr = filteredList.at(l_real_i).name;
     l_button->set_character(l_base_chr, ao_config->character_ini(l_base_chr));
-    l_button->set_taken((m_chr_list.at(l_real_i).taken));
+    l_button->set_taken((filteredList.at(l_real_i).taken));
     l_button->show();
+    l_button->move(xOffset, yOffset);
+    xOffset += 68;
+
+    if(xOffset + 40 >= ui_char_buttons->width())
+    {
+      xOffset = 0;
+      yOffset += 68;
+    }
+
   }
 }
 

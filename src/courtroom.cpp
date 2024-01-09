@@ -1426,6 +1426,12 @@ void Courtroom::on_chat_config_changed()
   update_ic_log(true);
 }
 
+void Courtroom::CharacterSearchUpdated()
+{
+  m_current_chr_page = 0;
+  set_char_select_page();
+}
+
 void Courtroom::load_ic_text_format()
 {
   ui_ic_chatlog->ensurePolished();

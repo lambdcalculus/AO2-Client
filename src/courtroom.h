@@ -61,6 +61,8 @@ class QLabel;
 
 #include <mk2/drplayer.h>
 
+#include <modules/theme/widgets/dro_line_edit.h>
+
 class Courtroom : public QWidget
 {
   Q_OBJECT
@@ -608,6 +610,8 @@ private:
   AOImageDisplay *ui_char_button_selector = nullptr;
   QVector<AOCharButton *> ui_char_button_list;
 
+  QLineEdit *pCharaSelectSearch = nullptr;
+
   AOButton *ui_back_to_lobby = nullptr;
   bool m_back_to_lobby_clicked = false;
 
@@ -703,6 +707,8 @@ public slots:
 
   void on_emote_left_clicked();
   void on_emote_right_clicked();
+  void on_char_select_left_clicked();
+  void on_char_select_right_clicked();
 
 private slots:
   void setup_chat();
@@ -724,6 +730,8 @@ private slots:
   void on_ic_message_return_pressed();
   void handle_ic_message_length();
   void on_chat_config_changed();
+
+  void CharacterSearchUpdated();
 
   void on_ic_chatlog_scroll_changed();
   void on_ic_chatlog_scroll_topdown_clicked();
@@ -827,8 +835,6 @@ private slots:
 
   void on_back_to_lobby_clicked();
 
-  void on_char_select_left_clicked();
-  void on_char_select_right_clicked();
   void update_character_icon(QString character);
   void char_clicked(int n_char);
   void char_mouse_entered(AOCharButton *p_caller);
