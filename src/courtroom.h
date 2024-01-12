@@ -96,7 +96,9 @@ public:
   {
     None = 0,
     Blackout,
-    PendingLook
+    PendingLook,
+    Blinded,
+    NoPlayerList
   };
 
   Q_ENUM(GameState)
@@ -275,7 +277,6 @@ public:
 
   template <typename T>
   int adapt_numbered_items(QVector<T *> &item_vector, QString config_item_number, QString item_name);
-  QVector<DrPlayer> m_player_data_list;
   ReportCardReason m_current_reportcard_reason = ReportCardReason::None;
   QString m_area_description = "";
 

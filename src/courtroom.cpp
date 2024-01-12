@@ -2977,7 +2977,7 @@ void Courtroom::construct_playerlist_layout()
   float resize = ThemeManager::get().getResize();
   int player_height = (int)((float)50 * resize);
   int y_spacing = (int)((float)f_spacing.y() * resize);
-  int max_pages = ceil((m_player_data_list.count() - 1) / m_page_max_player_count);
+  int max_pages = ceil((SceneManager::get().mPlayerDataList.count() - 1) / m_page_max_player_count);
 
   player_columns = (( (int)((float)ui_player_list->height() * resize) - player_height) / (y_spacing + player_height)) + 1;
 
@@ -2995,14 +2995,23 @@ void Courtroom::construct_playerlist_layout()
     switch(m_current_reportcard_reason)
     {
       case ReportCardReason::Blackout:
-        prompt_reason->set_reason("You can't see anyone as the lights are currently off..");
+        prompt_reason->set_reason("You can't see anyone as the lights are currently off.");
+        break;
+
+      case ReportCardReason::Blinded:
+        prompt_reason->set_reason("You can't see anyone as you are currently blinded.");
         break;
 
       case ReportCardReason::PendingLook:
         prompt_reason->set_reason("There appears to be people in the area.");
         break;
 
+      case ReportCardReason::NoPlayerList:
+        prompt_reason->set_reason("The Player List has been disabled by the GM.");
+        break;
+
       default:
+        prompt_reason->set_reason("Unimplemented ReportCardReason, please make sure you're up to date.");
         break;
     }
 
@@ -3036,13 +3045,16 @@ void Courtroom::construct_playerlist_layout()
 
   int starting_index = (m_page_player_list * m_page_max_player_count);
 
-  for (int n = starting_index; n < m_player_data_list.count(); ++n)
+  for (int n = starting_index; n < SceneManager::get().mPlayerDataList.count(); ++n)
   {
     int y_pos = ((int)((float)50 * resize) + y_spacing) * (n - starting_index);
     DrPlayerListEntry* ui_playername = new DrPlayerListEntry(ui_player_list, ao_app, 1, y_pos);
 
-    ui_playername->set_character(m_player_data_list.at(n).m_character);
-    ui_playername->set_name(m_player_data_list.at(n).m_showname);
+    ui_playername->set_character(SceneManager::get().mPlayerDataList.at(n).m_character);
+    ui_playername->set_name(SceneManager::get().mPlayerDataList.at(n).m_showname);
+    ui_playername->setURL(SceneManager::get().mPlayerDataList.at(n).mURL);
+    ui_playername->setID(SceneManager::get().mPlayerDataList.at(n).m_id);
+    ui_playername->setStatus(SceneManager::get().mPlayerDataList.at(n).mPlayerStatus);
 
     m_player_list.append(ui_playername);
     ui_playername->show();

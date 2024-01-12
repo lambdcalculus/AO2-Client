@@ -12,6 +12,7 @@
 #include "hardware_functions.h"
 #include "lobby.h"
 #include "version.h"
+#include "modules/networking/json_packet.h"
 
 void AOApplication::connect_to_server(DRServerInfo p_server)
 {
@@ -263,20 +264,9 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     m_lobby->set_loading_value(loading_value);
     send_server_packet(DRPacket("RD"));
   }
-  else if (l_header == "LP")
+  else if (l_header == "JSN")
   {
-    m_courtroom->m_player_data_list.clear();
-    int player_count = l_content.size() / 3;
-
-    for(int i = 0; i < player_count; i++)
-    {
-       DrPlayer* drp = new DrPlayer(l_content.at((i * 3) + 0).toInt(), l_content.at((i * 3)  + 1), l_content.at((i * 3) + 2));
-       m_courtroom->m_player_data_list.append(*drp);
-
-    }
-
-
-    m_courtroom->construct_playerlist_layout();
+    JsonPacket::ProcessJson(l_content.at(0));
   }
   else if (l_header == "LIST_REASON")
   {

@@ -25,6 +25,11 @@ void JSONReader::SetTargetObject(QJsonObject target)
   mTargetObject = target;
 }
 
+void JSONReader::SetTargetObject(QString string)
+{
+
+}
+
 QString JSONReader::getStringValue(QString string)
 {
   return mTargetObject.value(string).toString();

@@ -47,3 +47,8 @@ void SceneManager::setFadeDuration(int duration)
   mFadeDuration = duration;
 }
 
+void SceneManager::clearPlayerDataList()
+{
+  mPlayerDataList.clear();
+}
+

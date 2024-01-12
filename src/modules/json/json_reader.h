@@ -17,6 +17,7 @@ public:
   void ReadFromString(QString data);
 
   void SetTargetObject(QJsonObject target);
+  void SetTargetObject(QString string);
 
   QString getStringValue(QString string);
   QVector2D getVector2DValue(QString string);

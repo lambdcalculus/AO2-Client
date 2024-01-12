@@ -14,6 +14,9 @@ public:
     void set_character(QString p_character);
     void set_name(QString showname);
     void set_reason(QString p_reason);
+    void setURL(QString url);
+    void setID(int id);
+    void setStatus(QString status);
     AOImageDisplay *pCharacterBorderDisplay = nullptr;
     AOImageDisplay *ui_user_image = nullptr;
     AOLabel *ui_showname = nullptr;
@@ -22,6 +25,13 @@ public:
 
     int m_entrywidth = 0;
 
+    void setQUrl(const QUrl &newQUrl);
+
+  private slots:
+  void openCharacterFolder();
+  void openBrowserURL();
+  void copyID();
+
 private:
   AOApplication *ao_app = nullptr;
 
@@ -29,6 +39,11 @@ private:
   QImage m_texture;
   QString m_showname;
   QString m_character;
+  QString mStatus = "";
+  QString mURL = "";
+  int mID = -1;
+
+  void showContextMenu(QPoint pos);
 
 };
 

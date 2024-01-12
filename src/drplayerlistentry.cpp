@@ -4,6 +4,12 @@
 #include "file_functions.h"
 #include "modules/theme/thememanager.h"
 #include "theme.h"
+#include "file_functions.h"
+
+#include <QMenu>
+#include <QUrl>
+#include <QDesktopServices>
+#include <QClipboard>
 
 DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y)
     : QWidget(p_parent)
@@ -35,11 +41,6 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
 
     if (file_exists(l_selected_texture)) pCharacterBorderDisplay->set_image(l_selected_texture);
 
-
-
-    //set_stylesheet(ui_user_image, "[PLAYER ICON]", COURTROOM_STYLESHEETS_CSS, ao_app);
-
-
     //Prompt (For Blackouts / Look)
     m_prompt = new AOLabel(this, ao_app);
     m_prompt->move(5, 5);
@@ -51,6 +52,10 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
     ui_user_image->hide();
     pCharacterBorderDisplay->hide();
     m_prompt->hide();
+
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this ,&QWidget::customContextMenuRequested, this, &DrPlayerListEntry::showContextMenu);
+
 }
 
 
@@ -102,4 +107,74 @@ void DrPlayerListEntry::set_reason(QString p_reason)
   m_prompt->show();
 
   m_prompt->setText(p_reason);
+}
+
+void DrPlayerListEntry::setURL(QString url)
+{
+  mURL = url;
+}
+
+void DrPlayerListEntry::setID(int id)
+{
+  mID = id;
+}
+
+void DrPlayerListEntry::setStatus(QString status)
+{
+  if(!status.isEmpty())
+  {
+      setToolTip(status);
+      mStatus = status;
+  }
+}
+
+void DrPlayerListEntry::openCharacterFolder()
+{
+
+  QString folderPath = "characters/" + m_character;
+
+  QUrl folderUrl = QUrl::fromLocalFile(ao_app->get_package_or_base_path(folderPath));
+
+  QDesktopServices::openUrl(folderUrl);
+}
+
+void DrPlayerListEntry::openBrowserURL()
+{
+  if(!mURL.isEmpty())
+  {
+      QUrl url(mURL);
+      QDesktopServices::openUrl(url);
+
+  }
+}
+
+void DrPlayerListEntry::copyID()
+{
+  QClipboard *clipboard = QGuiApplication::clipboard();
+
+  clipboard->setText(QString::number(mID));
+}
+
+void DrPlayerListEntry::showContextMenu(QPoint pos)
+{
+  QMenu *menu = new QMenu(this);
+  menu->addAction("[" + QString::number(mID) + "] " + m_showname);
+
+  QAction *a = new QAction("Open Character Folder");
+  QObject::connect(a, &QAction::triggered, [this](){openCharacterFolder();});
+  menu->addAction(a);
+
+  if(!mURL.isEmpty())
+  {
+      QUrl url(mURL);
+      QAction *browserOpen = new QAction("Open " + url.host() + " in Browser");
+      QObject::connect(browserOpen, &QAction::triggered, [this](){openBrowserURL();});
+      menu->addAction(browserOpen);
+  }
+
+  QAction *copyIDAction = new QAction("Copy Player ID");
+  QObject::connect(copyIDAction, &QAction::triggered, [this](){copyID();});
+  menu->addAction(copyIDAction);
+
+  menu->popup(this->mapToGlobal(pos));
 }

@@ -19,6 +19,18 @@
 #include <QFontDatabase>
 #include <QRegularExpression>
 
+AOApplication *AOApplication::m_Instance = nullptr;
+
+void AOApplication::setInstance(AOApplication *newInstance)
+{
+  m_Instance = newInstance;
+}
+
+AOApplication *AOApplication::getInstance()
+{
+  return m_Instance;
+}
+
 AOApplication::AOApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
@@ -29,6 +41,7 @@ AOApplication::AOApplication(int &argc, char **argv)
   dr_discord = new DRDiscord(this);
 
   m_server_socket = new DRServerSocket(this);
+  setInstance(this);
 
   connect(ao_config, SIGNAL(theme_changed(QString)), this, SLOT(handle_theme_modification()));
   connect(ao_config, SIGNAL(gamemode_changed(QString)), this, SLOT(handle_theme_modification()));

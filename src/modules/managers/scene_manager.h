@@ -4,6 +4,8 @@
 #include "src/aolabel.h"
 #include "src/drgraphicscene.h"
 
+#include <mk2/drplayer.h>
+
 class SceneManager
 {
 public:
@@ -20,6 +22,10 @@ public:
   void RenderTransition();
   void AnimateTransition();
   void setFadeDuration(int duration);
+
+  void clearPlayerDataList();
+
+  QVector<DrPlayer> mPlayerDataList;
 private:
   SceneManager() {}
   static SceneManager s_Instance;

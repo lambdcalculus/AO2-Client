@@ -33,6 +33,9 @@ public:
     Disconnected,
   };
 
+  static AOApplication *m_Instance;
+  static AOApplication *getInstance();
+
   AOApplication(int &argc, char **argv);
   ~AOApplication();
 
@@ -201,6 +204,7 @@ public:
 
   ////// Functions for fonts handling //////
   void load_fonts();
+  Courtroom *m_courtroom = nullptr;
 
 public slots:
   void loading_cancelled();
@@ -222,7 +226,6 @@ private:
   Lobby *m_lobby = nullptr;
   bool is_lobby_constructed = false;
 
-  Courtroom *m_courtroom = nullptr;
   bool is_courtroom_constructed = false;
 
   ///////////////server metadata////////////////
@@ -274,6 +277,7 @@ public:
 
 public:
   bool notify(QObject *receiver, QEvent *event) override;
+  void setInstance(AOApplication *newInstance);
 };
 
 #endif // AOAPPLICATION_H
