@@ -19,26 +19,42 @@ void AOMusicPlayer::play(QString p_song)
 
   m_filename = p_song;
 
-  DRAudioStream::ptr l_stream = m_family->create_stream(ao_app->get_music_path(p_song));
-  if (l_stream)
+  if(mLastSong != nullptr)
+  {
+    mLastSong->stop();
+  }
+  mLastSong = mCurrentSong;
+
+  if(mLastSong != nullptr)
+  {
+    mLastSong->fadeOut(3000);
+  }
+
+  mCurrentSong = m_family->create_stream(ao_app->get_music_path(p_song));
+  if (mCurrentSong)
   {
     DRAudiotrackMetadata l_audiotrack(p_song);
     if (!l_audiotrack.play_once())
     {
-      l_stream->set_repeatable(true);
-      l_stream->set_loop(l_audiotrack.loop_start(), l_audiotrack.loop_end());
+      mCurrentSong->set_repeatable(true);
+      mCurrentSong->set_loop(l_audiotrack.loop_start(), l_audiotrack.loop_end());
     }
-    l_stream->play();
 
-    if (l_stream->is_playing())
+    mCurrentSong->fadeIn(3000);
+    mCurrentSong->play();
+
+    if (mCurrentSong->is_playing())
     {
-      qDebug() << "playing" << l_stream->get_file_name();
+      qDebug() << "playing" << mCurrentSong->get_file_name();
     }
   }
 }
 
 void AOMusicPlayer::stop()
 {
-  for (auto &song : m_family->get_stream_list())
-    song->stop();
+  //if(mLastSong == nullptr)
+  //{
+  //  for (auto &song : m_family->get_stream_list())
+  //    song->stop();
+  //}
 }

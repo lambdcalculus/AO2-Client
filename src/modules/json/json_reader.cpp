@@ -27,12 +27,22 @@ void JSONReader::SetTargetObject(QJsonObject target)
 
 void JSONReader::SetTargetObject(QString string)
 {
-
+  SetTargetObject(mTargetObject.value(string).toObject());
 }
 
 QString JSONReader::getStringValue(QString string)
 {
   return mTargetObject.value(string).toString();
+}
+
+bool JSONReader::getBoolValue(QString string)
+{
+  return mTargetObject.value(string).toBool();
+}
+
+int JSONReader::getIntValue(QString string)
+{
+  return mTargetObject.value(string).toInt();
 }
 
 QVector2D JSONReader::getVector2DValue(QString string)

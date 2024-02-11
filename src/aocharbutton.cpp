@@ -3,9 +3,13 @@
 #include "aoapplication.h"
 #include "aoimagedisplay.h"
 #include "file_functions.h"
+#include <QDesktopServices>
+#include "modules/managers/character_manager.h"
 
 #include <QFile>
 #include <QLabel>
+#include <QMenu>
+#include <QUrl>
 
 AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, int y_pos)
     : QPushButton(parent)
@@ -25,7 +29,32 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos, 
   ui_taken->set_theme_image("char_taken.png");
   ui_taken->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_taken->hide();
+
+  this->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(this ,&QWidget::customContextMenuRequested, this, &AOCharButton::showContextMenu);
 }
+
+void AOCharButton::showContextMenu(QPoint pos)
+{
+  QMenu *menu = new QMenu(this);
+
+
+  QAction *a = new QAction("Add to Favorites");
+  QObject::connect(a, &QAction::triggered, [this](){addToFavorites();});
+  menu->addAction(a);
+
+
+  QAction *copyIDAction = new QAction("Remove from Favorites");
+  QObject::connect(copyIDAction, &QAction::triggered, [this](){removeFavorites();});
+  menu->addAction(copyIDAction);
+
+  QAction *opencharfolder = new QAction("Open Character Folder");
+  QObject::connect(opencharfolder, &QAction::triggered, [this](){openCharacterFolder();});
+  menu->addAction(opencharfolder);
+
+  menu->popup(this->mapToGlobal(pos));
+}
+
 
 QString AOCharButton::character()
 {
@@ -53,6 +82,25 @@ void AOCharButton::set_character(QString p_character, QString p_character_ini)
 void AOCharButton::set_taken(const bool p_enabled)
 {
   ui_taken->setVisible(p_enabled);
+}
+
+void AOCharButton::addToFavorites()
+{
+  CharacterManager::get().AddToFavorites(m_character);
+}
+
+void AOCharButton::removeFavorites()
+{
+  CharacterManager::get().RemoveFromFavorites(m_character);
+}
+
+void AOCharButton::openCharacterFolder()
+{
+  QString folderPath = "characters/" + m_character;
+
+  QUrl folderUrl = QUrl::fromLocalFile(ao_app->get_package_or_base_path(folderPath));
+
+  QDesktopServices::openUrl(folderUrl);
 }
 
 void AOCharButton::enterEvent(QEvent *e)

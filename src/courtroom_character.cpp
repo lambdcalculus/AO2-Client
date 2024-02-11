@@ -13,9 +13,13 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QFutureWatcher>
 #include <QListView>
 #include <QPixmap>
 #include <QUrl>
+#include "modules/debug/time_debugger.h"
+#include "modules/managers/character_manager.h"
+#include <QtConcurrent/QtConcurrent>
 
 int Courtroom::get_character_id()
 {
@@ -33,7 +37,7 @@ void Courtroom::set_character_id(const int p_chr_id)
 
 QString Courtroom::get_character()
 {
-  return is_spectating() ? nullptr : m_chr_list.at(m_chr_id).name;
+  return is_spectating() ? nullptr : CharacterManager::get().mServerCharacters.at(m_chr_id).name;
 }
 
 QString Courtroom::get_character_ini()
@@ -77,47 +81,113 @@ void Courtroom::update_iniswap_list()
     QSignalBlocker b_ini_list(ui_iniswap_dropdown);
     ui_iniswap_dropdown->clear();
 
-    QStringList l_name_list{"Default"};
+    QFutureWatcher<void> *watcher = new QFutureWatcher<void>(this);
+    connect(watcher, &QFutureWatcher<void>::finished, this, &Courtroom::UpdateIniswapList);
 
-    QStringList l_package_folders{};
-
-    for (int i=0; i< ao_app->package_names.size(); i++)
-    {
-      if(!ao_app->m_disabled_packages.contains(ao_app-> package_names.at(i)))
-      {
-        const QString l_path = ao_app->get_package_path(ao_app->package_names.at(i)) + "/characters";
-        if(dir_exists(l_path)) l_package_folders.append(l_path);
-      }
-    }
-
-    l_package_folders.append(ao_app->get_base_path() + "/characters");
-
-    for (int i = 0; i < l_package_folders.length(); ++i)
-    {
-      const QFileInfoList l_info_list = QDir(l_package_folders.at(i)).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
-      for (const QFileInfo &i_info : l_info_list)
-      {
-        const QString l_name = i_info.fileName();
-        if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)))
-          continue;
-        if(!l_name_list.contains(l_name)) l_name_list.append(l_name);
-      }
-    }
-
-    for (int i = 0; i < l_name_list.length(); ++i)
-    {
-      const QString &i_name = l_name_list.at(i);
-      ui_iniswap_dropdown->addItem(i_name);
-      if (i == 0)
-        continue;
-      drSetItemIcon(ui_iniswap_dropdown, i, i_name, ao_app);
-    }
-    update_default_iniswap_item();
-    select_base_character_iniswap();
+    QFuture<void> future = QtConcurrent::run(this, &Courtroom::SearchForCharacterListAsync);
+    watcher->setFuture(future);
   }
 
-  update_iniswap_dropdown_searchable();
 }
+
+
+void Courtroom::SearchForCharacterListAsync()
+{
+  currentIniswapList = QStringList{"Default"};
+
+  QStringList l_package_folders{};
+
+  for (int i=0; i< ao_app->package_names.size(); i++)
+  {
+    if(!ao_app->m_disabled_packages.contains(ao_app-> package_names.at(i)))
+    {
+      const QString l_path = ao_app->get_package_path(ao_app->package_names.at(i)) + "/characters";
+      if(dir_exists(l_path)) l_package_folders.append(l_path);
+    }
+  }
+
+  l_package_folders.append(ao_app->get_base_path() + "/characters");
+
+  for (int i = 0; i < l_package_folders.length(); ++i)
+  {
+    const QFileInfoList l_info_list = QDir(l_package_folders.at(i)).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    for (const QFileInfo &i_info : l_info_list)
+    {
+      const QString l_name = i_info.fileName();
+      if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)))
+        continue;
+      if(!currentIniswapList.contains(l_name))
+      {
+        currentIniswapList.append(l_name);
+      }
+    }
+  }
+
+}
+
+void Courtroom::UpdateIniswapList()
+{
+  ui_iniswap_dropdown->addItems(currentIniswapList);
+
+  update_default_iniswap_item();
+  select_base_character_iniswap();
+  iniswapTimer = new QTimer(this);
+  UpdateIniswapIcons(true, 2);
+  update_iniswap_dropdown_searchable();
+
+
+}
+
+void Courtroom::UpdateIniswapIcons(bool reset, int batch_count, int starting_index)
+{
+
+  if(reset)
+  {
+    if (iniswapTimer && iniswapTimer->isActive())
+    {
+      iniswapTimer->stop();
+    }
+
+    iniswapTimer = new QTimer(this);
+
+    currentIniswapIconIndex = starting_index;
+  }
+
+
+  for (int i = 0; i < batch_count && currentIniswapIconIndex < currentIniswapList.length(); ++i, ++currentIniswapIconIndex)
+  {
+    const QString &i_name = currentIniswapList.at(currentIniswapIconIndex);
+    drSetItemIcon(ui_iniswap_dropdown, currentIniswapIconIndex, i_name, ao_app);
+  }
+
+  if (currentIniswapIconIndex < currentIniswapList.length())
+  {
+    if (iniswapTimer && iniswapTimer->isActive())
+    {
+      iniswapTimer->stop();
+    }
+
+    iniswapTimer = new QTimer(this);
+    connect(iniswapTimer, &QTimer::timeout, this, &Courtroom::OnIniswapTimerTimeout);
+    iniswapTimer->start(100);
+  }
+  else
+  {
+    if (iniswapTimer && iniswapTimer->isActive())
+    {
+      iniswapTimer->stop();
+    }
+  }
+
+
+}
+
+
+void Courtroom::OnIniswapTimerTimeout()
+{
+  UpdateIniswapIcons(false, 2);
+}
+
 
 void Courtroom::update_default_iniswap_item()
 {
@@ -148,6 +218,12 @@ void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
   ao_config->set_character_ini(get_character(),
                                p_index == 0 ? get_character() : ui_iniswap_dropdown->itemText(p_index));
+}
+
+void Courtroom::onCharacterSelectPackageChanged(int p_index)
+{
+  m_current_chr_page = 0;
+  set_char_select_page();
 }
 
 void Courtroom::update_iniswap_dropdown_searchable()

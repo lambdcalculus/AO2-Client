@@ -16,5 +16,9 @@ public slots:
 
 private:
   DRAudioStreamFamily::ptr m_family;
+
+  DRAudioStream::ptr mCurrentSong = nullptr;
+  DRAudioStream::ptr mLastSong = nullptr;
+
   QString m_filename;
 };

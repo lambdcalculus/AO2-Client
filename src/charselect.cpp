@@ -10,6 +10,8 @@
 #include "drpacket.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
+#include "modules/managers/character_manager.h"
+#include "qcombobox.h"
 #include "theme.h"
 #include "drtheme.h"
 
@@ -37,6 +39,7 @@ void Courtroom::construct_char_select()
   ui_spectator = setupButtonWidget("spectator", "spectator_image.png", "Spectator", ui_char_select_background);
 
   pCharaSelectSearch = setupLineEditWidget("character_search", "Search for a Character", "[CHARA SEARCH]", "", ui_char_select_background);
+  pCharaSelectSeries = setupComboBoxWidget(CharacterManager::get().GetCharacterPackages() , "character_packages", "[PACKAGE FILTER]");
 
   connect(char_button_mapper, SIGNAL(mapped(int)), this, SLOT(char_clicked(int)));
   connect(ui_back_to_lobby, SIGNAL(clicked()), this, SLOT(on_back_to_lobby_clicked()));
@@ -53,7 +56,6 @@ void Courtroom::construct_char_select()
 
 void Courtroom::reconstruct_char_select()
 {
-  qDeleteAll(ui_char_button_list.begin(), ui_char_button_list.end());
 
   QPoint f_spacing = ao_app->current_theme->get_widget_settings_spacing("char_buttons", "courtroom", "char_button_spacing");
 
@@ -65,12 +67,23 @@ void Courtroom::reconstruct_char_select()
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
 
+  int new_char_columns = ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
+  int new_char_rows = ((ui_char_buttons->height() - button_height) / (y_spacing + button_height)) + 1;
+  if(new_char_columns == char_columns && new_char_rows == char_rows && CharaSSSpacing == f_spacing)
+  {
+    return;
+  }
+
+  qDeleteAll(ui_char_button_list.begin(), ui_char_button_list.end());
+
+  CharaSSSpacing = f_spacing;
   char_columns = ((ui_char_buttons->width() - button_width) / (x_spacing + button_width)) + 1;
   char_rows = ((ui_char_buttons->height() - button_height) / (y_spacing + button_height)) + 1;
 
   m_page_max_chr_count = qMax(1, char_columns * char_rows);
 
   ui_char_button_list.clear();
+
   for (int n = 0; n < m_page_max_chr_count; ++n)
   {
     int x_pos = (button_width + x_spacing) * x_mod_count;
@@ -124,18 +137,21 @@ void Courtroom::set_char_select_page()
   ui_chr_select_right->hide();
 
 
-  QVector<char_type> filteredList = {};
+
+  CharacterManager::get().mFilteredChrList = {};
 
 
   for (AOCharButton *button : qAsConst(ui_char_button_list))
     button->hide();
 
-  for (char_type charaType : m_chr_list)
-  {
-    if(charaType.name.toLower().contains(pCharaSelectSearch->text().toLower())) filteredList.append(charaType);
 
+
+  for (char_type charaType : CharacterManager::get().GetCharList(pCharaSelectSeries->currentText()))
+  {
+    if(charaType.name.toLower().contains(pCharaSelectSearch->text().toLower())) CharacterManager::get().mFilteredChrList.append(charaType);
   }
-  const int l_item_count = filteredList.length();
+
+  const int l_item_count = CharacterManager::get().mFilteredChrList.length();
   const int l_page_count = qFloor(l_item_count / m_page_max_chr_count) + bool(l_item_count % m_page_max_chr_count);
   m_current_chr_page = qBound(0, m_current_chr_page, l_page_count - 1);
   const int l_current_page_emote_count =
@@ -150,19 +166,21 @@ void Courtroom::set_char_select_page()
   int yOffset = 0;
   int xOffset = 0;
 
+  UIFilteredCharButton = {};
 
   // show all buttons for this page
   for (int i = 0; i < l_current_page_emote_count; ++i)
   {
 
-  int l_real_i = i + m_current_chr_page * m_page_max_chr_count;
-  AOCharButton *l_button = ui_char_button_list.at(i);
-    const QString l_base_chr = filteredList.at(l_real_i).name;
+    int l_real_i = i + m_current_chr_page * m_page_max_chr_count;
+    AOCharButton *l_button = ui_char_button_list.at(i);
+    const QString l_base_chr = CharacterManager::get().mFilteredChrList.at(l_real_i).name;
     l_button->set_character(l_base_chr, ao_config->character_ini(l_base_chr));
-    l_button->set_taken((filteredList.at(l_real_i).taken));
+    l_button->set_taken((CharacterManager::get().mFilteredChrList.at(l_real_i).taken));
     l_button->show();
     l_button->move(xOffset, yOffset);
     xOffset += 68;
+    UIFilteredCharButton.append(l_button);
 
     if(xOffset + 40 >= ui_char_buttons->width())
     {
@@ -198,7 +216,7 @@ void Courtroom::update_character_icon(QString p_character)
 
 void Courtroom::char_clicked(int n_char)
 {
-  if (get_character() == ui_char_button_list.at(n_char)->character())
+  if (get_character() == UIFilteredCharButton.at(n_char)->character())
   {
     enter_courtroom(get_character_id());
     return;
@@ -206,7 +224,7 @@ void Courtroom::char_clicked(int n_char)
 
   int n_real_char = n_char + m_current_chr_page * m_page_max_chr_count;
 
-  QString char_ini_path = ao_app->get_character_path(m_chr_list.at(n_real_char).name, CHARACTER_CHAR_INI);
+  QString char_ini_path = ao_app->get_character_path(CharacterManager::get().mFilteredChrList.at(n_real_char).name, CHARACTER_CHAR_INI);
   qDebug() << "char_ini_path" << char_ini_path;
 
   if (!file_exists(char_ini_path))
@@ -214,6 +232,17 @@ void Courtroom::char_clicked(int n_char)
     qDebug() << "did not find " << char_ini_path;
     call_notice("Could not find " + char_ini_path);
     return;
+  }
+
+  if(!CharacterManager::get().GetCharacterInServer(n_real_char))
+  {
+    int filtered_char = n_real_char;
+    n_real_char = CharacterManager::get().GetAvaliablePersona();
+    ao_config->set_character_ini(CharacterManager::get().GetServerCharaName(n_real_char), CharacterManager::get().GetFilteredCharaName(filtered_char));
+  }
+  else
+  {
+    n_real_char = CharacterManager::get().GetFilteredId(n_real_char);
   }
 
   ao_app->send_server_packet(

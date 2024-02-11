@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
   qputenv("QT_MAC_WANTS_LAYER", "1");
 #endif
 
-  qInstallMessageHandler(logger::log);
+  //qInstallMessageHandler(logger::log);
   qInfo() << "Starting Danganronpa Online...";
 
   bool l_dpi_scaling = false;
@@ -56,18 +56,14 @@ int main(int argc, char *argv[])
     app.construct_lobby();
     app.get_lobby()->show();
 
-
-    launch_updater_check(check_updater_is_beta(), true);
-
     l_exit_code = app.exec();
 
-    logger::shutdown();
+    //logger::shutdown();
 
     if (l_config.autosave())
     {
       l_config.save_file();
     }
   }
-
   return l_exit_code;
 }

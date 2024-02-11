@@ -9,3 +9,9 @@ DrPlayer::DrPlayer(int id, QString showname, QString character, QString url, QSt
     mURL = url;
     mPlayerStatus = status;
 }
+
+void DrPlayer::setMod(QString ipid, QString hdid)
+{
+  mHDID = hdid;
+  mIPID = ipid;
+}

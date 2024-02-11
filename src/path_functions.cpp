@@ -5,6 +5,7 @@
 #include "courtroom.h"
 #include "drpather.h"
 #include "file_functions.h"
+#include "modules/managers/character_manager.h"
 
 #include <QDebug>
 #include <QDir>
@@ -36,7 +37,26 @@ void AOApplication::reload_packages()
   {
     if (packages_fileinfo.at(i).isDir())
     {
-      if(!packages_fileinfo.at(i).baseName().isEmpty())package_names.append(packages_fileinfo.at(i).baseName());
+      QString packageBaseName = packages_fileinfo.at(i).baseName();
+      if(!packageBaseName.isEmpty())
+      {
+        package_names.append(packageBaseName);
+
+        QDir package_dir(packages_fileinfo.at(i).absoluteFilePath() + "/characters");
+        if (package_dir.exists())
+        {
+          QVector<char_type> packageCharacters;
+          QStringList character_folders = package_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+          for (const QString &character_folder : character_folders)
+          {
+            char_type packageChar;
+            packageChar.name = character_folder;
+            packageCharacters.append(std::move(packageChar));
+          }
+          CharacterManager::get().SetCharList(packageBaseName, packageCharacters);
+        }
+
+      }
     }
   }
 

@@ -71,12 +71,8 @@ private slots:
   void on_audio_device_changed(DRAudioDevice p_device);
   void on_favorite_audio_device_changed(DRAudioDevice p_device);
   void on_audio_device_list_changed(QVector<DRAudioDevice> p_device_list);
-  void on_master_value_changed(int p_num);
-  void on_system_value_changed(int p_num);
-  void on_effect_value_changed(int p_num);
-  void on_music_value_changed(int p_num);
-  void on_video_value_changed(int p_num);
-  void on_blip_value_changed(int p_num);
+
+  void on_volume_value_changed(int p_num);
 
   void on_length_threshold_value_changed(int p_number);
 
@@ -93,6 +89,10 @@ private:
   // driver
   AOConfig *m_config = nullptr;
   DRAudioEngine *m_engine = nullptr;
+
+  //tabs
+  QListView *pTabFilters = nullptr;
+  QTabWidget *tab_widget;
 
   // behaviour
   QPushButton *ui_save = nullptr;
@@ -173,6 +173,9 @@ private:
   // audio
   QComboBox *ui_device = nullptr;
   QCheckBox *ui_favorite_device = nullptr;
+
+  //Audio Sliders
+  QMap<QSlider*, QLabel*> volumeSliderMap = {};
   QSlider *ui_master = nullptr;
   QLabel *ui_master_value = nullptr;
   QGroupBox *ui_suppress_background_audio = nullptr;
@@ -209,6 +212,7 @@ private:
 
 
 private slots:
+  void updateTabsVisibility(const QModelIndex &current, const QModelIndex &previous);
   void username_editing_finished();
   void showname_editing_finished();
   void advertiser_editing_finished();

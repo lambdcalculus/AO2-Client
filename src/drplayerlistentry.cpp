@@ -5,6 +5,7 @@
 #include "modules/theme/thememanager.h"
 #include "theme.h"
 #include "file_functions.h"
+#include "modules/managers/pair_manager.h"
 
 #include <QMenu>
 #include <QUrl>
@@ -128,6 +129,12 @@ void DrPlayerListEntry::setStatus(QString status)
   }
 }
 
+void DrPlayerListEntry::setMod(QString ipid, QString hdid)
+{
+  mIPID = ipid;
+  mHDID = hdid;
+}
+
 void DrPlayerListEntry::openCharacterFolder()
 {
 
@@ -148,6 +155,16 @@ void DrPlayerListEntry::openBrowserURL()
   }
 }
 
+void DrPlayerListEntry::sendPairRequest()
+{
+  ao_app->send_server_packet(DRPacket("PR", {QString::number(mID)}));
+}
+
+void DrPlayerListEntry::sendUnpairRequest()
+{
+  ao_app->send_server_packet(DRPacket("UPR", {QString::number(mID)}));
+}
+
 void DrPlayerListEntry::copyID()
 {
   QClipboard *clipboard = QGuiApplication::clipboard();
@@ -155,10 +172,38 @@ void DrPlayerListEntry::copyID()
   clipboard->setText(QString::number(mID));
 }
 
+void DrPlayerListEntry::copyHDID()
+{
+  QClipboard *clipboard = QGuiApplication::clipboard();
+
+  clipboard->setText(mHDID);
+}
+
+void DrPlayerListEntry::copyIPID()
+{
+  QClipboard *clipboard = QGuiApplication::clipboard();
+
+  clipboard->setText(mIPID);
+}
+
 void DrPlayerListEntry::showContextMenu(QPoint pos)
 {
   QMenu *menu = new QMenu(this);
   menu->addAction("[" + QString::number(mID) + "] " + m_showname);
+
+  if(PairManager::get().GetCanPair())
+  {
+      QAction *pairRequest = new QAction("Send Pair Request");
+      QObject::connect(pairRequest, &QAction::triggered, [this](){sendPairRequest() ;});
+      menu->addAction(pairRequest);
+  }
+  else
+  {
+      QAction *pairRequest = new QAction("Unpair from Partner");
+      QObject::connect(pairRequest, &QAction::triggered, [this](){sendUnpairRequest() ;});
+      menu->addAction(pairRequest);
+  }
+
 
   QAction *a = new QAction("Open Character Folder");
   QObject::connect(a, &QAction::triggered, [this](){openCharacterFolder();});
@@ -170,6 +215,20 @@ void DrPlayerListEntry::showContextMenu(QPoint pos)
       QAction *browserOpen = new QAction("Open " + url.host() + " in Browser");
       QObject::connect(browserOpen, &QAction::triggered, [this](){openBrowserURL();});
       menu->addAction(browserOpen);
+  }
+
+  if(!mHDID.isEmpty())
+  {
+      QAction *copyHDIDaction = new QAction("Copy HDID [" + mHDID + "]");
+      QObject::connect(copyHDIDaction, &QAction::triggered, [this](){copyHDID();});
+      menu->addAction(copyHDIDaction);
+  }
+
+  if(!mIPID.isEmpty())
+  {
+      QAction *copyHDIDaction = new QAction("Copy IPID [" + mIPID + "]");
+      QObject::connect(copyHDIDaction, &QAction::triggered, [this](){copyIPID();});
+      menu->addAction(copyHDIDaction);
   }
 
   QAction *copyIDAction = new QAction("Copy Player ID");

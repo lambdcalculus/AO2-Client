@@ -13,9 +13,11 @@
 #include "modules/theme/thememanager.h"
 #include <QCheckBox>
 #include <QComboBox>
+#include <QFuture>
 #include <QLineEdit>
 #include <QScreen>
 #include <QtMath>
+#include <QtConcurrent/QtConcurrent>
 #include <modules/theme/widgets/droemotebuttons.h>
 
 
@@ -50,8 +52,6 @@ void Courtroom::construct_emotes()
   ui_pos_dropdown->addItem("Judge", "jud");
   ui_pos_dropdown->addItem("Defense Assistant", "hld");
   ui_pos_dropdown->addItem("Prosecutor Assistant", "hlp");
-
-  construct_emote_page_layout();
 }
 
 void Courtroom::construct_emote_page_layout()
@@ -101,6 +101,7 @@ void Courtroom::construct_emote_page_layout()
       x_mod_count = 0;
     }
   }
+
 
   refresh_emote_page(true);
 }

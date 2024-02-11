@@ -7,6 +7,7 @@
 #include "debug_functions.h"
 #include "drdiscord.h"
 #include "drpacket.h"
+#include "modules/managers/character_manager.h"
 #include "drserversocket.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
@@ -189,7 +190,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     if (!is_courtroom_constructed)
       return;
 
-    QVector<char_type> l_chr_list = m_courtroom->get_character_list();
+    QVector<char_type> l_chr_list = CharacterManager::get().GetServerCharList();
     if (l_content.length() != l_chr_list.length())
     {
       qWarning() << "Server sent a character list of length " << l_content.length() << "which is different from the expected length " << l_chr_list.length() << "so ignoring it.";
@@ -197,8 +198,13 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     }
 
     for (int i = 0; i < l_chr_list.length(); ++i)
+    {
       l_chr_list[i].taken = l_content.at(i) == "-1";
-    m_courtroom->set_character_list(l_chr_list);
+      CharacterManager::get().SetCharaTaken(i, l_content.at(i) == "-1");
+    }
+
+
+    CharacterManager::get().SetCharList(l_chr_list);
   }
   else if (l_header == "SC")
   {
@@ -212,7 +218,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       l_chr.name = i_chr_name;
       l_chr_list.append(std::move(l_chr));
     }
-    m_courtroom->set_character_list(l_chr_list);
+    CharacterManager::get().SetCharList(l_chr_list);
     m_loaded_characters = m_character_count;
 
     if (is_lobby_constructed)
@@ -276,7 +282,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     m_courtroom->m_area_description = l_content.at(1);
 
     m_courtroom->write_area_desc();
-    m_courtroom->construct_playerlist_layout();
+    AOApplication::getInstance()->m_courtroom->construct_playerlist_layout();
   }
   else if (l_header == "FA")
   {

@@ -3,13 +3,16 @@
 #include "modules/theme/thememanager.h"
 #include "aoapplication.h"
 #include "aoblipplayer.h"
+#include "modules/debug/time_debugger.h"
 #include "aobutton.h"
 #include "aoconfig.h"
 #include "aoimagedisplay.h"
 #include "aomusicplayer.h"
+#include "modules/managers/character_manager.h"
 #include "aonotearea.h"
 #include "aonotepicker.h"
 #include "aosfxplayer.h"
+#include "modules/managers/pair_manager.h"
 #include "aoshoutplayer.h"
 #include "aosystemplayer.h"
 #include "aotimer.h"
@@ -39,6 +42,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QGraphicsBlurEffect>
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QListWidget>
@@ -85,6 +89,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   set_char_select();
   load_audiotracks();
   reset_viewport();
+  PairManager::get().SetUserPair(-1, 480);
 }
 
 Courtroom::~Courtroom()
@@ -93,17 +98,6 @@ Courtroom::~Courtroom()
   ao_config->set_gamemode(nullptr);
   ao_config->set_timeofday(nullptr);
   stop_all_audio();
-}
-
-QVector<char_type> Courtroom::get_character_list()
-{
-  return m_chr_list;
-}
-
-void Courtroom::set_character_list(QVector<char_type> p_chr_list)
-{
-  m_chr_list = p_chr_list;
-  set_char_select_page();
 }
 
 void Courtroom::set_area_list(QStringList p_area_list)
@@ -120,11 +114,17 @@ void Courtroom::set_music_list(QStringList p_music_list)
 
 void Courtroom::setup_courtroom()
 {
+  TimeDebugger::get().StartTimer("Courtroom Setup");
   load_shouts();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load Shouts");
   load_effects();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load Effects");
   load_wtce();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load WTCE");
   load_free_blocks();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load Free Blocks");
   load_sfx_list_theme();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load SFX List");
 
   map_viewers();
   assign_readers_for_all_viewers();
@@ -150,7 +150,9 @@ void Courtroom::setup_courtroom()
   ui_flip->show();
 
   list_music();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "List Music");
   list_areas();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "List Areas");
 
   // Update widgets first, then check if everything is valid
   // This will also handle showing the correct shouts, effects and wtce buttons,
@@ -159,18 +161,27 @@ void Courtroom::setup_courtroom()
   const bool l_chr_select_visible = ui_char_select_background->isVisible();
 
   set_widget_names();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Widget Names");
   set_widgets();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Widgets");
   set_widget_layers();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Widget Layers");
   reset_widget_toggles();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Widget Toggles");
 
   // char select
   reconstruct_char_select();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Reconstruct Char Select");
   ui_char_select_background->setVisible(l_chr_select_visible);
 
   for (AOTimer *i_timer : qAsConst(ui_timers))
   {
     i_timer->redraw();
   }
+
+  SceneManager::get().clearPlayerDataList();
+  construct_playerlist_layout();
+  TimeDebugger::get().EndTimer("Courtroom Setup");
 }
 
 void Courtroom::map_viewers()
@@ -193,6 +204,8 @@ void Courtroom::map_viewers()
   // characters
   m_mapped_viewer_list[SpriteCharacter].append(ui_vp_player_char->get_player());
 
+  m_mapped_viewer_list[SpritePairCharacter].append(ui_vp_player_pair->get_player());
+
   // shouts
   m_mapped_viewer_list[SpriteShout].append(ui_vp_objection->get_player());
 
@@ -214,6 +227,7 @@ void Courtroom::map_viewport_viewers()
   m_viewport_viewer_map.insert(ViewportCharacterPre, ui_vp_player_char->get_player());
   m_viewport_viewer_map.insert(ViewportCharacterIdle, ui_vp_player_char->get_player());
   m_viewport_viewer_map.insert(ViewportCharacterTalk, ui_vp_player_char->get_player());
+  m_viewport_viewer_map.insert(ViewportPairCharacterIdle, ui_vp_player_pair->get_player());
   m_viewport_viewer_map.insert(ViewportEffect, ui_vp_effect->get_player());
   m_viewport_viewer_map.insert(ViewportShout, ui_vp_objection->get_player());
 }
@@ -775,6 +789,11 @@ void Courtroom::on_showname_changed(QString p_showname)
   send_showname_packet(p_showname);
 }
 
+void Courtroom::on_pair_offset_changed()
+{
+  ao_app->send_server_packet(DRPacket("POFF", {QString::number(pUIPairOffsetSlider->value())}));
+}
+
 bool Courtroom::is_spectating()
 {
   return m_chr_id == SpectatorId;
@@ -971,7 +990,7 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
   {
     append_system_text(l_showname, l_message);
   }
-  else if (l_message_chr_id >= 0 && l_message_chr_id < m_chr_list.length())
+  else if (l_message_chr_id >= 0 && l_message_chr_id < CharacterManager::get().mServerCharacters.length())
   {
     const int l_client_id = p_chatmessage[CMClientId].toInt();
     append_ic_text(l_showname, l_message, false, false, l_client_id, m_chr_id == l_message_chr_id);
@@ -1035,6 +1054,8 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
   l_file_list.insert(ViewportCharacterPre, ao_app->get_character_sprite_pre_path(l_character, l_emote_anim));
   l_file_list.insert(ViewportCharacterIdle, ao_app->get_character_sprite_idle_path(l_character, l_emote));
   l_file_list.insert(ViewportCharacterTalk, ao_app->get_character_sprite_talk_path(l_character, l_emote));
+
+  l_file_list.insert(ViewportPairCharacterIdle, ao_app->get_character_sprite_idle_path(PairManager::get().GetCharacterFolder(), PairManager::get().GetEmoteName()));
 
   // shouts
   l_file_list.insert(ViewportShout, ao_app->get_shout_sprite_path(l_character, get_shout_name(l_shout_id)));
@@ -1124,7 +1145,7 @@ void Courtroom::handle_chatmessage()
   m_speaker_chr_id = m_chatmessage[CMChrId].toInt();
   is_system_speaking = (m_speaker_chr_id == SpectatorId);
 
-  if (m_speaker_chr_id != SpectatorId && (m_speaker_chr_id < 0 || m_speaker_chr_id >= m_chr_list.length()))
+  if (m_speaker_chr_id != SpectatorId && (m_speaker_chr_id < 0 || m_speaker_chr_id >= CharacterManager::get().mServerCharacters.length()))
   {
     post_chatmessage();
     return;
@@ -1249,8 +1270,18 @@ void Courtroom::objection_done()
 
 void Courtroom::handle_chatmessage_2() // handles IC
 {
+
+  ui_vp_player_char->setPos(PairManager::get().GetOffsetSelf(), ui_vp_player_char->y());
+  ui_vp_player_pair->setPos(PairManager::get().GetOffsetOther(), ui_vp_player_pair->y());
+
   qDebug() << "handle_chatmessage_2";
   ui_vp_player_char->stop();
+  ui_vp_player_pair->stop();
+
+  if(!PairManager::get().GetUsePairData())
+  {
+    ui_vp_player_pair->hide();
+  }
 
   if (m_shout_reload_theme)
   {
@@ -1267,11 +1298,15 @@ void Courtroom::handle_chatmessage_2() // handles IC
     display_background_scene();
   }
 
+
+  ui_vp_player_pair->set_mirrored(PairManager::get().GetCharacterFlipped());
+
   if (m_chatmessage[CMFlipState].toInt() == 1)
     ui_vp_player_char->set_mirrored(true);
   else
     ui_vp_player_char->set_mirrored(false);
 
+  SceneManager::get().AnimateTransition();
   if (m_play_pre)
   {
     int sfx_delay = m_chatmessage[CMSoundDelay].toInt();
@@ -1279,7 +1314,6 @@ void Courtroom::handle_chatmessage_2() // handles IC
     play_preanim();
     return;
   }
-
   handle_chatmessage_3();
 }
 
@@ -1288,6 +1322,12 @@ void Courtroom::handle_chatmessage_3()
   qDebug() << "handle_chatmessage_3";
 
   ui_vp_player_char->set_play_once(false);
+
+  if(PairManager::get().GetUsePairData())
+  {
+    ui_vp_player_pair->set_play_once(false);
+  }
+
 
   setup_chat();
 
@@ -1306,6 +1346,7 @@ void Courtroom::handle_chatmessage_3()
     return;
 
   ui_vp_player_char->stop();
+  ui_vp_player_pair->stop();
   const QString f_char = m_chatmessage[CMChrName];
   const QString f_emote = m_chatmessage[CMEmote];
 
@@ -1331,6 +1372,24 @@ void Courtroom::handle_chatmessage_3()
       ui_vp_showname->show();
     }
   }
+
+  //Setup Partner
+  if(PairManager::get().GetSpriteIsVisible())
+  {
+    ui_vp_player_pair->hide();
+    if(ui_vp_player_pair->is_running())
+    {
+      ui_vp_player_pair->stop();
+    }
+
+    swap_viewport_reader(ui_vp_player_pair, ViewportPairCharacterIdle);
+    ui_vp_player_pair->start();
+  }
+  else
+  {
+    ui_vp_player_pair->hide();
+  }
+
 
   // Path may be empty if
   // 1. Chat message was empty
@@ -1364,7 +1423,6 @@ void Courtroom::handle_chatmessage_3()
     break;
   }
 
-  SceneManager::get().AnimateTransition();
 
   {
     bool l_effect_index_result;
@@ -1419,6 +1477,7 @@ void Courtroom::handle_chatmessage_3()
 
   calculate_chat_tick_interval();
   start_chat_timer();
+  PairManager::get().DisableUpcomingPair();
 }
 
 void Courtroom::on_chat_config_changed()
@@ -1674,6 +1733,7 @@ void Courtroom::preanim_done()
     return;
   }
   handle_chatmessage_3();
+
 }
 
 void Courtroom::realization_done()
@@ -1995,6 +2055,7 @@ void Courtroom::set_ban(int p_cid)
   ao_app->destruct_courtroom();
 }
 
+
 void Courtroom::handle_song(QStringList p_contents)
 {
   if (p_contents.size() < 4)
@@ -2026,11 +2087,11 @@ void Courtroom::handle_song(QStringList p_contents)
   m_music_player->play(l_song);
 
   DRAudiotrackMetadata l_song_meta(l_song);
-  if (l_chr_id >= 0 && l_chr_id < m_chr_list.length())
+  if (l_chr_id >= 0 && l_chr_id < CharacterManager::get().mServerCharacters.length())
   {
     if (l_showname.isEmpty())
     {
-      l_showname = ao_app->get_showname(m_chr_list.at(l_chr_id).name);
+      l_showname = ao_app->get_showname(CharacterManager::get().mServerCharacters.at(l_chr_id).name);
     }
 
     append_ic_text(l_showname, "has played a song: " + l_song_meta.title(), false, true, NoClientId, l_chr_id == m_chr_id);
@@ -3050,11 +3111,15 @@ void Courtroom::construct_playerlist_layout()
     int y_pos = ((int)((float)50 * resize) + y_spacing) * (n - starting_index);
     DrPlayerListEntry* ui_playername = new DrPlayerListEntry(ui_player_list, ao_app, 1, y_pos);
 
-    ui_playername->set_character(SceneManager::get().mPlayerDataList.at(n).m_character);
-    ui_playername->set_name(SceneManager::get().mPlayerDataList.at(n).m_showname);
-    ui_playername->setURL(SceneManager::get().mPlayerDataList.at(n).mURL);
-    ui_playername->setID(SceneManager::get().mPlayerDataList.at(n).m_id);
-    ui_playername->setStatus(SceneManager::get().mPlayerDataList.at(n).mPlayerStatus);
+    DrPlayer playerData = SceneManager::get().mPlayerDataList.at(n);
+    ui_playername->set_character(playerData.m_character);
+    ui_playername->set_name(playerData.m_showname);
+    ui_playername->setURL(playerData.mURL);
+    ui_playername->setID(playerData.m_id);
+    ui_playername->setStatus(playerData.mPlayerStatus);
+    ui_playername->setStatus(playerData.mPlayerStatus);
+
+    ui_playername->setMod(playerData.mIPID, playerData.mHDID);
 
     m_player_list.append(ui_playername);
     ui_playername->show();

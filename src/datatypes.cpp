@@ -110,6 +110,7 @@ SpriteCategory viewport_sprite_to_sprite_category(ViewportSprite p_type)
       {ViewportCharacterPre, SpriteCharacter},
       {ViewportCharacterIdle, SpriteCharacter},
       {ViewportCharacterTalk, SpriteCharacter},
+      {ViewportPairCharacterIdle, SpritePairCharacter},
       {ViewportEffect, SpriteEffect},
       {ViewportShout, SpriteShout},
   }

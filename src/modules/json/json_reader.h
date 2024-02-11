@@ -20,6 +20,8 @@ public:
   void SetTargetObject(QString string);
 
   QString getStringValue(QString string);
+  bool getBoolValue(QString string);
+  int getIntValue(QString string);
   QVector2D getVector2DValue(QString string);
   QJsonArray getArrayValue(QString string);
   QVector<QString> getStringArrayValue(QString string);

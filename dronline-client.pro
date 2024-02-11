@@ -3,7 +3,7 @@ QT += core gui widgets uitools network multimedia multimediawidgets
 CONFIG += c++17
 
 TEMPLATE = app
-VERSION = 1.5.0
+VERSION = 1.5.1
 TARGET = dro-client
 
 RC_ICONS = icon.ico
@@ -81,8 +81,15 @@ HEADERS += \
   src/mk2/spritereadersynchronizer.h \
   src/mk2/spriteseekingreader.h \
   src/mk2/spriteviewer.h \
+  src/modules/debug/time_debugger.h \
+  src/modules/files/image_loader.h \
+  src/modules/json/character_reader.h \
+  src/modules/json/character_reader.h \
   src/modules/json/json_reader.h \
   src/modules/json/theme_reader.h \
+  src/modules/managers/character_manager.h \
+  src/modules/managers/notify_manager.h \
+  src/modules/managers/pair_manager.h \
   src/modules/managers/scene_manager.h \
   src/modules/networking/json_packet.h \
   src/modules/theme/thememanager.h \
@@ -90,6 +97,7 @@ HEADERS += \
   src/modules/theme/widgets/dro_combo_box.h \
   src/modules/theme/widgets/dro_line_edit.h \
   src/modules/theme/widgets/droemotebuttons.h \
+  src/modules/widgets/rpnotifymenu.h \
   src/theme.h \
   src/utils.h \
   src/version.h
@@ -168,8 +176,15 @@ SOURCES += \
   src/mk2/spritedynamicreader.cpp \
   src/mk2/spriteplayer.cpp \
   src/mk2/spriteseekingreader.cpp \
+  src/modules/debug/time_debugger.cpp \
+  src/modules/files/image_loader.cpp \
+  src/modules/json/character_reader.cpp \
+  src/modules/json/character_reader.cpp \
   src/modules/json/json_reader.cpp \
   src/modules/json/theme_reader.cpp \
+  src/modules/managers/character_manager.cpp \
+  src/modules/managers/notify_manager.cpp \
+  src/modules/managers/pair_manager.cpp \
   src/modules/managers/scene_manager.cpp \
   src/modules/networking/json_packet.cpp \
   src/modules/theme/thememanager.cpp \
@@ -177,6 +192,7 @@ SOURCES += \
   src/modules/theme/widgets/dro_combo_box.cpp \
   src/modules/theme/widgets/dro_line_edit.cpp \
   src/modules/theme/widgets/droemotebuttons.cpp \
+  src/modules/widgets/rpnotifymenu.cpp \
   src/path_functions.cpp \
   src/server_socket.cpp \
   src/mk2/spritereader.cpp \

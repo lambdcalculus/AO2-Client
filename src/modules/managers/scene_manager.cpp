@@ -16,7 +16,6 @@ AOLabel *SceneManager::GetTransition()
   return pUiTransition;
 }
 
-
 void SceneManager::RenderTransition()
 {
   QImage image(pViewport->scene()->sceneRect().size().toSize(), QImage::Format_ARGB32);
@@ -27,13 +26,11 @@ void SceneManager::RenderTransition()
   pUiTransition->setPixmap(QPixmap::fromImage(image));
 }
 
-
-
-
 void SceneManager::AnimateTransition()
 {
   QGraphicsOpacityEffect *eff = new QGraphicsOpacityEffect();
   pUiTransition->setGraphicsEffect(eff);
+
   QPropertyAnimation *a = new QPropertyAnimation(eff, "opacity");
   a->setDuration(mFadeDuration);
   a->setStartValue(1);

@@ -17,6 +17,7 @@ public:
     void setURL(QString url);
     void setID(int id);
     void setStatus(QString status);
+    void setMod(QString ipid, QString hdid);
     AOImageDisplay *pCharacterBorderDisplay = nullptr;
     AOImageDisplay *ui_user_image = nullptr;
     AOLabel *ui_showname = nullptr;
@@ -30,7 +31,11 @@ public:
   private slots:
   void openCharacterFolder();
   void openBrowserURL();
+  void sendPairRequest();
+  void sendUnpairRequest();
   void copyID();
+  void copyHDID();
+  void copyIPID();
 
 private:
   AOApplication *ao_app = nullptr;
@@ -41,6 +46,8 @@ private:
   QString m_character;
   QString mStatus = "";
   QString mURL = "";
+  QString mHDID = "";
+  QString mIPID = "";
   int mID = -1;
 
   void showContextMenu(QPoint pos);

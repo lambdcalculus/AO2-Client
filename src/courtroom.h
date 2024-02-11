@@ -41,6 +41,7 @@ class DRTextEdit;
 #include <QModelIndex>
 #include <QQueue>
 #include <QSharedPointer>
+#include <QSlider>
 #include <QStack>
 #include <QTextCharFormat>
 
@@ -62,6 +63,8 @@ class QLabel;
 #include <mk2/drplayer.h>
 
 #include <modules/theme/widgets/dro_line_edit.h>
+
+#include <modules/widgets/rpnotifymenu.h>
 
 class Courtroom : public QWidget
 {
@@ -109,8 +112,6 @@ public:
   Courtroom(AOApplication *p_ao_app, QWidget *parent = nullptr);
   ~Courtroom();
 
-  QVector<char_type> get_character_list();
-  void set_character_list(QVector<char_type> character_list);
   void set_area_list(QStringList area_list);
   void set_music_list(QStringList music_list);
 
@@ -166,11 +167,24 @@ public:
   // implementations in path_functions.cpp
   QString get_background_path(QString p_file);
 
+private:
+  QTimer* iniswapTimer;
+
+private slots:
+  void OnIniswapTimerTimeout();
+
 public:
+  QStringList currentIniswapList = {"Default"};
+  void SearchForCharacterListAsync();
+  void UpdateIniswapList();
+  void UpdateIniswapIcons(bool reset, int batch_count, int starting_index = 0);
+  int currentIniswapIconIndex = 0;
+
   QString get_character();
   QString get_character_ini();
   QString get_character_content_url();
   void update_iniswap_list();
+  QStringList SearchForCharacterList();
   void update_default_iniswap_item();
   void select_base_character_iniswap();
   void refresh_character_content_url();
@@ -294,7 +308,6 @@ private:
   AOApplication *ao_app = nullptr;
   AOConfig *ao_config = nullptr;
 
-  QVector<char_type> m_chr_list;
   QStringList m_area_list;
   QStringList m_music_list;
   QString m_current_song;
@@ -320,6 +333,9 @@ private:
   bool is_rainbow_enabled = false;
   bool is_note_shown = false;
   bool contains_add_button = false;
+
+
+  RPNotifyMenu *pNotifyPopup = nullptr;
 
   //////////////
   QScrollArea *ui_note_scroll_area = nullptr;
@@ -397,6 +413,7 @@ private:
   int prosecution_bar_state = 0;
 
   int m_current_chr_page = 0;
+  QPoint CharaSSSpacing;
   int char_columns = 10;
   int char_rows = 9;
   int m_page_max_chr_count = 90;
@@ -428,9 +445,12 @@ private:
   DRVideoScreen *ui_video = nullptr;
   DRSceneMovie *ui_vp_background = nullptr;
   DRCharacterMovie *ui_vp_player_char = nullptr;
+  DRCharacterMovie *ui_vp_player_pair = nullptr;
   DRSceneMovie *ui_vp_desk = nullptr;
 
   AONoteArea *ui_note_area = nullptr;
+
+  QSlider *pUIPairOffsetSlider = nullptr;
 
   AOImageDisplay *ui_vp_notepad_image = nullptr;
   DRTextEdit *ui_vp_notepad = nullptr;
@@ -610,8 +630,10 @@ private:
   QWidget *ui_char_buttons = nullptr;
   AOImageDisplay *ui_char_button_selector = nullptr;
   QVector<AOCharButton *> ui_char_button_list;
+  QVector<AOCharButton *> UIFilteredCharButton;
 
   QLineEdit *pCharaSelectSearch = nullptr;
+  QComboBox *pCharaSelectSeries = nullptr;
 
   AOButton *ui_back_to_lobby = nullptr;
   bool m_back_to_lobby_clicked = false;
@@ -725,6 +747,7 @@ private slots:
   void post_chatmessage();
 
   void on_showname_changed(QString);
+  void on_pair_offset_changed();
   void on_showname_placeholder_changed(QString);
   void on_character_ini_changed();
   void on_ic_showname_editing_finished();
@@ -765,6 +788,7 @@ private slots:
 
   void on_emote_dropdown_changed(int p_index);
   void on_iniswap_dropdown_changed(int p_index);
+  void onCharacterSelectPackageChanged(int p_index);
   void update_iniswap_dropdown_searchable();
   void on_pos_dropdown_changed();
 

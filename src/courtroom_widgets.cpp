@@ -7,6 +7,7 @@
 #include "aoimagedisplay.h"
 #include "aolabel.h"
 #include "aolineedit.h"
+#include "modules/managers/pair_manager.h"
 #include "aomusicplayer.h"
 #include "aonotearea.h"
 #include "aonotepicker.h"
@@ -26,6 +27,7 @@
 #include "drtextedit.h"
 #include "file_functions.h"
 #include "mk2/graphicsvideoscreen.h"
+#include "modules/managers/notify_manager.h"
 #include "theme.h"
 
 #include <QAction>
@@ -33,6 +35,7 @@
 #include <QComboBox>
 #include <QDebug>
 #include <QFile>
+#include <QGraphicsBlurEffect>
 #include <QHBoxLayout>
 #include <QListWidget>
 #include <QMenu>
@@ -47,9 +50,11 @@
 
 #include <modules/theme/widgets/dro_combo_box.h>
 #include <modules/theme/widgets/dro_line_edit.h>
+#include "modules/debug/time_debugger.h"
 
 void Courtroom::create_widgets()
 {
+  TimeDebugger::get().StartTimer("Theme Widgets");
   m_keepalive_timer = new QTimer(this);
   m_keepalive_timer->start(60000);
 
@@ -85,9 +90,13 @@ void Courtroom::create_widgets()
     background_anim = new QPropertyAnimation(ui_vp_background, "pos", this);
     l_scene->addItem(ui_vp_background);
 
+    ui_vp_player_pair = new DRCharacterMovie(ao_app);
+    l_scene->addItem(ui_vp_player_pair);
+
     ui_vp_player_char = new DRCharacterMovie(ao_app);
     player_sprite_anim = new QPropertyAnimation(ui_vp_player_char, "pos", this);
     l_scene->addItem(ui_vp_player_char);
+
 
     ui_vp_desk = new DRSceneMovie(ao_app);
     l_scene->addItem(ui_vp_desk);
@@ -229,6 +238,16 @@ void Courtroom::create_widgets()
   ui_note_area->add_button = new AOButton(ui_note_area, ao_app);
   ui_note_area->m_layout = new QVBoxLayout(ui_note_area);
 
+
+  pUIPairOffsetSlider = new QSlider(Qt::Horizontal, this);
+  pUIPairOffsetSlider->setMinimum(0);
+  pUIPairOffsetSlider->setMaximum(960);
+  PairManager::get().SetSlider(pUIPairOffsetSlider);
+
+  pNotifyPopup = new RPNotifyMenu(this);
+
+  NotifyManager::get().ThemeSetupPopup(pNotifyPopup);
+
   ui_note_scroll_area = new QScrollArea(this);
   ui_note_scroll_area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   ui_note_scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -322,7 +341,7 @@ void Courtroom::create_widgets()
 
   construct_char_select();
 
-
+  TimeDebugger::get().EndTimer("Theme Widgets");
 }
 
 QComboBox *Courtroom::setupComboBoxWidget(const QStringList& items, QString name, QString cssHeader)
@@ -388,6 +407,9 @@ void Courtroom::connect_widgets()
   connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
   connect(ui_iniswap_dropdown, SIGNAL(activated(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
   connect(ui_pos_dropdown, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed()));
+
+
+  connect(pCharaSelectSeries, SIGNAL(activated(int)), this, SLOT(onCharacterSelectPackageChanged(int)));
 
   connect(ao_config, SIGNAL(showname_changed(QString)), this, SLOT(on_showname_changed(QString)));
   connect(ao_config, SIGNAL(showname_placeholder_changed(QString)), this, SLOT(on_showname_placeholder_changed(QString)));
@@ -478,6 +500,9 @@ void Courtroom::connect_widgets()
   connect(ui_sfx_menu_preview, SIGNAL(triggered()), this, SLOT(on_sfx_menu_preview_triggered()));
   connect(ui_sfx_menu_insert_file_name, SIGNAL(triggered()), this, SLOT(on_sfx_menu_insert_file_name_triggered()));
   connect(ui_sfx_menu_insert_caption, SIGNAL(triggered()), this, SLOT(on_sfx_menu_insert_caption_triggered()));
+  connect(pUIPairOffsetSlider, SIGNAL(sliderReleased()), this, SLOT(on_pair_offset_changed()));
+
+
 
   connect(ui_note_area->add_button, SIGNAL(clicked(bool)), this, SLOT(on_add_button_clicked()));
   connect(ui_set_notes, SIGNAL(clicked(bool)), this, SLOT(on_set_notes_clicked()));
@@ -599,6 +624,7 @@ void Courtroom::reset_widget_names()
       {"sfx_search", ui_sfx_search},
       {"ic_chat_name", ui_ic_chat_showname},
       {"ao2_ic_chat_message", ui_ic_chat_message},
+      {"notify_popup", pNotifyPopup},
       // ui_muted
       {"ooc_chat_message", ui_ooc_chat_message},
       {"ooc_chat_name", ui_ooc_chat_name},
@@ -652,12 +678,14 @@ void Courtroom::reset_widget_names()
       {"char_select_left", ui_chr_select_left},
       {"char_select_right", ui_chr_select_right},
       {"character_search", pCharaSelectSearch},
+      {"character_packages", pCharaSelectSeries},
       {"spectator", ui_spectator},
       {"player_list", ui_player_list},
       {"player_list_left", ui_player_list_left},
       {"player_list_right", ui_player_list_right},
       {"area_look", ui_area_look},
       {"area_desc", ui_area_desc},
+      {"pair_offset", pUIPairOffsetSlider},
       {"viewport_transition", SceneManager::get().GetTransition()},
   };
 }
@@ -901,6 +929,7 @@ void Courtroom::set_widgets()
   ThemeManager::get().refreshButtons();
   ThemeManager::get().refreshLineEdit();
   ThemeManager::get().refreshComboBox();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "SetWidget-ComboBox");
 
   setupWidgetElement(ui_viewport, "viewport");
   setupWidgetElement(SceneManager::get().GetTransition(), "viewport");
@@ -1170,6 +1199,9 @@ void Courtroom::set_widgets()
 
   update_music_text_anim();
 
+  set_size_and_pos(pNotifyPopup, "notify_popup", COURTROOM_DESIGN_INI, ao_app);
+  set_size_and_pos(pUIPairOffsetSlider, "pair_offset", COURTROOM_DESIGN_INI, ao_app);
+
   set_size_and_pos(ui_set_notes, "set_notes_button", COURTROOM_DESIGN_INI, ao_app);
   ui_set_notes->set_image("set_notes.png");
   ui_note_area->m_layout->setSpacing(10);
@@ -1187,7 +1219,6 @@ void Courtroom::set_widgets()
 
 
   set_size_and_pos(ui_player_list, "player_list", COURTROOM_DESIGN_INI, ao_app);
-  construct_emote_page_layout();
 
   list_note_files();
 
@@ -1212,6 +1243,7 @@ void Courtroom::set_widgets()
   set_fonts();
 
   Q_EMIT loaded_theme();
+
 }
 
 void Courtroom::setupWidgetElement(QWidget *widget, QString name, bool visible)

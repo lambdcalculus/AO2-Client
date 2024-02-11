@@ -21,6 +21,7 @@
 #include <QRadioButton>
 #include <QSlider>
 #include <QSpinBox>
+#include <QStringListModel>
 #include <QTabWidget>
 
 AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
@@ -37,7 +38,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   loader.load_from_file(":res/ui/config_panel.ui", this);
 
   // tab
-  QTabWidget *tab_widget = AO_GUI_WIDGET(QTabWidget, "tab_widget");
+  tab_widget = AO_GUI_WIDGET(QTabWidget, "tab_widget");
   setFocusProxy(tab_widget);
   tab_widget->setCurrentIndex(0);
 
@@ -45,6 +46,20 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_save = AO_GUI_WIDGET(QPushButton, "save");
   ui_close = AO_GUI_WIDGET(QPushButton, "close");
   ui_autosave = AO_GUI_WIDGET(QCheckBox, "autosave");
+
+  pTabFilters = AO_GUI_WIDGET(QListView, "tabFilterListView");
+
+  QStringListModel *model = new QStringListModel(this);
+  QStringList items;
+  items << "General" << "Audio" << "Content" << "Message" << "Advanced" << "About";
+  model->setStringList(items);
+  pTabFilters->setModel(model);
+  QModelIndex firstIndex = model->index(0, 0);
+
+
+  connect(pTabFilters->selectionModel(), &QItemSelectionModel::currentChanged, this, &AOConfigPanel::updateTabsVisibility);
+
+  pTabFilters->setCurrentIndex(firstIndex);
 
   // notifications
   ui_clear_notifications = AO_GUI_WIDGET(QPushButton, "clear_notifications");
@@ -75,6 +90,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_chat_tick_interval = AO_GUI_WIDGET(QSpinBox, "chat_tick_interval");
   ui_emote_preview = AO_GUI_WIDGET(QCheckBox, "emote_preview");
   ui_sticky_sfx = AO_GUI_WIDGET(QCheckBox, "sticky_sfx");
+
 
   // IC message
   ui_length_threshold = AO_GUI_WIDGET(QSlider, "length_threshold");
@@ -140,6 +156,15 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_theme_resize = AO_GUI_WIDGET(QDoubleSpinBox, "themeResizeSpinbox");
   ui_fade_duration = AO_GUI_WIDGET(QSpinBox, "FadeDurationBox");
 
+  volumeSliderMap = {
+      {ui_master, ui_master_value},
+      {ui_system, ui_system_value},
+      {ui_effect, ui_effect_value},
+      {ui_music, ui_music_value},
+      {ui_video, ui_video_value}, // Corrected entry
+      {ui_blip, ui_blip_value}
+  };
+
   // about
   ui_about = AO_GUI_WIDGET(QLabel, "about_label");
 
@@ -147,11 +172,6 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_packages_list = AO_GUI_WIDGET(QListWidget, "packages_list");
   ui_load_new_packages = AO_GUI_WIDGET(QPushButton, "load_new_packages");
   refresh_packages_list();
-
-  //updates
-  //ui_check_updates = AO_GUI_WIDGET(QPushButton, "checkUpdatesButton");
-  //ui_beta_updates = AO_GUI_WIDGET(QCheckBox, "useBetaUpdates");
-  //ui_beta_updates->setChecked(check_updater_is_beta());
 
   // themes
   refresh_theme_list();
@@ -278,22 +298,25 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_log_is_recording, SIGNAL(toggled(bool)), m_config, SLOT(set_log_is_recording(bool)));
   connect(ui_suppress_background_audio, SIGNAL(toggled(bool)), m_config, SLOT(set_suppress_background_audio(bool)));
   connect(ui_device, SIGNAL(currentIndexChanged(int)), this, SLOT(on_device_current_index_changed(int)));
-  connect(ui_master, SIGNAL(valueChanged(int)), m_config, SLOT(set_master_volume(int)));
-  connect(ui_master, SIGNAL(valueChanged(int)), this, SLOT(on_master_value_changed(int)));
-  connect(ui_system, SIGNAL(valueChanged(int)), m_config, SLOT(set_system_volume(int)));
-  connect(ui_system, SIGNAL(valueChanged(int)), this, SLOT(on_system_value_changed(int)));
-  connect(ui_effect, SIGNAL(valueChanged(int)), m_config, SLOT(set_effect_volume(int)));
-  connect(ui_effect, SIGNAL(valueChanged(int)), this, SLOT(on_effect_value_changed(int)));
-  connect(ui_effect_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_effect_ignore_suppression(bool)));
-  connect(ui_music, SIGNAL(valueChanged(int)), m_config, SLOT(set_music_volume(int)));
-  connect(ui_music, SIGNAL(valueChanged(int)), this, SLOT(on_music_value_changed(int)));
-  connect(ui_music_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_music_ignore_suppression(bool)));
-  connect(ui_video, SIGNAL(valueChanged(int)), m_config, SLOT(set_video_volume(int)));
-  connect(ui_video, SIGNAL(valueChanged(int)), this, SLOT(on_video_value_changed(int)));
-  connect(ui_video_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_video_ignore_suppression(bool)));
-  connect(ui_blip, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_volume(int)));
-  connect(ui_blip, SIGNAL(valueChanged(int)), this, SLOT(on_blip_value_changed(int)));
-  connect(ui_blip_ignore_suppression, SIGNAL(toggled(bool)), m_config, SLOT(set_blip_ignore_suppression(bool)));
+
+
+  for (auto it = volumeSliderMap.constBegin(); it != volumeSliderMap.constEnd(); ++it)
+  {
+    connect(it.key(), &QAbstractSlider::valueChanged, this, &AOConfigPanel::on_volume_value_changed);
+  }
+
+  connect(ui_effect_ignore_suppression, &QAbstractButton::toggled, m_config, &AOConfig::set_effect_ignore_suppression);
+  connect(ui_music_ignore_suppression, &QAbstractButton::toggled, m_config, &AOConfig::set_music_ignore_suppression);
+  connect(ui_video_ignore_suppression, &QAbstractButton::toggled, m_config, &AOConfig::set_video_ignore_suppression);
+  connect(ui_blip_ignore_suppression, &QAbstractButton::toggled, m_config, &AOConfig::set_blip_ignore_suppression);
+
+  connect(ui_master, &QAbstractSlider::valueChanged, m_config, &AOConfig::set_master_volume);
+  connect(ui_system, &QAbstractSlider::valueChanged, m_config, &AOConfig::set_system_volume);
+  connect(ui_effect, &QAbstractSlider::valueChanged, m_config, &AOConfig::set_effect_volume);
+  connect(ui_music, &QAbstractSlider::valueChanged, m_config, &AOConfig::set_music_volume);
+  connect(ui_video, &QAbstractSlider::valueChanged, m_config, &AOConfig::set_video_volume);
+  connect(ui_blip, &QAbstractSlider::valueChanged, m_config, &AOConfig::set_blip_volume);
+
   connect(ui_blip_rate, SIGNAL(valueChanged(int)), m_config, SLOT(set_blip_rate(int)));
   connect(ui_punctuation_delay, SIGNAL(valueChanged(int)), m_config, SLOT(set_punctuation_delay(int)));
   connect(ui_blank_blips, SIGNAL(toggled(bool)), m_config, SLOT(set_blank_blips(bool)));
@@ -414,21 +437,13 @@ void AOConfigPanel::showEvent(QShowEvent *event)
 void AOConfigPanel::refresh_packages_list()
 {
   ui_packages_list->clear();
-
-  for (int i=0; i< ao_app->package_names.size(); i++)
-  {
-    QListWidgetItem* item = new QListWidgetItem(ao_app->package_names.at(i), ui_packages_list);
+  //Parse through the stored packages
+  for (const QString &package : ao_app->package_names) {
+    //Create the list widget item with the name of the package.
+    QListWidgetItem* item = new QListWidgetItem(package, ui_packages_list);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-    if(!ao_app->m_disabled_packages.contains(ao_app-> package_names.at(i)))
-    {
-      item->setCheckState(Qt::Checked);
-    }
-    else
-    {
-      item->setCheckState(Qt::Unchecked);
-    }
+    item->setCheckState(ao_app->m_disabled_packages.contains(package) ? Qt::Unchecked : Qt::Checked);
   }
-
 }
 
 void AOConfigPanel::refresh_theme_list()
@@ -707,34 +722,13 @@ void AOConfigPanel::on_audio_device_list_changed(QVector<DRAudioDevice> p_device
   update_audio_device_list();
 }
 
-void AOConfigPanel::on_master_value_changed(int p_num)
+void AOConfigPanel::on_volume_value_changed(int p_num)
 {
-  ui_master_value->setText(QString::number(p_num) + "%");
-}
-
-void AOConfigPanel::on_system_value_changed(int p_num)
-{
-  ui_system_value->setText(QString::number(p_num) + "%");
-}
-
-void AOConfigPanel::on_effect_value_changed(int p_num)
-{
-  ui_effect_value->setText(QString::number(p_num) + "%");
-}
-
-void AOConfigPanel::on_music_value_changed(int p_num)
-{
-  ui_music_value->setText(QString::number(p_num) + "%");
-}
-
-void AOConfigPanel::on_video_value_changed(int p_num)
-{
-  ui_video_value->setText(QString::number(p_num) + "%");
-}
-
-void AOConfigPanel::on_blip_value_changed(int p_num)
-{
-  ui_blip_value->setText(QString::number(p_num) + "%");
+  QSlider* slider = qobject_cast<QSlider*>(sender());
+  if (slider && volumeSliderMap.contains(slider)) {
+    QLabel* label = volumeSliderMap.value(slider);
+    label->setText(QString::number(p_num) + "%");
+  }
 }
 
 void AOConfigPanel::on_length_threshold_value_changed(int p_number)
@@ -777,6 +771,45 @@ void AOConfigPanel::set_caching_threshold(int p_number)
 {
   ui_caching_threshold->setValue(p_number);
   ui_caching_threshold_label->setText(QString::number(p_number) + "%");
+}
+
+void AOConfigPanel::updateTabsVisibility(const QModelIndex &current, const QModelIndex &previous)
+{
+  QString selected = current.data(Qt::DisplayRole).toString();
+
+  //Create a structure to store which tabs are used for each category
+  struct TabInfo
+  {
+    QVector<int> indices;
+    bool visible;
+    bool enabled;
+  };
+
+  std::map<QString, QVector<int>> tabInfoMap = {
+      {"General", {0, 1}},
+      {"Audio", {2}},
+      {"Content", {3, 4}},
+      {"Message", {5, 6, 7}},
+      {"Advanced", {8, 9}},
+      {"About", {10}}
+  };
+
+  for (int i = 0; i < 11; ++i) {
+    tab_widget->setTabVisible(i, false);
+    tab_widget->setTabEnabled(i, false);
+  }
+
+  tab_widget->setCurrentIndex(0);
+
+  if (tabInfoMap.find(selected) != tabInfoMap.end()) {
+    const QVector<int> info = tabInfoMap[selected];
+    for (int index : info)
+    {
+      tab_widget->setTabVisible(index, true);
+      tab_widget->setTabEnabled(index, true);
+    }
+  }
+
 }
 
 void AOConfigPanel::username_editing_finished()

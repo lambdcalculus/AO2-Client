@@ -18,10 +18,14 @@ public:
   QString character();
   void set_character(QString character, QString ini_character);
   void set_taken(const bool);
-
 signals:
   void mouse_entered(AOCharButton *p_caller);
   void mouse_left();
+
+private slots:
+  void addToFavorites();
+  void removeFavorites();
+  void openCharacterFolder();
 
 protected:
   void enterEvent(QEvent *e);
@@ -34,6 +38,8 @@ private:
 
   QLabel *ui_character = nullptr;
   AOImageDisplay *ui_taken = nullptr;
+
+  void showContextMenu(QPoint pos);
 };
 
 #endif // AOCHARBUTTON_H
