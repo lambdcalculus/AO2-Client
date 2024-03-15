@@ -21,8 +21,11 @@
 #include <QRadioButton>
 #include <QSlider>
 #include <QSpinBox>
+#include <QStandardItemModel>
 #include <QStringListModel>
 #include <QTabWidget>
+
+#include <modules/theme/thememanager.h>
 
 AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
     : QWidget(p_parent)
@@ -74,6 +77,8 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_discord_hide_character = AO_GUI_WIDGET(QCheckBox, "discord_hide_character");
 
   // game
+  //ui_themeModules = AO_GUI_WIDGET(QTreeView, "themeModules");
+
   ui_theme = AO_GUI_WIDGET(QComboBox, "theme");
   ui_switch_theme = AO_GUI_WIDGET(QPushButton, "switch_theme");
   ui_reload_theme = AO_GUI_WIDGET(QPushButton, "reload_theme");
@@ -576,6 +581,7 @@ void AOConfigPanel::update_theme_controls()
 
 void AOConfigPanel::on_switch_theme_clicked()
 {
+  ThemeManager::get().toggleReload();
   m_config->set_theme(ui_theme->currentText());
 }
 
@@ -602,6 +608,7 @@ void AOConfigPanel::on_check_for_updates_clicked()
 
 void AOConfigPanel::on_reload_theme_clicked()
 {
+  ThemeManager::get().toggleReload();
   Q_EMIT reload_theme();
 }
 

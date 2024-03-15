@@ -42,22 +42,45 @@ void DRStickerViewer::maybe_hide()
   }
 }
 
-void DRStickerViewer::set_chatbox_image(QString p_chatbox_name, bool p_is_self, bool chatmessage_is_empty)
+void DRStickerViewer::set_chatbox_image(QString p_chatbox_name, bool p_is_self, bool chatmessage_is_empty, QString pair)
 {
   if(chatmessage_is_empty) return;
+  QStringList targetChatboxes = {};
+
+  bool usePairChatbox = false;
+  if(pair == "left" || pair == "right") usePairChatbox = true;
+
+  if(usePairChatbox)
+  {
+    if(p_is_self)
+    {
+      targetChatboxes.append("chatmed_self_" + pair);
+    }
+    targetChatboxes.append("chatmed_" + pair);
+  }
+
+  if(p_is_self)
+  {
+    targetChatboxes.append("chatmed_self");
+  }
+
+  targetChatboxes.append("chatmed");
+
+
+
   QString l_target_file = ao_app->find_asset_path(ao_app->get_base_path() + "misc/" + p_chatbox_name + ".png");
   if (l_target_file.isEmpty())
   {
-    l_target_file = ao_app->find_theme_asset_path("chatmed", animated_or_static_extensions());
 
-    if (p_is_self)
+    for(QString chatbox_type : targetChatboxes)
     {
-      const QString l_self_file = ao_app->find_theme_asset_path("chatmed_self", animated_or_static_extensions());
-      if (!l_self_file.isEmpty())
+      l_target_file = ao_app->find_theme_asset_path(chatbox_type, animated_or_static_extensions());
+      if (!l_target_file.isEmpty())
       {
-        l_target_file = l_self_file;
+        break;
       }
     }
+
   }
 
   if (l_target_file.isEmpty())

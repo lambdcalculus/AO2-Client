@@ -1,9 +1,18 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include "qvector2d.h"
 #include <QDateTime>
 #include <QMap>
 #include <QVector>
+
+enum ThemeSceneType
+{
+  LOBBY,
+  COURTROOM,
+  TESTINGLABS,
+  REPLAYS
+};
 
 class DREmote
 {
@@ -165,6 +174,31 @@ struct pos_size_type
   int y = 0;
   int width = 0;
   int height = 0;
+};
+
+struct dialogueHighlights
+{
+  QString chars = "";
+  QString color = "#FFFFFF";
+  bool keepCharacters = false;
+};
+
+struct widgetFontStruct
+{
+  QString font = "";
+  int size = 20;
+  bool bold = false;
+  bool sharp = false;
+  bool outline = false;
+  QString color = "#FFFFFF";
+  QString align = "left";
+};
+
+struct WidgetThemeData
+{
+  pos_size_type Transform;
+  widgetFontStruct *Font = nullptr;
+  QVector2D Spacing = QVector2D(-1, -1);
 };
 
 enum SpriteCategory

@@ -1,6 +1,7 @@
 #ifndef PAIRMANAGER_H
 #define PAIRMANAGER_H
 
+#include "datatypes.h"
 #include <QSlider>
 #include <QString>
 
@@ -33,6 +34,10 @@ public:
   bool GetCanPair();
   bool GetSpriteIsVisible();
 
+
+  void ThemeReload();
+
+  pos_size_type GetElementAlignment(QString name, QString alighment);
 private:
   PairManager() {}
   static PairManager s_Instance;
@@ -49,6 +54,8 @@ private:
   int mLocalOffset = 0;
 
   QSlider *pSliderWidget = nullptr;
+
+  QHash<QString, pos_size_type> mPairChatboxPositions = {};
 };
 
 #endif // PAIRMANAGER_H

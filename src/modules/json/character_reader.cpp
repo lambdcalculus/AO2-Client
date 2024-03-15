@@ -29,7 +29,7 @@ QString CharacterReader::getGender()
 
 QStringList CharacterReader::getOutfitFolders()
 {
-
+  return {};
 }
 
 

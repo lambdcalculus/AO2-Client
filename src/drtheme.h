@@ -41,11 +41,7 @@ public:
 
 
   //Font Functions
-  QString get_widget_font_name(QString p_identifier, QString p_scene);
-  bool get_widget_font_bool(QString p_identifier, QString p_scene, QString p_param);
   bool get_widget_font_bool(QString p_identifier, QString p_scene, QString p_param, QString p_type);
-  int get_widget_font_int(QString p_identifier, QString p_scene, QString p_param);
-  QColor get_widget_font_color(QString p_identifier, QString p_scene);
   QColor get_widget_font_color(QString p_identifier, QString p_scene, QString p_type);
 
   int get_music_name_speed();

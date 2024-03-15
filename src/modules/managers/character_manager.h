@@ -15,15 +15,16 @@ public:
     return s_Instance;
   }
 
+  QString lastCharList = "Server Characters";
   QVector<char_type> GetCharList();
   QVector<char_type> GetCharList(QString package);
+  QVector<char_type> GetLastCharList();
   QVector<char_type> GetServerCharList();
 
   QString GetFilteredCharaName(int id);
   QString GetServerCharaName(int id);
 
-
-
+  void ResetPackages();
   void SetCharList(QVector<char_type> charList);
   void SetCharList(QString package, QVector<char_type> charList);
 
@@ -48,6 +49,7 @@ public:
   bool GetCharacterInServer(QString name);
   bool GetCharacterInServer(int filterID);
   int GetFilteredId(int Id);
+  int GetFilteredId(QString name);
 private:
   CharacterManager()
   {
@@ -57,7 +59,7 @@ private:
 
   QHash<QString, bool>CharacterTaken = {};
 
-  QStringList mCharacterPackages = {"Server Characters", "Favorites"};
+  QStringList mCharacterPackages = {"Server Characters", "Favorites", "All"};
 
 };
 

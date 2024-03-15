@@ -75,7 +75,7 @@ void drSetItemIcon(QComboBox *p_widget, const int p_index, const QString &p_chr_
 
 void Courtroom::update_iniswap_list()
 {
-  ui_iniswap_dropdown->setEditable(false);
+  //ui_iniswap_dropdown->setEditable(false);
 
   {
     QSignalBlocker b_ini_list(ui_iniswap_dropdown);
@@ -132,7 +132,7 @@ void Courtroom::UpdateIniswapList()
   update_default_iniswap_item();
   select_base_character_iniswap();
   iniswapTimer = new QTimer(this);
-  UpdateIniswapIcons(true, 2);
+  //UpdateIniswapIcons(true, 2);
   update_iniswap_dropdown_searchable();
 
 
@@ -239,5 +239,14 @@ void Courtroom::update_iniswap_dropdown_searchable()
     l_list->setTextElideMode(Qt::TextElideMode::ElideNone);
     l_list->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
   }
+}
+
+void Courtroom::UpdateIniswapStylesheet()
+{
+  update_iniswap_dropdown_searchable();
+  ui_iniswap_dropdown->blockSignals(true);
+  ui_iniswap_dropdown->clear();
   set_stylesheet(ui_iniswap_dropdown, "[INISWAP DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
+  update_iniswap_list();
+  ui_iniswap_dropdown->blockSignals(false);
 }

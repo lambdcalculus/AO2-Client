@@ -30,6 +30,11 @@ void JSONReader::SetTargetObject(QString string)
   SetTargetObject(mTargetObject.value(string).toObject());
 }
 
+bool JSONReader::ValueExists(QString value)
+{
+  return mTargetObject.contains(value);
+}
+
 QString JSONReader::getStringValue(QString string)
 {
   return mTargetObject.value(string).toString();
@@ -58,9 +63,9 @@ QJsonArray JSONReader::getArrayValue(QString string)
 return mTargetObject.value(string).toArray();
 }
 
-QVector<QString> JSONReader::getStringArrayValue(QString string)
+QStringList JSONReader::getStringArrayValue(QString string)
 {
-  QVector<QString> return_data = {};
+  QStringList return_data = {};
   QJsonArray data = mTargetObject.value(string).toArray();
 
   for(QJsonValueRef ref : data)

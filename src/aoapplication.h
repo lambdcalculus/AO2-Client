@@ -100,6 +100,8 @@ public:
   QString find_theme_asset_path(QString file);
   QString find_current_theme_path();
 
+  QString getCurrentTheme();
+
   QString get_case_sensitive_path(QString p_file);
 
   ////// Functions for accessing the config panel //////
@@ -278,6 +280,8 @@ public:
 public:
   bool notify(QObject *receiver, QEvent *event) override;
   void setInstance(AOApplication *newInstance);
+  QString getCurrentGamemode();
+  QString getCurrentTime();
 };
 
 #endif // AOAPPLICATION_H

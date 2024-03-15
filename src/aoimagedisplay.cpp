@@ -5,6 +5,7 @@
 #include "aoapplication.h"
 #include "aopixmap.h"
 #include "file_functions.h"
+#include "modules/theme/thememanager.h"
 
 /*!
  * @class AOImageDisplay
@@ -24,8 +25,17 @@ QString AOImageDisplay::get_image()
 void AOImageDisplay::set_image(QString p_image)
 {
   m_image = p_image;
-  AOPixmap l_pixmap(p_image);
-  setPixmap(l_pixmap.scale(size()));
+  if(!ThemeManager::get().mCurrentThemeReader.pixmapExists(p_image))
+  {
+    qDebug() << "[AOPixmap] Failed to find in theme, loading manually: " + p_image;
+    AOPixmap l_pixmap(p_image);
+    setPixmap(l_pixmap.scale(size()));
+  }
+  else
+  {
+    qDebug() << "[AOPixmap] Found in theme, loading: " + p_image;
+    setPixmap(ThemeManager::get().mCurrentThemeReader.getPixmap(p_image).scale(size()));//->scale(size()));
+  }
 }
 
 void AOImageDisplay::set_theme_image(QString p_image)

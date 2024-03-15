@@ -19,7 +19,7 @@ void TimeDebugger::CheckpointTimer(QString name, QString checkpoint)
   if(CurrentTimers.contains(name))
   {
     qint64 Time = CurrentTimers[name].elapsed();
-    QString message = "[" + name + "] Timer checkpoint " + checkpoint + " currently at " + QString::number(CurrentTimers[name].elapsed()) + "ms ";
+    QString message = "[" + QString::number(CurrentTimers[name].elapsed()) + "ms][" + checkpoint + "][" + name + "] Checkpoint!";
     if(mLastCheckpoint.contains(name)) message.append("(" + QString::number(Time - mLastCheckpoint[name]) + "ms since last checkpoint.)");
     qDebug() << message;
     mLastCheckpoint[name] = Time;

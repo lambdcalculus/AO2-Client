@@ -472,7 +472,7 @@ private:
   void map_viewers();
   void map_viewport_viewers();
   void map_viewport_readers();
-  void setup_screenshake_anim();
+  void setup_screenshake_anim(double message_offset);
   void play_screenshake_anim();
   mk2::SpriteReader::ptr get_viewport_reader(ViewportSprite type) const;
   void assign_readers_for_all_viewers();
@@ -642,6 +642,8 @@ private:
   AOButton *ui_chr_select_right = nullptr;
 
   AOButton *ui_spectator = nullptr;
+  AOButton *pBtnCharSelectRefresh = nullptr;
+  AOButton *pBtnCharSelectRandom = nullptr;
 
   QHash<QString, QWidget *> widget_names;
 
@@ -790,6 +792,7 @@ private slots:
   void on_iniswap_dropdown_changed(int p_index);
   void onCharacterSelectPackageChanged(int p_index);
   void update_iniswap_dropdown_searchable();
+  void UpdateIniswapStylesheet();
   void on_pos_dropdown_changed();
 
   void on_cycle_clicked();
@@ -866,6 +869,8 @@ private slots:
   void char_mouse_left();
 
   void on_spectator_clicked();
+  void OnCharRefreshClicked();
+  void OnCharRandomClicked();
 
   //Player List
 

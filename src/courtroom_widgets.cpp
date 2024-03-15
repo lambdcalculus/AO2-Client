@@ -335,8 +335,6 @@ void Courtroom::create_widgets()
   ui_player_list_right = setupButtonWidget("player_list_right", "arrow_right.png", "->");
   ui_area_look = setupButtonWidget("area_look", "area_look.png", "Look");
 
-  setup_screenshake_anim();
-
   construct_playerlist();
 
   construct_char_select();
@@ -680,6 +678,8 @@ void Courtroom::reset_widget_names()
       {"character_search", pCharaSelectSearch},
       {"character_packages", pCharaSelectSeries},
       {"spectator", ui_spectator},
+      {"char_select_refresh", pBtnCharSelectRefresh},
+      {"char_select_random", pBtnCharSelectRandom},
       {"player_list", ui_player_list},
       {"player_list_left", ui_player_list_left},
       {"player_list_right", ui_player_list_right},
@@ -924,9 +924,13 @@ void Courtroom::set_widgets()
 
   ui_background->move(0, 0);
   ui_background->resize(m_default_size);
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Resize");
   ui_background->set_theme_image(ao_app->current_theme->get_widget_image("courtroom", "courtroombackground.png", "courtroom"));
 
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Background");
+
   ThemeManager::get().refreshButtons();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "SetWidget-BUttons");
   ThemeManager::get().refreshLineEdit();
   ThemeManager::get().refreshComboBox();
   TimeDebugger::get().CheckpointTimer("Courtroom Setup", "SetWidget-ComboBox");
@@ -938,6 +942,7 @@ void Courtroom::set_widgets()
   setupWidgetElement(ui_vp_showname, "showname");
   setupWidgetElement(ui_vp_showname_image, "showname_image");
   setupWidgetElement(ui_vp_message, "message", "", Qt::NoTextInteraction);
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Setup Viewport Widgets");
 
   set_size_and_pos(ui_vp_chat_arrow, "chat_arrow", COURTROOM_DESIGN_INI, ao_app);
 
@@ -1031,23 +1036,32 @@ void Courtroom::set_widgets()
   construct_emote_page_layout();
 
 
-  { // emote preview
-    pos_size_type l_emote_preview_size = ao_app->get_element_dimensions("emote_preview", COURTROOM_DESIGN_INI);
-    if (l_emote_preview_size.width <= 0 || l_emote_preview_size.height <= 0)
-    {
-      l_emote_preview_size.width = 320;
-      l_emote_preview_size.height = 192;
+
+  if(ThemeManager::get().getReloadPending())
+  {
+    { // emote preview
+      pos_size_type l_emote_preview_size = ao_app->get_element_dimensions("emote_preview", COURTROOM_DESIGN_INI);
+      if (l_emote_preview_size.width <= 0 || l_emote_preview_size.height <= 0)
+      {
+        l_emote_preview_size.width = 320;
+        l_emote_preview_size.height = 192;
+      }
+      ui_emote_preview->resize(l_emote_preview_size.width, l_emote_preview_size.height);
+      ui_emote_preview_background->set_theme_image("emote_preview.png");
+      ui_emote_preview_character->set_size(QSizeF(l_emote_preview_size.width, l_emote_preview_size.height));
+      TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Emote Preview");
     }
-    ui_emote_preview->resize(l_emote_preview_size.width, l_emote_preview_size.height);
-    ui_emote_preview_background->set_theme_image("emote_preview.png");
-    ui_emote_preview_character->set_size(QSizeF(l_emote_preview_size.width, l_emote_preview_size.height));
   }
+
 
   set_size_and_pos(ui_emote_dropdown, "emote_dropdown", COURTROOM_DESIGN_INI, ao_app);
   set_stylesheet(ui_emote_dropdown, "[EMOTE DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Emote Drowndown");
+
   set_size_and_pos(ui_iniswap_dropdown, "iniswap_dropdown", COURTROOM_DESIGN_INI, ao_app);
-  update_iniswap_dropdown_searchable();
+  UpdateIniswapStylesheet();
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Iniswap Dropdown");
 
   set_size_and_pos(ui_pos_dropdown, "pos_dropdown", COURTROOM_DESIGN_INI, ao_app);
   set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
@@ -1061,6 +1075,8 @@ void Courtroom::set_widgets()
     set_size_and_pos(ui_shouts[i], shout_names[i], COURTROOM_DESIGN_INI, ao_app);
   }
   reset_shout_buttons();
+
+  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Shout Buttons");
 
 
   // courtroom_config.ini necessary + check for crash
@@ -1675,7 +1691,7 @@ void Courtroom::set_fonts()
   }
 }
 
-void Courtroom::setup_screenshake_anim()
+void Courtroom::setup_screenshake_anim(double message_offset)
 {
   pos_size_type chatbox_res = ao_app->get_element_dimensions("ao2_chatbox", COURTROOM_DESIGN_INI);
 
@@ -1695,10 +1711,10 @@ void Courtroom::setup_screenshake_anim()
 
   player_sprite_anim->setLoopCount(5);
   player_sprite_anim->setDuration(50);
-  player_sprite_anim->setStartValue(QPoint(0 - 25, 0 + 20));
-  player_sprite_anim->setKeyValueAt(0.30, QPoint(0, 0));
-  player_sprite_anim->setKeyValueAt(0.60, QPoint(0 + 25, 0 + 20));
-  player_sprite_anim->setEndValue(QPoint(0, 0));
+  player_sprite_anim->setStartValue(QPoint(message_offset - 25, 0 + 20));
+  player_sprite_anim->setKeyValueAt(0.30, QPoint(message_offset, 0));
+  player_sprite_anim->setKeyValueAt(0.60, QPoint(message_offset + 25, 0 + 20));
+  player_sprite_anim->setEndValue(QPoint(message_offset, 0));
 
 }
 

@@ -10,6 +10,8 @@ class AOConfig;
 #include <QDoubleSpinBox>
 #include <QMap>
 #include <QWidget>
+#include <qtableview.h>
+#include <qtreeview.h>
 
 class QCheckBox;
 class QComboBox;
@@ -131,6 +133,7 @@ private:
   QComboBox *ui_theme = nullptr;
   QPushButton *ui_switch_theme = nullptr;
   QPushButton *ui_reload_theme = nullptr;
+  QTreeView *ui_themeModules = nullptr;
   QLineEdit *ui_gamemode = nullptr;
   QComboBox *ui_manual_gamemode = nullptr;
   QCheckBox *ui_manual_gamemode_selection = nullptr;

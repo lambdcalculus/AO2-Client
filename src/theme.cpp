@@ -16,6 +16,8 @@
 #include "drtextedit.h"
 #include "drtheme.h"
 
+#include <modules/theme/thememanager.h>
+
 void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
 {
   pos_size_type design_ini_result = ao_app->get_element_dimensions(p_identifier, p_ini_file);
@@ -38,6 +40,9 @@ void set_text_alignment_or_default(QWidget *p_widget, QString p_identifier, QStr
                                    std::string p_property, Qt::Alignment p_default_horizontal,
                                    Qt::Alignment p_default_vertical)
 {
+
+
+
   const QStringList l_values =
       ao_app->current_theme->get_widget_font_string_setting(p_identifier, "align", p_ini_file, p_identifier + "_align").split(",", DR::SkipEmptyParts);
   if (!p_widget->property(p_property.c_str()).isValid())
@@ -51,6 +56,22 @@ void set_text_alignment_or_default(QWidget *p_widget, QString p_identifier, QStr
                                      .value(l_values.value(1).trimmed().toLower(), p_default_vertical)));
 }
 
+void set_text_alignment_or_default(QWidget *p_widget, widgetFontStruct font_data, AOApplication *ao_app,
+                                   std::string p_property, Qt::Alignment p_default_horizontal,
+                                   Qt::Alignment p_default_vertical)
+{
+  const QStringList l_values = font_data.align.split(",", DR::SkipEmptyParts);
+  if (!p_widget->property(p_property.c_str()).isValid())
+    return;
+  p_widget->setProperty(p_property.c_str(),
+                        QVariant(QHash<QString, Qt::Alignment>{
+                                                               {"left", Qt::AlignLeft}, {"center", Qt::AlignHCenter}, {"right", Qt::AlignRight}}
+                                     .value(l_values.value(0).trimmed().toLower(), p_default_horizontal) |
+                                 QHash<QString, Qt::Alignment>{
+                                                               {"top", Qt::AlignTop}, {"center", Qt::AlignVCenter}, {"bottom", Qt::AlignBottom}}
+                                     .value(l_values.value(1).trimmed().toLower(), p_default_vertical)));
+}
+
 void set_text_alignment(QWidget *p_widget, QString p_identifier, QString p_ini_file, AOApplication *ao_app)
 {
   set_text_alignment_or_default(p_widget, p_identifier, p_ini_file, ao_app, "alignment", Qt::AlignLeft,
@@ -60,8 +81,8 @@ void set_text_alignment(QWidget *p_widget, QString p_identifier, QString p_ini_f
 void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOApplication *ao_app)
 {
 
-  QString l_scene = "lobby";
-  if(ini_file == COURTROOM_FONTS_INI) l_scene = "courtroom";
+  ThemeSceneType l_scene = LOBBY;
+  if(ini_file == COURTROOM_FONTS_INI) l_scene = COURTROOM;
 
 
   QString class_name = p_widget->metaObject()->className();
@@ -81,11 +102,12 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
 
   if(ao_app->current_theme->m_jsonLoaded)
   {
-    font_name = ao_app->current_theme->get_widget_font_name(p_identifier, l_scene);
-    is_bold = ao_app->current_theme->get_widget_font_bool(p_identifier, l_scene, "bold");
-    is_antialias = ao_app->current_theme->get_widget_font_bool(p_identifier, l_scene, "sharp");
-    f_weight = ao_app->current_theme->get_widget_font_int(p_identifier, l_scene, "size");
-    l_font_color = ao_app->current_theme->get_widget_font_color(p_identifier, l_scene);
+    widgetFontStruct fontdata = ThemeManager::get().mCurrentThemeReader.getFont(l_scene, p_identifier);
+    font_name = fontdata.font;
+    is_bold = fontdata.bold;
+    is_antialias = fontdata.sharp;
+    f_weight = fontdata.size;
+    l_font_color = fontdata.color;
   }
   else
   {
@@ -132,7 +154,7 @@ void set_drtextedit_font(DRTextEdit *p_widget, QString p_identifier, QString p_i
 
   if(ao_app->current_theme->m_jsonLoaded)
   {
-    outline = ao_app->current_theme->get_widget_font_bool(p_identifier, l_scene, "outline");
+    outline = ThemeManager::get().mCurrentThemeReader.getFont(COURTROOM, p_identifier).outline;
   }
   else
   {
@@ -186,4 +208,51 @@ void set_sticker_play_once(DRStickerViewer *p_sticker, QString p_identifier, QSt
   {
     p_sticker->start();
   }
+}
+
+void setShownameFont(DRTextEdit *widget, QString identifier, QString align, AOApplication *ao_app)
+{
+  widgetFontStruct fontData = ThemeManager::get().mCurrentThemeReader.getPairingFont(identifier, align);
+
+  setThemeFont(widget, fontData, ao_app);
+
+  bool outline = fontData.outline;
+
+  widget->set_outline(outline);
+
+  set_text_alignment_or_default(widget, fontData, ao_app, "text_alignment", Qt::AlignLeft, Qt::AlignTop);
+}
+
+void setThemeFont(QWidget *widget, widgetFontStruct font_data, AOApplication *ao_app)
+{
+
+  QString class_name = widget->metaObject()->className();
+
+  QFont l_font;
+  // Font priority
+  // 1. "font_" + p_identifier
+  // 2. "font_default"
+  // 3. System font
+  QFontDatabase font_database;
+
+  bool is_antialias = font_data.sharp;
+
+  if (!font_data.font.isEmpty())
+  {
+    l_font.setFamily(font_data.font);
+  }
+
+
+  l_font.setPointSize(font_data.size);
+  l_font.setBold(font_data.bold);
+
+  if(is_antialias) l_font.setStyleStrategy(QFont::NoAntialias);
+  else{l_font.setStyleStrategy(QFont::PreferDefault);}
+
+  widget->setFont(l_font);
+
+  QString style_sheet_string = class_name + " { " + "background-color: rgba(0, 0, 0, 0);\n" +
+                               "color: " + QColor(font_data.color).name(QColor::HexArgb) + ";\n" + (font_data.bold ? "font: bold;" : "") +
+                               "}";
+  widget->setStyleSheet(style_sheet_string);
 }

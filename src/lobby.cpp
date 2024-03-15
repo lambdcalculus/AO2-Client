@@ -13,6 +13,7 @@
 #include "drserverinfoeditor.h"
 #include "drtextedit.h"
 #include "drtheme.h"
+#include "modules/managers/scene_manager.h"
 #include "theme.h"
 #include "version.h"
 
@@ -522,6 +523,7 @@ void Lobby::on_add_to_fav_released()
 
 void Lobby::on_connect_pressed()
 {
+  SceneManager::get().clearPlayerDataList();
   ui_connect->set_image("connect_pressed.png");
 }
 

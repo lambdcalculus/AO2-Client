@@ -31,12 +31,15 @@ void Courtroom::construct_char_select()
   ui_char_button_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_char_button_selector->resize(62, 62);
 
-  ui_back_to_lobby = setupButtonWidget("back_to_lobby", "lobby_return_image.png", "Back to Lobby", ui_char_select_background);
+  ui_back_to_lobby = setupButtonWidget("back_to_lobby", "lobby_return.png", "Back to Lobby", ui_char_select_background);
 
   ui_chr_select_left = setupButtonWidget("char_select_left", "arrow_left.png", "", ui_char_select_background);
   ui_chr_select_right = setupButtonWidget("char_select_right", "arrow_right.png", "", ui_char_select_background);
 
-  ui_spectator = setupButtonWidget("spectator", "spectator_image.png", "Spectator", ui_char_select_background);
+  ui_spectator = setupButtonWidget("spectator", "spectator.png", "Spectator", ui_char_select_background);
+
+  pBtnCharSelectRandom = setupButtonWidget("char_select_random", "char_random.png", "Random", ui_char_select_background);
+  pBtnCharSelectRefresh = setupButtonWidget("char_select_refresh", "char_refresh.png", "Refresh", ui_char_select_background);
 
   pCharaSelectSearch = setupLineEditWidget("character_search", "Search for a Character", "[CHARA SEARCH]", "", ui_char_select_background);
   pCharaSelectSeries = setupComboBoxWidget(CharacterManager::get().GetCharacterPackages() , "character_packages", "[PACKAGE FILTER]");
@@ -50,6 +53,9 @@ void Courtroom::construct_char_select()
   connect(ao_config, SIGNAL(character_ini_changed(QString)), this, SLOT(update_character_icon(QString)));
 
   connect(ui_spectator, SIGNAL(clicked()), this, SLOT(on_spectator_clicked()));
+
+  connect(pBtnCharSelectRefresh, SIGNAL(clicked()), this, SLOT(OnCharRefreshClicked()));
+  connect(pBtnCharSelectRandom, SIGNAL(clicked()), this, SLOT(OnCharRandomClicked()));
 
   reconstruct_char_select();
 }

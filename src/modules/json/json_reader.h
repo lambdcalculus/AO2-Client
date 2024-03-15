@@ -19,12 +19,13 @@ public:
   void SetTargetObject(QJsonObject target);
   void SetTargetObject(QString string);
 
+  bool ValueExists(QString value);
   QString getStringValue(QString string);
   bool getBoolValue(QString string);
   int getIntValue(QString string);
   QVector2D getVector2DValue(QString string);
   QJsonArray getArrayValue(QString string);
-  QVector<QString> getStringArrayValue(QString string);
+  QStringList getStringArrayValue(QString string);
 
   QJsonDocument mDocument;
   QJsonObject mMainObject;

@@ -16,6 +16,7 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
     : QWidget(p_parent)
 {
 
+  double themeResize = ThemeManager::get().getResize();
   int resize_height = (int)((float)50 * ThemeManager::get().getResize());
 
     ao_app = p_ao_app;
@@ -30,7 +31,7 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
     set_stylesheet(ui_showname, "[PLAYER NAME]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
     ui_user_image = new AOImageDisplay(this, ao_app);
-    ui_user_image->move(5, 5);
+    ui_user_image->move((int)((float)5 * themeResize), (int)((float)5 * themeResize));
     ui_user_image->resize((int)((float)40 * ThemeManager::get().getResize()), (int)((float)40 * ThemeManager::get().getResize()));
 
 

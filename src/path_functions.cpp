@@ -13,6 +13,8 @@
 #include <QFileInfo>
 #include <QRegExp>
 
+#include <modules/theme/thememanager.h>
+
 // Copied over from Vanilla.
 // As said in the comments there, this is a *super broad* definition.
 // Linux is guaranteed to be case-sensitive, however, in case of Mac, it...
@@ -25,6 +27,7 @@
 
 void AOApplication::reload_packages()
 {
+  CharacterManager::get().ResetPackages();
   package_names = {};
 
   QString packages_path = DRPather::get_application_path() + "/packages/";
@@ -330,7 +333,14 @@ QString AOApplication::find_asset_path(QString p_file)
  */
 QString AOApplication::find_theme_asset_path(QString p_file, QStringList p_extension_list)
 {
-  QStringList l_path_list;
+  QStringList themeManagerDirs = ThemeManager::get().mCurrentThemeReader.getThemeDirOrder();
+
+  QStringList l_path_list = {};
+
+  for(QString path : themeManagerDirs)
+  {
+    l_path_list.append(path + "/" + p_file);
+  }
 
   // Only add gamemode and/or time of day if non empty.
   const QString l_gamemode =
@@ -369,3 +379,19 @@ QString AOApplication::find_current_theme_path()
 {
   return get_package_or_base_path("themes/" + ao_config->theme());
 }
+
+QString AOApplication::getCurrentTheme()
+{
+  return ao_config->theme();
+}
+
+QString AOApplication::getCurrentGamemode()
+{
+  return ao_config->is_manual_gamemode_selection_enabled() ? ao_config->manual_gamemode() : ao_config->gamemode();
+}
+
+QString AOApplication::getCurrentTime()
+{
+  return ao_config->is_manual_timeofday_selection_enabled() ? ao_config->manual_timeofday() : ao_config->timeofday();
+}
+

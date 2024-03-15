@@ -17,6 +17,9 @@ DRTheme::DRTheme(AOApplication *p_ao_app)
 
 void DRTheme::InitTheme()
 {
+  ThemeManager::get().LoadTheme(ao_app->getCurrentTheme());
+  ThemeManager::get().LoadGamemode(ao_app->getCurrentGamemode());
+  ThemeManager::get().mCurrentThemeReader.SetTime(ao_app->getCurrentTime());
   const QString l_json_path = ao_app->find_theme_asset_path(THEME_JSON);
   m_themePath = ao_app->find_current_theme_path();
 
@@ -47,33 +50,7 @@ void DRTheme::InitTheme()
 
 void DRTheme::setup_layers()
 {
-  widget_layers = {};
-  QJsonValue layers_value = m_currentThemeObject.value(QString("layers"));
-  QJsonArray layers_array = layers_value.toArray();
-
-  for(QJsonValueRef i : layers_array)
-  {
-    QStringList layer_info = {};
-    QJsonObject layer_object = i.toObject();
-    QString widget_name = layer_object["widget_name"].toString();
-
-    if(!widget_name.isEmpty())
-    {
-      layer_info.append(widget_name);
-      QJsonArray children_array = layer_object["children"].toArray();
-
-      for(QJsonValueRef child_layer : children_array)
-      {
-        QString child_layer_value = child_layer.toString();
-        if(!child_layer_value.isEmpty())
-        {
-          layer_info.append(child_layer_value);
-        }
-      }
-      widget_layers.append(layer_info);
-    }
-  }
-
+  widget_layers = ThemeManager::get().mCurrentThemeReader.getLayers();
   return;
 }
 
@@ -199,11 +176,7 @@ bool DRTheme::read_config_bool(QString p_setting_name)
     return ao_app->read_theme_ini_bool(p_setting_name, COURTROOM_CONFIG_INI);
   }
 
-  QJsonValue value = m_currentThemeObject.value(QString("config"));
-  QJsonObject item = value.toObject();
-  bool return_value = item[p_setting_name].toBool();
-
-  return return_value;
+  return ThemeManager::get().getConfigBool(p_setting_name);
 }
 
 int DRTheme::read_config_int(QString p_setting_name)
@@ -213,6 +186,7 @@ int DRTheme::read_config_int(QString p_setting_name)
     return ao_app->read_theme_ini_int(p_setting_name, COURTROOM_CONFIG_INI);
   }
 
+  if(p_setting_name == "timer_number") return ThemeManager::get().mCurrentThemeReader.getTimerNumber();
   QJsonValue value = m_currentThemeObject.value(QString("config"));
   QJsonObject item = value.toObject();
   int return_value = item[p_setting_name].toInt();
@@ -222,42 +196,20 @@ int DRTheme::read_config_int(QString p_setting_name)
 
 QVector<QStringList>DRTheme::get_highlight_characters()
 {
-
-  QVector<QStringList> f_vec;
-
-  QJsonValue value = m_currentThemeObject.value(QString("config"));
-  QJsonObject item = value.toObject();
-  QJsonArray array = item["highlights"].toArray();
-
-  for(QJsonValueRef i : array)
-  {
-    QJsonObject arrayobject = i.toObject();
-
-    f_vec.append({arrayobject["chars"].toString(), arrayobject["color"].toString(), arrayobject["keep_characters"].toBool() ? "1" : "0"});
-  }
-
-  return f_vec;
+  return ThemeManager::get().mCurrentThemeReader.getHighlights();
 }
 
 pos_size_type DRTheme::get_element_dimensions(QString p_identifier, QString p_scene)
 {
-  pos_size_type return_value{0, 0, -1, -1};
-
-  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
-  QJsonObject item = value.toObject();
-  QJsonObject element_position = item[p_identifier].toObject();
-
-  if(!element_position.contains("position"))
+  if(p_scene == "courtroom")
   {
-    return return_value;
+    return ThemeManager::get().mCurrentThemeReader.getWidgetPosition(COURTROOM, p_identifier);
+  }
+  else
+  {
+    return ThemeManager::get().mCurrentThemeReader.getWidgetPosition(LOBBY, p_identifier);
   }
 
-  return_value.x =  ((float)element_position["position"].toObject()["x"].toInt() * ThemeManager::get().getResize());
-  return_value.y = ((float)element_position["position"].toObject()["y"].toInt() * ThemeManager::get().getResize());
-  return_value.width = ((float)element_position["position"].toObject()["width"].toInt() * ThemeManager::get().getResize());
-  return_value.height = ((float)element_position["position"].toObject()["height"].toInt() * ThemeManager::get().getResize());
-
-  return return_value;
 }
 
 QString DRTheme::get_widget_image(QString p_identifier, QString p_fallback, QString p_scene)
@@ -280,44 +232,6 @@ QString DRTheme::get_widget_image(QString p_identifier, QString p_fallback, QStr
 
 };
 
-QString DRTheme::get_widget_font_name(QString p_identifier, QString p_scene)
-{
-  if(!m_jsonLoaded)
-  {
-    return "";
-  }
-
-  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
-  QJsonObject item = value.toObject();
-  QJsonObject element_font = item[p_identifier].toObject();
-
-
-  if(!element_font["font"].toObject().contains("name"))
-  {
-    return "";
-  }
-
-  QString l_font_name = element_font["font"].toObject()["name"].toString();
-
-  return l_font_name;
-}
-
-bool DRTheme::get_widget_font_bool(QString p_identifier, QString p_scene, QString p_param)
-{
-  if(!m_jsonLoaded)
-  {
-    return false;
-  }
-
-  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
-  QJsonObject item = value.toObject();
-  QJsonObject element_font = item[p_identifier].toObject();
-
-  bool l_font_bool = element_font["font"].toObject()[p_param].toBool();
-
-  return l_font_bool;
-
-}
 
 QString DRTheme::get_widget_font_string_setting(QString p_identifier, QString p_param, QString p_scene, QString fallback)
 {
@@ -325,14 +239,10 @@ QString DRTheme::get_widget_font_string_setting(QString p_identifier, QString p_
   {
     return ao_app->read_theme_ini(fallback, p_scene);
   }
-  QString sceneType = "courtroom";
-  if(p_scene == LOBBY_FONTS_INI) sceneType = "lobby";
-  QJsonValue value = m_currentThemeObject.value(QString(sceneType));
-  QJsonObject item = value.toObject();
-  QJsonObject element_font = item[p_identifier].toObject();
-  QString data = element_font["font"].toObject()[p_param].toString();
-  return data;
 
+  ThemeSceneType sceneType = COURTROOM;
+  if(p_scene == LOBBY_FONTS_INI) sceneType = LOBBY;
+  return ThemeManager::get().mCurrentThemeReader.getFont(sceneType, p_identifier).align;
 }
 
 bool DRTheme::get_widget_font_bool(QString p_identifier, QString p_scene, QString p_param, QString p_type)
@@ -352,53 +262,6 @@ bool DRTheme::get_widget_font_bool(QString p_identifier, QString p_scene, QStrin
 
 }
 
-int DRTheme::get_widget_font_int(QString p_identifier, QString p_scene, QString p_param)
-{
-  if(!m_jsonLoaded)
-  {
-    return 1;
-  }
-
-  //Get scene value
-  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
-  QJsonObject item = value.toObject();
-  QJsonObject element_font = item[p_identifier].toObject();
-
-
-  if(!element_font["font"].toObject().contains(p_param))
-  {
-    return 1;
-  }
-
-  int l_font_int = (float)element_font["font"].toObject()[p_param].toInt() * ThemeManager::get().getResize();
-
-  return l_font_int;
-
-}
-
-QColor DRTheme::get_widget_font_color(QString p_identifier, QString p_scene)
-{
-  QColor return_value = QColor(0,0,0);
-  if(!m_jsonLoaded)
-  {
-    return return_value;
-  }
-
-  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
-  QJsonObject item = value.toObject();
-  QJsonObject element_font = item[p_identifier].toObject();
-
-
-  if(!element_font["font"].toObject().contains("color"))
-  {
-    return return_value;
-  }
-
-  return_value = QColor(element_font["font"].toObject()["color"].toString());
-
-  return return_value;
-
-}
 
 QColor DRTheme::get_widget_font_color(QString p_identifier, QString p_scene, QString p_type)
 {
@@ -505,20 +368,8 @@ QPoint DRTheme::get_widget_settings_spacing(QString p_identifier, QString p_scen
     return ao_app->get_button_spacing(ini_fallback, COURTROOM_DESIGN_INI);
   }
 
-  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
-  QJsonObject item = value.toObject();
-  QJsonObject element_font = item[p_identifier].toObject();
-
-
-  if(!element_font["settings"].toObject().contains("spacing"))
-  {
-    return ao_app->get_button_spacing(ini_fallback, COURTROOM_DESIGN_INI);
-  }
-
-  int x = element_font["settings"].toObject()["spacing"].toObject()["x"].toInt();
-  int y = element_font["settings"].toObject()["spacing"].toObject()["y"].toInt();
-
-  QPoint return_value = QPoint(x,y);
+  QVector2D spacing = ThemeManager::get().mCurrentThemeReader.getWidgetSpacing(p_identifier);
+  QPoint return_value = QPoint(spacing.x(),spacing.y());
   return return_value;
 }
 
@@ -541,24 +392,7 @@ QMap<DR::Color, DR::ColorInfo> DRTheme::get_chat_colors()
   QJsonArray array = item["colors"].toArray();
 
 
-  QMap<QString, DR::ColorInfo> color_replacement_map;
-
-  //Loop through the colors listed in the JSON
-  for(QJsonValueRef i : array)
-  {
-
-    QJsonObject arrayobject = i.toObject();
-    const QString color = arrayobject["color"].toString().toLower();
-    const QString code = arrayobject["code"].toString().toLower();
-
-    if (!QColor::isValidColor(code))
-    {
-      qWarning().noquote() << QString("[JSON color] for color %1: color code is invalid: %2").arg(color).arg(code);
-      continue;
-    }
-
-    color_replacement_map[color].code = code.toLower();
-  }
+  QMap<QString, DR::ColorInfo> color_replacement_map = ThemeManager::get().mCurrentThemeReader.getTextColors();
 
   for (DR::Color &i_color : color_map.keys())
   {
@@ -577,22 +411,7 @@ QString DRTheme::get_sfx_file(QString p_identifier)
 {
   if(!m_jsonLoaded) return ao_app->read_theme_ini(p_identifier, COURTROOM_SOUNDS_INI);
 
-  QJsonValue value = m_currentThemeObject.value(QString("config"));
-  QJsonObject item = value.toObject();
-  QJsonArray array = item["sounds"].toArray();
-
-  for(QJsonValueRef i : array)
-  {
-
-    QJsonObject arrayobject = i.toObject();
-    const QString sfx_name = arrayobject["sound"].toString();
-    const QString sfx_file = arrayobject["file"].toString();
-
-    if(sfx_name == p_identifier) return sfx_file;
-
-  }
-
-  return "";
+  return ThemeManager::get().mCurrentThemeReader.getSoundName(p_identifier);
 }
 
 QStringList DRTheme::get_effect(int index)
@@ -659,78 +478,48 @@ int DRTheme::get_free_block_count()
 QStringList DRTheme::get_tab_names()
 {
   QStringList tab_names = {};
-  QJsonValue layers_value = m_currentThemeObject.value(QString("tabs"));
-  QJsonArray layers_array = layers_value.toArray();
+  QHash<QString, QStringList> tabs = ThemeManager::get().mCurrentThemeReader.getTabs();
 
-  for(QJsonValueRef i : layers_array)
+  QHashIterator<QString, QStringList> tabIterator(tabs);
+  while (tabIterator.hasNext())
   {
-    QJsonObject tab_object = i.toObject();
-    QString tab_name = tab_object["tab_name"].toString();
+    tabIterator.next();
 
-    if(!tab_name.isEmpty())
+    if(!tabIterator.key().isEmpty())
     {
-      tab_names.append(tab_name);
+      tab_names.append(tabIterator.key());
     }
   }
-
   return tab_names;
 }
 
 QStringList DRTheme::get_tab_widgets(QString p_tab_name)
 {
-  QStringList widget_names = {};
-  QJsonValue layers_value = m_currentThemeObject.value(QString("tabs"));
-  QJsonArray layers_array = layers_value.toArray();
+  QStringList widget_names = ThemeManager::get().mCurrentThemeReader.getTabs()[p_tab_name.toLower()];
 
-  for(QJsonValueRef i : layers_array)
-  {
-    QJsonObject tab_object = i.toObject();
-    QString tab_name = tab_object["tab_name"].toString();
-
-    if(tab_name.toLower() == p_tab_name.toLower())
-    {
-      QJsonArray tab_widgets = tab_object["widgets"].toArray();
-      for(QJsonValueRef widget_object : tab_widgets)
-      {
-        QString widget_name = widget_object.toString();
-        if(!widget_name.isEmpty())
-        {
-          widget_names.append(widget_name);
-        }
-      }
-
-    }
-  }
-
+  qDebug() << "Contents of widget_names:";
+  qDebug() << widget_names;
   return widget_names;
 }
 
 QStringList DRTheme::get_tab_widgets_disable(QString p_tab_name)
 {
   QStringList widget_names = {};
-  QJsonValue layers_value = m_currentThemeObject.value(QString("tabs"));
-  QJsonArray layers_array = layers_value.toArray();
+  QHash<QString, QStringList> tabs = ThemeManager::get().mCurrentThemeReader.getTabs();
 
-  for(QJsonValueRef i : layers_array)
+  QHashIterator<QString, QStringList> tabIterator(tabs);
+  while (tabIterator.hasNext())
   {
-    QJsonObject tab_object = i.toObject();
-    QString tab_name = tab_object["tab_name"].toString();
+    tabIterator.next();
 
-    if(tab_name.toLower() != p_tab_name.toLower() && !tab_name.isEmpty())
+    for(QString tabName : tabIterator.value())
     {
-      QJsonArray tab_widgets = tab_object["widgets"].toArray();
-      for(QJsonValueRef widget_object : tab_widgets)
+      if(!tabName.isEmpty() && tabIterator.key() != p_tab_name.toLower())
       {
-        QString widget_name = widget_object.toString();
-        if(!widget_name.isEmpty())
-        {
-          widget_names.append(widget_name);
-        }
+        widget_names.append(tabName);
       }
-
     }
   }
-
   return widget_names;
 }
 
@@ -743,7 +532,7 @@ int DRTheme::get_music_name_speed()
   }
   else
   {
-    speed = read_config_int("music_scroll_speed");
+    speed = ThemeManager::get().mCurrentThemeReader.getMusicScrollSpeed();
   }
 
   return speed;

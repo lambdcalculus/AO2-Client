@@ -3,6 +3,35 @@
 
 ThemeManager ThemeManager::s_Instance;
 
+void ThemeManager::LoadTheme(QString theme_name)
+{
+  if(mRequiresReload)
+  {
+    mCurrentThemeReader.LoadTheme(theme_name);
+    mRequiresReload = false;
+  }
+}
+
+void ThemeManager::LoadGamemode(QString gamemode)
+{
+  mCurrentThemeReader.SetGamemode(gamemode);
+}
+
+bool ThemeManager::getConfigBool(QString value)
+{
+  return mCurrentThemeReader.getConfigBool(value);
+}
+
+bool ThemeManager::getReloadPending()
+{
+  return mRequiresReload;
+}
+
+void ThemeManager::toggleReload()
+{
+  mRequiresReload = true;
+}
+
 void ThemeManager::setResize(double size)
 {
   mClientResize = size;

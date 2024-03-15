@@ -70,6 +70,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(reload_theme()));
   connect(ao_app, SIGNAL(reload_character()), this, SLOT(load_character()));
   connect(ao_app, SIGNAL(reload_audiotracks()), this, SLOT(load_audiotracks()));
+  ThemeManager::get().toggleReload();
 
   create_widgets();
   connect_widgets();
@@ -116,43 +117,21 @@ void Courtroom::setup_courtroom()
 {
   TimeDebugger::get().StartTimer("Courtroom Setup");
   load_shouts();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load Shouts");
-  load_effects();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load Effects");
-  load_wtce();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load WTCE");
+
   load_free_blocks();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load Free Blocks");
   load_sfx_list_theme();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Load SFX List");
-
-  map_viewers();
-  assign_readers_for_all_viewers();
-
-  m_shout_state = 0;
-  m_shout_current = 0;
-  check_shouts();
-  if (m_shout_current < shouts_enabled.length() && !shouts_enabled[m_shout_current])
-    cycle_shout(1);
-
-  m_effect_state = 0;
-  m_effect_current = 0;
-  check_effects();
-  if (m_effect_current < effects_enabled.length() && !effects_enabled[m_effect_current])
-    cycle_effect(1);
-
-  m_wtce_current = 0;
-  reset_wtce_buttons();
-  check_wtce();
-  if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current]))
-    cycle_wtce(1);
 
   ui_flip->show();
 
-  list_music();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "List Music");
+  load_effects();
+  if(ThemeManager::get().getReloadPending())
+  {
+    load_wtce();
+    map_viewers();
+    assign_readers_for_all_viewers();
+    list_music();
+  }
   list_areas();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "List Areas");
 
   // Update widgets first, then check if everything is valid
   // This will also handle showing the correct shouts, effects and wtce buttons,
@@ -161,17 +140,12 @@ void Courtroom::setup_courtroom()
   const bool l_chr_select_visible = ui_char_select_background->isVisible();
 
   set_widget_names();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Widget Names");
   set_widgets();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Widgets");
   set_widget_layers();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Widget Layers");
   reset_widget_toggles();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Widget Toggles");
 
   // char select
   reconstruct_char_select();
-  TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Reconstruct Char Select");
   ui_char_select_background->setVisible(l_chr_select_visible);
 
   for (AOTimer *i_timer : qAsConst(ui_timers))
@@ -179,9 +153,9 @@ void Courtroom::setup_courtroom()
     i_timer->redraw();
   }
 
-  SceneManager::get().clearPlayerDataList();
   construct_playerlist_layout();
   TimeDebugger::get().EndTimer("Courtroom Setup");
+  PairManager::get().ThemeReload();
 }
 
 void Courtroom::map_viewers()
@@ -1271,9 +1245,17 @@ void Courtroom::objection_done()
 void Courtroom::handle_chatmessage_2() // handles IC
 {
 
-  ui_vp_player_char->setPos(PairManager::get().GetOffsetSelf(), ui_vp_player_char->y());
-  ui_vp_player_pair->setPos(PairManager::get().GetOffsetOther(), ui_vp_player_pair->y());
+  double selfOffset = PairManager::get().GetOffsetSelf();
+  double otherOffset = PairManager::get().GetOffsetOther();
 
+  QString offsetTextbox = "left";
+
+  if(selfOffset > otherOffset) offsetTextbox = "right";
+
+  ui_vp_player_char->setPos(selfOffset, ui_vp_player_char->y());
+  ui_vp_player_pair->setPos(otherOffset, ui_vp_player_pair->y());
+
+  setup_screenshake_anim(selfOffset);
   qDebug() << "handle_chatmessage_2";
   ui_vp_player_char->stop();
   ui_vp_player_pair->stop();
@@ -1281,7 +1263,21 @@ void Courtroom::handle_chatmessage_2() // handles IC
   if(!PairManager::get().GetUsePairData())
   {
     ui_vp_player_pair->hide();
+    pos_size_type showname = PairManager::get().GetElementAlignment("showname", "center");
+
+    ui_vp_showname->move(showname.x, showname.y);
+    ui_vp_showname->resize(showname.width, showname.height);
+    offsetTextbox = "center";
   }
+  else
+  {
+    pos_size_type showname = PairManager::get().GetElementAlignment("showname", offsetTextbox);
+
+    ui_vp_showname->move(showname.x, showname.y);
+    ui_vp_showname->resize(showname.width, showname.height);
+  }
+
+  if(ao_app->current_theme->m_jsonLoaded) setShownameFont(ui_vp_showname, "showname", offsetTextbox, ao_app);
 
   if (m_shout_reload_theme)
   {
@@ -1291,7 +1287,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
   const QString l_chatbox_name = ao_app->get_chat(m_chatmessage[CMChrName]);
   const bool l_is_self = (ao_config->log_display_self_highlight_enabled() && m_speaker_chr_id == m_chr_id);
-  ui_vp_chatbox->set_chatbox_image(l_chatbox_name, l_is_self, chatmessage_is_empty);
+  ui_vp_chatbox->set_chatbox_image(l_chatbox_name, l_is_self, chatmessage_is_empty, offsetTextbox);
 
   if (!m_msg_is_first_person)
   {
@@ -1433,7 +1429,9 @@ void Courtroom::handle_chatmessage_3()
       if (!l_effect_name.isEmpty() && l_effect_name != "effect_shake") // check to prevent crashing
       {
         QStringList offset = ao_app->get_effect_offset(f_char, l_effect_index);
-        ui_vp_effect->setPos(offset.at(0).toInt(), offset.at(1).toInt());
+
+        double selfOffset = PairManager::get().GetOffsetSelf();
+        ui_vp_effect->setPos(selfOffset, offset.at(1).toInt());
 
         QString s_eff = effect_names.at(l_effect_index - 1);
         QStringList f_eff = ao_app->get_effect(l_effect_index);
@@ -1502,10 +1500,10 @@ void Courtroom::load_ic_text_format()
 
     if(ao_app->current_theme->m_jsonLoaded)
     {
-      if (const std::optional<QColor> l_color = ao_app->current_theme->get_widget_font_color("ic_chatlog", "courtroom", f_identifier); l_color.has_value())
+      if (const std::optional<QColor> l_color = ThemeManager::get().mCurrentThemeReader.getChatlogColor(f_identifier); l_color.has_value())
         f_format.setForeground(l_color.value());
 
-      if (ao_app->current_theme->get_widget_font_bool("ic_chatlog", "courtroom", "bold", f_identifier))
+      if (ThemeManager::get().mCurrentThemeReader.getChatlogBool(f_identifier))
         f_format.setFontWeight(QFont::Bold);
       ;
     }
@@ -1769,7 +1767,8 @@ void Courtroom::setup_chat()
   // Cache these so chat_tick performs better
   if(ao_app->current_theme->m_jsonLoaded)
   {
-    m_chatbox_message_outline = ao_app->current_theme->get_widget_font_bool("message", "courtroom", "outline");
+
+    m_chatbox_message_outline = ThemeManager::get().mCurrentThemeReader.getFont(COURTROOM, "message").outline;
   }
   else
   {
@@ -1818,7 +1817,11 @@ void Courtroom::calculate_chat_tick_interval()
 void Courtroom::next_chat_letter()
 {
   const QString &f_message = m_chatmessage[CMMessage];
+
+  const QList<QChar> punctuationCharacters = { Qt::Key_Period, Qt::Key_Exclam, Qt::Key_Question, Qt::Key_Comma };
+
   int message_length = f_message.length();
+
   if (m_tick_step >= message_length || ui_vp_chatbox->isHidden())
   {
     post_chatmessage();
@@ -1828,6 +1831,7 @@ void Courtroom::next_chat_letter()
   // note: this is called fairly often(every 60 ms when char is talking)
   // do not perform heavy operations here
   QTextCharFormat vp_message_format = ui_vp_message->currentCharFormat();
+
   if (m_chatbox_message_outline)
     vp_message_format.setTextOutline(QPen(Qt::black, 1));
   else
@@ -1835,7 +1839,7 @@ void Courtroom::next_chat_letter()
 
   const QChar f_character = f_message.at(m_tick_step);
 
-  if ((f_character == Qt::Key_Period || f_character == Qt::Key_Exclam || f_character == Qt::Key_Question || f_character == Qt::Key_Comma) && m_tick_step != message_length - 1)
+  if (punctuationCharacters.contains(f_character) && m_tick_step != message_length - 1)
   {
     if(!is_delay_next_letter)
     {
@@ -1886,21 +1890,11 @@ void Courtroom::next_chat_letter()
 
     switch (m_rainbow_step)
     {
-    case 0:
-      html_color = "#BA1518";
-      break;
-    case 1:
-      html_color = "#D55900";
-      break;
-    case 2:
-      html_color = "#E7CE4E";
-      break;
-    case 3:
-      html_color = "#65C856";
-      break;
-    default:
-      html_color = "#1596C8";
-      m_rainbow_step = -1;
+    case 0: html_color = "#BA1518"; break;
+    case 1: html_color = "#D55900"; break;
+    case 2: html_color = "#E7CE4E"; break;
+    case 3: html_color = "#65C856"; break;
+    default: html_color = "#1596C8"; m_rainbow_step = -1;
     }
 
     ++m_rainbow_step;
@@ -2661,7 +2655,6 @@ void Courtroom::load_theme()
   ao_app->current_theme->InitTheme();
   switch_toggle(ToggleState::All);
   setup_courtroom();
-  setup_screenshake_anim();
   update_background_scene();
 
   if (ao_app->current_theme->read_config_bool("use_toggles")) switch_toggle(ToggleState::Chat);
@@ -2669,6 +2662,28 @@ void Courtroom::load_theme()
 
 void Courtroom::reload_theme()
 {
+
+  if(ThemeManager::get().getReloadPending())
+  {
+    m_shout_state = 0;
+    m_shout_current = 0;
+    check_shouts();
+    if (m_shout_current < shouts_enabled.length() && !shouts_enabled[m_shout_current])
+      cycle_shout(1);
+
+    m_effect_state = 0;
+    m_effect_current = 0;
+    check_effects();
+    if (m_effect_current < effects_enabled.length() && !effects_enabled[m_effect_current])
+      cycle_effect(1);
+
+    m_wtce_current = 0;
+    reset_wtce_buttons();
+    check_wtce();
+    if (is_judge && (m_wtce_current < wtce_enabled.length() && !wtce_enabled[m_wtce_current]))
+      cycle_wtce(1);
+  }
+
   if (m_game_state == GameState::Preloading || ui_vp_objection->is_running())
   {
     m_shout_reload_theme = true;
@@ -2706,6 +2721,58 @@ void Courtroom::on_back_to_lobby_clicked()
 void Courtroom::on_spectator_clicked()
 {
   ao_app->send_server_packet(DRPacket("CC", {QString::number(ao_app->get_client_id()), "-1", "HDID"}));
+}
+
+void Courtroom::OnCharRefreshClicked()
+{
+  ao_app->reload_packages();
+  pCharaSelectSeries->clear();
+  pCharaSelectSeries->addItems(CharacterManager::get().GetCharacterPackages());
+  m_current_chr_page = 0;
+  set_char_select_page();
+}
+
+void Courtroom::OnCharRandomClicked()
+{
+  int n_real_char = 0;
+  std::srand(std::time(nullptr));
+
+  QVector<char_type> randomList = CharacterManager::get().GetLastCharList();
+
+  int randomCount = randomList.length();
+
+  int randomIndex = std::rand() % randomCount;
+
+  char_type selectedChar = randomList[randomIndex];
+
+
+  if (get_character() == selectedChar.name)
+  {
+    enter_courtroom(get_character_id());
+    return;
+  }
+
+  QString char_ini_path = ao_app->get_character_path(selectedChar.name, CHARACTER_CHAR_INI);
+
+  if (!file_exists(char_ini_path))
+  {
+    qDebug() << "did not find " << char_ini_path;
+    call_notice("Could not find " + char_ini_path);
+    return;
+  }
+
+  if(!CharacterManager::get().GetCharacterInServer(selectedChar.name))
+  {
+    n_real_char = CharacterManager::get().GetAvaliablePersona();
+    ao_config->set_character_ini(CharacterManager::get().GetServerCharaName(n_real_char), selectedChar.name);
+  }
+  else
+  {
+    n_real_char = CharacterManager::get().GetFilteredId(selectedChar.name);
+  }
+
+  ao_app->send_server_packet(
+      DRPacket("CC", {QString::number(ao_app->get_client_id()), QString::number(n_real_char), "HDID"}));
 }
 
 void Courtroom::on_call_mod_clicked()
@@ -3037,7 +3104,7 @@ void Courtroom::construct_playerlist_layout()
 
   float resize = ThemeManager::get().getResize();
   int player_height = (int)((float)50 * resize);
-  int y_spacing = (int)((float)f_spacing.y() * resize);
+  int y_spacing = f_spacing.y();
   int max_pages = ceil((SceneManager::get().mPlayerDataList.count() - 1) / m_page_max_player_count);
 
   player_columns = (( (int)((float)ui_player_list->height() * resize) - player_height) / (y_spacing + player_height)) + 1;
@@ -3162,8 +3229,9 @@ void Courtroom::write_area_desc()
 
   if(ao_app->current_theme->m_jsonLoaded)
   {
-    l_color = ao_app->current_theme->get_widget_font_color("area_desc", "courtroom");
-    is_bold = ao_app->current_theme->get_widget_font_bool("area_desc", "courtroom", "bold");
+    widgetFontStruct fontstruct = ThemeManager::get().mCurrentThemeReader.getFont(COURTROOM, "area_desc");
+    l_color = fontstruct.color;
+    is_bold = fontstruct.bold;
   }
   else
   {

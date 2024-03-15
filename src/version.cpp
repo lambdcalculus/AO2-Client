@@ -33,7 +33,7 @@ VersionNumber get_version_number()
 
 QString get_post_version()
 {
-  return "b04";
+  return "b10";
 }
 
 QString get_version_string()

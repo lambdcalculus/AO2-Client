@@ -10,6 +10,7 @@
 #include "drtheme.h"
 #include "commondefs.h"
 #include "file_functions.h"
+#include "modules/theme/thememanager.h"
 #include "utils.h"
 
 QStringList AOApplication::get_callwords()
@@ -126,8 +127,8 @@ pos_size_type AOApplication::get_element_dimensions(QString p_identifier, QStrin
   {
     pos_size_type json_pos;
 
-    if(p_file == COURTROOM_DESIGN_INI) json_pos = current_theme->get_element_dimensions(p_identifier, "courtroom");
-    else if(p_file == LOBBY_DESIGN_INI) json_pos = current_theme->get_element_dimensions(p_identifier, "lobby");
+    if(p_file == COURTROOM_DESIGN_INI) json_pos = ThemeManager::get().mCurrentThemeReader.getWidgetPosition(COURTROOM, p_identifier);
+    else if(p_file == LOBBY_DESIGN_INI) json_pos = ThemeManager::get().mCurrentThemeReader.getWidgetPosition(LOBBY, p_identifier);
 
     if(json_pos.width != -1)
     {
@@ -465,6 +466,8 @@ QString AOApplication::get_char_name(QString p_chr)
 }
 
 #include <QQueue>
+
+#include <modules/theme/thememanager.h>
 
 QStringList AOApplication::get_char_include(QString p_chr)
 {

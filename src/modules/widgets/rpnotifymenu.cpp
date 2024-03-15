@@ -77,7 +77,6 @@ void RPNotifyMenu::SetNotificationSender(int sender)
 
 void RPNotifyMenu::NotifyAccept()
 {
-  qDebug() << "Accept!";
   if(mType == NotificationType::PairRequest)
   {
     AOApplication::getInstance()->send_server_packet(DRPacket("PAIR", {QString::number(mSender), mKey}));

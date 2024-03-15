@@ -3,7 +3,7 @@ QT += core gui widgets uitools network multimedia multimediawidgets
 CONFIG += c++17
 
 TEMPLATE = app
-VERSION = 1.5.1
+VERSION = 1.6.0
 TARGET = dro-client
 
 RC_ICONS = icon.ico
@@ -86,12 +86,15 @@ HEADERS += \
   src/modules/json/character_reader.h \
   src/modules/json/character_reader.h \
   src/modules/json/json_reader.h \
+  src/modules/json/theme_mode_reader.h \
+  src/modules/json/theme_module_reader.h \
   src/modules/json/theme_reader.h \
   src/modules/managers/character_manager.h \
   src/modules/managers/notify_manager.h \
   src/modules/managers/pair_manager.h \
   src/modules/managers/scene_manager.h \
   src/modules/networking/json_packet.h \
+  src/modules/theme/theme_scene.h \
   src/modules/theme/thememanager.h \
   src/modules/theme/widgets/characterselectwidget.h \
   src/modules/theme/widgets/dro_combo_box.h \
@@ -181,12 +184,15 @@ SOURCES += \
   src/modules/json/character_reader.cpp \
   src/modules/json/character_reader.cpp \
   src/modules/json/json_reader.cpp \
+  src/modules/json/theme_mode_reader.cpp \
+  src/modules/json/theme_module_reader.cpp \
   src/modules/json/theme_reader.cpp \
   src/modules/managers/character_manager.cpp \
   src/modules/managers/notify_manager.cpp \
   src/modules/managers/pair_manager.cpp \
   src/modules/managers/scene_manager.cpp \
   src/modules/networking/json_packet.cpp \
+  src/modules/theme/theme_scene.cpp \
   src/modules/theme/thememanager.cpp \
   src/modules/theme/widgets/characterselectwidget.cpp \
   src/modules/theme/widgets/dro_combo_box.cpp \

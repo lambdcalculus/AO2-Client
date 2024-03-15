@@ -873,6 +873,7 @@ void AOConfig::set_gamemode(QString p_string)
   if (d->gamemode == p_string)
     return;
   d->gamemode = p_string;
+  ThemeManager::get().LoadGamemode(p_string);
   d->invoke_signal("gamemode_changed", Q_ARG(QString, p_string));
 }
 
@@ -881,6 +882,7 @@ void AOConfig::set_manual_gamemode(QString p_string)
   if (d->manual_gamemode == p_string)
     return;
   d->manual_gamemode = p_string;
+  ThemeManager::get().LoadGamemode(p_string);
   d->manual_timeofday.clear();
   d->invoke_signal("manual_gamemode_changed", Q_ARG(QString, p_string));
 }
