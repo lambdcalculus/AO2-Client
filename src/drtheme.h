@@ -56,6 +56,7 @@ public:
 
   //Effects
   QStringList get_effect(int index);
+  bool getEffectPairOffset(int index);
   int get_effects_count();
 
   //Shouts

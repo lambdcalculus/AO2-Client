@@ -107,7 +107,7 @@ void DRTheme::LoadEffects()
   for(QJsonValueRef effect : l_array)
   {
     QJsonObject effect_object = effect.toObject();
-    effects.append({effect_object["effect_name"].toString(), effect_object["loop"].toBool() ? "0" : "1", QString::number(effect_object["id"].toInt())});
+    effects.append({effect_object["effect_name"].toString(), effect_object["loop"].toBool() ? "0" : "1", QString::number(effect_object["id"].toInt()), effect_object["ignore_pair"].toBool() ? "0" : "1"});
     effect_count += 1;
   }
 
@@ -422,6 +422,16 @@ QStringList DRTheme::get_effect(int index)
   }
 
   return QStringList{"", ""};
+}
+
+bool DRTheme::getEffectPairOffset(int index)
+{
+  for(QStringList effect : effects)
+  {
+    if(effect.at(2) == QString::number(index)) return effect.at(3) == "1";
+  }
+
+  return false;
 }
 
 QString DRTheme::get_shout(int index)
