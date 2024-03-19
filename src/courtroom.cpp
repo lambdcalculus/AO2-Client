@@ -1264,20 +1264,30 @@ void Courtroom::handle_chatmessage_2() // handles IC
   {
     ui_vp_player_pair->hide();
     pos_size_type showname = PairManager::get().GetElementAlignment("showname", "center");
+    pos_size_type l_MessagePos = PairManager::get().GetElementAlignment("message", "center");
 
     ui_vp_showname->move(showname.x, showname.y);
     ui_vp_showname->resize(showname.width, showname.height);
+    ui_vp_message->move(l_MessagePos.x, l_MessagePos.y);
+    ui_vp_message->resize(l_MessagePos.width, l_MessagePos.height);
     offsetTextbox = "center";
   }
   else
   {
     pos_size_type showname = PairManager::get().GetElementAlignment("showname", offsetTextbox);
+    pos_size_type l_MessagePos = PairManager::get().GetElementAlignment("message", offsetTextbox);
 
     ui_vp_showname->move(showname.x, showname.y);
     ui_vp_showname->resize(showname.width, showname.height);
+    ui_vp_message->move(l_MessagePos.x, l_MessagePos.y);
+    ui_vp_message->resize(l_MessagePos.width, l_MessagePos.height);
   }
 
-  if(ao_app->current_theme->m_jsonLoaded) setShownameFont(ui_vp_showname, "showname", offsetTextbox, ao_app);
+  if(ao_app->current_theme->m_jsonLoaded)
+  {
+    setShownameFont(ui_vp_showname, "showname", offsetTextbox, ao_app);
+    setShownameFont(ui_vp_message, "message", offsetTextbox, ao_app);
+  }
 
   if (m_shout_reload_theme)
   {

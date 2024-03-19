@@ -3,6 +3,8 @@
 
 #include <AOApplication.h>
 
+#include <modules/theme/thememanager.h>
+
 PairManager PairManager::s_Instance;
 
 void PairManager::SetSlider(QSlider *slider)
@@ -17,8 +19,20 @@ bool PairManager::GetUsePairData()
 
 void PairManager::SetPairData(QString character, QString emote, int selfOffset, int pairOffset, bool flipped)
 {
-  mPairOffset = pairOffset;
-  mSelfOffset = selfOffset;
+  int l_CourtroomWidth = ThemeManager::get().mCurrentThemeReader.getWidgetPosition(COURTROOM, "viewport").width;
+
+  if (l_CourtroomWidth != 0) {
+    mSelfOffset = (selfOffset * l_CourtroomWidth) / 960;
+  } else {
+    mSelfOffset = selfOffset;
+  }
+
+  if (l_CourtroomWidth != 0) {
+    mPairOffset = (pairOffset * l_CourtroomWidth) / 960;
+  } else {
+    mPairOffset = pairOffset;
+  }
+
   mCharacter = character;
   mEmote = emote;
   mPairUsed = true;
@@ -27,12 +41,20 @@ void PairManager::SetPairData(QString character, QString emote, int selfOffset, 
 
 double PairManager::GetOffsetSelf()
 {
-  return ((double)mSelfOffset / 960) * 960 - 480;
+  double l_CourtroomWidth = static_cast<double>(ThemeManager::get().mCurrentThemeReader.getWidgetPosition(COURTROOM, "viewport").width);
+  double l_HalfCourtroomWidth = static_cast<double>(l_CourtroomWidth / 2);
+
+  return static_cast<double>(((double)mSelfOffset / l_CourtroomWidth) * l_CourtroomWidth - l_HalfCourtroomWidth);
+
+  //return ((double)mSelfOffset / 960) * 960 - 480;
 }
 
 double PairManager::GetOffsetOther()
 {
-  return ((double)mPairOffset / 960) * 960 - 480;
+  double l_CourtroomWidth = static_cast<double>(ThemeManager::get().mCurrentThemeReader.getWidgetPosition(COURTROOM, "viewport").width);
+  double l_HalfCourtroomWidth = static_cast<double>(l_CourtroomWidth / 2);
+
+  return static_cast<double>(((double)mPairOffset / l_CourtroomWidth) * l_CourtroomWidth - l_HalfCourtroomWidth);
 }
 
 QString PairManager::GetEmoteName()
@@ -53,8 +75,9 @@ bool PairManager::GetCharacterFlipped()
 void PairManager::DisableUpcomingPair()
 {
   mPairUsed = false;
-  mPairOffset = 480;
-  mSelfOffset = 480;
+  double l_CourtroomWidth = static_cast<double>(ThemeManager::get().mCurrentThemeReader.getWidgetPosition(COURTROOM, "viewport").width);
+  mPairOffset = static_cast<int>(l_CourtroomWidth / 2);
+  mSelfOffset = mPairOffset;
 }
 
 void PairManager::SetUserPair(int partner, int offset)

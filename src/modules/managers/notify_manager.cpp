@@ -6,7 +6,6 @@ NotifyManager NotifyManager::s_Instance;
 
 void NotifyManager::ThemeSetupPopup(RPNotifyMenu *notify)
 {
-  if(pNotificationPopup != nullptr) delete pNotificationPopup;
   pNotificationPopup = notify;
   HideNotification();
 }
