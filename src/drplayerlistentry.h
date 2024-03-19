@@ -23,6 +23,7 @@ public:
     AOLabel *ui_showname = nullptr;
     AOLabel *m_prompt = nullptr;
 
+    AOImageDisplay *pStatusDisplay = nullptr;
 
     int m_entrywidth = 0;
 

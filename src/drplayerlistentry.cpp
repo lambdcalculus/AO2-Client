@@ -19,6 +19,9 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
   double themeResize = ThemeManager::get().getResize();
   int resize_height = (int)((float)50 * ThemeManager::get().getResize());
 
+
+  int statusResize = (int)((float)26 * ThemeManager::get().getResize());
+
     ao_app = p_ao_app;
     m_entrywidth = p_parent->size().width();
     this->resize(m_entrywidth, resize_height);
@@ -39,6 +42,15 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
     pCharacterBorderDisplay->move(0, 0);
     pCharacterBorderDisplay->resize(resize_height, resize_height);
 
+    pStatusDisplay = new AOImageDisplay(this, ao_app);
+    pStatusDisplay->move((int)((float)30 * themeResize),(int)((float)23 * themeResize));
+    pStatusDisplay->resize(statusResize, statusResize);
+
+    const QString lStatusImagePath = ao_app->find_theme_asset_path("player_list_status.png");
+
+    if (file_exists(lStatusImagePath)) pStatusDisplay->set_image(lStatusImagePath);
+
+
     const QString l_selected_texture = ao_app->find_theme_asset_path("char_border.png");
 
     if (file_exists(l_selected_texture)) pCharacterBorderDisplay->set_image(l_selected_texture);
@@ -53,6 +65,7 @@ DrPlayerListEntry::DrPlayerListEntry(QWidget *p_parent, AOApplication *p_ao_app,
     ui_showname->hide();
     ui_user_image->hide();
     pCharacterBorderDisplay->hide();
+    pStatusDisplay->hide();
     m_prompt->hide();
 
     this->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -88,6 +101,7 @@ void DrPlayerListEntry::set_character(QString p_character)
   }
   ui_user_image->show();
   pCharacterBorderDisplay->show();
+
   m_prompt->hide();
 
 }
@@ -125,8 +139,9 @@ void DrPlayerListEntry::setStatus(QString status)
 {
   if(!status.isEmpty())
   {
-      setToolTip(status);
       mStatus = status;
+      setToolTip(status);
+      pStatusDisplay->show();
   }
 }
 

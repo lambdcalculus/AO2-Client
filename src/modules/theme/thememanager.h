@@ -23,6 +23,9 @@ public:
   void LoadTheme(QString theme_name);
   void LoadGamemode(QString gamemode);
 
+  void TranslatePosition(QWidget *t_widget, int x, int y);
+  void ResizeWidget(QWidget *t_widget, int t_width, int t_height);
+
 
   //Data Management
   bool getConfigBool(QString value);

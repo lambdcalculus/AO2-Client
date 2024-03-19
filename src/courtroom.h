@@ -174,6 +174,7 @@ private slots:
   void OnIniswapTimerTimeout();
 
 public:
+  void SetChatboxFocus();
   QStringList currentIniswapList = {"Default"};
   void SearchForCharacterListAsync();
   void UpdateIniswapList();

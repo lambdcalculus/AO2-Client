@@ -99,7 +99,7 @@ QVector2D ThemeReader::getWidgetSpacing(QString widget_name)
     return_value = mCurrentGamemode->getWidgetSpacing(widget_name);
   }
 
-  if(return_value.x() != -1 || return_value.y() != -1)
+  if(return_value.x() == -1 || return_value.y() == -1)
   {
     return_value = mGameModes["default"]->getWidgetSpacing(widget_name);
   }
@@ -137,7 +137,7 @@ int ThemeReader::getTimerNumber()
     return mGameModes["default"]->getTimerNumber();
   }
 
-  return -1;
+  return 0;
 }
 
 QVector<QStringList> ThemeReader::getLayers()

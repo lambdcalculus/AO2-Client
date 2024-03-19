@@ -20,6 +20,8 @@ class RPNotifyMenu : public QWidget
   Q_OBJECT
 public:
   explicit RPNotifyMenu(QWidget *parent = nullptr);
+  void ThemeReload();
+  void SetupButton(AOButton* t_button, int t_x, int t_y, int t_width, int t_height, QString name);
 
   void SetNotificationText(QString message);
 

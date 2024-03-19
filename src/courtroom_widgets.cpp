@@ -242,6 +242,7 @@ void Courtroom::create_widgets()
   pUIPairOffsetSlider = new QSlider(Qt::Horizontal, this);
   pUIPairOffsetSlider->setMinimum(0);
   pUIPairOffsetSlider->setMaximum(960);
+
   PairManager::get().SetSlider(pUIPairOffsetSlider);
 
   pNotifyPopup = new RPNotifyMenu(this);
@@ -971,6 +972,7 @@ void Courtroom::set_widgets()
 
   if(ao_app->current_theme->get_widget_settings_bool("area_desc", "courtroom", "hide_frame")) ui_area_desc->setFrameStyle(QFrame::NoFrame);
 
+  NotifyManager::get().ReloadNotification();
 
   set_size_and_pos(ui_ooc_chatlog, "server_chatlog", COURTROOM_DESIGN_INI, ao_app);
 
@@ -1067,8 +1069,8 @@ void Courtroom::set_widgets()
   set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
 
-  setupWidgetElement(ui_defense_bar, "defense_bar", "defensebar" + QString::number(defense_bar_state) + ".png", false);
-  setupWidgetElement(ui_prosecution_bar, "prosecution_bar", "prosecutionbar" + QString::number(prosecution_bar_state) + ".png", false);
+  setupWidgetElement(ui_defense_bar, "defense_bar", "defensebar" + QString::number(defense_bar_state) + ".png", true);
+  setupWidgetElement(ui_prosecution_bar, "prosecution_bar", "prosecutionbar" + QString::number(prosecution_bar_state) + ".png", true);
 
   for (int i = 0; i < shout_names.size(); ++i)
   {

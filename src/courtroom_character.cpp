@@ -188,6 +188,11 @@ void Courtroom::OnIniswapTimerTimeout()
   UpdateIniswapIcons(false, 2);
 }
 
+void Courtroom::SetChatboxFocus()
+{
+  ui_ic_chat_message_field->setFocus();
+}
+
 
 void Courtroom::update_default_iniswap_item()
 {

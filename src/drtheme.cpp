@@ -181,17 +181,18 @@ bool DRTheme::read_config_bool(QString p_setting_name)
 
 int DRTheme::read_config_int(QString p_setting_name)
 {
+  int lReturnValue = 0;
   if(!m_jsonLoaded)
   {
-    return ao_app->read_theme_ini_int(p_setting_name, COURTROOM_CONFIG_INI);
+    int lReturnValue = ao_app->read_theme_ini_int(p_setting_name, COURTROOM_CONFIG_INI);
+    if(lReturnValue < 0) lReturnValue = 0;
+    return lReturnValue;
   }
 
-  if(p_setting_name == "timer_number") return ThemeManager::get().mCurrentThemeReader.getTimerNumber();
-  QJsonValue value = m_currentThemeObject.value(QString("config"));
-  QJsonObject item = value.toObject();
-  int return_value = item[p_setting_name].toInt();
+  lReturnValue = ThemeManager::get().mCurrentThemeReader.getTimerNumber();
 
-  return return_value;
+  if(lReturnValue < 0) lReturnValue = 0;
+  return lReturnValue;
 }
 
 QVector<QStringList>DRTheme::get_highlight_characters()

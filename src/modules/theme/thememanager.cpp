@@ -17,6 +17,22 @@ void ThemeManager::LoadGamemode(QString gamemode)
   mCurrentThemeReader.SetGamemode(gamemode);
 }
 
+void ThemeManager::TranslatePosition(QWidget *t_widget, int t_x, int t_y)
+{
+  int l_PositionX = static_cast<int>(t_x * mClientResize);
+  int l_PositionY = static_cast<int>(t_y * mClientResize);
+
+  t_widget->move(l_PositionX, l_PositionY);
+}
+
+void ThemeManager::ResizeWidget(QWidget *t_widget, int t_width, int t_height)
+{
+  int l_PositionWidth = static_cast<int>(t_width * mClientResize);
+  int l_PositionHeight = static_cast<int>(t_height * mClientResize);
+
+  t_widget->resize(l_PositionWidth, l_PositionHeight);
+}
+
 bool ThemeManager::getConfigBool(QString value)
 {
   return mCurrentThemeReader.getConfigBool(value);
