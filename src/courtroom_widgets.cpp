@@ -942,6 +942,9 @@ void Courtroom::set_widgets()
   setupWidgetElement(ui_vp_notepad, "notepad", "", Qt::TextEditable, false);
   setupWidgetElement(ui_vp_showname, "showname");
   setupWidgetElement(ui_vp_showname_image, "showname_image");
+
+  ui_vp_showname_image->hide();
+
   setupWidgetElement(ui_vp_message, "message", "", Qt::NoTextInteraction);
   TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Setup Viewport Widgets");
 
