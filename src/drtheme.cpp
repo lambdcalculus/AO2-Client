@@ -346,17 +346,13 @@ QColor DRTheme::get_widget_settings_color(QString p_identifier, QString p_scene,
     return ao_app->get_color(ini_fallback, COURTROOM_DESIGN_INI);
   }
 
-  QJsonValue value = m_currentThemeObject.value(QString(p_scene));
-  QJsonObject item = value.toObject();
-  QJsonObject element_font = item[p_identifier].toObject();
-
-
-  if(!element_font["settings"].toObject().contains(p_type + "_color"))
+  QString l_color = ThemeManager::get().mCurrentThemeReader.getSoundName(p_type + "_color");
+  if(l_color.isEmpty())
   {
     return ao_app->get_color(ini_fallback, COURTROOM_DESIGN_INI);
   }
 
-  return_value = QColor(element_font["settings"].toObject()[p_type + "_color"].toString());
+  return_value = QColor(l_color);
 
   return return_value;
 

@@ -150,6 +150,26 @@ ThemeScene *ThemeModuleReader::ParseScene(QString t_scene)
       }
     }
 
+    if(key == "sfx_list")
+    {
+      if(obj["settings"].toObject().contains("found_sfx_color")) m_configSounds["found_sfx_color"] = obj["settings"].toObject()["found_sfx_color"].toString();
+      if(obj["settings"].toObject().contains("missing_sfx_color")) m_configSounds["missing_sfx_color"] = obj["settings"].toObject()["missing_sfx_color"].toString();
+    }
+
+    if(key == "area_list")
+    {
+      if(obj["settings"].toObject().contains("area_free_color")) m_configSounds["area_free_color"] = obj["settings"].toObject()["area_free_color"].toString();
+    }
+
+    if(key == "music_list")
+    {
+      if(obj["settings"].toObject().contains("found_song_color")) m_configSounds["found_song_color"] = obj["settings"].toObject()["found_song_color"].toString();
+      if(obj["settings"].toObject().contains("missing_song_color")) m_configSounds["missing_song_color"] = obj["settings"].toObject()["missing_song_color"].toString();
+    }
+
+
+
+
     if(obj.contains("font"))
     {
       widgetFontStruct *widgetFont = new widgetFontStruct();
