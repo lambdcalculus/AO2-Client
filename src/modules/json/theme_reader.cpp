@@ -154,20 +154,16 @@ QVector<QStringList> ThemeReader::getLayers()
   return {};
 }
 
-QHash<QString, QStringList> ThemeReader::getTabs()
+QVector<ThemeTabInfo> ThemeReader::getTabs()
 {
-  QHash<QString, QStringList> return_data = mGameModes["default"]->getTabs();
+  QVector<ThemeTabInfo> return_data = {};
 
   if(mCurrentGamemode != nullptr && mCurrentGamemode != mGameModes["default"])
   {
-    QHashIterator<QString, QStringList>  i(mCurrentGamemode->getTabs());
-    while (i.hasNext())
-    {
-      i.next();
-      return_data[i.key()] = i.value();
-    }
+    return_data = mCurrentGamemode->getTabs();
+    if(return_data.length() > 0) return return_data;
   }
-
+  return_data = mGameModes["default"]->getTabs();
   return return_data;
 }
 
@@ -227,7 +223,6 @@ QVector<QStringList> ThemeReader::getHighlights()
 
 QMap<QString, DR::ColorInfo> ThemeReader::getTextColors()
 {
-
   QMap<QString, DR::ColorInfo> returnValue = mGameModes["default"]->getTextColors();
   if(mCurrentGamemode != nullptr && mCurrentGamemode != mGameModes["default"])
   {
@@ -240,7 +235,6 @@ QMap<QString, DR::ColorInfo> ThemeReader::getTextColors()
   }
   return returnValue;
 }
-
 
 bool ThemeReader::pixmapExists(QString path)
 {

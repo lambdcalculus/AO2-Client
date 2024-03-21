@@ -174,6 +174,8 @@ private slots:
   void OnIniswapTimerTimeout();
 
 public:
+  QHash<QString, QWidget *> widget_names;
+
   void SetChatboxFocus();
   QStringList currentIniswapList = {"Default"};
   void SearchForCharacterListAsync();
@@ -646,7 +648,6 @@ private:
   AOButton *pBtnCharSelectRefresh = nullptr;
   AOButton *pBtnCharSelectRandom = nullptr;
 
-  QHash<QString, QWidget *> widget_names;
 
   QHash<QString, QString> mDefaultWidgetCSS
   {

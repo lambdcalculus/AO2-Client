@@ -33,7 +33,7 @@ public:
   int getMusicScrollSpeed();
   int getTimerNumber();
   QVector<QStringList> getLayers();
-  QHash<QString, QStringList> getTabs();
+  QVector<ThemeTabInfo> getTabs();
   QString getSoundName(QString soundName);
   QMap<QString, DR::ColorInfo> getTextColors();
   bool getConfigBool(QString boolValue);

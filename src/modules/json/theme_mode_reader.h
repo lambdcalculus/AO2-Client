@@ -73,7 +73,7 @@ public:
 
 
   //Data Retrieval
-  QHash<QString, QStringList> getTabs();
+  QVector<ThemeTabInfo> getTabs();
   QVector<QStringList> getLayers();
   QHash<QString, dialogueHighlights>getHighlightColors();
   QMap<QString, DR::ColorInfo>getTextColors();

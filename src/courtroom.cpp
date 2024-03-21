@@ -2920,21 +2920,7 @@ void Courtroom::switch_toggle(ToggleState state)
 
     if(ao_app->current_theme->m_jsonLoaded)
     {
-        QStringList toggle_widgets = ao_app->current_theme->get_tab_widgets(state_name);
-        QStringList disable_widgets = ao_app->current_theme->get_tab_widgets_disable(state_name);
-
-        for (const QString widget_off: disable_widgets)
-        {
-            if(widget_names.contains(widget_off))
-                widget_names[widget_off]->hide();
-        }
-
-        for (const QString widget_on: toggle_widgets)
-        {
-            if(widget_names.contains(widget_on))
-                widget_names[widget_on]->show();
-        }
-
+      ThemeManager::get().ToggleTab(state_name);
     }
     else
     {

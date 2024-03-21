@@ -27,6 +27,9 @@ public:
   bool getContainsLayers();
   QVector<QStringList> getWidgetLayers();
 
+  //Tabs
+  QVector<ThemeTabInfo> getTabs();
+
   //Config
   bool getContainsBool(QString t_setting);
   bool getSettingBool(QString t_setting);
@@ -51,7 +54,7 @@ private:
 
   //Other
   QHash<QString, widgetFontStruct*> m_ChatlogColours = {};
-  QHash<QString, QStringList> m_tabGroups = {};
+  QVector<ThemeTabInfo> m_themeTabs = {};
   QVector<QStringList> m_WidgetLayers = {};
 
   QString m_moduleDirectory = "";

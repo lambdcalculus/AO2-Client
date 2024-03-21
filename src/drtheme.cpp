@@ -488,49 +488,59 @@ int DRTheme::get_free_block_count()
 
 QStringList DRTheme::get_tab_names()
 {
-  QStringList tab_names = {};
-  QHash<QString, QStringList> tabs = ThemeManager::get().mCurrentThemeReader.getTabs();
+  QStringList l_tab_names = {};
+  QVector<ThemeTabInfo> l_tabs = ThemeManager::get().mCurrentThemeReader.getTabs();
 
-  QHashIterator<QString, QStringList> tabIterator(tabs);
-  while (tabIterator.hasNext())
+  for(ThemeTabInfo tab : l_tabs)
   {
-    tabIterator.next();
-
-    if(!tabIterator.key().isEmpty())
+    if(!tab.m_Name.isEmpty())
     {
-      tab_names.append(tabIterator.key());
+      l_tab_names.append(tab.m_Name);
     }
   }
-  return tab_names;
+
+  return l_tab_names;
 }
 
 QStringList DRTheme::get_tab_widgets(QString p_tab_name)
 {
-  QStringList widget_names = ThemeManager::get().mCurrentThemeReader.getTabs()[p_tab_name.toLower()];
+  QStringList widget_names = {};
 
-  qDebug() << "Contents of widget_names:";
-  qDebug() << widget_names;
+  QVector<ThemeTabInfo> l_tabs = ThemeManager::get().mCurrentThemeReader.getTabs();
+
+  for(ThemeTabInfo tab : l_tabs)
+  {
+
+    for(QString widget_name : tab.m_WidgetContents)
+    {
+      if(!widget_name.isEmpty() && tab.m_Name.toLower() == p_tab_name.toLower())
+      {
+        widget_names.append(widget_name);
+      }
+    }
+  }
+
   return widget_names;
 }
 
 QStringList DRTheme::get_tab_widgets_disable(QString p_tab_name)
 {
   QStringList widget_names = {};
-  QHash<QString, QStringList> tabs = ThemeManager::get().mCurrentThemeReader.getTabs();
 
-  QHashIterator<QString, QStringList> tabIterator(tabs);
-  while (tabIterator.hasNext())
+  QVector<ThemeTabInfo> l_tabs = ThemeManager::get().mCurrentThemeReader.getTabs();
+
+  for(ThemeTabInfo tab : l_tabs)
   {
-    tabIterator.next();
 
-    for(QString tabName : tabIterator.value())
+    for(QString widget_name : tab.m_WidgetContents)
     {
-      if(!tabName.isEmpty() && tabIterator.key() != p_tab_name.toLower())
+      if(!widget_name.isEmpty() && tab.m_Name != p_tab_name.toLower())
       {
-        widget_names.append(tabName);
+        widget_names.append(widget_name);
       }
     }
   }
+
   return widget_names;
 }
 

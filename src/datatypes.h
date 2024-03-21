@@ -176,6 +176,15 @@ struct pos_size_type
   int height = 0;
 };
 
+struct ThemeTabInfo
+{
+  QString m_Name = "chat";
+  QString m_Group = "default";
+  pos_size_type m_transform;
+  QStringList m_WidgetContents = {};
+};
+
+
 struct dialogueHighlights
 {
   QString chars = "";

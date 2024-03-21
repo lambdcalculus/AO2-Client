@@ -689,6 +689,8 @@ void Courtroom::reset_widget_names()
       {"pair_offset", pUIPairOffsetSlider},
       {"viewport_transition", SceneManager::get().GetTransition()},
   };
+
+    ThemeManager::get().SetWidgetNames(widget_names);
 }
 
 void Courtroom::insert_widget_name(QString p_widget_name, QWidget *p_widget)

@@ -307,19 +307,17 @@ bool ThemeModeReader::getContainsChatlogBool(QString t_type)
   return false;
 }
 
-QHash<QString, QStringList> ThemeModeReader::getTabs()
+QVector<ThemeTabInfo> ThemeModeReader::getTabs()
 {
 
-  QHash<QString, QStringList> return_data = mTabWidgets;
+  QVector<ThemeTabInfo> return_data = {};
 
-  if(mCurrentTime != nullptr)
+  QVector<ThemeModuleReader*> loadOrder = getModuleLoadOrder();
+
+  for(ThemeModuleReader * module : loadOrder)
   {
-    QHashIterator<QString, QStringList>  i(mCurrentTime->mTabWidgets);
-    while (i.hasNext())
-    {
-      i.next();
-      return_data[i.key()] = i.value();
-    }
+    return_data = module->getTabs();
+    if(return_data.length() > 0) return return_data;
   }
 
   return return_data;

@@ -16,7 +16,7 @@ ThemeModuleReader::ThemeModuleReader(QString t_moduleDirectory, QString t_module
 void ThemeModuleReader::ParseModule()
 {
   m_WidgetLayers = {};
-  m_tabGroups = {};
+  m_themeTabs = {};
 
   ParseModuleConfig();
   m_CourtroomScene = ParseScene("courtroom");
@@ -97,7 +97,23 @@ void ThemeModuleReader::ParseTabs()
   for(QJsonValueRef tabObject : tabsObjectArray)
   {
     SetTargetObject(tabObject.toObject());
-    m_tabGroups[getStringValue("tab_name").toLower()] = getStringArrayValue("widgets");
+    ThemeTabInfo themeTab;
+    themeTab.m_Name = getStringValue("tab_name").toLower();
+    themeTab.m_WidgetContents = getStringArrayValue("widgets");
+
+    if(tabObject.toObject().contains("group"))
+    {
+      themeTab.m_Group = getStringValue("group");
+    }
+
+    if(tabObject.toObject().contains("position"))
+    {
+      SetTargetObject("position");
+      themeTab.m_transform.x = getIntValue("x");
+      themeTab.m_transform.y = getIntValue("y");
+    }
+
+    m_themeTabs.append(themeTab);
   }
 
 }
@@ -206,6 +222,11 @@ bool ThemeModuleReader::getContainsLayers()
 QVector<QStringList> ThemeModuleReader::getWidgetLayers()
 {
   return m_WidgetLayers;
+}
+
+QVector<ThemeTabInfo> ThemeModuleReader::getTabs()
+{
+  return m_themeTabs;
 }
 
 bool ThemeModuleReader::getContainsBool(QString t_setting)

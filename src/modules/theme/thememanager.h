@@ -26,15 +26,17 @@ public:
   void TranslatePosition(QWidget *t_widget, int x, int y);
   void ResizeWidget(QWidget *t_widget, int t_width, int t_height);
 
+  //Widgets
+  void SetWidgetNames(QHash<QString, QWidget *> t_WidgetNames);
+
+  //Tabs
+  void ToggleTab(QString tabName);
+
 
   //Data Management
   bool getConfigBool(QString value);
   bool getReloadPending();
-
-
   void toggleReload();
-
-
 
   //Widget Management
   void setResize(double size);
@@ -44,9 +46,8 @@ public:
   void refreshButtons();
 
   void addLineEdit(QString name, DROLineEdit* lineEdit);
-  void refreshLineEdit();
-
   void addComboBox(QString name, DROComboBox* lineEdit);
+  void refreshLineEdit();
   void refreshComboBox();
 
   ThemeReader mCurrentThemeReader = ThemeReader();
@@ -58,6 +59,7 @@ private:
   double mClientResize = 1;
 
 
+  QHash<QString, QWidget *> m_WidgetNames = {};
   QHash<QString, AOButton*> mButtonWidgets { };
   QHash<QString, DROLineEdit*> mLineEditWidgets { };
   QHash<QString, DROComboBox*> mComboBoxWidgets { };
