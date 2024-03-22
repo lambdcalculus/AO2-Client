@@ -50,6 +50,8 @@ public:
   void refreshLineEdit();
   void refreshComboBox();
 
+  QWidget *GetWidget(QString name);
+
   ThemeReader mCurrentThemeReader = ThemeReader();
 
 private:

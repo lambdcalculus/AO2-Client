@@ -136,3 +136,9 @@ void ThemeManager::refreshComboBox()
     comboBox->show();
   }
 }
+
+QWidget *ThemeManager::GetWidget(QString name)
+{
+  if(m_WidgetNames.contains(name)) return m_WidgetNames[name];
+  return nullptr;
+}
