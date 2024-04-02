@@ -28,7 +28,7 @@ void ThemeModuleReader::ParseModule()
 void ThemeModuleReader::ParseModuleConfig()
 {
   SetTargetObject("config");
-  QStringList configOptionNames = {"enable_single_shout" , "enable_single_effect", "enable_single_wtce", "enable_const_music_speed", "enable_showname_image", "enable_highlighting", "enable_button_images", "enable_label_images", "enable_cycle_ding", "use_toggles"};
+  QStringList configOptionNames = {"enable_single_shout" , "enable_single_effect",  "detatchable_viewport", "enable_single_wtce", "enable_const_music_speed", "enable_showname_image", "enable_highlighting", "enable_button_images", "enable_label_images", "enable_cycle_ding", "use_toggles"};
 
   for (const QString& optionName : configOptionNames) {
     if (ValueExists(optionName)) m_configBooleans[optionName] = getBoolValue(optionName);
@@ -77,11 +77,22 @@ void ThemeModuleReader::ParseLayers()
     if(!widget_name.isEmpty())
     {
       layerInfo.append(widget_name);
+
+      if(widget_name == "viewport")
+      {
+        layerInfo.append("viewport_transition");
+      }
+
       QStringList childArray = getStringArrayValue("children");
 
       for(QString layerChild : childArray)
       {
         if(!layerChild.isEmpty()) layerInfo.append(layerChild);
+      }
+
+      if(widget_name == "viewport")
+      {
+        layerInfo.append("viewport_overlay");
       }
       m_WidgetLayers.append(layerInfo);
     }

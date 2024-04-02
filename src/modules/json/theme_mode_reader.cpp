@@ -30,7 +30,7 @@ ThemeModeReader::ThemeModeReader(QString filePath)
 
     ReadFromFile(filePath + "/theme.json");
     SetTargetObject("config");
-    QStringList boolConfigs = {"enable_single_shout" , "enable_single_effect", "enable_single_wtce", "enable_const_music_speed", "enable_showname_image", "enable_highlighting", "enable_button_images", "enable_label_images", "enable_cycle_ding", "use_toggles"};
+    QStringList boolConfigs = {"enable_single_shout" , "detatchable_viewport", "enable_single_effect", "enable_single_wtce", "enable_const_music_speed", "enable_showname_image", "enable_highlighting", "enable_button_images", "enable_label_images", "enable_cycle_ding", "use_toggles"};
 
     for (const QString& boolName : boolConfigs)
     {
