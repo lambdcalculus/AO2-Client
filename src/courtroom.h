@@ -65,6 +65,7 @@ class QLabel;
 #include <modules/theme/widgets/dro_line_edit.h>
 
 #include <modules/widgets/rpnotifymenu.h>
+#include <modules/widgets/viewport_overlay.h>
 
 class Courtroom : public QWidget
 {
@@ -452,6 +453,9 @@ private:
   DRSceneMovie *ui_vp_desk = nullptr;
 
   AONoteArea *ui_note_area = nullptr;
+
+
+  ViewportOverlay *w_ViewportOverlay = nullptr;
 
   QSlider *pUIPairOffsetSlider = nullptr;
 

@@ -101,6 +101,7 @@ HEADERS += \
   src/modules/theme/widgets/dro_line_edit.h \
   src/modules/theme/widgets/droemotebuttons.h \
   src/modules/widgets/rpnotifymenu.h \
+  src/modules/widgets/viewport_overlay.h \
   src/theme.h \
   src/utils.h \
   src/version.h
@@ -199,6 +200,7 @@ SOURCES += \
   src/modules/theme/widgets/dro_line_edit.cpp \
   src/modules/theme/widgets/droemotebuttons.cpp \
   src/modules/widgets/rpnotifymenu.cpp \
+  src/modules/widgets/viewport_overlay.cpp \
   src/path_functions.cpp \
   src/server_socket.cpp \
   src/mk2/spritereader.cpp \

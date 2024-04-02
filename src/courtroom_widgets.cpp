@@ -120,6 +120,8 @@ void Courtroom::create_widgets()
     }
   }
 
+  w_ViewportOverlay = new ViewportOverlay(ui_viewport);
+
   ui_vp_music_display_a = new AOImageDisplay(this, ao_app);
   ui_vp_music_display_b = new AOImageDisplay(this, ao_app);
   ui_vp_music_area = new QWidget(ui_vp_music_display_a);
@@ -688,6 +690,7 @@ void Courtroom::reset_widget_names()
       {"area_desc", ui_area_desc},
       {"pair_offset", pUIPairOffsetSlider},
       {"viewport_transition", SceneManager::get().GetTransition()},
+      {"viewport_overlay", w_ViewportOverlay},
   };
 
     ThemeManager::get().SetWidgetNames(widget_names);
@@ -940,6 +943,7 @@ void Courtroom::set_widgets()
 
   setupWidgetElement(ui_viewport, "viewport");
   setupWidgetElement(SceneManager::get().GetTransition(), "viewport");
+  SceneManager::get().GetTransition()->move(0,0);
   setupWidgetElement(ui_vp_notepad_image, "notepad_image", "notepad_image.png", false);
   setupWidgetElement(ui_vp_notepad, "notepad", "", Qt::TextEditable, false);
   setupWidgetElement(ui_vp_showname, "showname");
@@ -1004,6 +1008,8 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_vp_music_area, "music_area", COURTROOM_DESIGN_INI, ao_app);
   ui_vp_music_area->show();
   set_size_and_pos(ui_vp_music_name, "music_name", COURTROOM_DESIGN_INI, ao_app);
+
+  setupWidgetElement(w_ViewportOverlay, "viewport", true);
 
   setupWidgetElement(ui_vp_music_display_a, "music_display_a", "music_display_a.png", true);
   setupWidgetElement(ui_vp_music_display_b, "music_display_b", "music_display_b.png", true);
