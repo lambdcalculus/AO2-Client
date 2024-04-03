@@ -114,7 +114,7 @@ void Courtroom::SearchForCharacterListAsync()
     for (const QFileInfo &i_info : l_info_list)
     {
       const QString l_name = i_info.fileName();
-      if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)))
+      if (!file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_INI)) && !file_exists(ao_app->get_character_path(l_name, CHARACTER_CHAR_JSON)))
         continue;
       if(!currentIniswapList.contains(l_name))
       {

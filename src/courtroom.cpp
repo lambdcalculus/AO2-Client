@@ -315,6 +315,11 @@ void Courtroom::enter_courtroom(int p_cid)
   const int l_current_cursor_pos = l_current_field->cursorPosition();
 
   const QString l_chr_name = get_character_ini();
+
+  CharacterManager::get().SwitchCharacter(l_chr_name);
+
+  CharacterData *l_selectedCharacter = CharacterManager::get().p_SelectedCharacter;
+
   if (is_spectating())
   {
     ao_app->get_discord()->clear_character_name();
@@ -322,7 +327,7 @@ void Courtroom::enter_courtroom(int p_cid)
   }
   else
   {
-    const QString l_showname = ao_app->get_showname(l_chr_name);
+    const QString l_showname = l_selectedCharacter->getShowname();
     const QString l_final_showname = l_showname.trimmed().isEmpty() ? l_chr_name : l_showname;
     ao_app->get_discord()->set_character_name(l_final_showname);
     ao_config->set_showname_placeholder(l_final_showname);
@@ -333,12 +338,14 @@ void Courtroom::enter_courtroom(int p_cid)
   }
   const bool l_changed_chr = l_chr_name != l_prev_chr_name;
   if (l_changed_chr)
-    set_character_position(ao_app->get_char_side(l_chr_name));
+    set_character_position(l_selectedCharacter->getSide());
   select_base_character_iniswap();
   refresh_character_content_url();
 
   const int l_prev_emote_count = m_emote_list.count();
-  m_emote_list = ao_app->get_emote_list(l_chr_name);
+  m_emote_list = CharacterManager::get().p_SelectedCharacter->getEmotes();
+
+      //ao_app->get_emote_list(l_chr_name);
 
   const QString l_prev_emote = ui_emote_dropdown->currentText();
   fill_emote_dropdown();
@@ -362,7 +369,7 @@ void Courtroom::enter_courtroom(int p_cid)
   ui_emote_dropdown->setDisabled(is_spectating());
   ui_iniswap_dropdown->setDisabled(is_spectating());
   ui_ic_chat_message_field->setDisabled(is_spectating());
-  set_character_position(ao_app->get_char_side(get_character_ini()));
+  set_character_position(l_selectedCharacter->getSide());
 
   // restore line field focus
   l_current_field->setFocus();
@@ -696,7 +703,7 @@ QString Courtroom::get_current_position()
 {
   if (ui_pos_dropdown->currentIndex() == DefaultPositionIndex)
   {
-    return ao_app->get_char_side(get_character_ini());
+    return CharacterManager::get().p_SelectedCharacter->getSide();
   }
   return ui_pos_dropdown->currentData(Qt::UserRole).toString();
 }
@@ -953,10 +960,12 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
   const int l_message_chr_id = p_chatmessage[CMChrId].toInt();
   const bool l_system_speaking = l_message_chr_id == SpectatorId;
 
+  CharacterData *l_speakerData = CharacterManager::get().ReadCharacter(p_chatmessage[CMChrName]);
+
   QString l_showname = p_chatmessage[CMShowName];
   if (l_showname.isEmpty() && !l_system_speaking)
   {
-    l_showname = ao_app->get_showname(p_chatmessage[CMChrName]);
+    l_showname = l_speakerData->getShowname();
   }
 
   const QString l_message = QString(p_chatmessage[CMMessage]).remove(QRegularExpression("(?<!\\\\)(\\{|\\})")).replace(QRegularExpression("\\\\(\\{|\\})"), "\\1");
@@ -1141,10 +1150,13 @@ void Courtroom::handle_chatmessage()
   // We actually DO wanna fail here if the showname is empty but the system is speaking.
   // Having an empty showname for system is actually what we expect.
 
+
+  CharacterData *l_speakerData = CharacterManager::get().ReadCharacter(m_chatmessage[CMChrName]);
+
   QString f_showname = m_chatmessage[CMShowName];
   if (f_showname.isEmpty() && !is_system_speaking)
   {
-    f_showname = ao_app->get_showname(m_chatmessage[CMChrName]);
+    f_showname = l_speakerData->getShowname();
   }
   m_speaker_showname = f_showname;
 
@@ -2144,7 +2156,7 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
 
 void Courtroom::set_character_position(QString p_pos)
 {
-  const bool l_is_default_pos = p_pos == ao_app->get_char_side(get_character_ini());
+  const bool l_is_default_pos = p_pos == CharacterManager::get().p_SelectedCharacter->getSide();
 
   int l_pos_index = ui_pos_dropdown->currentIndex();
   if (!l_is_default_pos)

@@ -9,6 +9,7 @@ const QString BASE_FAVORITE_SERVERS_INI = "favorite_servers.ini";
 const QString BASE_SERVERLIST_TXT = "serverlist.txt";
 
 const QString CHARACTER_CHAR_INI = "char.ini";
+const QString CHARACTER_CHAR_JSON = "char.json";
 const QString CHARACTER_SOUNDS_INI = "sounds.ini";
 
 const QString CONFIG_SOUNDS_INI = "configs/sounds.ini";

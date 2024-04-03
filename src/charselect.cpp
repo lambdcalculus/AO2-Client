@@ -230,13 +230,15 @@ void Courtroom::char_clicked(int n_char)
 
   int n_real_char = n_char + m_current_chr_page * m_page_max_chr_count;
 
-  QString char_ini_path = ao_app->get_character_path(CharacterManager::get().mFilteredChrList.at(n_real_char).name, CHARACTER_CHAR_INI);
-  qDebug() << "char_ini_path" << char_ini_path;
+  QString l_pathCharIni = ao_app->get_character_path(CharacterManager::get().mFilteredChrList.at(n_real_char).name, CHARACTER_CHAR_INI);
+  QString l_pathCharJson = ao_app->get_character_path(CharacterManager::get().mFilteredChrList.at(n_real_char).name, CHARACTER_CHAR_JSON);
 
-  if (!file_exists(char_ini_path))
+  qDebug() << "char_ini_path" << l_pathCharIni;
+
+  if (!file_exists(l_pathCharIni) && !file_exists(l_pathCharJson) )
   {
-    qDebug() << "did not find " << char_ini_path;
-    call_notice("Could not find " + char_ini_path);
+    qDebug() << "did not find " << l_pathCharIni;
+    call_notice("Could not find " + l_pathCharIni);
     return;
   }
 

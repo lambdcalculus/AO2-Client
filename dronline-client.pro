@@ -81,10 +81,12 @@ HEADERS += \
   src/mk2/spritereadersynchronizer.h \
   src/mk2/spriteseekingreader.h \
   src/mk2/spriteviewer.h \
+  src/modules/character/character_data.h \
+  src/modules/character/character_data_reader.h \
+  src/modules/character/legacy_character_reader.h \
+  src/modules/character/outfit_reader.h \
   src/modules/debug/time_debugger.h \
   src/modules/files/image_loader.h \
-  src/modules/json/character_reader.h \
-  src/modules/json/character_reader.h \
   src/modules/json/json_reader.h \
   src/modules/json/theme_mode_reader.h \
   src/modules/json/theme_module_reader.h \
@@ -180,10 +182,12 @@ SOURCES += \
   src/mk2/spritedynamicreader.cpp \
   src/mk2/spriteplayer.cpp \
   src/mk2/spriteseekingreader.cpp \
+  src/modules/character/character_data.cpp \
+  src/modules/character/character_data_reader.cpp \
+  src/modules/character/legacy_character_reader.cpp \
+  src/modules/character/outfit_reader.cpp \
   src/modules/debug/time_debugger.cpp \
   src/modules/files/image_loader.cpp \
-  src/modules/json/character_reader.cpp \
-  src/modules/json/character_reader.cpp \
   src/modules/json/json_reader.cpp \
   src/modules/json/theme_mode_reader.cpp \
   src/modules/json/theme_module_reader.cpp \

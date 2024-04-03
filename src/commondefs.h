@@ -9,6 +9,7 @@ extern const QString BASE_FAVORITE_SERVERS_INI;
 extern const QString BASE_SERVERLIST_TXT;
 
 extern const QString CHARACTER_CHAR_INI;
+extern const QString CHARACTER_CHAR_JSON;
 extern const QString CHARACTER_SOUNDS_INI;
 
 extern const QString CONFIG_SOUNDS_INI;

@@ -177,9 +177,6 @@ public:
   // Returns effect on cc_config according to index
   QStringList get_effect(int index);
 
-  // Returns the side of the p_char character from that characters ini file
-  QString get_char_side(QString p_char);
-
   // Returns the showname from the ini of p_char
   QString get_showname(QString p_char);
 

@@ -499,11 +499,6 @@ QString AOApplication::get_showname(QString p_chr)
   return read_char_ini(p_chr, "options", "showname", p_chr).toString();
 }
 
-QString AOApplication::get_char_side(QString p_chr)
-{
-  return read_char_ini(p_chr, "options", "side", "wit").toString();
-}
-
 QString AOApplication::get_gender(QString p_chr)
 {
   return read_char_ini(p_chr, "options", "gender", "male").toString();
@@ -525,117 +520,7 @@ QString drLookupKey(const QStringList &keyList, const QString &targetKey)
 
 QVector<DREmote> AOApplication::get_emote_list(QString p_chr)
 {
-  QVector<DREmote> r_emote_list;
-
-  QStringList l_chr_list = get_char_include(p_chr);
-  l_chr_list.append(p_chr);
-
-#ifdef QT_DEBUG
-  qDebug().noquote() << QString("Compiling char.ini for character <%1>").arg(p_chr);
-#endif
-  for (const QString &i_chr : l_chr_list)
-  {
-    if (!dir_exists(get_character_folder_path(i_chr)))
-    {
-      qWarning().noquote()
-          << QString("Parent character <%1> not found, character <%2> cannot use it.").arg(i_chr, p_chr);
-      continue;
-    }
-#ifdef QT_DEBUG
-    qDebug().noquote() << QString("Adding <%1>").arg(i_chr);
-#endif
-
-    QSettings l_chrini(get_character_path(i_chr, CHARACTER_CHAR_INI), QSettings::IniFormat);
-    l_chrini.setIniCodec("UTF-8");
-    utils::QSettingsKeyFetcher l_fetcher(l_chrini);
-
-    QStringList l_keys;
-    { // recover all numbered keys, ignore words
-      l_chrini.beginGroup(l_fetcher.lookup_group("emotions"));
-      l_keys = l_chrini.childKeys();
-      l_chrini.endGroup();
-
-      // remove keywords
-      l_keys.removeAll(drLookupKey(l_keys, "firstmode"));
-      l_keys.removeAll(drLookupKey(l_keys, "number"));
-
-      // remove all negative and non-numbers
-      for (int i = 0; i < l_keys.length(); ++i)
-      {
-        const QString &i_key = l_keys.at(i);
-        bool ok = false;
-        const int l_num = i_key.toInt(&ok);
-        if (ok && l_num >= 0)
-          continue;
-        l_keys.removeAt(i--);
-      }
-
-      std::stable_sort(l_keys.begin(), l_keys.end(), [](const QString &a, const QString &b) -> bool {
-        // if 0s are added at the beginning of the key, consider a whole number
-        if (a.length() < b.length())
-          return true;
-        return a.toInt() < b.toInt();
-      });
-    }
-
-    for (const QString &i_key : qAsConst(l_keys))
-    {
-      l_chrini.beginGroup(l_fetcher.lookup_group("emotions"));
-      const QStringList l_emotions = l_chrini.value(i_key).toString().split("#", DR::KeepEmptyParts);
-      l_chrini.endGroup();
-
-      if (l_emotions.length() < 4)
-      {
-        qWarning().noquote() << QString("Emote <%2> of <%1>; emote is malformed.").arg(i_chr, i_key);
-        continue;
-      }
-      enum EmoteField
-      {
-        Comment,
-        Animation,
-        Dialog,
-        Modifier,
-        DeskModifier,
-      };
-
-      DREmote l_emote;
-      l_emote.key = i_key;
-      l_emote.character = i_chr;
-      l_emote.comment = l_emotions.at(Comment);
-      l_emote.anim = l_emotions.at(Animation);
-      l_emote.dialog = l_emotions.at(Dialog);
-      l_emote.modifier = qMax(l_emotions.at(Modifier).toInt(), 0);
-      if (DeskModifier < l_emotions.length())
-        l_emote.desk_modifier = l_emotions.at(DeskModifier).toInt();
-
-      l_chrini.beginGroup(l_fetcher.lookup_group("soundn"));
-      l_emote.sound_file = l_chrini.value(i_key).toString();
-      l_chrini.endGroup();
-
-      l_chrini.beginGroup(l_fetcher.lookup_group("soundd"));
-      if (l_chrini.contains(i_key))
-      {
-        l_emote.sound_delay = l_chrini.value(i_key).toInt();
-      }
-      else
-      {
-        l_chrini.endGroup();
-        l_chrini.beginGroup(l_fetcher.lookup_group("soundt"));
-        l_emote.sound_delay = l_chrini.value(i_key).toInt() * 60;
-      }
-      l_chrini.endGroup();
-      l_emote.sound_delay = qMax(0, l_emote.sound_delay);
-
-      l_chrini.beginGroup(l_fetcher.lookup_group("videos"));
-      l_emote.video_file = l_chrini.value(i_key).toString();
-      l_chrini.endGroup();
-
-      // add the emote
-      r_emote_list.append(l_emote);
-    }
-  }
-
-  return r_emote_list;
+  return {};
 }
 
 QStringList AOApplication::get_effect_offset(QString p_chr, int p_effect)
