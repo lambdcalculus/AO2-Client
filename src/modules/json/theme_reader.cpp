@@ -154,6 +154,45 @@ QVector<QStringList> ThemeReader::getLayers()
   return {};
 }
 
+  QStringList ThemeReader::getLayerChildren(QString t_widget)
+{
+  QStringList l_returnData = {};
+  if(mCurrentGamemode != nullptr)
+  {
+    QVector<QStringList> l_rawLayers = mCurrentGamemode->getLayers();
+
+    if(l_rawLayers.count() != 0)
+    {
+      for(QStringList l_layers : l_rawLayers)
+      {
+        if(l_layers[0] == t_widget)
+        {
+          l_returnData = l_layers;
+          l_returnData.removeAt(0);
+          return l_returnData;
+        }
+      }
+    }
+  }
+
+  QVector<QStringList> l_rawLayers = mGameModes["default"]->getLayers();
+
+  if(l_rawLayers.count() != 0)
+  {
+    for(QStringList l_layers : l_rawLayers)
+    {
+      if(l_layers[0] == t_widget)
+      {
+        l_returnData = l_layers;
+        l_returnData.removeAt(0);
+        return l_returnData;
+      }
+    }
+  }
+
+  return {};
+}
+
 QVector<ThemeTabInfo> ThemeReader::getTabs()
 {
   QVector<ThemeTabInfo> return_data = {};

@@ -1265,8 +1265,8 @@ void Courtroom::handle_chatmessage_2() // handles IC
     if(!PairManager::get().GetUsePairData())
     {
       ui_vp_player_pair->hide();
-      pos_size_type showname = PairManager::get().GetElementAlignment("showname", "center");
-      pos_size_type l_MessagePos = PairManager::get().GetElementAlignment("message", "center");
+      pos_size_type showname = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("showname", "center"), ThemeManager::get().getViewporResize());
+      pos_size_type l_MessagePos = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("message", "center"), ThemeManager::get().getViewporResize());
 
       ui_vp_showname->move(showname.x, showname.y);
       ui_vp_showname->resize(showname.width, showname.height);
@@ -1276,8 +1276,8 @@ void Courtroom::handle_chatmessage_2() // handles IC
     }
     else
     {
-      pos_size_type showname = PairManager::get().GetElementAlignment("showname", offsetTextbox);
-      pos_size_type l_MessagePos = PairManager::get().GetElementAlignment("message", offsetTextbox);
+      pos_size_type showname = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("showname", offsetTextbox), ThemeManager::get().getViewporResize());
+      pos_size_type l_MessagePos = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("message", offsetTextbox), ThemeManager::get().getViewporResize());
 
       ui_vp_showname->move(showname.x, showname.y);
       ui_vp_showname->resize(showname.width, showname.height);

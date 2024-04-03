@@ -33,6 +33,7 @@ public:
   int getMusicScrollSpeed();
   int getTimerNumber();
   QVector<QStringList> getLayers();
+  QStringList getLayerChildren(QString t_widget);
   QVector<ThemeTabInfo> getTabs();
   QString getSoundName(QString soundName);
   QMap<QString, DR::ColorInfo> getTextColors();

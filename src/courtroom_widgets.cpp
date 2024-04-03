@@ -729,6 +729,7 @@ void Courtroom::set_widget_names()
   for (auto *i_block : qAsConst(ui_free_blocks))
   {
     widget_names.insert(i_block->objectName(), i_block);
+    ThemeManager::get().addWidgetName(i_block->objectName(), i_block);
   }
 
   // timers are special children
@@ -1010,6 +1011,7 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_vp_music_name, "music_name", COURTROOM_DESIGN_INI, ao_app);
 
   setupWidgetElement(w_ViewportOverlay, "viewport", true);
+  w_ViewportOverlay->move(0, 0);
 
   setupWidgetElement(ui_vp_music_display_a, "music_display_a", "music_display_a.png", true);
   setupWidgetElement(ui_vp_music_display_b, "music_display_b", "music_display_b.png", true);
@@ -1525,6 +1527,7 @@ void Courtroom::load_free_blocks()
     l_block->setObjectName(l_block_name);
     ui_free_blocks.append(l_block);
     widget_names.insert(l_block_name, l_block);
+    ThemeManager::get().addWidgetName(l_block_name, l_block);
   }
 }
 

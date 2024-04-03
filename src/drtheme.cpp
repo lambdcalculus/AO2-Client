@@ -39,8 +39,8 @@ void DRTheme::InitTheme()
 
     m_jsonLoaded = true;
 
-    setup_layers();
     setup_free_blocks();
+    setup_layers();
   }
   LoadEffects();
   LoadWtce();
@@ -56,7 +56,7 @@ void DRTheme::setup_layers()
 
 void DRTheme::setup_free_blocks()
 {
-  free_blocks = {};
+  //free_blocks = ThemeManager::get().mCurrentThemeReader->;
   free_block_count = 0;
   QJsonValue free_blocks_array_value = m_currentThemeObject.value(QString("free_blocks"));
   QJsonArray free_blocks_array = free_blocks_array_value.toArray();

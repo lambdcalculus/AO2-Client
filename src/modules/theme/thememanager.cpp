@@ -40,6 +40,11 @@ void ThemeManager::SetWidgetNames(QHash<QString, QWidget *> t_WidgetNames)
   m_WidgetNames = t_WidgetNames;
 }
 
+void ThemeManager::addWidgetName(QString t_widgetName, QWidget *t_widget)
+{
+  m_WidgetNames[t_widgetName] = t_widget;
+}
+
 void ThemeManager::ToggleTab(QString t_tabName)
 {
   QStringList disable_widgets = AOApplication::getInstance()->current_theme->get_tab_widgets_disable(t_tabName);
@@ -82,6 +87,16 @@ void ThemeManager::toggleReload()
   mRequiresReload = true;
 }
 
+pos_size_type ThemeManager::resizePosition(pos_size_type t_position, double t_scale)
+{
+  t_position.x = static_cast<int>(t_position.x * t_scale);
+  t_position.y = static_cast<int>(t_position.y * t_scale);
+  t_position.width = static_cast<int>(t_position.width * t_scale);
+  t_position.height = static_cast<int>(t_position.height * t_scale);
+
+  return t_position;
+}
+
 void ThemeManager::setResize(double size)
 {
   mClientResize = size;
@@ -90,6 +105,16 @@ void ThemeManager::setResize(double size)
 double ThemeManager::getResize()
 {
   return mClientResize;
+}
+
+void ThemeManager::setViewporResize(double size)
+{
+  mViewportResize = size;
+}
+
+double ThemeManager::getViewporResize()
+{
+  return mViewportResize;
 }
 
 void ThemeManager::addButton(QString name, AOButton *button)

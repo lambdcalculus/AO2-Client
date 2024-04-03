@@ -28,6 +28,7 @@ public:
 
   //Widgets
   void SetWidgetNames(QHash<QString, QWidget *> t_WidgetNames);
+  void addWidgetName(QString t_widgetName, QWidget *t_widget);
 
   //Tabs
   void ToggleTab(QString tabName);
@@ -39,8 +40,12 @@ public:
   void toggleReload();
 
   //Widget Management
+  pos_size_type resizePosition(pos_size_type t_position, double t_scale);
+
   void setResize(double size);
   double getResize();
+  void setViewporResize(double size);
+  double getViewporResize();
 
   void addButton(QString name, AOButton* button);
   void refreshButtons();
@@ -59,6 +64,8 @@ private:
   static ThemeManager s_Instance;
 
   double mClientResize = 1;
+
+  double mViewportResize = 1;
 
 
   QHash<QString, QWidget *> m_WidgetNames = {};

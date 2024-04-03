@@ -10,6 +10,15 @@ class ViewportOverlay : public QWidget
 public:
   explicit ViewportOverlay(QWidget *parent = nullptr);
 
+private:
+  QAction *createResizeAction(int t_width, int t_height);
+  void resizeWidgetAndChildren(QString t_widget, int t_width, int t_height);
+
+private slots:
+  void displayContextMenu(QPoint t_position);
+  void detatchViewport();
+  void resizeViewport(int t_width, int t_height);
+
 signals:
 
 };

@@ -214,6 +214,8 @@ void setShownameFont(DRTextEdit *widget, QString identifier, QString align, AOAp
 {
   widgetFontStruct fontData = ThemeManager::get().mCurrentThemeReader.getPairingFont(identifier, align);
 
+  fontData.size = static_cast<int>(fontData.size * ThemeManager::get().getViewporResize());
+
   setThemeFont(widget, fontData, ao_app);
 
   bool outline = fontData.outline;
