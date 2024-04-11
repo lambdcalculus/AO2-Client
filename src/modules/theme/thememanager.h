@@ -20,6 +20,9 @@ public:
     return s_Instance;
   }
 
+  void execRemoveWidget(QString t_name);
+
+
   void LoadTheme(QString theme_name);
   void LoadGamemode(QString gamemode);
 

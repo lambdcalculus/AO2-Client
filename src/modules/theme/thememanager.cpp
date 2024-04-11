@@ -5,6 +5,11 @@
 
 ThemeManager ThemeManager::s_Instance;
 
+void ThemeManager::execRemoveWidget(QString t_name)
+{
+  if(m_WidgetNames.contains(t_name)) m_WidgetNames.remove(t_name);
+}
+
 void ThemeManager::LoadTheme(QString theme_name)
 {
   if(mRequiresReload)

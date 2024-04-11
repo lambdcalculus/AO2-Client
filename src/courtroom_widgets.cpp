@@ -1467,7 +1467,9 @@ void Courtroom::check_wtce()
 void Courtroom::delete_widget(QWidget *p_widget)
 {
   // remove the widget from recorded names
-  widget_names.remove(p_widget->objectName());
+  QString l_widgetName = p_widget->objectName();
+  widget_names.remove(l_widgetName);
+  ThemeManager::get().execRemoveWidget(l_widgetName);
 
   // transfer the children to our grandparent since our parent is about to be deleted
   QWidget *grand_parent = p_widget->parentWidget();
