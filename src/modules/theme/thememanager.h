@@ -56,6 +56,7 @@ public:
   void refreshComboBox();
 
   QWidget *GetWidget(QString name);
+  AOButton *GetButton(QString t_name);
 
   ThemeReader mCurrentThemeReader = ThemeReader();
 

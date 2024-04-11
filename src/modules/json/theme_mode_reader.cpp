@@ -1,6 +1,6 @@
 #include "theme_mode_reader.h"
 #include "file_functions.h"
-
+#include "modules/managers/localization_manager.h"
 #include <AOApplication.h>
 #include <QDir>
 
@@ -243,7 +243,9 @@ QStringList ThemeModeReader::getThemeDirOrder()
   for(ThemeModuleReader * module : modulesList)
   {
     if(module == nullptr) continue;
-    dirs.append(module->getDirectoryPath());
+    QString l_moduleDir = module->getDirectoryPath();
+    dirs.append(l_moduleDir + "/localization/" + LocalizationManager::get().getLocalizationCode());
+    dirs.append(l_moduleDir);
   }
   return dirs;
 }

@@ -27,6 +27,8 @@
 
 #include <modules/theme/thememanager.h>
 
+#include <modules/managers/localization_manager.h>
+
 AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
     : QWidget(p_parent)
     , m_config(new AOConfig(this))
@@ -78,8 +80,9 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
 
   // game
   //ui_themeModules = AO_GUI_WIDGET(QTreeView, "themeModules");
-
   ui_theme = AO_GUI_WIDGET(QComboBox, "theme");
+  wSettingsLanguage = AO_GUI_WIDGET(QComboBox, "languageSelector");
+  wLanguageCredits = AO_GUI_WIDGET(QLabel, "translationCredit");
   ui_switch_theme = AO_GUI_WIDGET(QPushButton, "switch_theme");
   ui_reload_theme = AO_GUI_WIDGET(QPushButton, "reload_theme");
   ui_gamemode = AO_GUI_WIDGET(QLineEdit, "gamemode");
@@ -100,6 +103,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   // IC message
   ui_length_threshold = AO_GUI_WIDGET(QSlider, "length_threshold");
   ui_length_threshold_label = AO_GUI_WIDGET(QLabel, "length_threshold_label");
+
 
   // IC Chatlog
   ui_log_max_lines = AO_GUI_WIDGET(QSpinBox, "log_length");
@@ -179,6 +183,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   refresh_packages_list();
 
   // themes
+  refreshLanguageList();
   refresh_theme_list();
   refresh_gamemode_list();
   refresh_timeofday_list();
@@ -264,6 +269,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   connect(ui_discord_hide_character, SIGNAL(toggled(bool)), m_config, SLOT(set_discord_hide_character(const bool)));
 
   // game
+  connect(wSettingsLanguage, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateLanguage(QString)));
   connect(ui_theme, SIGNAL(currentTextChanged(QString)), this, SLOT(update_theme_controls()));
   connect(ui_switch_theme, SIGNAL(clicked()), this, SLOT(on_switch_theme_clicked()));
   connect(ui_reload_theme, SIGNAL(clicked()), this, SLOT(on_reload_theme_clicked()));
@@ -340,6 +346,7 @@ AOConfigPanel::AOConfigPanel(AOApplication *p_ao_app, QWidget *p_parent)
   ui_server_alerts->setChecked(m_config->server_alerts_enabled());
 
   // game
+  wSettingsLanguage->setCurrentText(m_config->language());
   ui_theme->setCurrentText(m_config->theme());
   ui_manual_gamemode->setCurrentText(m_config->manual_gamemode());
   ui_manual_gamemode_selection->setChecked(m_config->is_manual_gamemode_selection_enabled());
@@ -437,6 +444,18 @@ void AOConfigPanel::showEvent(QShowEvent *event)
     refresh_theme_list();
     refresh_packages_list();
   }
+}
+
+void AOConfigPanel::refreshLanguageList()
+{
+  wSettingsLanguage->clear();
+  for (const QString &r_langauge : LocalizationManager::get().getLanguageNames())
+  {
+    wSettingsLanguage->addItem(r_langauge);
+  }
+
+  qDebug() << m_config->language();
+  wSettingsLanguage->setCurrentText(m_config->language());
 }
 
 void AOConfigPanel::refresh_packages_list()
@@ -570,6 +589,22 @@ void AOConfigPanel::update_audio_device_list()
       ui_device->setItemData(l_item_index, QColor(Qt::green), Qt::BackgroundRole);
   }
   ui_device->setCurrentIndex(l_prev_driver_index.value_or(l_current_driver_index.value_or(0)));
+}
+
+void AOConfigPanel::updateLanguage(QString t_data)
+{
+  QString l_language = t_data;
+  LocalizationManager::get().setLanguage(l_language);
+  m_config->setLanguage(l_language);
+
+  QString l_translators = LocalizationManager::get().getLocalizationCredit();
+  if(l_translators.isEmpty())
+  {
+    wLanguageCredits->hide();
+    return;
+  }
+  wLanguageCredits->setText("Translated to " + l_language + " by " + l_translators);
+  wLanguageCredits->show();
 }
 
 void AOConfigPanel::update_theme_controls()

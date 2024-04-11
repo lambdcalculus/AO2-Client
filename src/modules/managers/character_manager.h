@@ -1,6 +1,7 @@
 #ifndef CHARACTERMANAGER_H
 #define CHARACTERMANAGER_H
 
+#include <aoemotebutton.h>
 #include <datatypes.h>
 
 #include <modules/character/character_data.h>
@@ -22,6 +23,9 @@ public:
   {
     return s_Instance;
   }
+
+  void setOutfitList(QStringList t_outfits);
+  void setOutfitIndex(int t_index);
 
   QString lastCharList = "Server Characters";
   QVector<char_type> GetCharList();
@@ -58,16 +62,16 @@ public:
   bool GetCharacterInServer(int filterID);
   int GetFilteredId(int Id);
   int GetFilteredId(QString name);
+
 private:
   CharacterManager()
   {
 
   }
   static CharacterManager s_Instance;
-
   QHash<QString, bool>CharacterTaken = {};
-
   QStringList mCharacterPackages = {"Server Characters", "Favorites", "All"};
+  QStringList mCharacterOutfits = {};
 
 };
 

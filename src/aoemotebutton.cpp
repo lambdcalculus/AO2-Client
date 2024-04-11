@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QPaintEvent>
 #include <QPainter>
+#include <modules/managers/character_manager.h>
 
 AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x, int p_y)
     : QPushButton(p_parent)
@@ -38,8 +39,7 @@ int AOEmoteButton::get_emote_number()
 
 void AOEmoteButton::set_image(DREmote p_emote, bool p_enabled)
 {
-  QString l_texture =
-      ao_app->get_character_path(p_emote.character, QString("emotions/button%1_off.png").arg(p_emote.key));
+  QString l_texture = CharacterManager::get().p_SelectedCharacter->getEmoteButton(p_emote, false);
 
   // reset states
   ui_selected->hide();
@@ -48,7 +48,7 @@ void AOEmoteButton::set_image(DREmote p_emote, bool p_enabled)
   if (p_enabled)
   {
 
-    const QString l_selected_texture = ao_app->get_character_path(p_emote.character, "emotions/selected.png");
+    const QString l_selected_texture = CharacterManager::get().p_SelectedCharacter->getSelectedImage(p_emote);
 
 
 
@@ -59,7 +59,7 @@ void AOEmoteButton::set_image(DREmote p_emote, bool p_enabled)
     }
     else
     {
-      const QString l_enabled_texture = ao_app->get_character_path(p_emote.character, QString("emotions/button%1_on.png").arg(p_emote.key));
+      const QString l_enabled_texture = CharacterManager::get().p_SelectedCharacter->getEmoteButton(p_emote, true);
 
       if (file_exists(l_enabled_texture))
       {

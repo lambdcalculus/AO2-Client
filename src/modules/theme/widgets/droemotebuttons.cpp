@@ -1,12 +1,12 @@
 #include "droemotebuttons.h"
 #include "courtroom.h"
-
+#include "modules/managers/emotion_manager.h"
 #include <QWheelEvent>
 
-DROEmoteButtons::DROEmoteButtons(QWidget *parent, AOApplication *p_ao_app)
+DROEmoteButtons::DROEmoteButtons(QWidget *parent)
     : QWidget{parent}
 {
-  ao_app = p_ao_app;
+
 }
 
 void DROEmoteButtons::wheelEvent(QWheelEvent *event)
@@ -15,11 +15,11 @@ void DROEmoteButtons::wheelEvent(QWheelEvent *event)
 
   if (delta > 0)
   {
-    ao_app->get_courtroom()->on_emote_left_clicked();
+    EmotionManager::get().execEmotePagePrevious();
   }
   else if (delta < 0)
   {
-    ao_app->get_courtroom()->on_emote_right_clicked();
+    EmotionManager::get().execEmotePageNext();
   }
 
   QWidget::wheelEvent(event);

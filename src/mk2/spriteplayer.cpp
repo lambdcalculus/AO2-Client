@@ -56,6 +56,11 @@ QImage SpritePlayer::get_current_frame() const
   return m_scaled_current_frame;
 }
 
+QImage SpritePlayer::get_current_native_frame() const
+{
+  return m_current_frame.image;
+}
+
 QRectF SpritePlayer::get_scaled_bounding_rect() const
 {
   return m_scaled_current_frame.rect();

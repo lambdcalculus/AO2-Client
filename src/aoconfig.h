@@ -35,6 +35,7 @@ public:
   bool discord_presence() const;
   bool discord_hide_server() const;
   bool discord_hide_character() const;
+  QString language() const;
   QString theme() const;
   QString gamemode() const;
   QString manual_gamemode() const;
@@ -105,6 +106,7 @@ public slots:
   void set_discord_presence(const bool p_enabled);
   void set_discord_hide_server(const bool p_enabled);
   void set_discord_hide_character(const bool p_enabled);
+  void setLanguage(QString t_language);
   void set_theme(QString p_string);
   void set_gamemode(QString p_string);
   void set_manual_gamemode(QString p_string);
@@ -178,6 +180,7 @@ signals:
   void sticky_sfx_changed(bool);
 
   // theme
+  void language_changed(QString);
   void theme_changed(QString);
   void gamemode_changed(QString);
   void manual_gamemode_changed(QString);

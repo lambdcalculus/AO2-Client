@@ -6,6 +6,7 @@
 #include "drpather.h"
 #include "mk2/spritedynamicreader.h"
 #include "modules/managers/scene_manager.h"
+#include "modules/managers/localization_manager.h"
 
 // qt
 #include <QApplication>
@@ -62,6 +63,7 @@ private:
   bool discord_presence = false;
   bool discord_hide_server = false;
   bool discord_hide_character = false;
+  QString language;
   QString theme;
   QString gamemode;
   QString manual_gamemode;
@@ -165,6 +167,11 @@ void AOConfigPrivate::load_file()
   discord_presence = cfg.value("discord_presence", true).toBool();
   discord_hide_server = cfg.value("discord_hide_server", false).toBool();
   discord_hide_character = cfg.value("discord_hide_character", false).toBool();
+
+  language = cfg.value("language").toString();
+  if (language.trimmed().isEmpty())
+    language = "English";
+  LocalizationManager::get().setLanguage(language);
 
   theme = cfg.value("theme").toString();
   if (theme.trimmed().isEmpty())
@@ -284,6 +291,7 @@ void AOConfigPrivate::save_file()
   cfg.setValue("discord_hide_character", discord_hide_character);
 
   cfg.setValue("theme", theme);
+  cfg.setValue("language", language);
   cfg.setValue("gamemode", manual_gamemode);
   cfg.setValue("manual_gamemode", manual_gamemode_selection);
   cfg.setValue("timeofday", manual_timeofday);
@@ -483,6 +491,11 @@ bool AOConfig::discord_hide_server() const
 bool AOConfig::discord_hide_character() const
 {
   return d->discord_hide_character;
+}
+
+QString AOConfig::language() const
+{
+  return d->language;
 }
 
 /**
@@ -856,6 +869,13 @@ void AOConfig::set_discord_hide_character(const bool p_enabled)
     return;
   d->discord_hide_character = p_enabled;
   d->invoke_signal("discord_hide_character_changed", Q_ARG(bool, d->discord_hide_character));
+}
+
+void AOConfig::setLanguage(QString t_language)
+{
+  if(d->language == t_language) return;
+  d->language = t_language;
+  d->invoke_signal("language_changed", Q_ARG(QString, t_language));
 }
 
 void AOConfig::set_theme(QString p_string)

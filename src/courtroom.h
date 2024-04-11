@@ -63,6 +63,7 @@ class QLabel;
 #include <mk2/drplayer.h>
 
 #include <modules/theme/widgets/dro_line_edit.h>
+#include <modules/theme/widgets/droemotebuttons.h>
 
 #include <modules/widgets/rpnotifymenu.h>
 #include <modules/widgets/viewport_overlay.h>
@@ -302,7 +303,9 @@ signals:
   void loaded_theme();
   void closing();
 
-
+public:
+  AOConfig *ao_config = nullptr;
+  bool is_spectating();
 
 private:
   bool m_first_theme_loading = true;
@@ -310,7 +313,6 @@ private:
   bool m_is_maximized = false;
 
   AOApplication *ao_app = nullptr;
-  AOConfig *ao_config = nullptr;
 
   QStringList m_area_list;
   QStringList m_music_list;
@@ -423,13 +425,8 @@ private:
   int m_page_max_chr_count = 90;
 
   QString m_character_content_url;
-  QVector<DREmote> m_emote_list;
-  int m_emote_id = 0;
-  int m_current_emote_page = 0;
   int emote_columns = 5;
   int emote_rows = 2;
-  int m_page_max_emote_count = 10;
-  int m_emote_preview_id = -1;
 
   int m_current_clock = -1;
 
@@ -535,13 +532,12 @@ private:
 
   QLineEdit *ui_sfx_search = nullptr;
 
-  QWidget *ui_emotes = nullptr;
+  DROEmoteButtons *ui_emotes = nullptr;
 
 
   QWidget * ui_player_list = nullptr;
 
 
-  QVector<AOEmoteButton *> ui_emote_list;
   AOButton *ui_emote_left = nullptr;
   AOButton *ui_emote_right = nullptr;
   DRGraphicsView *ui_emote_preview;
@@ -549,6 +545,9 @@ private:
   DRCharacterMovie *ui_emote_preview_character;
 
   QComboBox *ui_emote_dropdown = nullptr;
+
+  QComboBox *wOutfitDropdown = nullptr;
+
   QComboBox *ui_iniswap_dropdown = nullptr;
 
   QComboBox *ui_chat_type_dropdown = nullptr;
@@ -710,19 +709,12 @@ private:
 
   void construct_playerlist();
 
-
-  void reset_emote_page();
-  void refresh_emote_page(const bool scroll_to_current_emote = false);
-  void fill_emote_dropdown();
-  DREmote get_emote(const int id);
-  DREmote get_current_emote();
   QString get_current_position();
 
   void load_note();
   void save_note();
   void save_textlog(QString p_text);
 
-  bool is_spectating();
 
   QString get_shout_name(int shout_index);
   QString get_effect_name(int effect_index);
@@ -740,6 +732,7 @@ public slots:
   void on_emote_right_clicked();
   void on_char_select_left_clicked();
   void on_char_select_right_clicked();
+  void hide_emote_tooltip(int id);
 
 private slots:
   void setup_chat();
@@ -790,7 +783,6 @@ private slots:
 
   void on_emote_clicked(int id);
   void show_emote_tooltip(int id, QPoint global_pos);
-  void hide_emote_tooltip(int id);
   void on_emote_preview_toggled(bool);
 
 
@@ -835,6 +827,7 @@ private slots:
   void on_text_color_changed(int p_color);
 
   void on_chat_type_changed(int p_type);
+  void onOutfitChanged(int t_outfitIndex);
 
   void reset_wtce_buttons();
   void on_wtce_clicked();

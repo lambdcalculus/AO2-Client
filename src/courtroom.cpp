@@ -12,12 +12,14 @@
 #include "aonotearea.h"
 #include "aonotepicker.h"
 #include "aosfxplayer.h"
+#include "modules/managers/emotion_manager.h"
 #include "modules/managers/pair_manager.h"
 #include "aoshoutplayer.h"
 #include "aosystemplayer.h"
 #include "aotimer.h"
 #include "commondefs.h"
 #include "debug_functions.h"
+#include "modules/managers/localization_manager.h"
 #include "draudiotrackmetadata.h"
 #include "drcharactermovie.h"
 #include "drchatlog.h"
@@ -342,25 +344,8 @@ void Courtroom::enter_courtroom(int p_cid)
   select_base_character_iniswap();
   refresh_character_content_url();
 
-  const int l_prev_emote_count = m_emote_list.count();
-  m_emote_list = CharacterManager::get().p_SelectedCharacter->getEmotes();
-
-      //ao_app->get_emote_list(l_chr_name);
-
-  const QString l_prev_emote = ui_emote_dropdown->currentText();
-  fill_emote_dropdown();
-
-  if (l_changed_chr || l_prev_emote_count != m_emote_list.count())
-  {
-    m_emote_id = 0;
-    m_current_emote_page = 0;
-    ui_pre->setChecked(ui_pre->isChecked() || ao_config->always_pre_enabled());
-  }
-  else
-  {
-    ui_emote_dropdown->setCurrentText(l_prev_emote);
-  }
-  refresh_emote_page();
+  EmotionManager::get().refreshEmoteSelection(l_changed_chr);
+  EmotionManager::get().refreshEmotePage();
 
   load_current_character_sfx_list();
   select_default_sfx();
@@ -437,6 +422,8 @@ void Courtroom::update_background_scene()
   const QString l_prev_background_name = m_background_name;
   m_background_name = get_current_background();
 
+  SceneManager::get().execLoadPlayerBackground(m_background_name);
+
   if (l_prev_background_name.isEmpty() || l_prev_background_name != m_background_name)
   {
     const QString l_positions_ini = ao_app->find_asset_path(ao_app->get_background_path(m_background_name) + "/" + "positions.ini");
@@ -450,12 +437,12 @@ void Courtroom::update_background_scene()
   DRPosition l_position = m_position_map.get_position(m_chatmessage[CMPosition]);
 
   {
-    const QString l_file_name = ao_app->get_background_sprite_path(m_background_name, l_position.get_back());
+    const QString l_file_name = SceneManager::get().getBackgroundPath(l_position_id);
     ui_vp_background->set_file_name(l_file_name);
   }
 
   {
-    const QString l_file_name = ao_app->get_background_sprite_path(m_background_name, l_position.get_front());
+    const QString l_file_name = SceneManager::get().getForegroundPath(l_position_id);
     ui_vp_desk->set_file_name(l_file_name);
   }
 
@@ -782,7 +769,7 @@ bool Courtroom::is_spectating()
 
 void Courtroom::on_showname_placeholder_changed(QString p_showname_placeholder)
 {
-  const QString l_showname(p_showname_placeholder.trimmed().isEmpty() ? "Showname" : p_showname_placeholder);
+  const QString l_showname(p_showname_placeholder.trimmed().isEmpty() ? LocalizationManager::get().getLocalizationText("TEXTBOX_SHOWNAME") : p_showname_placeholder);
   ui_ic_chat_showname->setPlaceholderText(l_showname);
   ui_ic_chat_showname->setToolTip(l_showname);
 }
@@ -835,7 +822,7 @@ void Courtroom::on_ic_message_return_pressed()
 
   QStringList packet_contents;
 
-  const DREmote &l_emote = get_emote(m_emote_id);
+  const DREmote &l_emote = EmotionManager::get().getCurrentEmote();
 
   const QString l_desk_modifier = l_emote.desk_modifier == -1 ? QString("chat") : QString::number(l_emote.desk_modifier);
   packet_contents.append(l_desk_modifier);
@@ -1029,8 +1016,14 @@ void Courtroom::preload_chatmessage(QStringList p_contents)
 
   { // backgrounds
     DRPosition l_position = m_position_map.get_position(l_position_id);
-    l_file_list.insert(ViewportStageBack, ao_app->get_background_sprite_path(m_background_name, l_position.get_back()));
-    l_file_list.insert(ViewportStageFront, ao_app->get_background_sprite_path(m_background_name, l_position.get_front()));
+    l_file_list.insert(ViewportStageBack, SceneManager::get().getBackgroundPath(l_position_id));
+    l_file_list.insert(ViewportStageFront, SceneManager::get().getForegroundPath(l_position_id));
+
+    double l_characterHeight = CharacterManager::get().ReadCharacter(l_character)->getHeight();
+
+    ui_vp_background->setBackgroundScaling(l_characterHeight);
+    ui_vp_desk->setBackgroundScaling(l_characterHeight);
+
   }
 
   // characters
@@ -2067,7 +2060,7 @@ void Courtroom::set_ban(int p_cid)
   if (p_cid != m_chr_id && p_cid != SpectatorId)
     return;
 
-  call_notice("You have been banned.");
+  call_notice(LocalizationManager::get().getLocalizationText("NOTICE_BANNED"));
 
   ao_app->construct_lobby();
   ao_app->destruct_courtroom();
@@ -2197,7 +2190,7 @@ void Courtroom::send_ooc_packet(QString ooc_message)
 
   if (ooc_message.trimmed().isEmpty())
   {
-    append_server_chatmessage("CLIENT", "You cannot send empty messages.");
+    append_server_chatmessage("CLIENT",  LocalizationManager::get().getLocalizationText("OOC_EMPTY"));
     return;
   }
   QStringList l_content{ao_config->username(), ooc_message};
@@ -2241,7 +2234,7 @@ void Courtroom::on_ooc_message_return_pressed()
 
   if (l_message.startsWith("/rainbow") && !is_rainbow_enabled)
   {
-    ui_text_color->addItem("Rainbow");
+    ui_text_color->addItem(LocalizationManager::get().getLocalizationText("COLOR_RAINBOW"));
     ui_ooc_chat_message->clear();
     is_rainbow_enabled = true;
     return;
@@ -2620,7 +2613,12 @@ void Courtroom::on_text_color_changed(int p_color)
 void Courtroom::on_chat_type_changed(int p_type)
 {
     m_current_chat_type = static_cast<ChatTypes>(p_type);
-    ui_ic_chat_message_field->setFocus();
+  ui_ic_chat_message_field->setFocus();
+}
+
+void Courtroom::onOutfitChanged(int t_outfitIndex)
+{
+  CharacterManager::get().setOutfitIndex(t_outfitIndex);
 }
 
 /**
@@ -3133,19 +3131,19 @@ void Courtroom::construct_playerlist_layout()
     switch(m_current_reportcard_reason)
     {
       case ReportCardReason::Blackout:
-        prompt_reason->set_reason("You can't see anyone as the lights are currently off.");
+      prompt_reason->set_reason(LocalizationManager::get().getLocalizationText("REASON_BLACKOUT"));
         break;
 
       case ReportCardReason::Blinded:
-        prompt_reason->set_reason("You can't see anyone as you are currently blinded.");
+        prompt_reason->set_reason(LocalizationManager::get().getLocalizationText("REASON_BLINDED"));
         break;
 
       case ReportCardReason::PendingLook:
-        prompt_reason->set_reason("There appears to be people in the area.");
+        prompt_reason->set_reason(LocalizationManager::get().getLocalizationText("REASON_PENDING"));
         break;
 
       case ReportCardReason::NoPlayerList:
-        prompt_reason->set_reason("The Player List has been disabled by the GM.");
+        prompt_reason->set_reason(LocalizationManager::get().getLocalizationText("REASON_DISABLED"));
         break;
 
       default:

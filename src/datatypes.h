@@ -14,6 +14,24 @@ enum ThemeSceneType
   REPLAYS
 };
 
+class DRBackgroundSettings
+{
+public:
+  bool isDynamic = false;
+  double mScaleMinimum = 0.1;
+  double mScaleMax = 0.9;
+  double mPositionMinimum = 0;
+  double mPositionMaximum = 1;
+};
+
+class DRBackgroundPosition
+{
+public:
+  QString mBackground = "";
+  QString mForeground = "";
+};
+
+
 class DREmote
 {
 public:

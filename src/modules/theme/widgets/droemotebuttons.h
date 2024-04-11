@@ -9,13 +9,11 @@ class DROEmoteButtons : public QWidget
 {
   Q_OBJECT
 public:
-  explicit DROEmoteButtons(QWidget *parent, AOApplication *p_ao_app);
+  explicit DROEmoteButtons(QWidget *parent);
 signals:
 protected:
   void wheelEvent(QWheelEvent *event) override;
 
-private:
-  AOApplication *ao_app = nullptr;
 };
 
 #endif // DROEMOTEBUTTONS_H

@@ -44,6 +44,7 @@ protected:
   void showEvent(QShowEvent *event) override;
 
 private:
+  void refreshLanguageList();
   void refresh_theme_list();
   void refresh_packages_list();
   void refresh_gamemode_list();
@@ -51,6 +52,7 @@ private:
   void update_audio_device_list();
 
 private slots:
+  void updateLanguage(QString t_data);
   void update_theme_controls();
   void on_switch_theme_clicked();
   void on_reload_theme_clicked();
@@ -131,6 +133,9 @@ private:
 
   // game
   QComboBox *ui_theme = nullptr;
+  QLabel *wLanguageCredits = nullptr;
+  QComboBox *wSettingsLanguage = nullptr;
+
   QPushButton *ui_switch_theme = nullptr;
   QPushButton *ui_reload_theme = nullptr;
   QTreeView *ui_themeModules = nullptr;

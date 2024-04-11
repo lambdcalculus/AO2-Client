@@ -20,6 +20,11 @@ void JSONReader::ReadFromString(QString data)
   mTargetObject = mMainObject;
 }
 
+void JSONReader::ResetTargetObject()
+{
+  mTargetObject = mMainObject;
+}
+
 void JSONReader::SetTargetObject(QJsonObject target)
 {
   mTargetObject = target;
@@ -48,6 +53,11 @@ bool JSONReader::getBoolValue(QString string)
 int JSONReader::getIntValue(QString string)
 {
   return mTargetObject.value(string).toInt();
+}
+
+double JSONReader::getDoubleValue(QString string)
+{
+  return mTargetObject.value(string).toDouble();
 }
 
 QVector2D JSONReader::getVector2DValue(QString string)

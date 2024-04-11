@@ -6,6 +6,8 @@
 #include "aoimagedisplay.h"
 #include "commondefs.h"
 #include "datatypes.h"
+#include "modules/managers/localization_manager.h"
+#include "modules/managers/emotion_manager.h"
 #include "debug_functions.h"
 #include "drchatlog.h"
 #include "drmasterclient.h"
@@ -61,11 +63,11 @@ Lobby::Lobby(AOApplication *p_ao_app)
 
   ui_server_menu = new QMenu(this);
   ui_server_menu->addSection(tr("Server"));
-  ui_create_server = ui_server_menu->addAction(tr("Add"));
-  ui_modify_server = ui_server_menu->addAction(tr("Edit"));
-  ui_move_up_server = ui_server_menu->addAction(tr("Move up"));
-  ui_move_down_server = ui_server_menu->addAction(tr("Move down"));
-  ui_delete_server = ui_server_menu->addAction(tr("Remove"));
+  ui_create_server = ui_server_menu->addAction(LocalizationManager::get().getLocalizationText("SERVER_FAVORITES_ADD"));
+  ui_modify_server = ui_server_menu->addAction(LocalizationManager::get().getLocalizationText("SERVER_FAVORITES_EDIT"));
+  ui_move_up_server = ui_server_menu->addAction(LocalizationManager::get().getLocalizationText("SERVER_FAVORITES_UP"));
+  ui_move_down_server = ui_server_menu->addAction(LocalizationManager::get().getLocalizationText("SERVER_FAVORITES_DOWN"));
+  ui_delete_server = ui_server_menu->addAction(LocalizationManager::get().getLocalizationText("SERVER_FAVORITES_REMOVE"));
 
   ui_player_count = new DRTextEdit(this);
   ui_player_count->setFrameStyle(QFrame::NoFrame);
@@ -129,6 +131,8 @@ Lobby::Lobby(AOApplication *p_ao_app)
   update_widgets();
   m_master_client->set_address(ao_config->server_advertiser());
   set_choose_a_server();
+
+  EmotionManager::get().wEmoteList = {};
 }
 
 Lobby::~Lobby()
@@ -679,12 +683,12 @@ void Lobby::move_down_server()
 void Lobby::_p_update_description()
 {
   QMap<AOApplication::ServerStatus, QString> l_report_map{
-      {AOApplication::NotConnected, tr("Choose a server.")},
-      {AOApplication::Connecting, tr("Connecting to server.")},
-      {AOApplication::Connected, tr("Connected to server.")},
-      {AOApplication::Joined, tr("Joined server.")},
-      {AOApplication::TimedOut, tr("Failed to connect to server.")},
-      {AOApplication::Disconnected, tr("Choose a server.")},
+      {AOApplication::NotConnected, LocalizationManager::get().getLocalizationText("CONNECTION_NOT")},
+      {AOApplication::Connecting, LocalizationManager::get().getLocalizationText("CONNECTION_CONNECTING")},
+      {AOApplication::Connected, LocalizationManager::get().getLocalizationText("CONNECTION_CONNECTED")},
+      {AOApplication::Joined, LocalizationManager::get().getLocalizationText("CONNECTION_JOINED")},
+      {AOApplication::TimedOut, LocalizationManager::get().getLocalizationText("CONNECTION_TIMEDOUT")},
+      {AOApplication::Disconnected, LocalizationManager::get().getLocalizationText("CONNECTION_NOT")},
   };
 
   QString l_message = l_report_map[ao_app->last_server_status()];

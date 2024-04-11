@@ -76,6 +76,8 @@ public slots:
 
   void start();
   void restart();
+  void setVerticalOffset(int t_offset);
+  void setBackgroundScaling(double t_offset);
   void stop();
 
 signals:
@@ -90,6 +92,7 @@ signals:
 
 private:
   QScopedPointer<SpritePlayer> m_player;
+  int mVerticalVPOffset = 0;
 
 private slots:
   void notify_size();

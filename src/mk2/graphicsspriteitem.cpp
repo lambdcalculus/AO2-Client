@@ -24,6 +24,8 @@
 
 #include <functional>
 
+#include <modules/managers/scene_manager.h>
+
 using namespace mk2;
 
 GraphicsSpriteItem::GraphicsSpriteItem(QGraphicsItem *parent)
@@ -117,6 +119,23 @@ void GraphicsSpriteItem::restart()
   start();
 }
 
+void GraphicsSpriteItem::setVerticalOffset(int t_offset)
+{
+  mVerticalVPOffset = -t_offset;
+}
+
+void GraphicsSpriteItem::setBackgroundScaling(double t_offset)
+{
+  //TO-DO
+  //DRBackgroundSettings l_settings = SceneManager::get().getBackgroundSettings();
+  //double l_minimum_scale = l_settings.mScaleMinimum;
+  //double l_maxScale = l_settings.mScaleMax;
+  //
+  //double l_minimumPosition = l_settings.mPositionMinimum;
+  //double l_maxPosition = l_settings.mPositionMaximum;
+
+}
+
 void GraphicsSpriteItem::stop()
 {
   m_player->stop();
@@ -154,6 +173,7 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
     {
       const QPointF l_center = l_scene->sceneRect().center() - m_player->get_scaled_bounding_rect().center();
       l_horizontal_center.setX(l_center.x());
+      l_horizontal_center.setY(mVerticalVPOffset);
     }
 
     painter->drawImage(l_horizontal_center, m_player->get_current_frame());

@@ -20,6 +20,7 @@
 #include <QRegularExpression>
 
 #include <modules/managers/character_manager.h>
+#include <modules/managers/localization_manager.h>
 
 AOApplication *AOApplication::m_Instance = nullptr;
 
@@ -37,6 +38,8 @@ AOApplication::AOApplication(int &argc, char **argv)
     : QApplication(argc, argv)
 {
   ao_config = new AOConfig(this);
+  SceneManager::get().pConfigAO = ao_config;
+  LocalizationManager::get().execLoadLanguages();
 
   ao_config_panel = new AOConfigPanel(this);
 

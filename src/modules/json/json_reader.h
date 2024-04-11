@@ -16,6 +16,7 @@ public:
   void ReadFromFile(QString path);
   void ReadFromString(QString data);
 
+  void ResetTargetObject();
   void SetTargetObject(QJsonObject target);
   void SetTargetObject(QString string);
 
@@ -23,6 +24,7 @@ public:
   QString getStringValue(QString string);
   bool getBoolValue(QString string);
   int getIntValue(QString string);
+  double getDoubleValue(QString string);
   QVector2D getVector2DValue(QString string);
   QJsonArray getArrayValue(QString string);
   QStringList getStringArrayValue(QString string);

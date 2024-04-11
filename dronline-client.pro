@@ -81,6 +81,9 @@ HEADERS += \
   src/mk2/spritereadersynchronizer.h \
   src/mk2/spriteseekingreader.h \
   src/mk2/spriteviewer.h \
+  src/modules/background/background_data.h \
+  src/modules/background/background_reader.h \
+  src/modules/background/legacy_background_reader.h \
   src/modules/character/character_data.h \
   src/modules/character/character_data_reader.h \
   src/modules/character/legacy_character_reader.h \
@@ -88,10 +91,13 @@ HEADERS += \
   src/modules/debug/time_debugger.h \
   src/modules/files/image_loader.h \
   src/modules/json/json_reader.h \
+  src/modules/json/localization_reader.h \
   src/modules/json/theme_mode_reader.h \
   src/modules/json/theme_module_reader.h \
   src/modules/json/theme_reader.h \
   src/modules/managers/character_manager.h \
+  src/modules/managers/emotion_manager.h \
+  src/modules/managers/localization_manager.h \
   src/modules/managers/notify_manager.h \
   src/modules/managers/pair_manager.h \
   src/modules/managers/scene_manager.h \
@@ -182,6 +188,9 @@ SOURCES += \
   src/mk2/spritedynamicreader.cpp \
   src/mk2/spriteplayer.cpp \
   src/mk2/spriteseekingreader.cpp \
+  src/modules/background/background_data.cpp \
+  src/modules/background/background_reader.cpp \
+  src/modules/background/legacy_background_reader.cpp \
   src/modules/character/character_data.cpp \
   src/modules/character/character_data_reader.cpp \
   src/modules/character/legacy_character_reader.cpp \
@@ -189,10 +198,13 @@ SOURCES += \
   src/modules/debug/time_debugger.cpp \
   src/modules/files/image_loader.cpp \
   src/modules/json/json_reader.cpp \
+  src/modules/json/localization_reader.cpp \
   src/modules/json/theme_mode_reader.cpp \
   src/modules/json/theme_module_reader.cpp \
   src/modules/json/theme_reader.cpp \
   src/modules/managers/character_manager.cpp \
+  src/modules/managers/emotion_manager.cpp \
+  src/modules/managers/localization_manager.cpp \
   src/modules/managers/notify_manager.cpp \
   src/modules/managers/pair_manager.cpp \
   src/modules/managers/scene_manager.cpp \

@@ -49,6 +49,7 @@ public:
   ~SpritePlayer();
 
   QImage get_current_frame() const;
+  QImage get_current_native_frame() const;
 
   QRectF get_scaled_bounding_rect() const;
 

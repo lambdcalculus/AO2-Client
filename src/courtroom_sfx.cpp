@@ -8,6 +8,9 @@
 
 #include <QCheckBox>
 #include <QColor>
+#include "modules/managers/localization_manager.h"
+#include "modules/managers/character_manager.h"
+#include "modules/managers/emotion_manager.h"
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMenu>
@@ -26,7 +29,7 @@ std::optional<DRSfx> Courtroom::current_sfx()
 
 QString Courtroom::current_sfx_file()
 {
-  const QString l_current_emote_file = get_current_emote().sound_file;
+  const QString l_current_emote_file = EmotionManager::get().getCurrentEmote().sound_file;
   const std::optional<DRSfx> l_optional_sfx = current_sfx();
   if (!l_optional_sfx.has_value())
     return l_current_emote_file;
@@ -49,8 +52,8 @@ void Courtroom::load_current_character_sfx_list()
 
   // items
   m_sfx_list.clear();
-  m_sfx_list.append(DRSfx("Default", m_sfx_default_file));
-  m_sfx_list.append(DRSfx("Silence", nullptr));
+  m_sfx_list.append(DRSfx(LocalizationManager::get().getLocalizationText("DEFAULT"), m_sfx_default_file));
+  m_sfx_list.append(DRSfx(LocalizationManager::get().getLocalizationText("SFX_SILENCE"), nullptr));
 
   const QStringList l_sfx_list = ao_app->get_sfx_list();
   for (const QString &i_sfx_line : l_sfx_list)

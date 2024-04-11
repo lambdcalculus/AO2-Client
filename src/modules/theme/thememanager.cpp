@@ -167,3 +167,8 @@ QWidget *ThemeManager::GetWidget(QString name)
   if(m_WidgetNames.contains(name)) return m_WidgetNames[name];
   return nullptr;
 }
+
+AOButton *ThemeManager::GetButton(QString t_name)
+{
+  return dynamic_cast<AOButton*>(ThemeManager::get().GetWidget(t_name));
+}

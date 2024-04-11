@@ -1,13 +1,20 @@
 #include "character_manager.h"
+#include "aoemotebutton.h"
 #include "commondefs.h"
 #include "file_functions.h"
+#include "emotion_manager.h"
 
 #include <AOApplication.h>
+#include <QCheckBox>
 #include <QFile>
+#include "courtroom.h"
+#include "qmath.h"
 #include <QTextStream>
 
 #include <modules/character/character_data_reader.h>
 #include <modules/character/legacy_character_reader.h>
+
+#include <modules/theme/thememanager.h>
 
 CharacterManager CharacterManager::s_Instance;
 
@@ -30,19 +37,48 @@ CharacterData *CharacterManager::ReadCharacter(QString t_folder)
 void CharacterManager::SwitchCharacter(QString t_folder)
 {
   QString l_jsonPath = AOApplication::getInstance()->get_character_path(t_folder, "char.json");
+
+  QStringList l_OutfitNames = {"<All>"};
+
+
   if(file_exists(l_jsonPath))
   {
     p_SelectedCharacter = new CharacterDataReader();
     p_SelectedCharacter->loadCharacter(t_folder);
+    QStringList l_charaOutfits = p_SelectedCharacter->getOutfitNames();
+    l_OutfitNames.append(l_charaOutfits);
+    setOutfitList(l_OutfitNames);
     return;
   }
 
-
   p_SelectedCharacter = new LegacyCharacterReader();
   p_SelectedCharacter->loadCharacter(t_folder);
+  setOutfitList(l_OutfitNames);
   return;
+}
 
+void CharacterManager::setOutfitList(QStringList t_outfits)
+{
+  mCharacterOutfits = t_outfits;
 
+  QWidget *l_outfitSelectorWidget = ThemeManager::get().GetWidget("outfit_selector");
+
+  if (dynamic_cast<QComboBox*>(l_outfitSelectorWidget) != nullptr)
+  {
+    QComboBox* l_outfitSelectorCombo = dynamic_cast<QComboBox*>(l_outfitSelectorWidget);
+    l_outfitSelectorCombo->clear();
+    l_outfitSelectorCombo->addItems(t_outfits);
+  }
+}
+
+void CharacterManager::setOutfitIndex(int t_index)
+{
+  if(mCharacterOutfits.length() > t_index && t_index != -1)
+  {
+    p_SelectedCharacter->switchOutfit(mCharacterOutfits[t_index]);
+  }
+  EmotionManager::get().refreshEmoteSelection(false);
+  EmotionManager::get().refreshEmotePage();
 }
 
 QVector<char_type> CharacterManager::GetCharList()
@@ -268,7 +304,6 @@ int CharacterManager::GetFilteredId(QString name)
 
   return -1;
 }
-
 
 int CharacterManager::GetAvaliablePersona()
 {

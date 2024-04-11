@@ -8,6 +8,7 @@
 #include "drdiscord.h"
 #include "drpacket.h"
 #include "modules/managers/character_manager.h"
+#include "modules/managers/localization_manager.h"
 #include "drserversocket.h"
 #include "file_functions.h"
 #include "hardware_functions.h"
@@ -58,7 +59,7 @@ void AOApplication::_p_handle_server_state_update(DRServerSocket::ConnectionStat
       if (is_courtroom_constructed)
       {
         m_courtroom->stop_all_audio();
-        call_notice("Disconnected from server.");
+        call_notice(LocalizationManager::get().getLocalizationText("NOTICE_DISCONNECT"));
         construct_lobby();
         destruct_courtroom();
       }
@@ -414,7 +415,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       if (f_cid != remote_cid && remote_cid != -1)
         return;
 
-      call_notice("You have been kicked.");
+      call_notice(LocalizationManager::get().getLocalizationText("NOTICE_KICKED"));
       leave_server();
       construct_lobby();
       destruct_courtroom();
@@ -427,7 +428,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   }
   else if (l_header == "BD")
   {
-    call_notice("You are banned on this server.");
+    call_notice(LocalizationManager::get().getLocalizationText("NOTICE_BANNED_2"));
   }
   else if (l_header == "ZZ")
   {
