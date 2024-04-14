@@ -35,7 +35,7 @@ void JSONReader::SetTargetObject(QString string)
   SetTargetObject(mTargetObject.value(string).toObject());
 }
 
-bool JSONReader::ValueExists(QString value)
+bool JSONReader::isValueExists(QString value)
 {
   return mTargetObject.contains(value);
 }

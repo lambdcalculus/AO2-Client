@@ -22,8 +22,8 @@ QAction *ViewportOverlay::createResizeAction(int t_width, int t_height)
 
 void ViewportOverlay::resizeWidgetAndChildren(QString t_widget, int t_width, int t_height)
 {
-
-  QWidget* l_widget = ThemeManager::get().GetWidget(t_widget);
+  
+  QWidget* l_widget = ThemeManager::get().getWidget(t_widget);
   if(l_widget == nullptr) return;
 
   int l_viewportNativeHeight = ThemeManager::get().mCurrentThemeReader.getWidgetPosition(COURTROOM, "viewport").height;
@@ -90,7 +90,7 @@ void ViewportOverlay::displayContextMenu(QPoint t_position)
 
 void ViewportOverlay::detatchViewport()
 {
-  QWidget* l_viewport = ThemeManager::get().GetWidget("viewport");
+  QWidget* l_viewport = ThemeManager::get().getWidget("viewport");
 
   l_viewport->setParent(nullptr);
   l_viewport->show();
@@ -99,7 +99,7 @@ void ViewportOverlay::detatchViewport()
 
 void ViewportOverlay::resizeViewport(int t_width, int t_height)
 {
-  QWidget* l_viewport = ThemeManager::get().GetWidget("viewport");
+  QWidget* l_viewport = ThemeManager::get().getWidget("viewport");
   l_viewport->resize(t_width, t_height);
 
   QStringList l_viewportChildren = ThemeManager::get().mCurrentThemeReader.getLayerChildren("viewport");

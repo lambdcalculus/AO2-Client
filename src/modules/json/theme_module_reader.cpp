@@ -28,14 +28,14 @@ void ThemeModuleReader::ParseModule()
 void ThemeModuleReader::ParseModuleConfig()
 {
   SetTargetObject("config");
-  QStringList configOptionNames = {"enable_single_shout" , "enable_single_effect",  "detatchable_viewport", "enable_single_wtce", "enable_const_music_speed", "enable_showname_image", "enable_highlighting", "enable_button_images", "enable_label_images", "enable_cycle_ding", "use_toggles"};
+  QStringList configOptionNames = {"enable_single_shout" , "enable_music_and_area_list_separation", "enable_single_effect",  "detatchable_viewport", "enable_single_wtce", "enable_const_music_speed", "enable_showname_image", "enable_highlighting", "enable_button_images", "enable_label_images", "enable_cycle_ding", "use_toggles"};
 
   for (const QString& optionName : configOptionNames) {
-    if (ValueExists(optionName)) m_configBooleans[optionName] = getBoolValue(optionName);
+    if (isValueExists(optionName)) m_configBooleans[optionName] = getBoolValue(optionName);
   }
-
-  if(ValueExists("music_scroll_speed")) m_configMusicSpeed = getIntValue("music_scroll_speed");
-  if(ValueExists("timer_number")) m_configTimer = getIntValue("timer_number");
+  
+  if(isValueExists("music_scroll_speed")) m_configMusicSpeed = getIntValue("music_scroll_speed");
+  if(isValueExists("timer_number")) m_configTimer = getIntValue("timer_number");
 
   QJsonArray configColorsArray = getArrayValue("colors");
   QJsonArray configHighlightsArray = getArrayValue("highlights");

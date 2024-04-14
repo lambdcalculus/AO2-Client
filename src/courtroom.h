@@ -625,11 +625,6 @@ private:
 
   AOButton *ui_note_button = nullptr;
 
-
-  AOButton *ui_area_toggle_button = nullptr;
-  AOButton *ui_chat_toggle_button = nullptr;
-  AOButton *ui_gm_toggle_button = nullptr;
-
   AOImageDisplay *ui_char_select_background = nullptr;
 
   // abstract widget to hold char buttons
@@ -692,6 +687,7 @@ private:
   void insert_widget_names(QVector<QString> &p_widget_names, QVector<QWidget *> &p_widgets);
   template <typename T>
   void insert_widget_names(QVector<QString> &p_widget_names, QVector<T *> &p_widgets);
+  void setupWidgetTabs();
   void set_widget_layers();
   void set_widget_layers_legacy();
 
@@ -848,7 +844,7 @@ private slots:
 
   void on_gm_toggle_clicked();
   void on_chat_toggle_clicked();
-  void switch_toggle(ToggleState state);
+  void switchToggle(QString t_tabName);
   bool ui_in_current_toggle(QString p_ui_name);
   void on_area_toggle_clicked();
 

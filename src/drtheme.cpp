@@ -17,7 +17,7 @@ DRTheme::DRTheme(AOApplication *p_ao_app)
 
 void DRTheme::InitTheme()
 {
-  ThemeManager::get().LoadTheme(ao_app->getCurrentTheme());
+  ThemeManager::get().loadTheme(ao_app->getCurrentTheme());
   ThemeManager::get().LoadGamemode(ao_app->getCurrentGamemode());
   ThemeManager::get().mCurrentThemeReader.SetTime(ao_app->getCurrentTime());
   const QString l_json_path = ao_app->find_theme_asset_path(THEME_JSON);
@@ -516,7 +516,6 @@ QStringList DRTheme::get_tab_widgets(QString p_tab_name)
       }
     }
   }
-
   return widget_names;
 }
 

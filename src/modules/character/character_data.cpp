@@ -11,7 +11,6 @@ QString CharacterData::getEmoteButton(DREmote t_emote, bool t_enabled)
   QString l_texture = AOApplication::getInstance()->get_character_path(t_emote.character, QString("emotions/button%1_off.png").arg(t_emote.key));
 
   if(t_enabled) l_texture = AOApplication::getInstance()->get_character_path(t_emote.character, QString("emotions/button%1_on.png").arg(t_emote.key));
-  qDebug() << l_texture;
   return l_texture;
 }
 

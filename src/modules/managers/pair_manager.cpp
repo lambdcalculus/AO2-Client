@@ -19,7 +19,7 @@ bool PairManager::GetUsePairData()
 
 void PairManager::SetPairData(QString character, QString emote, int selfOffset, int pairOffset, bool flipped)
 {
-  int l_CourtroomWidth = ThemeManager::get().GetWidget("viewport")->width();
+  int l_CourtroomWidth = ThemeManager::get().getWidget("viewport")->width();
 
   if (l_CourtroomWidth != 0) {
     mSelfOffset = (selfOffset * l_CourtroomWidth) / 960;
@@ -41,7 +41,7 @@ void PairManager::SetPairData(QString character, QString emote, int selfOffset, 
 
 double PairManager::GetOffsetSelf()
 {
-  double l_CourtroomWidth = static_cast<double>(ThemeManager::get().GetWidget("viewport")->width());
+  double l_CourtroomWidth = static_cast<double>(ThemeManager::get().getWidget("viewport")->width());
   double l_HalfCourtroomWidth = static_cast<double>(l_CourtroomWidth / 2);
 
   return static_cast<double>(((double)mSelfOffset / l_CourtroomWidth) * l_CourtroomWidth - l_HalfCourtroomWidth);
@@ -51,7 +51,7 @@ double PairManager::GetOffsetSelf()
 
 double PairManager::GetOffsetOther()
 {
-  double l_CourtroomWidth = static_cast<double>(ThemeManager::get().GetWidget("viewport")->width());
+  double l_CourtroomWidth = static_cast<double>(ThemeManager::get().getWidget("viewport")->width());
   double l_HalfCourtroomWidth = static_cast<double>(l_CourtroomWidth / 2);
 
   return static_cast<double>(((double)mPairOffset / l_CourtroomWidth) * l_CourtroomWidth - l_HalfCourtroomWidth);
@@ -75,7 +75,7 @@ bool PairManager::GetCharacterFlipped()
 void PairManager::DisableUpcomingPair()
 {
   mPairUsed = false;
-  double l_CourtroomWidth = static_cast<double>(ThemeManager::get().GetWidget("viewport")->width());
+  double l_CourtroomWidth = static_cast<double>(ThemeManager::get().getWidget("viewport")->width());
   mPairOffset = static_cast<int>(l_CourtroomWidth / 2);
   mSelfOffset = mPairOffset;
 }

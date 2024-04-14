@@ -60,8 +60,8 @@ void CharacterManager::SwitchCharacter(QString t_folder)
 void CharacterManager::setOutfitList(QStringList t_outfits)
 {
   mCharacterOutfits = t_outfits;
-
-  QWidget *l_outfitSelectorWidget = ThemeManager::get().GetWidget("outfit_selector");
+  
+  QWidget *l_outfitSelectorWidget = ThemeManager::get().getWidget("outfit_selector");
 
   if (dynamic_cast<QComboBox*>(l_outfitSelectorWidget) != nullptr)
   {

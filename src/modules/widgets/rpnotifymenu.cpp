@@ -33,7 +33,7 @@ void RPNotifyMenu::ThemeReload()
 
   //Background Image
   pBackgroundImage->move(0, 0);
-  ThemeManager::get().ResizeWidget(pBackgroundImage, 235, 135);
+  ThemeManager::get().setWidgetDimensions(pBackgroundImage, 235, 135);
 
   if (!lAOApp->find_theme_asset_path("notify_bg", animated_or_static_extensions()).isEmpty())
     pBackgroundImage->set_theme_image("notify_bg");
@@ -42,8 +42,8 @@ void RPNotifyMenu::ThemeReload()
 
   //Message Text
   pMessageText->setFrameStyle(QFrame::NoFrame);
-  ThemeManager::get().TranslatePosition(pMessageText, 5, 5);
-  ThemeManager::get().ResizeWidget(pMessageText, 224, 95);
+  ThemeManager::get().setWidgetPosition(pMessageText, 5, 5);
+  ThemeManager::get().setWidgetDimensions(pMessageText, 224, 95);
 
   pMessageText->setReadOnly(true);
   set_drtextedit_font(pMessageText, "notify_popup", COURTROOM_FONTS_INI, lAOApp);
@@ -57,8 +57,8 @@ void RPNotifyMenu::ThemeReload()
 void RPNotifyMenu::SetupButton(AOButton *t_button, int t_x, int t_y, int t_width, int t_height, QString name)
 {
   AOApplication *l_AOApp = AOApplication::getInstance();
-  ThemeManager::get().TranslatePosition(t_button, t_x, t_y);
-  ThemeManager::get().ResizeWidget(t_button, t_width, t_height);
+  ThemeManager::get().setWidgetPosition(t_button, t_x, t_y);
+  ThemeManager::get().setWidgetDimensions(t_button, t_width, t_height);
 
   QString l_WidgetName = "notify_" + name.toLower();
 

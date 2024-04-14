@@ -3,6 +3,7 @@
 
 #include <AOButton.h>
 #include <QHash>
+#include <aoimagedisplay.h>
 
 #include <modules/theme/widgets/dro_combo_box.h>
 #include <modules/theme/widgets/dro_line_edit.h>
@@ -20,21 +21,27 @@ public:
     return s_Instance;
   }
 
+  //Tabs
+  void createTabParent();
+  void execLayerTabs();
+  void toggleTab(QString t_tabName);
+  void detatchTab(QString t_tabName);
+  QVector <ThemeTabInfo> getTabsInfo();
+
+
   void execRemoveWidget(QString t_name);
 
-
-  void LoadTheme(QString theme_name);
+  void loadTheme(QString theme_name);
   void LoadGamemode(QString gamemode);
 
-  void TranslatePosition(QWidget *t_widget, int x, int y);
-  void ResizeWidget(QWidget *t_widget, int t_width, int t_height);
+  void setWidgetPosition(QWidget *t_widget, int x, int y);
+  void setWidgetDimensions(QWidget *t_widget, int t_width, int t_height);
 
   //Widgets
   void SetWidgetNames(QHash<QString, QWidget *> t_WidgetNames);
   void addWidgetName(QString t_widgetName, QWidget *t_widget);
 
   //Tabs
-  void ToggleTab(QString tabName);
 
 
   //Data Management
@@ -58,7 +65,9 @@ public:
   void refreshLineEdit();
   void refreshComboBox();
 
-  QWidget *GetWidget(QString name);
+  void setCourtroomBackground(AOImageDisplay *t_background);
+
+  QWidget *getWidget(QString name);
   AOButton *GetButton(QString t_name);
 
   ThemeReader mCurrentThemeReader = ThemeReader();
@@ -72,12 +81,15 @@ private:
   double mViewportResize = 1;
 
 
+  QMap<QString, QWidget *> waTabWidgets = {};
+
   QHash<QString, QWidget *> m_WidgetNames = {};
   QHash<QString, AOButton*> mButtonWidgets { };
   QHash<QString, DROLineEdit*> mLineEditWidgets { };
   QHash<QString, DROComboBox*> mComboBoxWidgets { };
 
   bool mRequiresReload = true;
+  AOImageDisplay *wCourtroomBackground = nullptr;
 };
 
 #endif // THEMEMANAGER_H

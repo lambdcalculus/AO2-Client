@@ -20,8 +20,8 @@ void BackgroundReader::execLoadBackground(QString t_backgroundName)
     for(QString l_pos : l_positions)
     {
       SetTargetObject("positions");
-
-      if(ValueExists(l_pos))
+      
+      if(isValueExists(l_pos))
       {
         SetTargetObject(l_pos);
         DRBackgroundPosition l_positionData;

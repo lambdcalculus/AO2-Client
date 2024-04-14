@@ -30,22 +30,22 @@ ThemeModeReader::ThemeModeReader(QString filePath)
 
     ReadFromFile(filePath + "/theme.json");
     SetTargetObject("config");
-    QStringList boolConfigs = {"enable_single_shout" , "detatchable_viewport", "enable_single_effect", "enable_single_wtce", "enable_const_music_speed", "enable_showname_image", "enable_highlighting", "enable_button_images", "enable_label_images", "enable_cycle_ding", "use_toggles"};
+    QStringList boolConfigs = {"enable_single_shout" , "enable_music_and_area_list_separation", "detatchable_viewport", "enable_single_effect", "enable_single_wtce", "enable_const_music_speed", "enable_showname_image", "enable_highlighting", "enable_button_images", "enable_label_images", "enable_cycle_ding", "use_toggles"};
 
     for (const QString& boolName : boolConfigs)
     {
-      if (ValueExists(boolName))
+      if (isValueExists(boolName))
       {
         mConfigToggles[boolName] = getBoolValue(boolName);
       }
     }
 
-    if(ValueExists("music_scroll_speed"))
+    if(isValueExists("music_scroll_speed"))
     {
       mMusicScrollSpeed = getIntValue("music_scroll_speed");
     }
 
-    if(ValueExists("timer_number"))
+    if(isValueExists("timer_number"))
     {
       mTimerNumber = getIntValue("timer_number");
     }

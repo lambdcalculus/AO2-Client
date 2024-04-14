@@ -80,6 +80,8 @@ void Courtroom::create_widgets()
 
   ui_background = new AOImageDisplay(this, ao_app);
 
+  ThemeManager::get().setCourtroomBackground(ui_background);
+
   ui_viewport = new DRGraphicsView(this);
 
   SceneManager::get().CreateTransition(this, ao_app, ui_viewport);
@@ -287,11 +289,6 @@ void Courtroom::create_widgets()
   ui_config_panel = setupButtonWidget("config_panel", "config_panel.png", "Config");
   ui_note_button = setupButtonWidget("note_button", "notebutton.png", "Notes");
 
-
-
-  ui_gm_toggle_button = setupButtonWidget("gm_toggle", "gm_toggle.png", "GM");
-  ui_area_toggle_button = setupButtonWidget("area_toggle", "area_toggle.png", "Area");
-  ui_chat_toggle_button = setupButtonWidget("chat_toggle", "chat_toggle.png", "Chat");
 
   ui_label_images.resize(label_images.size());
   for (int i = 0; i < ui_label_images.size(); ++i)
@@ -508,11 +505,6 @@ void Courtroom::connect_widgets()
   connect(ui_config_panel, SIGNAL(clicked()), this, SLOT(on_config_panel_clicked()));
   connect(ui_note_button, SIGNAL(clicked()), this, SLOT(on_note_button_clicked()));
 
-
-  connect(ui_area_toggle_button, SIGNAL(clicked()), this, SLOT(on_area_toggle_clicked()));
-  connect(ui_chat_toggle_button, SIGNAL(clicked()), this, SLOT(on_chat_toggle_clicked()));
-  connect(ui_gm_toggle_button, SIGNAL(clicked()), this, SLOT(on_gm_toggle_clicked()));
-
   connect(ui_vp_notepad, SIGNAL(textChanged()), this, SLOT(on_note_text_changed()));
 
   connect(ui_pre, SIGNAL(clicked()), this, SLOT(on_pre_clicked()));
@@ -680,10 +672,6 @@ void Courtroom::reset_widget_names()
       {"switch_area_music", ui_switch_area_music},
       {"config_panel", ui_config_panel},
       {"note_button", ui_note_button},
-      //The Toggles
-      {"gm_toggle", ui_gm_toggle_button},
-      {"area_toggle", ui_area_toggle_button},
-      {"chat_toggle", ui_chat_toggle_button},
       // Each ui_label_images[i]
       {"pre", ui_pre},
       {"flip", ui_flip},
@@ -737,6 +725,11 @@ void Courtroom::insert_widget_names(QVector<QString> &p_name_list, QVector<QWidg
     insert_widget_name(p_name_list[i], p_widget_list[i]);
 }
 
+void Courtroom::setupWidgetTabs()
+{
+  ThemeManager::get().createTabParent();
+}
+
 void Courtroom::set_widget_names()
 {
   // Assign names to the default widgets
@@ -781,8 +774,10 @@ void Courtroom::set_widget_layers()
   {
     int count = 0;
     QString l_parent_name = objectName();
+
     for(QString l_child_name : widget_layers)
     {
+      if(l_child_name == "char_select") ThemeManager::get().execLayerTabs();
       if(count != 0)
       {
         l_parent_name = widget_layers[0];

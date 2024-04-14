@@ -453,8 +453,6 @@ void AOConfigPanel::refreshLanguageList()
   {
     wSettingsLanguage->addItem(r_langauge);
   }
-
-  qDebug() << m_config->language();
   wSettingsLanguage->setCurrentText(m_config->language());
 }
 

@@ -34,7 +34,7 @@ DREmote EmotionManager::getEmote(const int t_emoteID)
 
 void EmotionManager::fillEmoteDropdown()
 {
-  QWidget *w_emoteDropdown = ThemeManager::get().GetWidget("emote_dropdown");
+  QWidget *w_emoteDropdown = ThemeManager::get().getWidget("emote_dropdown");
 
   if (dynamic_cast<QComboBox*>(w_emoteDropdown) != nullptr)
   {
@@ -53,9 +53,9 @@ void EmotionManager::refreshEmoteSelection(bool t_switchedCharacter)
 {
   const int l_prev_emote_count = mEmoteList.count();
   mEmoteList = CharacterManager::get().p_SelectedCharacter->getEmotes();
-
-  QComboBox* l_emoteCombobox = dynamic_cast<QComboBox*>(ThemeManager::get().GetWidget("emote_dropdown"));
-  QCheckBox* l_preCheckbox = dynamic_cast<QCheckBox*>(ThemeManager::get().GetWidget("pre"));
+  
+  QComboBox* l_emoteCombobox = dynamic_cast<QComboBox*>(ThemeManager::get().getWidget("emote_dropdown"));
+  QCheckBox* l_preCheckbox = dynamic_cast<QCheckBox*>(ThemeManager::get().getWidget("pre"));
 
   const QString l_prev_emote = l_emoteCombobox->currentText();
 
@@ -77,8 +77,8 @@ void EmotionManager::resetEmotePage()
 {
   mEmoteID = 0;
   mCurrentEmotePage = 0;
-
-  QWidget *w_emoteDropdown = ThemeManager::get().GetWidget("emote_dropdown");
+  
+  QWidget *w_emoteDropdown = ThemeManager::get().getWidget("emote_dropdown");
 
   if (dynamic_cast<QComboBox*>(w_emoteDropdown) != nullptr)
   {
@@ -178,8 +178,8 @@ void EmotionManager::execSelectEmote(int t_id)
   }
 
   const int emote_mod = l_emote.modifier;
-
-  QCheckBox* l_preCheckbox = dynamic_cast<QCheckBox*>(ThemeManager::get().GetWidget("pre"));
+  
+  QCheckBox* l_preCheckbox = dynamic_cast<QCheckBox*>(ThemeManager::get().getWidget("pre"));
   if (l_prev_emote_id == mEmoteID) // toggle
     l_preCheckbox->setChecked(!l_preCheckbox->isChecked());
   else

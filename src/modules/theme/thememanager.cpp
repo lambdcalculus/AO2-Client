@@ -1,16 +1,135 @@
 #include "thememanager.h"
 #include "courtroom.h"
 #include "drtheme.h"
-
+#include "aoapplication.h"
+#include "widgets/tab_toggle_button.h"
+#include "../widgets/tabgroupingwidget.h"
 
 ThemeManager ThemeManager::s_Instance;
+
+void ThemeManager::createTabParent()
+{
+  waTabWidgets = {};
+  for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
+  {
+    QWidget *l_courtroom = getWidget("courtroom");
+    TabGroupingWidget *l_newTab = new TabGroupingWidget(l_courtroom);
+
+
+    QString l_buttonName = r_tabInfo.m_Name + "_toggle";
+    QString l_panelName = r_tabInfo.m_Name + "_panel";
+
+    pos_size_type l_panelPosition = mCurrentThemeReader.getWidgetPosition(COURTROOM, l_panelName);
+    pos_size_type l_buttonDimensions = mCurrentThemeReader.getWidgetPosition(COURTROOM, l_buttonName);
+
+
+    l_newTab->move(l_panelPosition.x, l_panelPosition.y);
+    l_newTab->resize(l_panelPosition.width, l_panelPosition.height);
+    //l_newTab->w_BackgroundImage->move(0, 0);
+    //l_newTab->w_BackgroundImage->move(l_panelPosition.width, l_panelPosition.height);
+    l_newTab->setBackgroundImage(r_tabInfo.m_Name);
+
+    addWidgetName(l_panelName, l_newTab);
+    waTabWidgets[r_tabInfo.m_Name] = l_newTab;
+
+    TabToggleButton *l_newButton = new TabToggleButton(l_courtroom, AOApplication::getInstance());
+    l_newButton->setTabName(r_tabInfo.m_Name);
+
+    setWidgetDimensions(l_newButton, l_buttonDimensions.width, l_buttonDimensions.height);
+    setWidgetPosition(l_newButton, l_buttonDimensions.x, l_buttonDimensions.y);
+
+    addWidgetName(l_buttonName,  l_newButton);
+    addButton(l_buttonName, l_newButton);
+  };
+
+}
+
+void ThemeManager::execLayerTabs()
+{
+
+  for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
+  {
+    if(waTabWidgets.contains(r_tabInfo.m_Name))
+    {
+      for(QString r_WidgetName : r_tabInfo.m_WidgetContents)
+      {
+        QWidget *l_ChildWidget = getWidget(r_WidgetName);
+        if(l_ChildWidget != nullptr)
+        {
+          l_ChildWidget->setParent(waTabWidgets[r_tabInfo.m_Name]);
+        }
+      }
+      waTabWidgets[r_tabInfo.m_Name]->raise();
+      waTabWidgets[r_tabInfo.m_Name]->hide();
+    }
+  };
+
+}
+
+void ThemeManager::toggleTab(QString t_tabName)
+{
+  for (auto it = waTabWidgets.begin(); it != waTabWidgets .end(); ++it)
+  {
+    QString l_tabName = it.key();
+    QWidget *l_tabWidget = it.value();
+
+    QString l_buttonName = l_tabName + "_toggle";
+
+    if(l_tabName == t_tabName)
+    {
+      if(m_WidgetNames.contains(l_buttonName))
+      {
+        TabToggleButton* l_tabButton = dynamic_cast<TabToggleButton*>(getWidget(l_buttonName));
+        l_tabButton->setActiveStatus(true);
+      }
+      l_tabWidget->show();
+
+      QString l_bg_image = AOApplication::getInstance()->find_theme_asset_path("courtroombackground_" + t_tabName + ".png");
+      if (!l_bg_image.isEmpty())
+      {
+        wCourtroomBackground->set_theme_image("courtroombackground_" + t_tabName + ".png");
+      }
+      else
+      {
+        wCourtroomBackground->set_theme_image("courtroombackground.png");
+      }
+
+
+    }
+    else
+    {
+      if(m_WidgetNames.contains(l_buttonName))
+      {
+        TabToggleButton* l_tabButton = dynamic_cast<TabToggleButton*>(getWidget(l_buttonName));
+        l_tabButton->setActiveStatus(false);
+      }
+      l_tabWidget->hide();
+    }
+  }
+}
+
+void ThemeManager::detatchTab(QString t_tabName)
+{
+  QString l_panelName = t_tabName + "_panel";
+  QWidget *l_widget = getWidget(l_panelName);
+
+  if(l_widget != nullptr)
+  {
+    l_widget->setParent(nullptr);
+    l_widget->move(40, 40);
+    l_widget->setWindowFlag(Qt::WindowStaysOnTopHint, true);
+    l_widget->show();
+
+  }
+}
 
 void ThemeManager::execRemoveWidget(QString t_name)
 {
   if(m_WidgetNames.contains(t_name)) m_WidgetNames.remove(t_name);
 }
 
-void ThemeManager::LoadTheme(QString theme_name)
+
+void ThemeManager::loadTheme(QString theme_name)
 {
   if(mRequiresReload)
   {
@@ -24,7 +143,7 @@ void ThemeManager::LoadGamemode(QString gamemode)
   mCurrentThemeReader.SetGamemode(gamemode);
 }
 
-void ThemeManager::TranslatePosition(QWidget *t_widget, int t_x, int t_y)
+void ThemeManager::setWidgetPosition(QWidget *t_widget, int t_x, int t_y)
 {
   int l_PositionX = static_cast<int>(t_x * mClientResize);
   int l_PositionY = static_cast<int>(t_y * mClientResize);
@@ -32,7 +151,7 @@ void ThemeManager::TranslatePosition(QWidget *t_widget, int t_x, int t_y)
   t_widget->move(l_PositionX, l_PositionY);
 }
 
-void ThemeManager::ResizeWidget(QWidget *t_widget, int t_width, int t_height)
+void ThemeManager::setWidgetDimensions(QWidget *t_widget, int t_width, int t_height)
 {
   int l_PositionWidth = static_cast<int>(t_width * mClientResize);
   int l_PositionHeight = static_cast<int>(t_height * mClientResize);
@@ -50,31 +169,37 @@ void ThemeManager::addWidgetName(QString t_widgetName, QWidget *t_widget)
   m_WidgetNames[t_widgetName] = t_widget;
 }
 
-void ThemeManager::ToggleTab(QString t_tabName)
+//void ThemeManager::ToggleTab(QString t_tabName)
+//{
+//  return;
+//  QStringList disable_widgets = AOApplication::getInstance()->current_theme->get_tab_widgets_disable(t_tabName);
+//
+//  QVector<ThemeTabInfo> l_themeTabs = mCurrentThemeReader.getTabs();
+//
+//  for (const QString widgetOff: disable_widgets)
+//  {
+//    if(m_WidgetNames.contains(widgetOff)) m_WidgetNames[widgetOff]->hide();
+//  }
+//
+//  for(ThemeTabInfo l_tab : l_themeTabs)
+//  {
+//    if(l_tab.m_Name == t_tabName)
+//    {
+//      for (const QString l_widgetName: l_tab.m_WidgetContents)
+//      {
+//        if(!m_WidgetNames.contains(l_widgetName)) continue;
+//        QWidget *l_widgetInstance = m_WidgetNames[l_widgetName];
+//        l_widgetInstance->show();
+//      }
+//    }
+//  }
+//
+//
+//}
+
+QVector<ThemeTabInfo> ThemeManager::getTabsInfo()
 {
-  QStringList disable_widgets = AOApplication::getInstance()->current_theme->get_tab_widgets_disable(t_tabName);
-
-  QVector<ThemeTabInfo> l_themeTabs = mCurrentThemeReader.getTabs();
-
-  for (const QString widgetOff: disable_widgets)
-  {
-    if(m_WidgetNames.contains(widgetOff)) m_WidgetNames[widgetOff]->hide();
-  }
-
-  for(ThemeTabInfo l_tab : l_themeTabs)
-  {
-    if(l_tab.m_Name == t_tabName)
-    {
-      for (const QString l_widgetName: l_tab.m_WidgetContents)
-      {
-        if(!m_WidgetNames.contains(l_widgetName)) continue;
-        QWidget *l_widgetInstance = m_WidgetNames[l_widgetName];
-        l_widgetInstance->show();
-      }
-    }
-  }
-
-
+  return ThemeManager::get().mCurrentThemeReader.getTabs();
 }
 
 bool ThemeManager::getConfigBool(QString value)
@@ -167,7 +292,12 @@ void ThemeManager::refreshComboBox()
   }
 }
 
-QWidget *ThemeManager::GetWidget(QString name)
+void ThemeManager::setCourtroomBackground(AOImageDisplay *t_background)
+{
+  wCourtroomBackground = t_background;
+}
+
+QWidget *ThemeManager::getWidget(QString name)
 {
   if(m_WidgetNames.contains(name)) return m_WidgetNames[name];
   return nullptr;
@@ -175,5 +305,5 @@ QWidget *ThemeManager::GetWidget(QString name)
 
 AOButton *ThemeManager::GetButton(QString t_name)
 {
-  return dynamic_cast<AOButton*>(ThemeManager::get().GetWidget(t_name));
+  return dynamic_cast<AOButton*>(ThemeManager::get().getWidget(t_name));
 }
