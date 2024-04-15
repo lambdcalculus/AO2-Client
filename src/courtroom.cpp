@@ -87,7 +87,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   map_viewport_viewers();
   map_viewport_readers();
   if (ao_app->current_theme->read_config_bool("use_toggles"))
-    switchToggle("chat");
+    ThemeManager::get().resetSelectedTabs();
 
   set_char_select();
   load_audiotracks();
@@ -2681,7 +2681,7 @@ void Courtroom::load_theme()
   setup_courtroom();
   update_background_scene();
 
-  if (ao_app->current_theme->read_config_bool("use_toggles")) switchToggle("chat");
+  if (ao_app->current_theme->read_config_bool("use_toggles")) ThemeManager::get().resetSelectedTabs();
 }
 
 void Courtroom::reload_theme()
@@ -2860,21 +2860,9 @@ void Courtroom::on_config_panel_clicked()
   ui_ic_chat_message_field->setFocus();
 }
 
-void Courtroom::on_area_toggle_clicked()
-{
-  switchToggle("area");
-  ui_ic_chat_message_field->setFocus();
-}
-
-void Courtroom::on_chat_toggle_clicked()
-{
-  switchToggle("chat");
-  ui_ic_chat_message_field->setFocus();
-}
-
 void Courtroom::switchToggle(QString t_tabName)
 {
-    ThemeManager::get().toggleTab(t_tabName);
+    ThemeManager::get().toggleTab(t_tabName, "default");
     set_judge_enabled(is_judge);
 }
 
@@ -2913,11 +2901,6 @@ bool Courtroom::ui_in_current_toggle(QString p_ui_name)
   return true;
 }
 
-void Courtroom::on_gm_toggle_clicked()
-{
-  switchToggle("gm");
-  ui_ic_chat_message_field->setFocus();
-}
 
 void Courtroom::on_note_button_clicked()
 {

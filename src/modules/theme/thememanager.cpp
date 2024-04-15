@@ -25,8 +25,6 @@ void ThemeManager::createTabParent()
 
     l_newTab->move(l_panelPosition.x, l_panelPosition.y);
     l_newTab->resize(l_panelPosition.width, l_panelPosition.height);
-    //l_newTab->w_BackgroundImage->move(0, 0);
-    //l_newTab->w_BackgroundImage->move(l_panelPosition.width, l_panelPosition.height);
     l_newTab->setBackgroundImage(r_tabInfo.m_Name);
 
     addWidgetName(l_panelName, l_newTab);
@@ -34,6 +32,7 @@ void ThemeManager::createTabParent()
 
     TabToggleButton *l_newButton = new TabToggleButton(l_courtroom, AOApplication::getInstance());
     l_newButton->setTabName(r_tabInfo.m_Name);
+    l_newButton->setTabGroup(r_tabInfo.m_Group);
 
     setWidgetDimensions(l_newButton, l_buttonDimensions.width, l_buttonDimensions.height);
     setWidgetPosition(l_newButton, l_buttonDimensions.x, l_buttonDimensions.y);
@@ -46,7 +45,6 @@ void ThemeManager::createTabParent()
 
 void ThemeManager::execLayerTabs()
 {
-
   for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
   {
     if(waTabWidgets.contains(r_tabInfo.m_Name))
@@ -66,23 +64,37 @@ void ThemeManager::execLayerTabs()
 
 }
 
-void ThemeManager::toggleTab(QString t_tabName)
+void ThemeManager::resetSelectedTabs()
 {
-  for (auto it = waTabWidgets.begin(); it != waTabWidgets .end(); ++it)
+  QStringList l_resetTabs = {};
+  for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
   {
-    QString l_tabName = it.key();
-    QWidget *l_tabWidget = it.value();
+    if(l_resetTabs.contains(r_tabInfo.m_Group)) continue;
+    toggleTab(r_tabInfo.m_Name, r_tabInfo.m_Group);
+    l_resetTabs.append(r_tabInfo.m_Group);
+  }
+}
 
-    QString l_buttonName = l_tabName + "_toggle";
+void ThemeManager::toggleTab(QString t_tabName, QString t_tabGroup)
+{
+  for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
+  {
 
-    if(l_tabName == t_tabName)
+    QString l_buttonName = r_tabInfo.m_Name + "_toggle";
+    QString l_tabPanel = r_tabInfo.m_Name + "_panel";
+
+    if(r_tabInfo.m_Group != t_tabGroup) continue;
+    if(!m_WidgetNames.contains(l_tabPanel)) continue;
+
+    if(r_tabInfo.m_Name == t_tabName)
     {
       if(m_WidgetNames.contains(l_buttonName))
       {
         TabToggleButton* l_tabButton = dynamic_cast<TabToggleButton*>(getWidget(l_buttonName));
         l_tabButton->setActiveStatus(true);
       }
-      l_tabWidget->show();
+
+      getWidget(l_tabPanel)->show();
 
       QString l_bg_image = AOApplication::getInstance()->find_theme_asset_path("courtroombackground_" + t_tabName + ".png");
       if (!l_bg_image.isEmpty())
@@ -103,9 +115,11 @@ void ThemeManager::toggleTab(QString t_tabName)
         TabToggleButton* l_tabButton = dynamic_cast<TabToggleButton*>(getWidget(l_buttonName));
         l_tabButton->setActiveStatus(false);
       }
-      l_tabWidget->hide();
+      getWidget(l_tabPanel)->hide();
     }
+
   }
+
 }
 
 void ThemeManager::detatchTab(QString t_tabName)

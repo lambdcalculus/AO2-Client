@@ -12,6 +12,7 @@ public:
 
   void refreshButtonStatus();
   void setTabName(QString t_name);
+  void setTabGroup(QString t_name);
   void setActiveStatus(bool t_isActive);
 
 signals:
@@ -24,7 +25,9 @@ private slots:
 
 private:
   QString mTabName = "";
+  QString mTabGroup = "default";
   bool mTabActive = false;
+  bool mIsDetatched = false;
 
 };
 

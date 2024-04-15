@@ -842,11 +842,8 @@ private slots:
 
   //toggles
 
-  void on_gm_toggle_clicked();
-  void on_chat_toggle_clicked();
   void switchToggle(QString t_tabName);
   bool ui_in_current_toggle(QString p_ui_name);
-  void on_area_toggle_clicked();
 
   void on_set_notes_clicked();
 
