@@ -100,6 +100,7 @@ void Courtroom::create_widgets()
 
     ui_vp_player_char = new DRCharacterMovie(ao_app);
     player_sprite_anim = new QPropertyAnimation(ui_vp_player_char, "pos", this);
+    aniPlayerChar = new GraphicObjectAnimator(ui_vp_player_char, 60);
     l_scene->addItem(ui_vp_player_char);
 
 
@@ -208,6 +209,9 @@ void Courtroom::create_widgets()
   ui_music_menu = new QMenu(this);
   ui_music_menu_play = ui_music_menu->addAction(tr("Play"));
   ui_music_menu_insert_ooc = ui_music_menu->addAction(tr("Insert to OOC"));
+
+
+  wCharaAnimList = new QListWidget(this);
 
   ui_sfx_list = new QListWidget(this);
   ui_sfx_list->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -731,7 +735,8 @@ void Courtroom::reset_widget_names()
       {"evidence_list", wEvidenceList},
       {"evidence_left", wEvidenceLeft},
       {"evidence_right", wEvidenceRight},
-      {"evidence_present", wEvidencePresent}
+      {"evidence_present", wEvidencePresent},
+      {"chara_animations", wCharaAnimList}
   };
 
     ThemeManager::get().SetWidgetNames(widget_names);
@@ -1042,6 +1047,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_sfx_list, "sfx_list", COURTROOM_DESIGN_INI, ao_app);
 
+  set_size_and_pos(wCharaAnimList, "chara_animations", COURTROOM_DESIGN_INI, ao_app);
 
   set_size_and_pos(ui_ic_chat_message, "ao2_ic_chat_message", COURTROOM_DESIGN_INI, ao_app);
   set_text_alignment(ui_ic_chat_message_field, "ao2_ic_chat_message", COURTROOM_FONTS_INI, ao_app);
@@ -1761,6 +1767,7 @@ void Courtroom::set_fonts()
   set_font(ui_music_list, "music_list", COURTROOM_FONTS_INI, ao_app);
   set_font(ui_area_list, "area_list", COURTROOM_FONTS_INI, ao_app);
   set_font(ui_sfx_list, "sfx_list", COURTROOM_FONTS_INI, ao_app);
+  set_font(wCharaAnimList, "chara_animations", COURTROOM_FONTS_INI, ao_app);
   set_drtextedit_font(ui_vp_music_name, "music_name", COURTROOM_FONTS_INI, ao_app);
   ui_vp_music_name->setPlainText(ui_vp_music_name->toPlainText());
   set_drtextedit_font(ui_vp_notepad, "notepad", COURTROOM_FONTS_INI, ao_app);

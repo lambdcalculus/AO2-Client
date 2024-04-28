@@ -125,11 +125,14 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     {
       QString l_text = l_content.at(1);
       QString l_localization = l_content.at(2);
-      QString l_varOne = l_content.at(3);
-      QString l_varTwo = l_content.at(4);
+      if (l_content.size() == 4)
+      {
+        QString l_varOne = l_content.at(3);
+        QString l_varTwo = l_content.at(4);
 
-      QString l_localized = LocalizationManager::get().getLocalizationText(l_localization, {l_varOne, l_varTwo});
-      if(!l_localized.isEmpty()) l_text = l_localized;
+        QString l_localized = LocalizationManager::get().getLocalizationText(l_localization, {l_varOne, l_varTwo});
+        if(!l_localized.isEmpty()) l_text = l_localized;
+      }
       m_courtroom->append_server_chatmessage(l_content.at(0), l_text);
     }
   }

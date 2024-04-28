@@ -1,5 +1,6 @@
 #include "lobby.h"
 
+#include "modules/theme/widget_animator.h"
 #include "aoapplication.h"
 #include "aobutton.h"
 #include "aoconfig.h"
@@ -52,6 +53,14 @@ Lobby::Lobby(AOApplication *p_ao_app)
   ui_refresh = new AOButton(this, ao_app);
   ui_toggle_favorite = new AOButton(this, ao_app);
   ui_connect = new AOButton(this, ao_app);
+
+  testAnimator = new WidgetAnimator(ui_connect, 60);
+  testAnimator->addKeyframe(0, ePOS_Y, 200, EASE,  EASE );
+  testAnimator->addKeyframe(0, ePOS_X, -555, EASE,  EASE );
+  testAnimator->addKeyframe(500, ePOS_X, 700, LINEAR,  LINEAR);
+  testAnimator->addKeyframe(2800, ePOS_X, 765, LINEAR,  LINEAR);
+  testAnimator->addKeyframe(3000, eALPHA, 0, LINEAR,  LINEAR );
+
   ui_version = new DRTextEdit(this);
   ui_version->setFrameStyle(QFrame::NoFrame);
   ui_version->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -490,6 +499,7 @@ void Lobby::update_server_filter_buttons()
 void Lobby::on_refresh_pressed()
 {
   ui_refresh->set_image("refresh_pressed.png");
+  testAnimator->startAnimation();
 }
 
 void Lobby::on_refresh_released()

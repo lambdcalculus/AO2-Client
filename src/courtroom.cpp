@@ -35,6 +35,7 @@
 #include "mk2/graphicsvideoscreen.h"
 #include "mk2/spritedynamicreader.h"
 #include "mk2/spriteseekingreader.h"
+#include "modules/managers/animation_manager.h"
 #include "src/datatypes.h"
 #include "theme.h"
 
@@ -323,7 +324,7 @@ void Courtroom::enter_courtroom(int p_cid)
   const QString l_chr_name = get_character_ini();
 
   CharacterManager::get().SwitchCharacter(l_chr_name);
-
+  AnimationManager::get().loadCharacterAnimations();
   CharacterData *l_selectedCharacter = CharacterManager::get().p_SelectedCharacter;
 
   if (is_spectating())
@@ -785,6 +786,8 @@ void Courtroom::on_character_ini_changed()
 
 void Courtroom::on_ic_message_return_pressed()
 {
+
+
   if (ui_ic_chat_message_field->text() == "")
     return;
 
@@ -1263,6 +1266,13 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
   ui_vp_player_char->setPos(selfOffset, ui_vp_player_char->y());
   ui_vp_player_pair->setPos(otherOffset, ui_vp_player_pair->y());
+
+         //TO-DO: Replace with proper networking.
+  if(wCharaAnimList->currentItem() != nullptr)
+  {
+    aniPlayerChar->setKeyframes(AnimationManager::get().getCharacterFrames(wCharaAnimList->currentItem()->text()));
+    aniPlayerChar->startAnimation(AnimationManager::get().getCharacterLoop(wCharaAnimList->currentItem()->text()));
+  }
 
   setup_screenshake_anim(selfOffset);
   qDebug() << "handle_chatmessage_2";

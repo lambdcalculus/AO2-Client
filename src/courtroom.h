@@ -3,6 +3,7 @@
 
 #include "datatypes.h"
 #include "drgraphicscene.h"
+#include "modules/theme/graphicobjectanimator.h"
 #include "drposition.h"
 #include "drthememovie.h"
 #include "modules/managers/scene_manager.h"
@@ -447,6 +448,8 @@ private:
 
   DRVideoScreen *ui_video = nullptr;
   DRSceneMovie *ui_vp_background = nullptr;
+
+  GraphicObjectAnimator *aniPlayerChar = nullptr;
   DRCharacterMovie *ui_vp_player_char = nullptr;
   DRCharacterMovie *ui_vp_player_pair = nullptr;
   DRSceneMovie *ui_vp_desk = nullptr;
@@ -518,6 +521,7 @@ private:
   QAction *ui_music_menu_play = nullptr;
   QAction *ui_music_menu_insert_ooc = nullptr;
 
+  QListWidget *wCharaAnimList = nullptr;
   QListWidget *ui_sfx_list = nullptr;
   QVector<DRSfx> m_sfx_list;
   const QString m_sfx_default_file = "__DEFAULT__";

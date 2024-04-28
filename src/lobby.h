@@ -8,6 +8,8 @@
 
 #include <optional>
 
+#include <modules/theme/widget_animator.h>
+
 class AOApplication;
 class AOButton;
 class AOConfig;
@@ -70,6 +72,7 @@ private:
   AOButton *ui_refresh = nullptr;
   AOButton *ui_toggle_favorite = nullptr;
   AOButton *ui_connect = nullptr;
+  WidgetAnimator *testAnimator = nullptr;
   DRTextEdit *ui_version = nullptr;
   AOButton *ui_config_panel = nullptr;
   QListWidget *ui_server_list = nullptr;

@@ -6,25 +6,53 @@
 #include <QMap>
 #include <QVector>
 
-enum AnimationVariableTypes
+enum AnimTypes
 {
-  POS_X,
-  POS_Y,
-  SIZE_X,
-  SIZE_Y,
-  SIZE_LINKED,
-  KEYFRAME,
-  ALPHA,
-  FIXED_HEIGHT,
-  ROTATION
+  eAnimationShout,
+  eAnimationEffects,
+  eAnimationPlayer,
+  eAnimationTheme
 };
 
-enum AnimationTypes
+enum AnimationVariableTypes
+{
+  ePOS_X,
+  ePOS_Y,
+  eSIZE_X,
+  eSIZE_Y,
+  eSIZE_LINKED,
+  eKEYFRAME,
+  eALPHA,
+  eFIXED_HEIGHT,
+  eROTATION,
+  eNONE
+};
+
+enum AnimCurveType
 {
   LINEAR,
   EASE,
   BEZIER,
   PARAMETRIC
+};
+
+
+class DROAnimationKeyframe
+{
+public:
+  DROAnimationKeyframe(qint64 time, AnimationVariableTypes type, float value, AnimCurveType fin, AnimCurveType fout)
+  {
+    Time = time;
+    Type = type;
+    Value = value;
+    FadeIn = fin;
+    FadeOut = fout;
+  };
+  qint64 Time;
+  AnimationVariableTypes Type;
+  float Value;
+  AnimCurveType FadeIn = LINEAR;
+  AnimCurveType FadeOut = LINEAR;
 };
 
 enum ThemeSceneType
