@@ -52,6 +52,7 @@
 #include <modules/theme/widgets/dro_line_edit.h>
 #include "modules/debug/time_debugger.h"
 
+#include <modules/managers/evidence_manager.h>
 #include <modules/managers/localization_manager.h>
 
 void Courtroom::create_widgets()
@@ -126,6 +127,8 @@ void Courtroom::create_widgets()
 
   w_ViewportOverlay = new ViewportOverlay(ui_viewport);
 
+  wEvidencePreviewImage = new AOImageDisplay(this, ao_app);
+
   ui_vp_music_display_a = new AOImageDisplay(this, ao_app);
   ui_vp_music_display_b = new AOImageDisplay(this, ao_app);
   ui_vp_music_area = new QWidget(ui_vp_music_display_a);
@@ -180,6 +183,14 @@ void Courtroom::create_widgets()
   ui_area_desc = new DRTextEdit(this);
   ui_area_desc->setReadOnly(true);
   ui_area_desc->set_auto_align(false);
+
+
+  wEvidenceDescription = new DRTextEdit(this);
+  wEvidenceDescription->setFrameStyle(QFrame::NoFrame);
+  wEvidenceDescription->setReadOnly(true);
+  wEvidenceDescription->set_auto_align(false);
+
+  EvidenceManager::get().setEvidenceText("Leon's Body\n\nCorpse Corpse");
 
   ui_ooc_chatlog = new DRChatLog(this);
   ui_ooc_chatlog->setReadOnly(true);
@@ -354,10 +365,16 @@ void Courtroom::create_widgets()
   ui_timers[0] = new AOTimer(this);
 
 
+  wEvidenceLeft = setupButtonWidget("evidence_left", "arrow_left.png", "<-");
+  wEvidenceRight = setupButtonWidget("evidence_right", "arrow_right.png", "<-");
+  wEvidencePresent = setupButtonWidget("evidence_present", "evidence_present.png", "Present");
+
+
   ui_player_list_left = setupButtonWidget("player_list_left", "arrow_left.png", "<-");
   ui_player_list_right = setupButtonWidget("player_list_right", "arrow_right.png", "->");
   ui_area_look = setupButtonWidget("area_look", "area_look.png", LocalizationManager::get().getLocalizationText("TITLE_LOOK"));
 
+  constructEvidenceList();
   construct_playerlist();
 
   construct_char_select();
@@ -532,6 +549,11 @@ void Courtroom::connect_widgets()
   connect(m_loading_timer, SIGNAL(timeout()), ui_vp_loading, SLOT(show()));
 
 
+  //Evidence List
+  connect(wEvidenceLeft, SIGNAL(clicked()), this, SLOT(onEvidenceLeftClicked()));
+  connect(wEvidenceRight, SIGNAL(clicked()), this, SLOT(onEvidenceRightClicked()));
+  connect(wEvidencePresent, SIGNAL(clicked()), this, SLOT(onEvidencePresentClicked()));
+
   //Player List
   connect(ui_player_list_left, SIGNAL(clicked()), this, SLOT(on_player_list_left_clicked()));
   connect(ui_player_list_right, SIGNAL(clicked()), this, SLOT(on_player_list_right_clicked()));
@@ -703,7 +725,13 @@ void Courtroom::reset_widget_names()
       {"pair_offset", pUIPairOffsetSlider},
       {"viewport_transition", SceneManager::get().GetTransition()},
       {"viewport_overlay", w_ViewportOverlay},
-      {"outfit_selector", wOutfitDropdown}
+      {"outfit_selector", wOutfitDropdown},
+      {"evidence_image", wEvidencePreviewImage},
+      {"evidence_description", wEvidenceDescription},
+      {"evidence_list", wEvidenceList},
+      {"evidence_left", wEvidenceLeft},
+      {"evidence_right", wEvidenceRight},
+      {"evidence_present", wEvidencePresent}
   };
 
     ThemeManager::get().SetWidgetNames(widget_names);
@@ -992,6 +1020,7 @@ void Courtroom::set_widgets()
     ui_vp_loading->setVisible(l_visible);
   }
 
+  set_size_and_pos(wEvidenceDescription, "evidence_description", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_ic_chatlog, "ic_chatlog", COURTROOM_DESIGN_INI, ao_app);
 
   if(ao_app->current_theme->get_widget_settings_bool("ic_chatlog", "courtroom", "hide_frame")) ui_ic_chatlog->setFrameStyle(QFrame::NoFrame);
@@ -1023,6 +1052,9 @@ void Courtroom::set_widgets()
   ui_ic_chat_message_field->setStyleSheet(ui_ic_chat_message->styleSheet());
   ui_ic_chat_message_counter->setStyleSheet(ui_ic_chat_message->styleSheet());
 
+
+
+
   set_size_and_pos(ui_vp_chatbox, "ao2_chatbox", COURTROOM_DESIGN_INI, ao_app);
   set_sticker_play_once(ui_vp_chatbox, "ao2_chatbox", COURTROOM_CONFIG_INI, ao_app);
 
@@ -1032,6 +1064,9 @@ void Courtroom::set_widgets()
 
   setupWidgetElement(w_ViewportOverlay, "viewport", true);
   w_ViewportOverlay->move(0, 0);
+
+
+  setupWidgetElement(wEvidencePreviewImage, "evidence_image", "evidence_missing.png", true);
 
   setupWidgetElement(ui_vp_music_display_a, "music_display_a", "music_display_a.png", true);
   setupWidgetElement(ui_vp_music_display_b, "music_display_b", "music_display_b.png", true);
@@ -1129,6 +1164,8 @@ void Courtroom::set_widgets()
   for (int i = 0; i < effect_names.size(); ++i)
   {
     set_size_and_pos(ui_effects[i], effect_names[i], COURTROOM_DESIGN_INI, ao_app);
+
+    ThemeManager::get().addWidgetName(effect_names[i], ui_effects[i]);
   }
   reset_effect_buttons();
 
@@ -1196,6 +1233,7 @@ void Courtroom::set_widgets()
   for (int i = 0; i < ui_label_images.size(); ++i)
   {
     set_size_and_pos(ui_label_images[i], label_images[i].toLower() + "_image", COURTROOM_DESIGN_INI, ao_app);
+    ThemeManager::get().addWidgetName(label_images[i].toLower() + "_image", ui_label_images[i]);
   }
 
   if (ao_app->current_theme->read_config_bool("enable_label_images"))
@@ -1269,7 +1307,9 @@ void Courtroom::set_widgets()
 
 
 
+  set_size_and_pos(wEvidenceList, "evidence_list", COURTROOM_DESIGN_INI, ao_app);
   set_size_and_pos(ui_player_list, "player_list", COURTROOM_DESIGN_INI, ao_app);
+
 
   list_note_files();
 
@@ -1706,8 +1746,12 @@ void Courtroom::set_fonts()
   ui_vp_message->setPlainText(ui_vp_message->toPlainText());
   set_drtextedit_font(ui_ic_chatlog, "ic_chatlog", COURTROOM_FONTS_INI, ao_app);
 
+  set_drtextedit_font(wEvidenceDescription, "evidence_description", COURTROOM_FONTS_INI, ao_app);
+  wEvidenceDescription->setPlainText(wEvidenceDescription->toPlainText());
+
   set_drtextedit_font(ui_area_desc, "area_desc", COURTROOM_FONTS_INI, ao_app);
   ui_area_desc->setPlainText(ui_area_desc->toPlainText());
+
 
   // Chatlog does not support drtextedit because html
   set_font(ui_ooc_chatlog, "server_chatlog", COURTROOM_FONTS_INI, ao_app);

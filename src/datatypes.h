@@ -6,12 +6,41 @@
 #include <QMap>
 #include <QVector>
 
+enum AnimationVariableTypes
+{
+  POS_X,
+  POS_Y,
+  SIZE_X,
+  SIZE_Y,
+  SIZE_LINKED,
+  KEYFRAME,
+  ALPHA,
+  FIXED_HEIGHT,
+  ROTATION
+};
+
+enum AnimationTypes
+{
+  LINEAR,
+  EASE,
+  BEZIER,
+  PARAMETRIC
+};
+
 enum ThemeSceneType
 {
   LOBBY,
   COURTROOM,
   TESTINGLABS,
   REPLAYS
+};
+
+class EvidenceData
+{
+public:
+  QString mName = "???";
+  QString mDescription = "No Description Provided.";
+  QString mImage = "";
 };
 
 class DRBackgroundSettings

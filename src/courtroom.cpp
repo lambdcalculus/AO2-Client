@@ -57,6 +57,8 @@
 #include <QToolTip>
 #include <QVBoxLayout>
 
+#include <modules/managers/evidence_manager.h>
+
 const int Courtroom::DEFAULT_WIDTH = 714;
 const int Courtroom::DEFAULT_HEIGHT = 668;
 
@@ -2799,6 +2801,23 @@ void Courtroom::OnCharRandomClicked()
       DRPacket("CC", {QString::number(ao_app->get_client_id()), QString::number(n_real_char), "HDID"}));
 }
 
+void Courtroom::onEvidenceLeftClicked()
+{
+  EvidenceManager::get().addCurrentPage(-1);
+  buildEvidenceList();
+}
+
+void Courtroom::onEvidenceRightClicked()
+{
+  EvidenceManager::get().addCurrentPage(1);
+  buildEvidenceList();
+}
+
+void Courtroom::onEvidencePresentClicked()
+{
+
+}
+
 void Courtroom::on_call_mod_clicked()
 {
   QMessageBox::StandardButton reply;
@@ -2995,6 +3014,22 @@ void Courtroom::pause_timer(int p_id)
     return;
   AOTimer *l_timer = ui_timers.at(p_id);
   l_timer->pause();
+}
+
+void Courtroom::constructEvidenceList()
+{
+  wEvidenceList = new EvidenceList(this);
+  buildEvidenceList();
+}
+
+void Courtroom::buildEvidenceList()
+{
+  set_size_and_pos(wEvidenceList, "evidence_list", COURTROOM_DESIGN_INI, ao_app);
+  int l_currentPage = EvidenceManager::get().getCurrentPage();
+  bool l_morePages = wEvidenceList->buildList(l_currentPage);
+
+  wEvidenceRight->setVisible(l_morePages);
+  wEvidenceLeft->setVisible(l_currentPage != 0);
 }
 
 void Courtroom::construct_playerlist()

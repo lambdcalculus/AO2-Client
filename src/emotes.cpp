@@ -109,6 +109,7 @@ void Courtroom::construct_emote_page_layout()
   EmotionManager::get().refreshEmotePage(true);
 }
 
+
 void Courtroom::select_emote(int p_id)
 {
   EmotionManager::get().execSelectEmote(p_id);

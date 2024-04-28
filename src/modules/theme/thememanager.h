@@ -68,6 +68,19 @@ public:
 
   void setCourtroomBackground(AOImageDisplay *t_background);
 
+  template<typename T>
+  T* getWidgetType(QString t_name)
+  {
+    QWidget *mReturnWidget = ThemeManager::get().getWidget(t_name);
+    if (dynamic_cast<T*>(mReturnWidget) != nullptr)
+    {
+      T* l_return = dynamic_cast<T*>(mReturnWidget);
+      return l_return;
+    }
+
+    return nullptr;
+  }
+
   QWidget *getWidget(QString name);
   AOButton *GetButton(QString t_name);
 

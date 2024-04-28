@@ -18,6 +18,7 @@ private:
   static void ProcessNotifyRequestPacket(JSONReader& jsonReader);
   static void ProcessPairDataPacket(JSONReader& jsonReader);
   static void ProcessPairPacket(JSONReader& jsonReader);
+  static void ProcessEvidencePacket(JSONReader& jsonReader);
 };
 
 #endif // JSONPACKET_H

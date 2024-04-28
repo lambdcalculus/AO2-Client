@@ -21,12 +21,14 @@ public:
   QStringList getLanguageNames();
 
   QString getLocalizationText(QString t_value);
+  QString getLocalizationText(QString t_value, QStringList t_variables);
   QString getLocalizationCode();
   QString getLocalizationCredit();
 
 
 private:
   LocalizationManager() {}
+  QString insertVariables(QString t_value, QStringList t_variables);
   static LocalizationManager s_Instance;
 
   QString mSelectedLanguageName = "English";

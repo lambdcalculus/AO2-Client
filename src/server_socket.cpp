@@ -122,7 +122,16 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       return;
 
     if (is_courtroom_constructed)
-      m_courtroom->append_server_chatmessage(l_content.at(0), l_content.at(1));
+    {
+      QString l_text = l_content.at(1);
+      QString l_localization = l_content.at(2);
+      QString l_varOne = l_content.at(3);
+      QString l_varTwo = l_content.at(4);
+
+      QString l_localized = LocalizationManager::get().getLocalizationText(l_localization, {l_varOne, l_varTwo});
+      if(!l_localized.isEmpty()) l_text = l_localized;
+      m_courtroom->append_server_chatmessage(l_content.at(0), l_text);
+    }
   }
   else if (l_header == "client_version")
   {

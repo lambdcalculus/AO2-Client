@@ -49,6 +49,7 @@ HEADERS += \
   src/drchatlog.h \
   src/drdiscord.h \
   src/dreffectmovie.h \
+  src/drevidencedialogue.h \
   src/drgraphicscene.h \
   src/drmasterclient.h \
   src/drmediatester.h \
@@ -97,11 +98,13 @@ HEADERS += \
   src/modules/json/theme_reader.h \
   src/modules/managers/character_manager.h \
   src/modules/managers/emotion_manager.h \
+  src/modules/managers/evidence_manager.h \
   src/modules/managers/localization_manager.h \
   src/modules/managers/notify_manager.h \
   src/modules/managers/pair_manager.h \
   src/modules/managers/scene_manager.h \
   src/modules/networking/json_packet.h \
+  src/modules/theme/droanimation.h \
   src/modules/theme/theme_scene.h \
   src/modules/theme/thememanager.h \
   src/modules/theme/widgets/characterselectwidget.h \
@@ -109,6 +112,8 @@ HEADERS += \
   src/modules/theme/widgets/dro_line_edit.h \
   src/modules/theme/widgets/droemotebuttons.h \
   src/modules/theme/widgets/tab_toggle_button.h \
+  src/modules/widgets/evidence_entry_button.h \
+  src/modules/widgets/evidence_list.h \
   src/modules/widgets/rpnotifymenu.h \
   src/modules/widgets/tabgroupingwidget.h \
   src/modules/widgets/viewport_overlay.h \
@@ -158,6 +163,7 @@ SOURCES += \
   src/drcharactermovie.cpp \
   src/drchatlog.cpp \
   src/dreffectmovie.cpp \
+  src/drevidencedialogue.cpp \
   src/drgraphicscene.cpp \
   src/drmasterclient.cpp \
   src/drmediatester.cpp \
@@ -206,11 +212,13 @@ SOURCES += \
   src/modules/json/theme_reader.cpp \
   src/modules/managers/character_manager.cpp \
   src/modules/managers/emotion_manager.cpp \
+  src/modules/managers/evidence_manager.cpp \
   src/modules/managers/localization_manager.cpp \
   src/modules/managers/notify_manager.cpp \
   src/modules/managers/pair_manager.cpp \
   src/modules/managers/scene_manager.cpp \
   src/modules/networking/json_packet.cpp \
+  src/modules/theme/droanimation.cpp \
   src/modules/theme/theme_scene.cpp \
   src/modules/theme/thememanager.cpp \
   src/modules/theme/widgets/characterselectwidget.cpp \
@@ -218,6 +226,8 @@ SOURCES += \
   src/modules/theme/widgets/dro_line_edit.cpp \
   src/modules/theme/widgets/droemotebuttons.cpp \
   src/modules/theme/widgets/tab_toggle_button.cpp \
+  src/modules/widgets/evidence_entry_button.cpp \
+  src/modules/widgets/evidence_list.cpp \
   src/modules/widgets/rpnotifymenu.cpp \
   src/modules/widgets/tabgroupingwidget.cpp \
   src/modules/widgets/viewport_overlay.cpp \
@@ -246,7 +256,9 @@ DISTFILES +=
 
 FORMS += \
   res/ui/config_panel.ui \
-  src/drserverinfoeditor.ui
+  src/drevidencedialogue.ui \
+  src/drserverinfoeditor.ui \
+  src/evidencedialogue.ui
 
 # Mac stuff
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.13

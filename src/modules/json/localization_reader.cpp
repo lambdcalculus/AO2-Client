@@ -45,6 +45,7 @@ QString LocalizationReader::getLocalizationValue(QString t_value)
   return mValues[t_value];
 }
 
+
 QString LocalizationReader::getCode()
 {
   return mLangCode;

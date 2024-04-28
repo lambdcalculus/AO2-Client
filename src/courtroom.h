@@ -9,6 +9,7 @@
 #include "mk2/graphicsvideoscreen.h"
 #include "mk2/spriteplayer.h"
 #include "mk2/spritereadersynchronizer.h"
+#include "modules/widgets/evidence_list.h"
 
 class AOApplication;
 class AOBlipPlayer;
@@ -194,6 +195,7 @@ public:
   void select_base_character_iniswap();
   void refresh_character_content_url();
   void construct_playerlist_layout();
+  void buildEvidenceList();
   void write_area_desc();
 
   // Set the showname of the client
@@ -483,6 +485,10 @@ private:
   void swap_viewport_reader(DRMovie *viewer, ViewportSprite type);
   void cleanup_preload_readers();
 
+  //Evidence
+  AOImageDisplay *wEvidencePreviewImage = nullptr;
+  DRTextEdit *wEvidenceDescription = nullptr;
+
   AOImageDisplay *ui_vp_music_display_a = nullptr;
   AOImageDisplay *ui_vp_music_display_b = nullptr;
 
@@ -536,6 +542,7 @@ private:
 
 
   QWidget * ui_player_list = nullptr;
+  EvidenceList *wEvidenceList = nullptr;
 
 
   AOButton *ui_emote_left = nullptr;
@@ -659,6 +666,9 @@ private:
   QHash<QString, QString> widget_toggles;
 
 
+  AOButton *wEvidenceLeft = nullptr;
+  AOButton *wEvidenceRight = nullptr;
+  AOButton *wEvidencePresent = nullptr;
 
   AOButton *ui_player_list_left = nullptr;
   AOButton *ui_player_list_right = nullptr;
@@ -703,6 +713,7 @@ private:
   void construct_emotes();
   void construct_emote_page_layout();
 
+  void constructEvidenceList();
   void construct_playerlist();
 
   QString get_current_position();
@@ -863,6 +874,12 @@ private slots:
   void on_spectator_clicked();
   void OnCharRefreshClicked();
   void OnCharRandomClicked();
+
+  //Player List
+
+  void onEvidenceLeftClicked();
+  void onEvidenceRightClicked();
+  void onEvidencePresentClicked();
 
   //Player List
 
