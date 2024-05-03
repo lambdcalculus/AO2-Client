@@ -59,6 +59,7 @@
 #include <QVBoxLayout>
 
 #include <modules/managers/evidence_manager.h>
+#include <modules/managers/replay_manager.h>
 
 const int Courtroom::DEFAULT_WIDTH = 714;
 const int Courtroom::DEFAULT_HEIGHT = 668;
@@ -511,6 +512,7 @@ DRAreaBackground Courtroom::get_background()
 
 void Courtroom::set_background(DRAreaBackground p_background)
 {
+  ReplayManager::get().recordArea(p_background.background);
   m_background = p_background;
 
   QStringList l_background_list{m_background.background};
@@ -913,6 +915,8 @@ void Courtroom::on_ic_message_return_pressed()
   packet_contents.append(QString::number(ui_hide_character->isChecked()));
 
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
+
+
 }
 
 void Courtroom::handle_ic_message_length()
@@ -954,6 +958,9 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
   const int l_message_chr_id = p_chatmessage[CMChrId].toInt();
   const bool l_system_speaking = l_message_chr_id == SpectatorId;
 
+  SceneManager::get().setCurrentSpeaker(p_chatmessage[CMChrName], p_chatmessage[CMEmote]);
+
+  ReplayManager::get().recordMessage(p_chatmessage);
   CharacterData *l_speakerData = CharacterManager::get().ReadCharacter(p_chatmessage[CMChrName]);
 
   QString l_showname = p_chatmessage[CMShowName];
@@ -1238,11 +1245,16 @@ void Courtroom::video_finished()
   }
 
   qDebug() << "[viewport] Starting shout..." << l_shout_name;
-  m_play_pre = true;
-  ui_vp_objection->set_play_once(true);
-  swap_viewport_reader(ui_vp_objection, ViewportShout);
-  ui_vp_objection->start();
-  m_shouts_player->play(l_character, l_shout_name);
+
+  if(!wShoutsLayer->playAnimation(l_shout_name))
+  {
+    m_play_pre = true;
+    ui_vp_objection->set_play_once(true);
+    swap_viewport_reader(ui_vp_objection, ViewportShout);
+    ui_vp_objection->start();
+    m_shouts_player->play(l_character, l_shout_name);
+  }
+
 }
 
 void Courtroom::objection_done()
@@ -2110,6 +2122,8 @@ void Courtroom::handle_song(QStringList p_contents)
   m_current_song = l_song;
 
   m_music_player->play(l_song);
+
+  ReplayManager::get().recordMusicOP(l_song);
 
   DRAudiotrackMetadata l_song_meta(l_song);
   if (l_chr_id >= 0 && l_chr_id < CharacterManager::get().mServerCharacters.length())

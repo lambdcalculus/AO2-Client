@@ -175,6 +175,18 @@ void ThemeManager::setWidgetDimensions(QWidget *t_widget, int t_width, int t_hei
   t_widget->resize(l_PositionWidth, l_PositionHeight);
 }
 
+void ThemeManager::autoWidgetDimensions(QWidget *t_widget, QString t_name, ThemeSceneType t_scene)
+{
+  pos_size_type lPositionData = mCurrentThemeReader.getWidgetPosition(t_scene, t_name);
+  lPositionData.width = static_cast<int>(lPositionData.width * mClientResize);
+  lPositionData.height = static_cast<int>(lPositionData.height * mClientResize);
+  lPositionData.x = static_cast<int>(lPositionData.x * mClientResize);
+  lPositionData.y = static_cast<int>(lPositionData.y * mClientResize);
+
+  t_widget->move(lPositionData.x, lPositionData.y);
+  t_widget->resize(lPositionData.width, lPositionData.height);
+}
+
 void ThemeManager::SetWidgetNames(QHash<QString, QWidget *> t_WidgetNames)
 {
   m_WidgetNames = t_WidgetNames;
@@ -295,4 +307,17 @@ QWidget *ThemeManager::getWidget(QString name)
 AOButton *ThemeManager::GetButton(QString t_name)
 {
   return dynamic_cast<AOButton*>(ThemeManager::get().getWidget(t_name));
+}
+
+void ThemeManager::createButtonWidget(QString t_name, QWidget *t_parent)
+{
+  AOButton *lButton = new AOButton(t_parent, AOApplication::getInstance());
+  autoWidgetDimensions(lButton, t_name, REPLAYS);
+  addWidgetName(t_name, lButton);
+  lButton->show();
+}
+
+void ThemeManager::createComboboxWidget(QString t_name)
+{
+
 }

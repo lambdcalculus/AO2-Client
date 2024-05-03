@@ -462,77 +462,27 @@ int ThemeModeReader::getTimerNumber()
 
 bool ThemeModeReader::containsWidgetPosition(ThemeSceneType sceneType, QString name)
 {
-  if(sceneType == COURTROOM) return containsCourtroomWidgetPosition(name);
+  if(mCurrentTime != nullptr)
+  {
+    bool l_timeHasWidget = mCurrentTime->m_GamemodeModule->getContainsSceneWidget(sceneType, name);
+    if(l_timeHasWidget) return true;
+  }
 
-  if(sceneType == LOBBY) return containsLobbyWidgetPosition(name);
-  return false;
+  for(QString module : m_ModuleNames)
+  {
+    if(m_ThemeModules[module].contains("default.json"))
+    {
+      bool l_modHasWidget = m_ThemeModules[module]["default.json"]->getContainsSceneWidget(sceneType, name);
+      if(l_modHasWidget) return true;
+    }
+  }
+
+  return m_GamemodeModule->getContainsSceneWidget(sceneType, name);
 }
 
 pos_size_type ThemeModeReader::getWidgetPosition(ThemeSceneType sceneType, QString name)
 {
   return getWidgetDimensions(getSceneLoadOrder(sceneType), name);
-}
-
-bool ThemeModeReader::containsCourtroomWidgetPosition(QString widget_name)
-{
-  if(mCurrentTime != nullptr)
-  {
-    if(mCurrentTime->mCourtroomWidgetPositions.contains(widget_name)) return true;
-  }
-
-  for(QString module : m_ModuleNames)
-  {
-    if(m_ThemeModules[module].contains("default.json"))
-    {
-      ThemeScene *scene = m_ThemeModules[module]["default.json"]->getThemeScene(COURTROOM);
-      if(scene == nullptr) continue;
-      WidgetThemeData* widgetData = scene->getWidgetData(widget_name);
-      if(widgetData == nullptr) continue;
-
-      pos_size_type position = widgetData->Transform;
-      if(position.height != -1 && position.width != -1)
-      {
-        return true;
-      }
-
-    }
-  }
-
-  if(mCourtroomWidgetPositions.contains(widget_name)) return true;
-
-
-  return false;
-}
-
-bool ThemeModeReader::containsLobbyWidgetPosition(QString widget_name)
-{
-  if(mCurrentTime != nullptr)
-  {
-    if(mCurrentTime->mLobbyWidgetPositions.contains(widget_name)) return true;
-  }
-
-  for(QString module : m_ModuleNames)
-  {
-    if(m_ThemeModules[module].contains("default.json"))
-    {
-      ThemeScene *scene = m_ThemeModules[module]["default.json"]->getThemeScene(LOBBY);
-      if(scene == nullptr) continue;
-      WidgetThemeData* widgetData = scene->getWidgetData(widget_name);
-      if(widgetData == nullptr) continue;
-
-      pos_size_type position = widgetData->Transform;
-      if(position.height != -1 && position.width != -1)
-      {
-        return true;
-      }
-
-    }
-  }
-
-  if(mLobbyWidgetPositions.contains(widget_name)) return true;
-
-
-  return false;
 }
 
 bool ThemeModeReader::containsWidgetFont(ThemeSceneType t_sceneType, QString widget_name)
@@ -620,3 +570,5 @@ QVector<ThemeModuleReader *> ThemeModeReader::getModuleLoadOrder()
 
   return returnValue;
 }
+
+

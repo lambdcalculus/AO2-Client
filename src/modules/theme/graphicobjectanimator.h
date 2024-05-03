@@ -16,8 +16,7 @@ public:
   void startAnimation(bool t_loop);
   void addKeyframe(qint64 time, AnimationVariableTypes type, float value, AnimCurveType fin, AnimCurveType fout);
   void setKeyframes(QVector<DROAnimationKeyframe> t_frames);
-
-private slots:
+  DROAnimation *getAnimation();
   void updateAnimation();
 
 private:

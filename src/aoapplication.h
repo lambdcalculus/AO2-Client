@@ -8,6 +8,7 @@
 class AOConfig;
 class AOConfigPanel;
 class Courtroom;
+class ReplayScene;
 class DRDiscord;
 class DRTheme;
 class DRMasterClient;
@@ -17,6 +18,7 @@ class Lobby;
 #include <QVector>
 
 #include <optional>
+
 
 class AOApplication : public QApplication
 {
@@ -53,6 +55,7 @@ public:
   void destruct_lobby();
 
   Courtroom *get_courtroom() const;
+  void constructReplay();
   void construct_courtroom();
   void destruct_courtroom();
 
@@ -204,6 +207,7 @@ public:
   ////// Functions for fonts handling //////
   void load_fonts();
   Courtroom *m_courtroom = nullptr;
+  ReplayScene *mReplayPlayer = nullptr;
 
 public slots:
   void loading_cancelled();
@@ -226,6 +230,7 @@ private:
   bool is_lobby_constructed = false;
 
   bool is_courtroom_constructed = false;
+  bool isReplayConstructed = false;
 
   ///////////////server metadata////////////////
 

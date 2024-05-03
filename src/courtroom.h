@@ -67,6 +67,7 @@ class QLabel;
 #include <modules/theme/widgets/dro_line_edit.h>
 #include <modules/theme/widgets/droemotebuttons.h>
 
+#include <modules/widgets/keyframe_player.h>
 #include <modules/widgets/rpnotifymenu.h>
 #include <modules/widgets/viewport_overlay.h>
 
@@ -440,6 +441,7 @@ private:
 
   AOImageDisplay *ui_background = nullptr;
 
+  KeyframePlayer *wShoutsLayer = nullptr;
   DRGraphicsView *ui_viewport = nullptr;
   QPropertyAnimation *background_anim = nullptr;
 

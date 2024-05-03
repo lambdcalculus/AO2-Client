@@ -53,6 +53,11 @@ void GraphicsSpriteItem::set_scaling_mode(SpritePlayer::ScalingMode p_scaling_mo
   m_player->set_scaling_mode(p_scaling_mode);
 }
 
+void GraphicsSpriteItem::set_center_mode(bool t_center)
+{
+  mCenterSprite = t_center;
+}
+
 QSizeF GraphicsSpriteItem::get_size() const
 {
   return m_player->get_size();
@@ -169,12 +174,18 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
     // calculate center position
     QPointF l_horizontal_center;
-    if (auto *l_scene = scene())
+    if(mCenterSprite)
     {
-      const QPointF l_center = l_scene->sceneRect().center() - m_player->get_scaled_bounding_rect().center();
-      l_horizontal_center.setX(l_center.x());
-      l_horizontal_center.setY(mVerticalVPOffset);
+      if (auto *l_scene = scene())
+      {
+        const QPointF l_center = l_scene->sceneRect().center() - m_player->get_scaled_bounding_rect().center();
+        l_horizontal_center.setX(l_center.x());
+        l_horizontal_center.setY(mVerticalVPOffset);
+      }
     }
+    painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
+    painter->setRenderHint(QPainter::Antialiasing, true);
+
 
     painter->drawImage(l_horizontal_center, m_player->get_current_frame());
     painter->restore();

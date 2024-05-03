@@ -1,11 +1,24 @@
 #include "animation_reader.h"
 #include "aoapplication.h"
 #include "file_functions.h"
+#include "modules/managers/scene_manager.h"
 
 AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
 {
+  QString l_animationPath = "";
+  if(t_type == eAnimationPlayer)
+  {
+    mAnimationPath = AOApplication::getInstance()->get_base_path() + "animations/" + "characters/";
+    l_animationPath = mAnimationPath + t_name + ".json";
+  }
 
-  QString l_animationPath = AOApplication::getInstance()->get_base_path() + "animations/" + "characters/" + t_name + ".json";
+  if(t_type == eAnimationShout)
+  {
+    mAnimationPath = AOApplication::getInstance()->get_base_path() + "animations/" + "shouts/" + t_name + "/";
+    l_animationPath = mAnimationPath + "anim.json";
+  }
+
+
   if(file_exists(l_animationPath))
   {
     ReadFromFile(l_animationPath);
@@ -18,8 +31,17 @@ AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
     {
       SetTargetObject(r_animObject.toObject());
       QString lObjectName = getStringValue("name");
-      QJsonArray lFrames = getArrayValue("frames");
+      QString lImageName = getStringValue("variable_image");
 
+      if(!lImageName.isEmpty())
+      {
+        mVariableImages[lObjectName] = lImageName;
+      }
+      QJsonArray lFrames = getArrayValue("frames");
+      mObjectNames.append(lObjectName);
+
+
+      //Parse the Frame Data
       for(QJsonValueRef r_frame : lFrames)
       {
         SetTargetObject(r_frame.toObject());
@@ -53,4 +75,42 @@ QVector<DROAnimationKeyframe> AnimationReader::getFrames(QString t_objectName)
 bool AnimationReader::getCanLoop()
 {
   return mLoopAnimation;
+}
+
+QStringList AnimationReader::getObjectNames()
+{
+  return mObjectNames;
+}
+
+QString AnimationReader::getAnimPath()
+{
+  return mAnimationPath;
+}
+
+QSizeF AnimationReader::getObjectSize(QString t_name)
+{
+  if(mObjectSizes.contains(t_name)) return mObjectSizes[t_name];
+  return QSizeF(960, 544);
+}
+
+QString AnimationReader::getImageName(QString t_name)
+{
+  if(mVariableImages.contains(t_name))
+  {
+    if(mVariableImages[t_name] == "speaker")
+    {
+      return "character/" + SceneManager::get().getCurrentSpeaker().mCharacter + ".png";
+    }
+    else if(mVariableImages[t_name] == "speaker_previous")
+    {
+      return "character/" + SceneManager::get().getPreviousSpeaker().mCharacter + ".png";
+    }
+  }
+  if(mImageNames.contains(t_name)) return mImageNames[t_name];
+  return t_name + ".png";
+}
+
+bool AnimationReader::animationLoaded()
+{
+  return mObjectNames.count() != 0;
 }

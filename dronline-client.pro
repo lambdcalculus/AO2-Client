@@ -37,6 +37,7 @@ HEADERS += \
   src/courtroom.h \
   src/datatypes.h \
   src/debug_functions.h \
+  src/debugmenuui.h \
   src/draudio.h \
   src/draudiodevice.h \
   src/draudioengine.h \
@@ -104,8 +105,10 @@ HEADERS += \
   src/modules/managers/localization_manager.h \
   src/modules/managers/notify_manager.h \
   src/modules/managers/pair_manager.h \
+  src/modules/managers/replay_manager.h \
   src/modules/managers/scene_manager.h \
   src/modules/networking/json_packet.h \
+  src/modules/scenes/replay_scene.h \
   src/modules/theme/droanimation.h \
   src/modules/theme/graphicobjectanimator.h \
   src/modules/theme/theme_scene.h \
@@ -118,6 +121,7 @@ HEADERS += \
   src/modules/theme/widgets/tab_toggle_button.h \
   src/modules/widgets/evidence_entry_button.h \
   src/modules/widgets/evidence_list.h \
+  src/modules/widgets/keyframe_player.h \
   src/modules/widgets/rpnotifymenu.h \
   src/modules/widgets/tabgroupingwidget.h \
   src/modules/widgets/viewport_overlay.h \
@@ -156,6 +160,7 @@ SOURCES += \
   src/courtroom_widgets.cpp \
   src/datatypes.cpp \
   src/debug_functions.cpp \
+  src/debugmenuui.cpp \
   src/draudio.cpp \
   src/draudiodevice.cpp \
   src/draudioengine.cpp \
@@ -222,8 +227,10 @@ SOURCES += \
   src/modules/managers/localization_manager.cpp \
   src/modules/managers/notify_manager.cpp \
   src/modules/managers/pair_manager.cpp \
+  src/modules/managers/replay_manager.cpp \
   src/modules/managers/scene_manager.cpp \
   src/modules/networking/json_packet.cpp \
+  src/modules/scenes/replay_scene.cpp \
   src/modules/theme/droanimation.cpp \
   src/modules/theme/graphicobjectanimator.cpp \
   src/modules/theme/theme_scene.cpp \
@@ -236,6 +243,7 @@ SOURCES += \
   src/modules/theme/widgets/tab_toggle_button.cpp \
   src/modules/widgets/evidence_entry_button.cpp \
   src/modules/widgets/evidence_list.cpp \
+  src/modules/widgets/keyframe_player.cpp \
   src/modules/widgets/rpnotifymenu.cpp \
   src/modules/widgets/tabgroupingwidget.cpp \
   src/modules/widgets/viewport_overlay.cpp \
@@ -264,6 +272,7 @@ DISTFILES +=
 
 FORMS += \
   res/ui/config_panel.ui \
+  src/debugmenuui.ui \
   src/drevidencedialogue.ui \
   src/drserverinfoeditor.ui \
   src/evidencedialogue.ui

@@ -55,12 +55,15 @@ public:
 
   bool is_running() const;
 
+
   QRectF boundingRect() const final;
 
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) final;
 
 public slots:
   void set_scaling_mode(SpritePlayer::ScalingMode scaling_mode);
+
+  void set_center_mode(bool t_center);
 
   void set_size(QSizeF size);
 
@@ -93,6 +96,7 @@ signals:
 private:
   QScopedPointer<SpritePlayer> m_player;
   int mVerticalVPOffset = 0;
+  bool mCenterSprite = true;
 
 private slots:
   void notify_size();

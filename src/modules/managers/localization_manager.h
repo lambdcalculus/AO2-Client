@@ -28,8 +28,8 @@ public:
 
 private:
   LocalizationManager() {}
-  QString insertVariables(QString t_value, QStringList t_variables);
   static LocalizationManager s_Instance;
+  QString insertVariables(QString t_value, QStringList t_variables);
 
   QString mSelectedLanguageName = "English";
 

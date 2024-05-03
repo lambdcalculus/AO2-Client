@@ -1,6 +1,7 @@
 #include "animation_manager.h"
 #include "modules/theme/thememanager.h"
-
+#include <QObject>
+#include <QtConcurrent/QtConcurrent>
 #include <QListWidget>
 
 
@@ -38,4 +39,35 @@ bool AnimationManager::getCharacterLoop(QString t_name)
 {
   if(mCharacterAnimations.contains(t_name)) return mCharacterAnimations[t_name]->getCanLoop();
   return true;
+}
+
+void AnimationManager::setScene(KeyframePlayer *t_scene)
+{
+  mShoutsScene = t_scene;
+}
+
+void AnimationManager::addToQueue(DROAnimation *t_animation)
+{
+  mGraphicsRenderQueue.append(t_animation);
+}
+
+void AnimationManager::startQueue()
+{
+  //QtConcurrent::run(this, &AnimationManager::loopRenderQueue);
+
+  //ThAnimationQueue->start();
+}
+
+void AnimationManager::loopRenderQueue()
+{
+  while(true)
+  {
+    if(mGraphicsRenderQueue.count() == 0) continue;
+    for(DROAnimation * animation : mGraphicsRenderQueue)
+    {
+      if(animation->getIsPlaying()) animation->RunAnimation();
+    }
+    //if(mShoutsScene != nullptr) mShoutsScene->update();
+  }
+  //Loop this function every 33ms.
 }

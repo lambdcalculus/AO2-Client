@@ -14,18 +14,38 @@ public:
   QVector<DROAnimationKeyframe> getFrames(QString t_objectName);
   bool getCanLoop();
 
+  QStringList getObjectNames();
+  QString getAnimPath();
+
+  QSizeF getObjectSize(QString t_name);
+  QString getImageName(QString t_name);
+
+  bool animationLoaded();
+
 private:
   int mFrameRate = 60;
   bool mLoopAnimation = false;
+  QString mAnimationPath = "";
+
+  QStringList mObjectNames = {};
+
+  QMap<QString, QSizeF> mObjectSizes = {};
+  QMap<QString, QString> mImageNames = {};
+  QMap<QString, QString> mVariableImages = {};
+
 
   QMap<QString, QVector<DROAnimationKeyframe>> mFrames = {};
+
 
   QMap<QString, AnimationVariableTypes> mAnimationTypes =
   {
       {"x", ePOS_X},
       {"y", ePOS_Y},
+      {"rotation", eROTATION},
       {"width", eSIZE_X},
       {"height", eSIZE_Y},
+      {"scale", eSCALE},
+      {"alpha", eALPHA}
   };
 
   QMap<QString, AnimCurveType> mAnimationCurves =
@@ -34,6 +54,7 @@ private:
       {"ease", EASE},
       {"bezier", BEZIER},
       {"parametric", PARAMETRIC},
+      {"none", NONE}
   };
 };
 

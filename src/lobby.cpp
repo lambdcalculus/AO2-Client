@@ -50,16 +50,12 @@ Lobby::Lobby(AOApplication *p_ao_app)
   ui_background = new AOImageDisplay(this, ao_app);
   ui_public_server_filter = new AOButton(this, ao_app);
   ui_favorite_server_filter = new AOButton(this, ao_app);
+
+  wReplayPlay = new AOButton(this, ao_app);
+
   ui_refresh = new AOButton(this, ao_app);
   ui_toggle_favorite = new AOButton(this, ao_app);
   ui_connect = new AOButton(this, ao_app);
-
-  testAnimator = new WidgetAnimator(ui_connect, 60);
-  testAnimator->addKeyframe(0, ePOS_Y, 200, EASE,  EASE );
-  testAnimator->addKeyframe(0, ePOS_X, -555, EASE,  EASE );
-  testAnimator->addKeyframe(500, ePOS_X, 700, LINEAR,  LINEAR);
-  testAnimator->addKeyframe(2800, ePOS_X, 765, LINEAR,  LINEAR);
-  testAnimator->addKeyframe(3000, eALPHA, 0, LINEAR,  LINEAR );
 
   ui_version = new DRTextEdit(this);
   ui_version->setFrameStyle(QFrame::NoFrame);
@@ -111,6 +107,8 @@ Lobby::Lobby(AOApplication *p_ao_app)
   connect(ui_public_server_filter, SIGNAL(clicked()), this, SLOT(toggle_public_server_filter()));
 
   connect(ui_favorite_server_filter, SIGNAL(clicked()), this, SLOT(toggle_favorite_server_filter()));
+
+  connect(wReplayPlay, SIGNAL(pressed()), this, SLOT(onPlayReplayPresssed()));
 
   connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
   connect(ui_refresh, SIGNAL(released()), this, SLOT(on_refresh_released()));
@@ -181,6 +179,9 @@ void Lobby::update_widgets()
 
   set_size_and_pos(ui_refresh, "refresh", LOBBY_DESIGN_INI, ao_app);
   ui_refresh->set_image("refresh.png");
+
+  set_size_and_pos(wReplayPlay, "play_replay", LOBBY_DESIGN_INI, ao_app);
+  wReplayPlay->set_image("play_replay.png");
 
   set_size_and_pos(ui_toggle_favorite, "add_to_fav", LOBBY_DESIGN_INI, ao_app);
   ui_toggle_favorite->set_image("addtofav.png");
@@ -477,6 +478,11 @@ void Lobby::select_current_server()
   }
 }
 
+void Lobby::onPlayReplayPresssed()
+{
+  ao_app->constructReplay();
+}
+
 void Lobby::toggle_public_server_filter()
 {
   m_server_filter = m_server_filter == PublicOnly ? NoFilter : PublicOnly;
@@ -499,7 +505,6 @@ void Lobby::update_server_filter_buttons()
 void Lobby::on_refresh_pressed()
 {
   ui_refresh->set_image("refresh_pressed.png");
-  testAnimator->startAnimation();
 }
 
 void Lobby::on_refresh_released()

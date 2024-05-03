@@ -1,4 +1,5 @@
 #include "graphicobjectanimator.h"
+#include "qgraphicsscene.h"
 #include "qtimer.h"
 
 GraphicObjectAnimator::GraphicObjectAnimator(QGraphicsObject *t_widget, int t_framerate)
@@ -10,20 +11,49 @@ GraphicObjectAnimator::GraphicObjectAnimator(QGraphicsObject *t_widget, int t_fr
 
 void GraphicObjectAnimator::startAnimation(bool t_loop)
 {
+  QRectF boundingRect = mTargetWidget->boundingRect();
+  QPointF centerBottom(boundingRect.width() / 2.0, boundingRect.height());
+
+  //mTargetWidget->setTransformOriginPoint(centerBottom);
   mAnimationPlayer->Start(t_loop);
-  updateAnimation();
+  //updateAnimation();
 }
 
 void GraphicObjectAnimator::updateAnimation()
 {
-  mAnimationPlayer->RunAnimation();
-  int posX = mAnimationPlayer->getValue(ePOS_X);
-  int posY = mAnimationPlayer->getValue(ePOS_Y);
-  mTargetWidget->setPos(posX, posY);
+  if(!mAnimationPlayer->getIsPlaying()) return;
 
-  if(mAnimationPlayer->getIsPlaying())
+  float posX = mAnimationPlayer->getValue(ePOS_X);
+  float posY = mAnimationPlayer->getValue(ePOS_Y);
+
+  float lRotation = mAnimationPlayer->getValue(eROTATION);
+  float lAlpha = mAnimationPlayer->getValue(eALPHA);
+
+  float lScale = mAnimationPlayer->getValue(eSCALE);
+
+  mTargetWidget->setX(posX);
+  mTargetWidget->setY(posY);
+  if(lScale != 9999999)
   {
-    QTimer::singleShot(1000 / mFrameRate, this, SLOT(updateAnimation()));
+    double l_scale = (lScale / 100);
+    mTargetWidget->setScale(l_scale);
+  }
+
+  if(lRotation != 9999999)
+  {
+    mTargetWidget->setRotation(lRotation);
+  }
+  if(lAlpha != 9999999)
+  {
+    if (lAlpha != 0)
+    {
+      double opacity = (lAlpha / 255.0);
+      mTargetWidget->setOpacity(opacity);
+    }
+    else
+    {
+      mTargetWidget->setOpacity(0);
+    }
   }
 }
 
@@ -37,4 +67,9 @@ void GraphicObjectAnimator::addKeyframe(qint64 time, AnimationVariableTypes type
 void GraphicObjectAnimator::setKeyframes(QVector<DROAnimationKeyframe> t_frames)
 {
   mAnimationPlayer->setKeyframes(t_frames);
+}
+
+DROAnimation *GraphicObjectAnimator::getAnimation()
+{
+  return mAnimationPlayer;
 }

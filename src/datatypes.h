@@ -6,6 +6,30 @@
 #include <QMap>
 #include <QVector>
 
+
+class ReplayOperation
+{
+public:
+  ReplayOperation(QString t_operation)
+  {
+    mOperation = t_operation;
+  };
+  QString mOperation = "";
+  QMap<QString, QString> mVariables = {};
+};
+
+class SpeakerData
+{
+public:
+  SpeakerData(QString t_chara, QString t_sprite)
+  {
+    mCharacter = t_chara;
+    mEmote = t_sprite;
+  };
+  QString mCharacter = "";
+  QString mEmote = "";
+};
+
 enum AnimTypes
 {
   eAnimationShout,
@@ -20,7 +44,7 @@ enum AnimationVariableTypes
   ePOS_Y,
   eSIZE_X,
   eSIZE_Y,
-  eSIZE_LINKED,
+  eSCALE,
   eKEYFRAME,
   eALPHA,
   eFIXED_HEIGHT,
@@ -33,7 +57,8 @@ enum AnimCurveType
   LINEAR,
   EASE,
   BEZIER,
-  PARAMETRIC
+  PARAMETRIC,
+  NONE
 };
 
 

@@ -95,3 +95,19 @@ void SceneManager::clearPlayerDataList()
   mPlayerDataList.clear();
 }
 
+void SceneManager::setCurrentSpeaker(QString t_chara, QString t_emote)
+{
+  mLastSpeaker = SpeakerData(mCurrentSpeaker.mCharacter, mCurrentSpeaker.mEmote);
+  mCurrentSpeaker = SpeakerData(t_chara, t_emote);
+}
+
+SpeakerData SceneManager::getCurrentSpeaker()
+{
+  return mCurrentSpeaker;
+}
+
+SpeakerData SceneManager::getPreviousSpeaker()
+{
+  return mLastSpeaker;
+}
+

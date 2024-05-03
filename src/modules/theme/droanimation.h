@@ -19,6 +19,8 @@ public:
 
   float getValue(AnimationVariableTypes type);
 
+  int getCurrentFrame();
+
 private:
   qint64 mElapsedTime = 0;
   int mCurrentKeyframe = 0;

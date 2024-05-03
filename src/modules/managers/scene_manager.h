@@ -3,7 +3,7 @@
 
 #include "src/aolabel.h"
 #include "src/drgraphicscene.h"
-
+#include "datatypes.h"
 #include <mk2/drplayer.h>
 #include "modules/background/background_data.h"
 
@@ -38,6 +38,12 @@ public:
   QVector<DrPlayer> mPlayerDataList;
 
   AOConfig *pConfigAO = nullptr;
+
+  //Current Scene
+  void setCurrentSpeaker(QString t_chara, QString t_emote);
+  SpeakerData getCurrentSpeaker();
+  SpeakerData getPreviousSpeaker();
+
 private:
   SceneManager() {}
   static SceneManager s_Instance;
@@ -49,6 +55,10 @@ private:
 
   QString mBackgroundName = "";
   BackgroundData *pCurrentBackground = nullptr;
+
+  //Current Scene
+  SpeakerData mCurrentSpeaker = SpeakerData("", "");
+  SpeakerData mLastSpeaker = SpeakerData("", "");
 
 };
 

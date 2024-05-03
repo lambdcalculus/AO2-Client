@@ -3,6 +3,7 @@
 #include "aoconfig.h"
 #include "aoconfigpanel.h"
 #include "courtroom.h"
+#include "modules/scenes/replay_scene.h"
 #include "debug_functions.h"
 #include "drdiscord.h"
 #include "drpacket.h"
@@ -135,6 +136,14 @@ void AOApplication::destruct_lobby()
 Courtroom *AOApplication::get_courtroom() const
 {
   return m_courtroom;
+}
+
+void AOApplication::constructReplay()
+{
+  isReplayConstructed = true;
+  mReplayPlayer = new ReplayScene(this);
+  center_widget_to_screen(mReplayPlayer);
+  mReplayPlayer->show();
 }
 
 void AOApplication::construct_courtroom()

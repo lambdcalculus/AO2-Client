@@ -83,7 +83,9 @@ void Courtroom::create_widgets()
 
   ThemeManager::get().setCourtroomBackground(ui_background);
 
+
   ui_viewport = new DRGraphicsView(this);
+  wShoutsLayer = new KeyframePlayer(this);
 
   SceneManager::get().CreateTransition(this, ao_app, ui_viewport);
 
@@ -432,6 +434,7 @@ void Courtroom::connect_widgets()
   connect(m_keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
 
   connect(ui_video, SIGNAL(finished()), this, SLOT(video_finished()));
+  connect(wShoutsLayer, SIGNAL(animationFinished()), this, SLOT(objection_done()));
   connect(ui_vp_objection, SIGNAL(done()), this, SLOT(objection_done()));
   connect(ui_vp_player_char, SIGNAL(done()), this, SLOT(preanim_done()));
 
@@ -736,7 +739,8 @@ void Courtroom::reset_widget_names()
       {"evidence_left", wEvidenceLeft},
       {"evidence_right", wEvidenceRight},
       {"evidence_present", wEvidencePresent},
-      {"chara_animations", wCharaAnimList}
+      {"chara_animations", wCharaAnimList},
+      {"shouts_player", wShoutsLayer}
   };
 
     ThemeManager::get().SetWidgetNames(widget_names);
@@ -996,6 +1000,8 @@ void Courtroom::set_widgets()
   TimeDebugger::get().CheckpointTimer("Courtroom Setup", "SetWidget-ComboBox");
 
   setupWidgetElement(ui_viewport, "viewport");
+  setupWidgetElement(wShoutsLayer, "viewport");
+
   setupWidgetElement(SceneManager::get().GetTransition(), "viewport");
   SceneManager::get().GetTransition()->move(0,0);
   setupWidgetElement(ui_vp_notepad_image, "notepad_image", "notepad_image.png", false);

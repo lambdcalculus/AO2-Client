@@ -21,6 +21,7 @@ void ThemeModuleReader::ParseModule()
   ParseModuleConfig();
   m_CourtroomScene = ParseScene("courtroom");
   m_LobbyScene = ParseScene("lobby");
+  m_ReplaysScene = ParseScene("replays");
   ParseLayers();
   ParseTabs();
 }
@@ -237,12 +238,33 @@ ThemeScene *ThemeModuleReader::getThemeScene(ThemeSceneType t_scene)
     case LOBBY:
       return m_LobbyScene;
 
+    case REPLAYS:
+      return m_ReplaysScene;
+
     case COURTROOM:
-    return m_CourtroomScene;
+      return m_CourtroomScene;
 
     default:
       return nullptr;
     }
+}
+
+bool ThemeModuleReader::getContainsSceneWidget(ThemeSceneType t_scene, QString t_name)
+{
+    ThemeScene *l_scene = getThemeScene(t_scene);
+
+    if(l_scene == nullptr) return false;
+    WidgetThemeData* l_widgetData = l_scene->getWidgetData(t_name);
+
+    if(l_widgetData == nullptr) return false;
+
+    pos_size_type position = l_widgetData->Transform;
+    if(position.height != -1 && position.width != -1)
+    {
+      return true;
+    }
+
+    return false;
 }
 
 bool ThemeModuleReader::getContainsLayers()
@@ -284,3 +306,4 @@ QString ThemeModuleReader::getDirectoryPath()
 {
   return m_moduleDirectory;
 }
+

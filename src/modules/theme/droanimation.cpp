@@ -7,8 +7,10 @@ DROAnimation::DROAnimation()
 
 void DROAnimation::RunAnimation()
 {
-  if(keyFrames.count() == 0) return;
+  if (!mCurrentlyPlaying || keyFrames.empty()) return;
+
   mElapsedTime = timer.elapsed();
+
   while(keyFrames.at(mCurrentKeyframe).Time <= mElapsedTime)
   {
     //Return and stop the animation if the keyframe count is at the end.
@@ -37,6 +39,7 @@ void DROAnimation::SetNextKeyframe(AnimationVariableTypes animType)
 
 void DROAnimation::Start(bool loop)
 {
+  Stop();
   if(keyFrames.count() == 0) return;
   mVarNextKeyframe = {};
   mVarLastKeyframe = {};
@@ -64,7 +67,6 @@ void DROAnimation::Stop()
 {
   mCurrentlyPlaying = false;
   mCurrentKeyframe = 0;
-
 }
 
 void DROAnimation::Pause()
@@ -137,8 +139,18 @@ float DROAnimation::getValue(AnimationVariableTypes type)
     float duration_percantage = (float)duration_passed / (float)total_duration;
     float distance = nextValue - lastValue;
     //Caluclate the value differances
-
-    if(duration_percantage <= 0.5)
+    if(fadeIn == NONE)
+    {
+      if (mElapsedTime >= nextTime)
+      {
+        return nextValue;
+      }
+      else
+      {
+        return lastValue;
+      }
+    }
+    else if(duration_percantage <= 0.5)
     {
       if(fadeIn == EASE)
       {
@@ -179,4 +191,9 @@ float DROAnimation::getValue(AnimationVariableTypes type)
   {
     return 9999999;
   }
+}
+
+int DROAnimation::getCurrentFrame()
+{
+  return mCurrentKeyframe;
 }

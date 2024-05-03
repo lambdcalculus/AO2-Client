@@ -37,6 +37,7 @@ public:
 
   void setWidgetPosition(QWidget *t_widget, int x, int y);
   void setWidgetDimensions(QWidget *t_widget, int t_width, int t_height);
+  void autoWidgetDimensions(QWidget *t_widget, QString t_name, ThemeSceneType t_scene);
 
   //Widgets
   void SetWidgetNames(QHash<QString, QWidget *> t_WidgetNames);
@@ -85,6 +86,11 @@ public:
   AOButton *GetButton(QString t_name);
 
   ThemeReader mCurrentThemeReader = ThemeReader();
+
+
+  //Create Widgets
+  void createButtonWidget(QString t_name, QWidget *t_parent = nullptr);
+  void createComboboxWidget(QString t_name);
 
 private:
   ThemeManager() {}

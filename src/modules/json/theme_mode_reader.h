@@ -90,8 +90,6 @@ public:
   int getTimerNumber();
 
   bool containsWidgetPosition(ThemeSceneType sceneType, QString name);
-  bool containsCourtroomWidgetPosition(QString widget_name);
-  bool containsLobbyWidgetPosition(QString widget_name);
 
   pos_size_type getWidgetPosition(ThemeSceneType sceneType, QString name);
 
@@ -102,6 +100,7 @@ public:
 
   QVector<ThemeScene *> getSceneLoadOrder(ThemeSceneType t_type);
   QVector<ThemeModuleReader *>getModuleLoadOrder();
+
 };
 
 #endif // THEMEMODEREADER_H
