@@ -31,10 +31,11 @@ void ReplayScene::constructWidgets()
 
 void ReplayScene::setBackground(QString t_name)
 {
-  SceneManager::get().execLoadPlayerBackground("DR2 Corral_HD");
+  SceneManager::get().execLoadPlayerBackground(t_name);
+  setBgPosition("wit");
 }
 
 void ReplayScene::setBgPosition(QString t_name)
 {
-  vpBackground->set_file_name(SceneManager::get().getBackgroundPath("wit"));
+  vpBackground->set_file_name(SceneManager::get().getBackgroundPath(t_name));
 }

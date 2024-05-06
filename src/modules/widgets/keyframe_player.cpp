@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "modules/managers/scene_manager.h"
 #include <modules/json/animation_reader.h>
+#include "modules/managers/game_manager.h"
 #include "modules/managers/animation_manager.h"
 
 KeyframePlayer::KeyframePlayer(QWidget *parent) : DRGraphicsView(parent)
@@ -10,6 +11,8 @@ KeyframePlayer::KeyframePlayer(QWidget *parent) : DRGraphicsView(parent)
   setStyleSheet("background: transparent;");
   setBackgroundBrush(Qt::transparent);
   AnimationManager::get().setScene(this);
+
+  connect(&GameManager::get(), SIGNAL(ShoutComplete()), this, SLOT(animationComplete()));
 }
 
 bool KeyframePlayer::playAnimation(QString t_animation)
@@ -19,7 +22,8 @@ bool KeyframePlayer::playAnimation(QString t_animation)
     clearAniamtions();
   }
   bool animationExists = loadAnimation(t_animation);
-  updateView();
+  GameManager::get().SetAnimationGroup(eAnimationShout, mAnimatiorObjects);
+  //updateView();
 
   return animationExists;
 }
@@ -38,6 +42,7 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
   for(QString r_name : mNames)
   {
     i++;
+
     DRSceneMovie * l_newObject = new DRSceneMovie(AOApplication::getInstance());
     scene()->addItem(l_newObject);
     l_newObject->setZValue(i);
@@ -52,6 +57,7 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
 
     mAnimationObjects[r_name] = l_newObject;
     mObjectAnimations[r_name] = l_newAnim;
+    mAnimatiorObjects.append(l_newAnim);
   }
 
   for(QString r_name : mNames)
@@ -60,13 +66,6 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
   }
 
   return l_reader->animationLoaded();
-}
-
-void KeyframePlayer::updateView()
-{
-  connect(&mFrameTimer, &QTimer::timeout, this, &KeyframePlayer::playerUpdate);
-  mFrameTimer.setInterval(1000 / 60);
-  mFrameTimer.start();
 }
 
 void KeyframePlayer::clearAniamtions()
@@ -82,32 +81,13 @@ void KeyframePlayer::clearAniamtions()
     delete it.value();
   }
   mObjectAnimations.clear();
+
+  mAnimatiorObjects.clear();
 }
 
-void KeyframePlayer::playerUpdate()
+void KeyframePlayer::animationComplete()
 {
-  if(!flgUpdateRunning)
-  {
-    flgUpdateRunning = true;
-    bool allAnimationsDone = true;
-    for(QString r_name : mNames)
-    {
-      if(mObjectAnimations[r_name]->getAnimation()->getIsPlaying())
-      {
-        allAnimationsDone = false;
-        mObjectAnimations[r_name]->getAnimation()->RunAnimation();
-        mObjectAnimations[r_name]->updateAnimation();
-      }
-    }
-
-    if(allAnimationsDone)
-    {
-      mFrameTimer.stop();
-      clearAniamtions();
-      emit animationFinished();
-    }
-
-    flgUpdateRunning = false;
-  }
-  //update();
+  mFrameTimer.stop();
+  clearAniamtions();
+  emit animationFinished();
 }

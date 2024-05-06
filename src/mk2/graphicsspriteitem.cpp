@@ -183,8 +183,17 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
         l_horizontal_center.setY(mVerticalVPOffset);
       }
     }
-    painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
-    painter->setRenderHint(QPainter::Antialiasing, true);
+    if(rotation() == 0)
+    {
+      painter->setRenderHint(QPainter::SmoothPixmapTransform, false);
+      painter->setRenderHint(QPainter::Antialiasing, false);
+    }
+    else
+    {
+      painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
+      painter->setRenderHint(QPainter::Antialiasing, true);
+    }
+
 
 
     painter->drawImage(l_horizontal_center, m_player->get_current_frame());

@@ -60,6 +60,7 @@
 
 #include <modules/managers/evidence_manager.h>
 #include <modules/managers/replay_manager.h>
+#include <modules/managers/game_manager.h>
 
 const int Courtroom::DEFAULT_WIDTH = 714;
 const int Courtroom::DEFAULT_HEIGHT = 668;
@@ -97,6 +98,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   load_audiotracks();
   reset_viewport();
   PairManager::get().SetUserPair(-1, 480);
+  GameManager::get().StartGameLoop();
 }
 
 Courtroom::~Courtroom()
@@ -1284,6 +1286,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   {
     aniPlayerChar->setKeyframes(AnimationManager::get().getCharacterFrames(wCharaAnimList->currentItem()->text()));
     aniPlayerChar->startAnimation(AnimationManager::get().getCharacterLoop(wCharaAnimList->currentItem()->text()));
+    GameManager::get().SetPlayerAnimation(aniPlayerChar);
   }
 
   setup_screenshake_anim(selfOffset);

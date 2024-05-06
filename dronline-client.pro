@@ -102,6 +102,7 @@ HEADERS += \
   src/modules/managers/character_manager.h \
   src/modules/managers/emotion_manager.h \
   src/modules/managers/evidence_manager.h \
+  src/modules/managers/game_manager.h \
   src/modules/managers/localization_manager.h \
   src/modules/managers/notify_manager.h \
   src/modules/managers/pair_manager.h \
@@ -224,6 +225,7 @@ SOURCES += \
   src/modules/managers/character_manager.cpp \
   src/modules/managers/emotion_manager.cpp \
   src/modules/managers/evidence_manager.cpp \
+  src/modules/managers/game_manager.cpp \
   src/modules/managers/localization_manager.cpp \
   src/modules/managers/notify_manager.cpp \
   src/modules/managers/pair_manager.cpp \

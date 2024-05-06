@@ -20,7 +20,7 @@ public:
   void clearAniamtions();
 
 public slots:
-  void playerUpdate();
+  void animationComplete();
 
 signals:
   void animationFinished();
@@ -31,6 +31,7 @@ private:
   QStringList mNames = {};
   QMap<QString, DRSceneMovie *> mAnimationObjects = {};
   QMap<QString, GraphicObjectAnimator *> mObjectAnimations = {};
+  QVector<GraphicObjectAnimator *> mAnimatiorObjects = {};
 
 
 
