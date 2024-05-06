@@ -62,6 +62,8 @@
 #include <modules/managers/replay_manager.h>
 #include <modules/managers/game_manager.h>
 
+#include <mk2/spritecachingreader.h>
+
 const int Courtroom::DEFAULT_WIDTH = 714;
 const int Courtroom::DEFAULT_HEIGHT = 668;
 
@@ -180,6 +182,11 @@ void Courtroom::map_viewers()
   });
 
   // backgrounds
+
+  m_mapped_viewer_list[SpriteWeather].append({
+      vpWeatherLayer->get_player()
+  });
+
   m_mapped_viewer_list[SpriteStage].append({
       ui_vp_background->get_player(),
       ui_vp_desk->get_player(),
@@ -214,6 +221,8 @@ void Courtroom::map_viewport_viewers()
   m_viewport_viewer_map.insert(ViewportPairCharacterIdle, ui_vp_player_pair->get_player());
   m_viewport_viewer_map.insert(ViewportEffect, ui_vp_effect->get_player());
   m_viewport_viewer_map.insert(ViewportShout, ui_vp_objection->get_player());
+  //m_viewport_viewer_map.insert(ViewportWeather, vpWeatherLayer->get_player());
+
 }
 
 void Courtroom::map_viewport_readers()
@@ -425,6 +434,22 @@ QString Courtroom::get_current_background() const
   return m_background.background_tod_map.value(l_tod, m_background.background);
 }
 
+void Courtroom::updateWeather(QString t_weatherName)
+{
+  const QString l_file_name = AOApplication::getInstance()->getWeatherSprite(t_weatherName);
+  auto l_viewer = vpWeatherLayer->get_reader();
+
+  const QString l_current_file_name = l_viewer->get_file_name();
+
+  if (l_file_name != l_current_file_name)
+  {
+    vpWeatherLayer->set_reader(mk2::SpriteReader::ptr(new mk2::SpriteCachingReader));
+    vpWeatherLayer->set_file_name(l_file_name);
+    vpWeatherLayer->start();
+    vpWeatherLayer->show();
+  }
+}
+
 void Courtroom::update_background_scene()
 {
   const QString l_prev_background_name = m_background_name;
@@ -474,6 +499,7 @@ void Courtroom::display_background_scene()
   }
 
   ui_vp_desk->show();
+  vpWeatherLayer->show();
   ui_vp_desk->set_play_once(false);
   swap_viewport_reader(ui_vp_desk, ViewportStageFront);
   ui_vp_desk->start();

@@ -29,6 +29,7 @@ public slots:
   void RunGameLoop();
 
 signals:
+  void FrameComplete();
   void JudgeComplete();
   void ShoutComplete();
 

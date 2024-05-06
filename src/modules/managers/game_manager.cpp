@@ -58,5 +58,6 @@ void GameManager::RunGameLoop()
 
 
     mFlgUpdateRunning = false;
+    emit FrameComplete();
   }
 }

@@ -327,6 +327,11 @@ QString AOApplication::get_background_sprite_path(QString p_background_name, QSt
   return l_target_filename;
 }
 
+QString AOApplication::getWeatherSprite(QString weather)
+{
+  return get_case_sensitive_path(get_package_or_base_file("animations/weather/" + weather + ".webp"));
+}
+
 QString AOApplication::get_background_sprite_noext_path(QString background, QString image)
 {
   return find_asset_path(get_background_path(background) + "/" + image, animated_or_static_extensions());

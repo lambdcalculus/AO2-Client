@@ -112,6 +112,9 @@ void Courtroom::create_widgets()
     ui_vp_effect = new DREffectMovie(ao_app);
     l_scene->addItem(ui_vp_effect);
 
+    vpWeatherLayer = new DRSceneMovie(ao_app);
+    l_scene->addItem(vpWeatherLayer);
+
     ui_vp_wtce = new DRSplashMovie(ao_app);
     l_scene->addItem(ui_vp_wtce);
 

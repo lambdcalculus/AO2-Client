@@ -316,6 +316,7 @@ enum SpriteCategory
   SpriteStage,
   SpriteCharacter,
   SpritePairCharacter,
+  SpriteWeather,
   SpriteEffect,
   SpriteShout,
   SpriteSticker,
@@ -333,6 +334,7 @@ enum ViewportSprite
   ViewportCharacterIdle,
   ViewportCharacterTalk,
   ViewportPairCharacterIdle,
+  ViewportWeather,
   ViewportEffect,
   ViewportShout,
 };
