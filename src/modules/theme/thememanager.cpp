@@ -11,6 +11,7 @@ ThemeManager ThemeManager::s_Instance;
 void ThemeManager::createTabParent()
 {
   waTabWidgets = {};
+
   for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
   {
     QWidget *l_courtroom = getWidget("courtroom");
@@ -29,6 +30,9 @@ void ThemeManager::createTabParent()
     l_newTab->setBackgroundImage(r_tabInfo.m_Name);
 
     addWidgetName(l_panelName, l_newTab);
+
+    if(waTabWidgets.contains(r_tabInfo.m_Name))delete waTabWidgets[r_tabInfo.m_Name];
+
     waTabWidgets[r_tabInfo.m_Name] = l_newTab;
 
     TabToggleButton *l_newButton = new TabToggleButton(l_courtroom, AOApplication::getInstance());
@@ -307,6 +311,15 @@ QWidget *ThemeManager::getWidget(QString name)
 AOButton *ThemeManager::GetButton(QString t_name)
 {
   return dynamic_cast<AOButton*>(ThemeManager::get().getWidget(t_name));
+}
+
+void ThemeManager::clearWidgets()
+{
+  waTabWidgets.clear();
+  m_WidgetNames.clear();
+  mButtonWidgets.clear();
+  mLineEditWidgets.clear();
+  mComboBoxWidgets.clear();
 }
 
 void ThemeManager::createButtonWidget(QString t_name, QWidget *t_parent)

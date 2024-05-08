@@ -15,6 +15,7 @@ public:
     mOperation = t_operation;
   };
   QString mOperation = "";
+  int mTimestamp = 0;
   QMap<QString, QString> mVariables = {};
 };
 

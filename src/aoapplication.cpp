@@ -21,7 +21,10 @@
 #include <QRegularExpression>
 
 #include <modules/managers/character_manager.h>
+#include <modules/managers/game_manager.h>
 #include <modules/managers/localization_manager.h>
+
+#include <modules/theme/thememanager.h>
 
 AOApplication *AOApplication::m_Instance = nullptr;
 
@@ -106,6 +109,7 @@ Lobby *AOApplication::get_lobby() const
 
 void AOApplication::construct_lobby()
 {
+  ThemeManager::get().clearWidgets();
   if (is_lobby_constructed)
   {
     qDebug() << "W: lobby was attempted constructed when it already exists";
@@ -163,6 +167,7 @@ void AOApplication::construct_courtroom()
 
 void AOApplication::destruct_courtroom()
 {
+  GameManager::get().StopGameLoop();
   // destruct courtroom
   if (is_courtroom_constructed)
   {

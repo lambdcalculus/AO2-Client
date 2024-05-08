@@ -124,9 +124,9 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     if (is_courtroom_constructed)
     {
       QString l_text = l_content.at(1);
-      QString l_localization = l_content.at(2);
-      if (l_content.size() == 4)
+      if (l_content.size() > 2)
       {
+        QString l_localization = l_content.at(2);
         QString l_varOne = l_content.at(3);
         QString l_varTwo = l_content.at(4);
 

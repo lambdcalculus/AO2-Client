@@ -89,6 +89,7 @@ public:
 
 
   //Create Widgets
+  void clearWidgets();
   void createButtonWidget(QString t_name, QWidget *t_parent = nullptr);
   void createComboboxWidget(QString t_name);
 

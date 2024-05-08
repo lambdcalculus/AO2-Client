@@ -1,9 +1,11 @@
 #include "game_manager.h"
+#include "replay_manager.h"
 
 GameManager GameManager::s_Instance;
 
 void GameManager::StartGameLoop()
 {
+  ReplayManager::get().startRecording();
   connect(&mFrameTimer, &QTimer::timeout, this, &GameManager::RunGameLoop);
   mFrameTimer.setInterval(1000 / mFPS);
   mFrameTimer.start();
