@@ -112,7 +112,7 @@ jobs:
           cd ../..
           qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
           ${{matrix.make}}
-          ${{matrix.make}} INSTALL_ROOT="${Qt5_DIR}" install
+          sudo ${{matrix.make}} INSTALL_ROOT="${Qt5_DIR}" install
 
       - name: Install Windows Discord RPC
         if: contains(matrix.os, 'windows')
