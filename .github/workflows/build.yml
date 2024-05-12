@@ -74,7 +74,9 @@ jobs:
           rm -rf $ANDROID_HOME/ndk/25.2.9519653
           ln -sf $ANDROID_HOME/ndk/21.4.7075529 $ANDROID_HOME/ndk/25.2.9519653
  
-      - uses: jurplel/install-qt-action@v3
+      - name: Install Qt
+        if: matrix.os != 'ubuntu-latest'
+        uses: jurplel/install-qt-action@v3
         id: qt
         with:
           version: ${{matrix.version}}
@@ -83,6 +85,13 @@ jobs:
           tools: ${{matrix.tools}}
           cache: true
           cache-key-prefix: qt
+
+      - name: Install Qt (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt upgrade
+          sudo apt install qt5base-dev libqt5websockets5 qt5-image-formats-plugins libqt5svg5
 
       - name: Add tools to PATH (MinGW)
         if: matrix.platform == 'mingw81_32'
