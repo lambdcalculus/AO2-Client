@@ -89,9 +89,9 @@ jobs:
       - name: Install Qt (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt update
-          sudo apt upgrade
-          sudo apt install qt5base-dev libqt5websockets5 qt5-image-formats-plugins libqt5svg5
+          sudo apt-get update
+          sudo apt-get upgrade
+          sudo apt-get install qt5base-dev libqt5websockets5 qt5-image-formats-plugins libqt5svg5
 
       - name: Add tools to PATH (MinGW)
         if: matrix.platform == 'mingw81_32'
