@@ -3,6 +3,8 @@
 #include "file_functions.h"
 #include "modules/managers/scene_manager.h"
 
+#include <modules/managers/variable_manager.h>
+
 AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
 {
   QString l_animationPath = "";
@@ -10,6 +12,13 @@ AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
   {
     mAnimationPath = AOApplication::getInstance()->get_base_path() + "animations/" + "characters/";
     l_animationPath = mAnimationPath + t_name + ".json";
+  }
+
+
+  if(t_type == eAnimationGM)
+  {
+    mAnimationPath = AOApplication::getInstance()->get_base_path() + "animations/" + "judge/" + t_name + "/";
+    l_animationPath = mAnimationPath + "anim.json";
   }
 
   if(t_type == eAnimationShout)
@@ -32,11 +41,19 @@ AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
       SetTargetObject(r_animObject.toObject());
       QString lObjectName = getStringValue("name");
       QString lImageName = getStringValue("variable_image");
+      QString lImageMask = getStringValue("image_mask");
 
       if(!lImageName.isEmpty())
       {
         mVariableImages[lObjectName] = lImageName;
       }
+
+      if(!lImageMask.isEmpty())
+      {
+        mObjectMasking[lObjectName] = lImageMask;
+      }
+
+
       QJsonArray lFrames = getArrayValue("frames");
       mObjectNames.append(lObjectName);
 
@@ -99,15 +116,24 @@ QString AnimationReader::getImageName(QString t_name)
   {
     if(mVariableImages[t_name] == "speaker")
     {
-      return "character/" + SceneManager::get().getCurrentSpeaker().mCharacter + ".png";
+      return "character/" + VariableManager::get().getVariable("speaker") + ".png";
     }
     else if(mVariableImages[t_name] == "speaker_previous")
     {
-      return "character/" + SceneManager::get().getPreviousSpeaker().mCharacter + ".png";
+      return "character/" + VariableManager::get().getVariable("speaker_last") + ".png";
     }
   }
   if(mImageNames.contains(t_name)) return mImageNames[t_name];
   return t_name + ".png";
+}
+
+QString AnimationReader::getObjectMask(QString t_name)
+{
+  if(mObjectMasking.contains(t_name))
+  {
+    return mObjectMasking[t_name];
+  }
+  return "";
 }
 
 bool AnimationReader::animationLoaded()

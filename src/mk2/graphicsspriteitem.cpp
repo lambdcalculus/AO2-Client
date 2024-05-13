@@ -58,6 +58,11 @@ void GraphicsSpriteItem::set_center_mode(bool t_center)
   mCenterSprite = t_center;
 }
 
+void GraphicsSpriteItem::set_composition_mode(QPainter::CompositionMode t_composition)
+{
+  mCompoMode = t_composition;
+}
+
 QSizeF GraphicsSpriteItem::get_size() const
 {
   return m_player->get_size();
@@ -170,8 +175,7 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
   if (!l_image.isNull())
   {
     painter->save();
-    painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-
+    painter->setCompositionMode(mCompoMode);
     // calculate center position
     QPointF l_horizontal_center;
     if(mCenterSprite)

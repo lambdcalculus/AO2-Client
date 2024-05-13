@@ -19,6 +19,18 @@ public:
   QMap<QString, QString> mVariables = {};
 };
 
+class FreeblockData
+{
+public:
+  FreeblockData(QString t_name)
+  {
+    mName = t_name;
+  };
+  QString mName = "";
+  QString mImagePath = "";
+  QMap<QString, QString> mVariables = {};
+};
+
 class SpeakerData
 {
 public:
@@ -34,6 +46,7 @@ public:
 enum AnimTypes
 {
   eAnimationShout,
+  eAnimationGM,
   eAnimationEffects,
   eAnimationPlayer,
   eAnimationTheme
@@ -363,6 +376,11 @@ enum ChatMessage : int32_t
   CMVideoName,
   CMHideCharacter,
   CMClientId,
+  CMOffsetX,
+  CMPairChrName,
+  CMPairEmote,
+  CMPairFlip,
+  CMPairOffsetX
 };
 
 enum EmoteMod

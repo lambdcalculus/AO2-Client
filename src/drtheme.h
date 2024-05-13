@@ -68,6 +68,9 @@ public:
   int get_wtce_count();
 
   QString get_free_block(int index);
+  QString getFreeblockImage(int index);
+  QMap<QString, QString> getFreeblockVariables(QString t_name);
+  QString getFreeblockImage(QString t_name);
   int get_free_block_count();
 
   QVector<QStringList> widget_layers = {};
@@ -85,7 +88,7 @@ private:
   QVector<QStringList> effects = {};
   QVector<QStringList> shouts = {};
   QVector<QStringList> wtce = {};
-  QVector<QString> free_blocks = {};
+  QVector<FreeblockData> mFreeBlocks = {};
   int effect_count = 0;
   int shouts_count = 0;
   int wtce_count = 0;

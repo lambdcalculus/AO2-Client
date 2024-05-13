@@ -24,6 +24,7 @@ public:
 
   void SetPlayerAnimation(GraphicObjectAnimator * t_animation);
   void SetAnimationGroup(AnimTypes t_type, QVector<GraphicObjectAnimator *> t_animations);
+  void RunAnimationLoop(AnimTypes t_type);
 
 public slots:
   void RunGameLoop();

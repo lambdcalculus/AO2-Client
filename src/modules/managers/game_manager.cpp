@@ -26,6 +26,30 @@ void GameManager::SetAnimationGroup(AnimTypes t_type, QVector<GraphicObjectAnima
   mRuntimeAnimation[t_type] = t_animations;
 }
 
+void GameManager::RunAnimationLoop(AnimTypes t_type)
+{
+  if(mRuntimeAnimation.contains(t_type))
+  {
+    bool lAllAnimationsDone = true;
+    for(GraphicObjectAnimator * r_anim : mRuntimeAnimation[t_type])
+    {
+      if(r_anim->getAnimation()->getIsPlaying())
+      {
+        lAllAnimationsDone = false;
+        r_anim->getAnimation()->RunAnimation();
+        r_anim->updateAnimation();
+      }
+    }
+
+    if(lAllAnimationsDone)
+    {
+      mRuntimeAnimation[t_type] = {};
+      if(t_type == eAnimationShout) emit ShoutComplete();
+      if(t_type == eAnimationGM) emit JudgeComplete();
+    }
+  }
+}
+
 void GameManager::RunGameLoop()
 {
   if(!mFlgUpdateRunning)
@@ -38,25 +62,8 @@ void GameManager::RunGameLoop()
       mPlayerAnimation->updateAnimation();
     }
 
-    if(mRuntimeAnimation.contains(eAnimationShout))
-    {
-      bool lAllAnimationsDone = true;
-      for(GraphicObjectAnimator * r_anim : mRuntimeAnimation[eAnimationShout])
-      {
-        if(r_anim->getAnimation()->getIsPlaying())
-        {
-          lAllAnimationsDone = false;
-          r_anim->getAnimation()->RunAnimation();
-          r_anim->updateAnimation();
-        }
-      }
-
-      if(lAllAnimationsDone)
-      {
-        mRuntimeAnimation[eAnimationShout] = {};
-        emit ShoutComplete();
-      }
-    }
+    RunAnimationLoop(eAnimationShout);
+    RunAnimationLoop(eAnimationGM);
 
 
     mFlgUpdateRunning = false;

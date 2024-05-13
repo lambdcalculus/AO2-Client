@@ -54,6 +54,7 @@
 
 #include <modules/managers/evidence_manager.h>
 #include <modules/managers/localization_manager.h>
+#include <modules/managers/variable_manager.h>
 
 void Courtroom::create_widgets()
 {
@@ -1213,11 +1214,23 @@ void Courtroom::set_widgets()
   set_judge_wtce();
   reset_wtce_buttons();
 
+  VariableManager::get().setWatchlist({});
+
   for (DRStickerViewer *i_sticker : ui_free_blocks)
   {
     const QString l_name = i_sticker->objectName();
     set_size_and_pos(i_sticker, l_name, COURTROOM_DESIGN_INI, ao_app);
-    i_sticker->set_theme_image(l_name);
+    QString l_path = ao_app->current_theme->getFreeblockImage(l_name);
+    i_sticker->set_variable_string(l_path);
+    QMap<QString, QString> l_variables = ao_app->current_theme->getFreeblockVariables(l_name);
+    i_sticker->set_variable_map(l_variables);
+
+    for(QString rKey : l_variables.values())
+    {
+      VariableManager::get().addWatchlist(l_name, rKey);
+    }
+
+    i_sticker->set_theme_image(l_path);
     set_sticker_play_once(i_sticker, l_name, COURTROOM_CONFIG_INI, ao_app);
     i_sticker->show();
   }
@@ -1585,15 +1598,17 @@ void Courtroom::load_free_blocks()
   const int l_block_count = ao_app->current_theme->get_free_block_count();
   for (int i = 0; i < l_block_count; ++i)
   {
-
+    QString l_imagePath = "";
     QString l_name = "";
     if(ao_app->current_theme->m_jsonLoaded)
     {
       l_name = ao_app->current_theme->get_free_block(i);
+      l_imagePath = ao_app->current_theme->getFreeblockImage(i);
     }
     else
     {
       l_name = ao_app->get_spbutton("[FREE BLOCKS]", i + 1).trimmed();
+      l_imagePath = "free_block_" + l_name;
     }
     if (l_name.isEmpty())
     {

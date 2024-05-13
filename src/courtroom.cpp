@@ -61,6 +61,7 @@
 #include <modules/managers/evidence_manager.h>
 #include <modules/managers/replay_manager.h>
 #include <modules/managers/game_manager.h>
+#include <modules/managers/variable_manager.h>
 
 #include <mk2/spritecachingreader.h>
 
@@ -942,6 +943,14 @@ void Courtroom::on_ic_message_return_pressed()
   // hide character
   packet_contents.append(QString::number(ui_hide_character->isChecked()));
 
+  // Character Animation
+  QString lAnimName = "";
+  if(wCharaAnimList->currentItem() != nullptr)
+  {
+    lAnimName = wCharaAnimList->currentItem()->text();
+  }
+
+  packet_contents.append(lAnimName);
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 
 
@@ -985,6 +994,11 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
 
   const int l_message_chr_id = p_chatmessage[CMChrId].toInt();
   const bool l_system_speaking = l_message_chr_id == SpectatorId;
+
+  if(!p_chatmessage[CMPairChrName].isEmpty())
+  {
+    PairManager::get().SetPairData(p_chatmessage[CMPairChrName], p_chatmessage[CMPairEmote], p_chatmessage[CMOffsetX].toInt(), p_chatmessage[CMPairOffsetX].toInt(), p_chatmessage[CMPairFlip].toInt() == 1);
+  }
 
   SceneManager::get().setCurrentSpeaker(p_chatmessage[CMChrName], p_chatmessage[CMEmote]);
 
@@ -1274,7 +1288,7 @@ void Courtroom::video_finished()
 
   qDebug() << "[viewport] Starting shout..." << l_shout_name;
 
-  if(!wShoutsLayer->playAnimation(l_shout_name))
+  if(!wShoutsLayer->playAnimation(l_shout_name, eAnimationShout))
   {
     m_play_pre = true;
     ui_vp_objection->set_play_once(true);
@@ -2169,7 +2183,7 @@ void Courtroom::handle_song(QStringList p_contents)
       save_textlog(l_showname + " has played a song: " + l_song_meta.filename());
     }
   }
-
+  VariableManager::get().setVariable("song_title", l_song_meta.title());
   set_music_text(l_song_meta.title());
 }
 
@@ -2182,7 +2196,11 @@ void Courtroom::handle_wtce(QString p_wtce)
     if (p_wtce == "testimony")
     {
       m_effects_player->play_effect(ao_app->get_sfx(wtce_names[index - 1]));
-      ui_vp_wtce->play(wtce_names[index - 1]);
+
+      if(!wShoutsLayer->playAnimation(wtce_names[index - 1], eAnimationGM))
+      {
+        ui_vp_wtce->play(wtce_names[index - 1]);
+      }
     }
   }
 }
@@ -2219,6 +2237,7 @@ void Courtroom::set_character_position(QString p_pos)
   }
   ui_pos_dropdown->setCurrentIndex(l_pos_index);
 
+  VariableManager::get().setVariable("player_pos", p_pos);
   // enable judge mechanics if appropriate
   set_judge_enabled(p_pos == "jud");
 }

@@ -13,7 +13,7 @@ class KeyframePlayer : public DRGraphicsView
   Q_OBJECT
 public:
   KeyframePlayer(QWidget *parent = nullptr);
-  bool playAnimation(QString t_animation);
+  bool playAnimation(QString t_animation, AnimTypes t_type);
   bool loadAnimation(QString t_animation);
   void updateView();
 
@@ -33,6 +33,7 @@ private:
   QMap<QString, GraphicObjectAnimator *> mObjectAnimations = {};
   QVector<GraphicObjectAnimator *> mAnimatiorObjects = {};
 
+  AnimTypes mAnimType = eAnimationTheme;
 
 
 

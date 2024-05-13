@@ -56,7 +56,7 @@ void DRTheme::setup_layers()
 
 void DRTheme::setup_free_blocks()
 {
-  free_blocks = {};
+  mFreeBlocks = {};
   //free_blocks = ThemeManager::get().mCurrentThemeReader->;
   free_block_count = 0;
   QJsonValue free_blocks_array_value = m_currentThemeObject.value(QString("free_blocks"));
@@ -66,10 +66,25 @@ void DRTheme::setup_free_blocks()
   {
     QJsonObject free_block_object = i.toObject();
     QString free_block_name = free_block_object["name"].toString();
+    QString imagePath = free_block_object["image"].toString();
 
     if(!free_block_name.isEmpty())
     {
-      free_blocks.append(free_block_name);
+      FreeblockData mFreeblock = FreeblockData(free_block_name);
+      mFreeblock.mImagePath = imagePath;
+
+
+      QJsonArray variablesArray = free_block_object.value(QString("variables")).toArray();
+
+      for(QJsonValueRef rVar : variablesArray)
+      {
+        QJsonObject varObject = rVar.toObject();
+        mFreeblock.mVariables[varObject["key"].toString()] = varObject["value"].toString();
+
+      }
+
+      mFreeBlocks.append(mFreeblock);
+
       free_block_count += 1;
     }
   }
@@ -469,8 +484,39 @@ int DRTheme::get_wtce_count()
 
 QString DRTheme::get_free_block(int index)
 {
-  if(free_blocks.length() <= index) return "";
-  return free_blocks[index];
+  if(mFreeBlocks.length() <= index) return "";
+  return mFreeBlocks[index].mName;
+}
+
+QString DRTheme::getFreeblockImage(int index)
+{
+  if(mFreeBlocks.length() <= index) return "";
+  if(mFreeBlocks[index].mImagePath.isEmpty()) return "free_block_" + mFreeBlocks[index].mName;
+  return mFreeBlocks[index].mImagePath;
+}
+
+QMap<QString, QString> DRTheme::getFreeblockVariables(QString t_name)
+{
+  for(FreeblockData fbdata : mFreeBlocks)
+  {
+    if(("free_block_" + fbdata.mName) == t_name)
+    {
+      if(!fbdata.mImagePath.isEmpty()) return fbdata.mVariables;
+    }
+  }
+  return {};
+}
+
+QString DRTheme::getFreeblockImage(QString t_name)
+{
+  for(FreeblockData fbdata : mFreeBlocks)
+  {
+    if(("free_block_" + fbdata.mName) == t_name)
+    {
+      if(!fbdata.mImagePath.isEmpty()) return fbdata.mImagePath;
+    }
+  }
+  return t_name;
 }
 
 int DRTheme::get_free_block_count()

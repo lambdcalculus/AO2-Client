@@ -106,8 +106,10 @@ HEADERS += \
   src/modules/managers/localization_manager.h \
   src/modules/managers/notify_manager.h \
   src/modules/managers/pair_manager.h \
+  src/modules/managers/pathing_manager.h \
   src/modules/managers/replay_manager.h \
   src/modules/managers/scene_manager.h \
+  src/modules/managers/variable_manager.h \
   src/modules/networking/json_packet.h \
   src/modules/scenes/replay_scene.h \
   src/modules/theme/droanimation.h \
@@ -229,8 +231,10 @@ SOURCES += \
   src/modules/managers/localization_manager.cpp \
   src/modules/managers/notify_manager.cpp \
   src/modules/managers/pair_manager.cpp \
+  src/modules/managers/pathing_manager.cpp \
   src/modules/managers/replay_manager.cpp \
   src/modules/managers/scene_manager.cpp \
+  src/modules/managers/variable_manager.cpp \
   src/modules/networking/json_packet.cpp \
   src/modules/scenes/replay_scene.cpp \
   src/modules/theme/droanimation.cpp \

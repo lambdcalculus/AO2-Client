@@ -97,3 +97,23 @@ void DRStickerViewer::set_chatbox_image(QString p_chatbox_name, bool p_is_self, 
   this->hide();
 
 }
+
+void DRStickerViewer::set_variable_map(QMap<QString, QString> t_map)
+{
+  mVariables = t_map;
+}
+
+void DRStickerViewer::set_variable_string(QString t_path)
+{
+  mVariableString = t_path;
+}
+
+QString DRStickerViewer::getVariableString()
+{
+  return mVariableString;
+}
+
+QMap<QString, QString> DRStickerViewer::getVariableMap()
+{
+  return mVariables;
+}

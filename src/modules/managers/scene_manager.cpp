@@ -5,6 +5,7 @@
 #include "file_functions.h"
 #include "modules/background/background_reader.h"
 #include "modules/background/legacy_background_reader.h"
+#include "modules/managers/variable_manager.h"
 
 SceneManager SceneManager::s_Instance;
 
@@ -99,6 +100,8 @@ void SceneManager::setCurrentSpeaker(QString t_chara, QString t_emote)
 {
   mLastSpeaker = SpeakerData(mCurrentSpeaker.mCharacter, mCurrentSpeaker.mEmote);
   mCurrentSpeaker = SpeakerData(t_chara, t_emote);
+  VariableManager::get().setVariable("speaker", mCurrentSpeaker.mCharacter);
+  VariableManager::get().setVariable("speaker_last", mLastSpeaker.mCharacter);
 }
 
 SpeakerData SceneManager::getCurrentSpeaker()

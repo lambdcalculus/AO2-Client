@@ -24,10 +24,10 @@ void JsonPacket::ProcessJson(QString p_jsonString)
   {
     ProcessNotifyRequestPacket(jsonReader);
   }
-  else if(packetValue == "pair_data")
-  {
-    ProcessPairDataPacket(jsonReader);
-  }
+  ////else if(packetValue == "pair_data")
+  ////{
+  ////  ProcessPairDataPacket(jsonReader);
+  ////}
   else if(packetValue == "pair")
   {
     ProcessPairPacket(jsonReader);
@@ -81,14 +81,14 @@ void JsonPacket::ProcessNotifyRequestPacket(JSONReader& jsonReader)
 
 void JsonPacket::ProcessPairDataPacket(JSONReader& jsonReader)
 {
-  jsonReader.SetTargetObject("data");
-  int offsetPair = jsonReader.getIntValue("offset_pair");
-  int offsetSelf = jsonReader.getIntValue("self_offset");
-  QString charat = jsonReader.getStringValue("character");
-  QString emote = jsonReader.getStringValue("last_sprite");
-  bool isFlipped = jsonReader.getBoolValue("flipped");
+  //jsonReader.SetTargetObject("data");
+  //int offsetPair = jsonReader.getIntValue("offset_pair");
+  //int offsetSelf = jsonReader.getIntValue("self_offset");
+  //QString charat = jsonReader.getStringValue("character");
+  //QString emote = jsonReader.getStringValue("last_sprite");
+  //bool isFlipped = jsonReader.getBoolValue("flipped");
 
-  PairManager::get().SetPairData(charat, emote, offsetSelf, offsetPair, isFlipped);
+  ////
 }
 
 void JsonPacket::ProcessPairPacket(JSONReader& jsonReader)

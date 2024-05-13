@@ -24,6 +24,7 @@
 
 #include <QGraphicsObject>
 #include <QObject>
+#include <QPainter>
 
 namespace mk2
 {
@@ -65,6 +66,8 @@ public slots:
 
   void set_center_mode(bool t_center);
 
+  void set_composition_mode(QPainter::CompositionMode t_composition);
+
   void set_size(QSizeF size);
 
   void set_play_once(bool enabled);
@@ -95,6 +98,7 @@ signals:
 
 private:
   QScopedPointer<SpritePlayer> m_player;
+  QPainter::CompositionMode mCompoMode = QPainter::CompositionMode_SourceOver;
   int mVerticalVPOffset = 0;
   bool mCenterSprite = true;
 

@@ -19,6 +19,7 @@ public:
 
   QSizeF getObjectSize(QString t_name);
   QString getImageName(QString t_name);
+  QString getObjectMask(QString t_name);
 
   bool animationLoaded();
 
@@ -32,6 +33,9 @@ private:
   QMap<QString, QSizeF> mObjectSizes = {};
   QMap<QString, QString> mImageNames = {};
   QMap<QString, QString> mVariableImages = {};
+
+
+  QMap<QString, QString> mObjectMasking = {};
 
 
   QMap<QString, QVector<DROAnimationKeyframe>> mFrames = {};

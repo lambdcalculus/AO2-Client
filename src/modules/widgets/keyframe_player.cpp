@@ -13,17 +13,18 @@ KeyframePlayer::KeyframePlayer(QWidget *parent) : DRGraphicsView(parent)
   AnimationManager::get().setScene(this);
 
   connect(&GameManager::get(), SIGNAL(ShoutComplete()), this, SLOT(animationComplete()));
+  connect(&GameManager::get(), SIGNAL(JudgeComplete()), this, SLOT(animationComplete()));
 }
 
-bool KeyframePlayer::playAnimation(QString t_animation)
+bool KeyframePlayer::playAnimation(QString t_animation, AnimTypes t_type)
 {
+  mAnimType = t_type;
   if(!mObjectAnimations.isEmpty())
   {
     clearAniamtions();
   }
   bool animationExists = loadAnimation(t_animation);
-  GameManager::get().SetAnimationGroup(eAnimationShout, mAnimatiorObjects);
-  //updateView();
+  GameManager::get().SetAnimationGroup(mAnimType, mAnimatiorObjects);
 
   return animationExists;
 }
@@ -34,7 +35,7 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
   mAnimationObjects = {};
   mObjectAnimations = {};
 
-  AnimationReader *l_reader = new AnimationReader(eAnimationShout, t_animation);
+  AnimationReader *l_reader = new AnimationReader(mAnimType, t_animation);
   mNames = l_reader->getObjectNames();
 
   QString l_animPath = l_reader->getAnimPath();
@@ -51,6 +52,17 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
     l_newObject->set_scaling_mode(mk2::SpritePlayer::NoScaling);
     l_newObject->set_size(l_reader->getObjectSize(r_name));
     l_newObject->start();
+
+
+    QString mMask = l_reader->getObjectMask(r_name);
+    if(!mMask.isEmpty())
+    {
+      if(mAnimationObjects.contains(mMask))
+      {
+        //l_newObject->set_composition_mode(QPainter::CompositionMode_SourceAtop);
+      }
+    }
+
 
     GraphicObjectAnimator * l_newAnim = new GraphicObjectAnimator(l_newObject, 60);
     l_newAnim->setKeyframes(l_reader->getFrames(r_name));
