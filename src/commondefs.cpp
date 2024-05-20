@@ -24,6 +24,8 @@ const QString COURTROOM_SOUNDS_INI = "courtroom_sounds.ini";
 const QString COURTROOM_TEXT_COLOR_INI = "courtroom_text_colors.ini";
 const QString COURTROOM_STYLESHEETS_CSS = "courtroom_stylesheets.css";
 
+const QString REPLAYS_FONTS_INI = "replays_fonts.ini";
+
 const QString LOBBY_DESIGN_INI = "lobby_design.ini";
 const QString LOBBY_FONTS_INI = "lobby_fonts.ini";
 

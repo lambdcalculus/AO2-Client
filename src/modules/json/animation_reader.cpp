@@ -53,16 +53,26 @@ AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
         mObjectMasking[lObjectName] = lImageMask;
       }
 
+      pos_size_type mDefaultPostion = getPositionData("position");
+      mFrames[lObjectName].append(DROAnimationKeyframe(0, ePOS_X, mDefaultPostion.x, LINEAR,  LINEAR));
+      mFrames[lObjectName].append(DROAnimationKeyframe(0, ePOS_Y, mDefaultPostion.y, LINEAR,  LINEAR));
+      if(t_type != eAnimationPlayer)
+      {
+        mFrames[lObjectName].append(DROAnimationKeyframe(0, eVarWidth, mDefaultPostion.width, LINEAR,  LINEAR));
+        mFrames[lObjectName].append(DROAnimationKeyframe(0, eVarHeight, mDefaultPostion.height, LINEAR,  LINEAR));
+      }
+
 
       QJsonArray lFrames = getArrayValue("frames");
       mObjectNames.append(lObjectName);
 
 
       //Parse the Frame Data
+      int lTime = 0;
       for(QJsonValueRef r_frame : lFrames)
       {
         SetTargetObject(r_frame.toObject());
-        int lTime = getIntValue("time");
+        lTime = getIntValue("time");
         QString lVarType = getStringValue("var");
         int lValue = getIntValue("value");
         QString lCruveInString = getStringValue("curve_in");
@@ -79,6 +89,8 @@ AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
 
         mFrames[lObjectName].append(DROAnimationKeyframe(lTime, lVarTypeEnum, lValue, lCurveIn,  lCurveOut));
       }
+
+      mFrames[lObjectName].append(DROAnimationKeyframe(lTime + 1, eNONE, 0, LINEAR,  LINEAR));
     }
   }
 }

@@ -146,6 +146,11 @@ void GraphicsSpriteItem::setBackgroundScaling(double t_offset)
 
 }
 
+void GraphicsSpriteItem::setCurrentAnimation(DROAnimation *t_animation)
+{
+  mWidgetAnimation = t_animation;
+}
+
 void GraphicsSpriteItem::stop()
 {
   m_player->stop();
@@ -171,9 +176,21 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
   Q_UNUSED(option);
   Q_UNUSED(widget);
 
-  const QImage l_image = m_player->get_current_frame();
+
+  QImage l_image = m_player->get_current_frame();
   if (!l_image.isNull())
   {
+    if(mWidgetAnimation != nullptr)
+    {
+      int lWidth = mWidgetAnimation->getValue(eVarWidth);
+      int lHeight = mWidgetAnimation->getValue(eVarHeight);
+      if(lWidth != 9999999 && lHeight != 9999999 && mWidgetAnimation->getIsPlaying())
+      {
+        l_image = l_image.scaled(QSize(lWidth, lHeight), Qt::IgnoreAspectRatio);
+        update();
+      }
+    }
+
     painter->save();
     painter->setCompositionMode(mCompoMode);
     // calculate center position
@@ -200,7 +217,7 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
 
 
-    painter->drawImage(l_horizontal_center, m_player->get_current_frame());
+    painter->drawImage(l_horizontal_center, l_image);
     painter->restore();
   }
 }

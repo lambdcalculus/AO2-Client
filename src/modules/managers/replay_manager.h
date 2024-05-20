@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <datatypes.h>
 
+#include <modules/scenes/replay_scene.h>
+
 class ReplayManager
 {
 public:
@@ -15,12 +17,19 @@ public:
     return s_Instance;
   }
 
+  void loadReplay();
+
   void startRecording();
   void recordMusicOP(QString t_music);
   void recordArea(QString t_bgn);
   void recordMessage(QStringList t_message);
 
   void saveReplay();
+
+
+  void loadReplayPlayback(QString t_name, ReplayScene *p_scene);
+  QString getPlaybackBackground();
+  void progressPlayback();
 
 
 private:
@@ -31,6 +40,11 @@ private:
   QString mReplayFilePath = "replays/replay.json";
 
   QVector<ReplayOperation> mCurrentHubReplay = {};
+
+
+  ReplayScene *mReplayScene = nullptr;
+  int mCurrentPlaybackIndex = 0;
+  QVector<ReplayOperation> mPlaybackReplay = {};
 
 };
 

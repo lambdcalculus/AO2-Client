@@ -70,7 +70,20 @@ QVector2D JSONReader::getVector2DValue(QString string)
 
 QJsonArray JSONReader::getArrayValue(QString string)
 {
-return mTargetObject.value(string).toArray();
+  return mTargetObject.value(string).toArray();
+}
+
+pos_size_type JSONReader::getPositionData(QString string)
+{
+  pos_size_type lReturnValue;
+  if(mTargetObject.contains(string))
+  {
+    lReturnValue.x = mTargetObject.value(string).toObject().value("x").toInt();
+    lReturnValue.y = mTargetObject.value(string).toObject().value("y").toInt();
+    lReturnValue.width = mTargetObject.value(string).toObject().value("width").toInt();
+    lReturnValue.height = mTargetObject.value(string).toObject().value("height").toInt();
+  }
+  return lReturnValue;
 }
 
 QStringList JSONReader::getStringArrayValue(QString string)

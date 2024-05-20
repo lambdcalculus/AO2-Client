@@ -95,6 +95,7 @@ HEADERS += \
   src/modules/json/animation_reader.h \
   src/modules/json/json_reader.h \
   src/modules/json/localization_reader.h \
+  src/modules/json/replay_reader.h \
   src/modules/json/theme_mode_reader.h \
   src/modules/json/theme_module_reader.h \
   src/modules/json/theme_reader.h \
@@ -127,6 +128,7 @@ HEADERS += \
   src/modules/widgets/keyframe_player.h \
   src/modules/widgets/rpnotifymenu.h \
   src/modules/widgets/tabgroupingwidget.h \
+  src/modules/widgets/typewritertextedit.h \
   src/modules/widgets/viewport_overlay.h \
   src/theme.h \
   src/utils.h \
@@ -220,6 +222,7 @@ SOURCES += \
   src/modules/json/animation_reader.cpp \
   src/modules/json/json_reader.cpp \
   src/modules/json/localization_reader.cpp \
+  src/modules/json/replay_reader.cpp \
   src/modules/json/theme_mode_reader.cpp \
   src/modules/json/theme_module_reader.cpp \
   src/modules/json/theme_reader.cpp \
@@ -252,6 +255,7 @@ SOURCES += \
   src/modules/widgets/keyframe_player.cpp \
   src/modules/widgets/rpnotifymenu.cpp \
   src/modules/widgets/tabgroupingwidget.cpp \
+  src/modules/widgets/typewritertextedit.cpp \
   src/modules/widgets/viewport_overlay.cpp \
   src/path_functions.cpp \
   src/server_socket.cpp \

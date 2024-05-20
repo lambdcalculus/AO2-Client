@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QFile>
 #include <AOApplication.h>
+#include <modules/json/replay_reader.h>
 
 ReplayManager ReplayManager::s_Instance;
 
@@ -93,4 +94,42 @@ void ReplayManager::saveReplay()
   out << lOutputJson.toJson();
 
   file.close();
+}
+
+void ReplayManager::loadReplayPlayback(QString t_name, ReplayScene *p_scene)
+{
+  mCurrentPlaybackIndex = 0;
+  mReplayScene = p_scene;
+  ReplayReader l_reader = ReplayReader(t_name);
+  mPlaybackReplay = l_reader.getOperations();
+  return;
+}
+
+QString ReplayManager::getPlaybackBackground()
+{
+  return "FTOD/Island 5/SurfaceCaveView";
+}
+
+void ReplayManager::progressPlayback()
+{
+  if(mPlaybackReplay.count() > (mCurrentPlaybackIndex + 1))
+  {
+    mCurrentPlaybackIndex += 1;
+    QString mOp = mPlaybackReplay[mCurrentPlaybackIndex].mOperation;
+
+    if(mOp == "msg")
+    {
+      mReplayScene->setBgPosition(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["pos"]);
+      mReplayScene->setCharacter(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["char"], mPlaybackReplay[mCurrentPlaybackIndex].mVariables["emote"]);
+      mReplayScene->setText(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["msg"]);
+    }
+
+    if(mOp == "bg")
+    {
+      mReplayScene->setBackground(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["name"]);
+    }
+
+    if(mOp != "msg") progressPlayback();
+  }
+
 }

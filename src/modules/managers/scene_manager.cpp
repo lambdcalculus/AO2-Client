@@ -54,7 +54,12 @@ DRBackgroundSettings SceneManager::getBackgroundSettings()
 AOLabel *SceneManager::CreateTransition(QWidget *parents, AOApplication *ao_app, DRGraphicsView *viewport)
 {
   pUiTransition = new AOLabel(parents, ao_app);
+
   pViewport = viewport;
+
+  pUiTransition->move(pViewport->x(), pViewport->y());
+  pUiTransition->resize(pViewport->width(), pViewport->height());
+
   return pUiTransition;
 }
 

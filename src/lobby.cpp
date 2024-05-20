@@ -51,8 +51,6 @@ Lobby::Lobby(AOApplication *p_ao_app)
   ui_public_server_filter = new AOButton(this, ao_app);
   ui_favorite_server_filter = new AOButton(this, ao_app);
 
-  wReplayPlay = new AOButton(this, ao_app);
-
   ui_refresh = new AOButton(this, ao_app);
   ui_toggle_favorite = new AOButton(this, ao_app);
   ui_connect = new AOButton(this, ao_app);
@@ -94,6 +92,12 @@ Lobby::Lobby(AOApplication *p_ao_app)
   ui_progress_bar->setStyleSheet("QProgressBar{ color: white; }");
   ui_cancel = new AOButton(ui_loading_background, ao_app);
 
+  //Replay Gallery
+  pUiReplayBackground = new AOImageDisplay(this, ao_app);
+  pUiGalleryToggle = new AOButton(this, ao_app);
+
+  wReplayPlay = new AOButton(pUiReplayBackground, ao_app);
+
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(update_widgets()));
   connect(ao_app, &AOApplication::server_status_changed, this, &Lobby::_p_update_description);
 
@@ -109,6 +113,7 @@ Lobby::Lobby(AOApplication *p_ao_app)
   connect(ui_favorite_server_filter, SIGNAL(clicked()), this, SLOT(toggle_favorite_server_filter()));
 
   connect(wReplayPlay, SIGNAL(pressed()), this, SLOT(onPlayReplayPresssed()));
+  connect(pUiGalleryToggle, SIGNAL(pressed()), this, SLOT(onToggleGalleryPressed()));
 
   connect(ui_refresh, SIGNAL(pressed()), this, SLOT(on_refresh_pressed()));
   connect(ui_refresh, SIGNAL(released()), this, SLOT(on_refresh_released()));
@@ -171,6 +176,11 @@ void Lobby::update_widgets()
   set_size_and_pos(ui_background, "lobby", LOBBY_DESIGN_INI, ao_app);
   ui_background->set_theme_image("lobbybackground.png");
 
+
+  set_size_and_pos(pUiReplayBackground, "lobby", LOBBY_DESIGN_INI, ao_app);
+  pUiReplayBackground->set_theme_image("replaybackground.png");
+  pUiReplayBackground->hide();
+
   set_size_and_pos(ui_public_server_filter, "public_servers", LOBBY_DESIGN_INI, ao_app);
   ui_public_server_filter->set_image(m_server_filter == PublicOnly ? "publicservers_selected.png" : "publicservers.png");
 
@@ -179,6 +189,10 @@ void Lobby::update_widgets()
 
   set_size_and_pos(ui_refresh, "refresh", LOBBY_DESIGN_INI, ao_app);
   ui_refresh->set_image("refresh.png");
+
+
+  set_size_and_pos(pUiGalleryToggle, "toggle_gallery", LOBBY_DESIGN_INI, ao_app);
+  pUiGalleryToggle->set_image("toggle_gallery.png");
 
   set_size_and_pos(wReplayPlay, "play_replay", LOBBY_DESIGN_INI, ao_app);
   wReplayPlay->set_image("play_replay.png");
@@ -476,6 +490,11 @@ void Lobby::select_current_server()
       break;
     }
   }
+}
+
+void Lobby::onToggleGalleryPressed()
+{
+  pUiReplayBackground->setVisible(!pUiReplayBackground->isVisible());
 }
 
 void Lobby::onPlayReplayPresssed()

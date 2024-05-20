@@ -62,6 +62,8 @@ private:
   AOImageDisplay *ui_background = nullptr;
   AOButton *ui_public_server_filter = nullptr;
   AOButton *ui_favorite_server_filter = nullptr;
+
+  AOImageDisplay *pUiReplayBackground = nullptr;
   enum ServerFilter
   {
     NoFilter,
@@ -71,6 +73,7 @@ private:
   ServerFilter m_server_filter = NoFilter;
 
   AOButton *wReplayPlay = nullptr;
+  AOButton *pUiGalleryToggle = nullptr;
 
   AOButton *ui_refresh = nullptr;
   AOButton *ui_toggle_favorite = nullptr;
@@ -124,6 +127,7 @@ private slots:
   void select_current_server();
 
 
+  void onToggleGalleryPressed();
   void onPlayReplayPresssed();
   void on_refresh_pressed();
   void on_refresh_released();

@@ -19,6 +19,7 @@
 **************************************************************************/
 #pragma once
 
+#include "modules/theme/droanimation.h"
 #include "spriteplayer.h"
 #include "spritereader.h"
 
@@ -84,6 +85,8 @@ public slots:
   void restart();
   void setVerticalOffset(int t_offset);
   void setBackgroundScaling(double t_offset);
+
+  void setCurrentAnimation(DROAnimation* t_animation);
   void stop();
 
 signals:
@@ -101,6 +104,7 @@ private:
   QPainter::CompositionMode mCompoMode = QPainter::CompositionMode_SourceOver;
   int mVerticalVPOffset = 0;
   bool mCenterSprite = true;
+  DROAnimation* mWidgetAnimation = nullptr;
 
 private slots:
   void notify_size();

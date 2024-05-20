@@ -56,8 +56,8 @@ enum AnimationVariableTypes
 {
   ePOS_X,
   ePOS_Y,
-  eSIZE_X,
-  eSIZE_Y,
+  eVarWidth,
+  eVarHeight,
   eSCALE,
   eKEYFRAME,
   eALPHA,
@@ -354,6 +354,14 @@ enum ViewportSprite
 };
 
 SpriteCategory viewport_sprite_to_sprite_category(ViewportSprite p_type);
+
+enum ChatCharaType : int32_t
+{
+  CharChara,
+  CharNarrator,
+  CharCG
+};
+
 
 enum ChatMessage : int32_t
 {

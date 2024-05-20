@@ -2,7 +2,7 @@
 #include "qgraphicsscene.h"
 #include "qtimer.h"
 
-GraphicObjectAnimator::GraphicObjectAnimator(QGraphicsObject *t_widget, int t_framerate)
+GraphicObjectAnimator::GraphicObjectAnimator(mk2::GraphicsSpriteItem *t_widget, int t_framerate)
 {
   mAnimationPlayer = new DROAnimation;
   mFrameRate = t_framerate;
@@ -15,6 +15,7 @@ void GraphicObjectAnimator::startAnimation(bool t_loop)
   QPointF centerBottom(boundingRect.width() / 2.0, boundingRect.height());
 
   //mTargetWidget->setTransformOriginPoint(centerBottom);
+  mTargetWidget->setCurrentAnimation(mAnimationPlayer);
   mAnimationPlayer->Start(t_loop);
   //updateAnimation();
 }
@@ -33,6 +34,7 @@ void GraphicObjectAnimator::updateAnimation()
 
   mTargetWidget->setX(posX);
   mTargetWidget->setY(posY);
+
   if(lScale != 9999999)
   {
     double l_scale = (lScale / 100);
@@ -66,6 +68,7 @@ void GraphicObjectAnimator::addKeyframe(qint64 time, AnimationVariableTypes type
 
 void GraphicObjectAnimator::setKeyframes(QVector<DROAnimationKeyframe> t_frames)
 {
+  if(t_frames.isEmpty()) mTargetWidget->setCurrentAnimation(nullptr);
   mAnimationPlayer->setKeyframes(t_frames);
 }
 

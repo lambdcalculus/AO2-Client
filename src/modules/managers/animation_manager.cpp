@@ -67,7 +67,5 @@ void AnimationManager::loopRenderQueue()
     {
       if(animation->getIsPlaying()) animation->RunAnimation();
     }
-    //if(mShoutsScene != nullptr) mShoutsScene->update();
   }
-  //Loop this function every 33ms.
 }

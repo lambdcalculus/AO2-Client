@@ -7,6 +7,7 @@
 #include "datatypes.h"
 
 #include <modules/theme/graphicobjectanimator.h>
+#include "modules/widgets/typewritertextedit.h"
 
 class GameManager : public QObject
 {
@@ -23,8 +24,10 @@ public:
   void StopGameLoop();
 
   void SetPlayerAnimation(GraphicObjectAnimator * t_animation);
+  void SetTypeWriter(TypewriterTextEdit * t_writer);
   void SetAnimationGroup(AnimTypes t_type, QVector<GraphicObjectAnimator *> t_animations);
   void RunAnimationLoop(AnimTypes t_type);
+  int getUptime();
 
 public slots:
   void RunGameLoop();
@@ -43,8 +46,11 @@ private:
   bool mFlgUpdateRunning = false;
   QTimer mFrameTimer;
 
+  int mUptime = 0;
+
   GraphicObjectAnimator *mPlayerAnimation = nullptr;
 
+  TypewriterTextEdit *mMessageTypeWriter = nullptr;
   QMap<AnimTypes, QVector<GraphicObjectAnimator *>> mRuntimeAnimation = {};
 
 };

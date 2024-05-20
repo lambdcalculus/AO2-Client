@@ -1324,7 +1324,12 @@ void Courtroom::handle_chatmessage_2() // handles IC
          //TO-DO: Replace with proper networking.
   if(wCharaAnimList->currentItem() != nullptr)
   {
-    aniPlayerChar->setKeyframes(AnimationManager::get().getCharacterFrames(wCharaAnimList->currentItem()->text()));
+    QVector<DROAnimationKeyframe> t_frames = AnimationManager::get().getCharacterFrames(wCharaAnimList->currentItem()->text());
+    if(t_frames.isEmpty())
+    {
+      aniPlayerChar->getAnimation();
+    }
+    aniPlayerChar->setKeyframes(t_frames);
     aniPlayerChar->startAnimation(AnimationManager::get().getCharacterLoop(wCharaAnimList->currentItem()->text()));
     GameManager::get().SetPlayerAnimation(aniPlayerChar);
   }

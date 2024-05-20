@@ -83,6 +83,7 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
 
   ThemeSceneType l_scene = LOBBY;
   if(ini_file == COURTROOM_FONTS_INI) l_scene = COURTROOM;
+  else if(ini_file == REPLAYS_FONTS_INI) l_scene = REPLAYS;
 
 
   QString class_name = p_widget->metaObject()->className();

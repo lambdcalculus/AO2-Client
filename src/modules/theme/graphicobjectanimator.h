@@ -7,11 +7,13 @@
 #include <datatypes.h>
 #include <QGraphicsObject>
 
+#include <mk2/graphicsspriteitem.h>
+
 class GraphicObjectAnimator : public QObject
 {
   Q_OBJECT
 public:
-  GraphicObjectAnimator(QGraphicsObject *t_widget, int t_framerate);
+  GraphicObjectAnimator(mk2::GraphicsSpriteItem *t_widget, int t_framerate);
 
   void startAnimation(bool t_loop);
   void addKeyframe(qint64 time, AnimationVariableTypes type, float value, AnimCurveType fin, AnimCurveType fout);
@@ -21,7 +23,7 @@ public:
 
 private:
   int mFrameRate = 60;
-  QGraphicsObject *mTargetWidget = nullptr;
+  mk2::GraphicsSpriteItem *mTargetWidget = nullptr;
   DROAnimation *mAnimationPlayer = nullptr;
 };
 

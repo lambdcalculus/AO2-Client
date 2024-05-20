@@ -46,8 +46,8 @@ private:
       {"x", ePOS_X},
       {"y", ePOS_Y},
       {"rotation", eROTATION},
-      {"width", eSIZE_X},
-      {"height", eSIZE_Y},
+      {"width", eVarWidth},
+      {"height", eVarHeight},
       {"scale", eSCALE},
       {"alpha", eALPHA}
   };

@@ -330,6 +330,17 @@ void ThemeManager::createButtonWidget(QString t_name, QWidget *t_parent)
   lButton->show();
 }
 
+void ThemeManager::createImageWidget(QString t_name, QString t_image, bool visible, QWidget *t_parent)
+{
+  AOImageDisplay *l_image = new AOImageDisplay(t_parent, AOApplication::getInstance());
+  autoWidgetDimensions(l_image, t_name, REPLAYS);
+  addWidgetName(t_name, l_image);
+  l_image->set_theme_image(AOApplication::getInstance()->current_theme->get_widget_image(t_name, t_image, "replays"));
+
+  if(!visible) l_image->hide();
+  else l_image->show();
+}
+
 void ThemeManager::createComboboxWidget(QString t_name)
 {
 
