@@ -3,6 +3,7 @@
 
 #include "datatypes.h"
 
+#include <QComboBox>
 #include <QMainWindow>
 #include <QModelIndex>
 
@@ -64,6 +65,7 @@ private:
   AOButton *ui_favorite_server_filter = nullptr;
 
   AOImageDisplay *pUiReplayBackground = nullptr;
+  AOImageDisplay *pUIReplayPreview = nullptr;
   enum ServerFilter
   {
     NoFilter,
@@ -75,6 +77,8 @@ private:
   AOButton *wReplayPlay = nullptr;
   AOButton *pUiGalleryToggle = nullptr;
   QListWidget *pUiReplayList = nullptr;
+  QComboBox *pUiPackageSelector = nullptr;
+  QComboBox *pUiPackageCategory = nullptr;
 
   AOButton *ui_refresh = nullptr;
   AOButton *ui_toggle_favorite = nullptr;
@@ -112,6 +116,9 @@ private:
   void load_legacy_favorite_server_list();
   void save_favorite_server_list();
 
+  QString mCurrentPackage = "";
+  QString mCurrentCategory = "";
+
 private slots:
   void update_widgets();
 
@@ -127,7 +134,9 @@ private slots:
   void filter_server_listing();
   void select_current_server();
 
-
+  void onReplayRowChanged(int row);
+  void onReplayPackageChanged(int t_index);
+  void onReplayCategoryChanged(int t_index);
   void onToggleGalleryPressed();
   void onPlayReplayPresssed();
   void on_refresh_pressed();

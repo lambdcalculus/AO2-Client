@@ -26,10 +26,6 @@ public:
 
   void setScene(KeyframePlayer * t_scene);
   void addToQueue(DROAnimation * t_animation);
-  void startQueue();
-
-public slots:
-  void loopRenderQueue();
 
 private:
   QThread *ThAnimationQueue = nullptr;

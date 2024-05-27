@@ -4,7 +4,7 @@
 
 ReplayReader::ReplayReader(QString t_path)
 {
-  QString l_filePath = AOApplication::getInstance()->get_base_path() + t_path;
+  QString l_filePath = t_path;
   if(file_exists(l_filePath))
   {
     ReadFromFile(l_filePath);

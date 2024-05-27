@@ -10,9 +10,49 @@
 
 ReplayManager ReplayManager::s_Instance;
 
-QStringList ReplayManager::getReplayList()
+QStringList ReplayManager::getReplayList(QString t_package, QString t_category)
 {
-  return PathingManager::get().searchDirectoryContentsFirst("replays/", "json", false);
+  QString t_path = "replays/";
+  if(!t_category.trimmed().isEmpty()) t_path += (t_category + "/");
+  return PathingManager::get().searchDirectoryContentsSpecific(t_path, "json", t_package, false);
+}
+
+QString ReplayManager::getReplayPath(QString t_package, QString t_category, QString t_name)
+{
+  QString t_path = "";
+  if(t_package.trimmed().isEmpty())
+  {
+    t_path = PathingManager::get().getBasePath() + "replays/";
+  }
+  else
+  {
+    t_path = PathingManager::get().getPackagePath(t_package) + "replays/";
+  }
+
+  if(!t_category.trimmed().isEmpty()) t_path += (t_category + "/");
+  t_path += t_name;
+  t_path += ".json";
+
+  return t_path;
+}
+
+QString ReplayManager::getReplayImagePath(QString t_package, QString t_category, QString t_name)
+{
+  QString t_path = "";
+  if(t_package.trimmed().isEmpty())
+  {
+    t_path = PathingManager::get().getBasePath() + "replays/";
+  }
+  else
+  {
+    t_path = PathingManager::get().getPackagePath(t_package) + "replays/";
+  }
+
+  if(!t_category.trimmed().isEmpty()) t_path += (t_category + "/");
+  t_path += t_name;
+  t_path += ".png";
+
+  return t_path;
 }
 
 void ReplayManager::startRecording()
@@ -159,4 +199,14 @@ void ReplayManager::cachePackageReplays(QString t_package, QVector<QString> t_ta
     mPackageNames.append(t_package);
     mPackageReplays[t_package] = t_tags;
   }
+}
+
+QStringList ReplayManager::getPackageNames()
+{
+  return mPackageNames.toList();
+}
+
+QVector<QString> ReplayManager::getPackageCategoryList(QString t_package)
+{
+  return mPackageReplays[t_package];
 }

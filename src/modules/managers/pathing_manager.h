@@ -26,6 +26,7 @@ public:
   QString searchFirstFile(QString t_file);
   QString searchFirstDirectory(QString t_directory);
   QStringList searchDirectoryContentsFirst(QString t_directory, QString t_extension, bool t_includeExtension = true);
+  QStringList searchDirectoryContentsSpecific(QString t_directory, QString t_extension, QString t_package, bool t_includeExtension = true);
   QStringList searchAllDirectory(QString t_directory);
 
   //Packages
@@ -37,6 +38,8 @@ public:
 private:
   PathingManager() {}
   static PathingManager s_Instance;
+
+  QStringList searchDirectoryContents(QString t_directory, QString t_extension, bool t_includeExtension = true);
 
   QStringList mDisabledPackages = {};
   QStringList mLocalPackages = {};

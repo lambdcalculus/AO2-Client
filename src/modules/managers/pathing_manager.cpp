@@ -54,37 +54,20 @@ QString PathingManager::searchFirstDirectory(QString t_directory)
 
 QStringList PathingManager::searchDirectoryContentsFirst(QString t_directory, QString t_extension, bool t_includeExtension)
 {
-  QStringList lReturnData = {};
-
   QString lPath = searchFirstDirectory(t_directory);
-  QDir lQDirectory(lPath);
+  return searchDirectoryContents(lPath, t_extension, t_includeExtension);
+}
 
-  QStringList l_fileList = {};
+QStringList PathingManager::searchDirectoryContentsSpecific(QString t_directory, QString t_extension, QString t_package, bool t_includeExtension)
+{
+  QString lPath = getBasePath() + t_directory;
 
-  if(t_extension.trimmed().isEmpty())
+  if(!t_package.trimmed().isEmpty())
   {
-    l_fileList = lQDirectory.entryList();
-  }
-  else
-  {
-    l_fileList = lQDirectory.entryList(QStringList() << "*." + t_extension, QDir::Files);
-  }
-
-
-  for(QString r_fileName : l_fileList)
-  {
-    if (r_fileName.endsWith("." + t_extension))
-    {
-      if(t_includeExtension)
-      {
-        lReturnData.append(r_fileName); continue;
-      }
-      QString baseName = r_fileName.left(r_fileName.length() - ("." + t_extension).length()); // 5 is the length of ".json"
-      lReturnData.append(baseName);
-    }
+    lPath = getPackagePath(t_package) + t_directory;
   }
 
-  return lReturnData;
+  return searchDirectoryContents(lPath, t_extension, t_includeExtension);
 }
 
 QStringList PathingManager::searchAllDirectory(QString t_directory)
@@ -133,7 +116,7 @@ void PathingManager::refreshLocalPackages()
         {
           QVector<QString> l_replayGroups;
           QStringList l_folderGroups = l_replaysDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-          ReplayManager::get().cachePackageReplays(packageBaseName, l_replayGroups);
+          ReplayManager::get().cachePackageReplays(packageBaseName, l_folderGroups.toVector());
         }
       }
     }
@@ -167,4 +150,39 @@ QStringList PathingManager::getPackageNames()
 QStringList PathingManager::getDisabledPackages()
 {
   return mDisabledPackages;
+}
+
+QStringList PathingManager::searchDirectoryContents(QString t_directory, QString t_extension, bool t_includeExtension)
+{
+
+  QStringList lReturnData = {};
+
+  QDir lQDirectory(t_directory);
+
+  QStringList l_fileList = {};
+
+  if(t_extension.trimmed().isEmpty())
+  {
+    l_fileList = lQDirectory.entryList();
+  }
+  else
+  {
+    l_fileList = lQDirectory.entryList(QStringList() << "*." + t_extension, QDir::Files);
+  }
+
+
+  for(QString r_fileName : l_fileList)
+  {
+    if (r_fileName.endsWith("." + t_extension))
+    {
+      if(t_includeExtension)
+      {
+        lReturnData.append(r_fileName); continue;
+      }
+      QString baseName = r_fileName.left(r_fileName.length() - ("." + t_extension).length()); // 5 is the length of ".json"
+      lReturnData.append(baseName);
+    }
+  }
+
+  return lReturnData;
 }

@@ -17,7 +17,9 @@ public:
     return s_Instance;
   }
 
-  QStringList getReplayList();
+  QStringList getReplayList(QString t_package, QString t_category);
+  QString getReplayPath(QString t_package, QString t_category, QString t_name);
+  QString getReplayImagePath(QString t_package, QString t_category, QString t_name);
 
   void loadReplay();
 
@@ -35,6 +37,8 @@ public:
 
   void clearPackagesReplays();
   void cachePackageReplays(QString t_package, QVector<QString> t_tags);
+  QStringList getPackageNames();
+  QVector<QString> getPackageCategoryList(QString t_package);
 
 
 private:

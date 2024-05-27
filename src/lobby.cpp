@@ -1,5 +1,6 @@
 #include "lobby.h"
 
+#include "file_functions.h"
 #include "modules/theme/widget_animator.h"
 #include "aoapplication.h"
 #include "aobutton.h"
@@ -103,6 +104,16 @@ Lobby::Lobby(AOApplication *p_ao_app)
   pUiReplayList = new QListWidget(pUiReplayBackground);
   pUiReplayList->setContextMenuPolicy(Qt::CustomContextMenu);
 
+  pUiPackageSelector = new QComboBox(pUiReplayBackground);
+  pUiPackageCategory = new QComboBox(pUiReplayBackground);
+  pUIReplayPreview = new AOImageDisplay(pUiReplayBackground, ao_app);
+
+
+  connect(pUiPackageCategory, SIGNAL(currentIndexChanged(int)), this, SLOT(onReplayCategoryChanged(int)));
+  connect(pUiPackageSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(onReplayPackageChanged(int)));
+
+  connect(pUiReplayList, SIGNAL(currentRowChanged(int)), this, SLOT(onReplayRowChanged(int)));
+
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(update_widgets()));
   connect(ao_app, &AOApplication::server_status_changed, this, &Lobby::_p_update_description);
 
@@ -150,10 +161,9 @@ Lobby::Lobby(AOApplication *p_ao_app)
   set_choose_a_server();
 
   EmotionManager::get().wEmoteList = {};
-  pUiReplayList->clear();
-  QStringList lCurrentReplays = ReplayManager::get().getReplayList();
-  pUiReplayList->addItems(lCurrentReplays);
-
+  pUiPackageCategory->clear();
+  pUiPackageSelector->clear();
+  pUiPackageSelector->addItems(ReplayManager::get().getPackageNames());
 }
 
 Lobby::~Lobby()
@@ -185,6 +195,10 @@ void Lobby::update_widgets()
   set_size_and_pos(ui_background, "lobby", LOBBY_DESIGN_INI, ao_app);
   ui_background->set_theme_image("lobbybackground.png");
 
+
+
+  set_size_and_pos(pUIReplayPreview, "replay_preview", LOBBY_DESIGN_INI, ao_app);
+  pUIReplayPreview->set_theme_image("replay_preview.png");
 
   set_size_and_pos(pUiReplayBackground, "lobby", LOBBY_DESIGN_INI, ao_app);
   pUiReplayBackground->set_theme_image("replaybackground.png");
@@ -223,6 +237,11 @@ void Lobby::update_widgets()
     ui_config_panel->move(0, 0);
     ui_config_panel->show();
   }
+
+
+  set_size_and_pos(pUiPackageCategory, "replay_category", LOBBY_DESIGN_INI, ao_app);
+
+  set_size_and_pos(pUiPackageSelector, "replay_packages", LOBBY_DESIGN_INI, ao_app);
 
   set_size_and_pos(ui_server_list, "server_list", LOBBY_DESIGN_INI, ao_app);
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
@@ -278,6 +297,8 @@ void Lobby::set_fonts()
   set_drtextedit_font(ui_loading_text, "loading_text", LOBBY_FONTS_INI, ao_app);
   set_font(ui_server_list, "server_list", LOBBY_FONTS_INI, ao_app);
   set_font(pUiReplayList, "replay_list", LOBBY_FONTS_INI, ao_app);
+  set_font(pUiPackageSelector, "replay_packages", LOBBY_FONTS_INI, ao_app);
+  set_font(pUiPackageCategory, "replay_category", LOBBY_FONTS_INI, ao_app);
 }
 
 void Lobby::set_stylesheet(QWidget *widget, QString target_tag)
@@ -296,6 +317,8 @@ void Lobby::set_stylesheets()
   set_stylesheet(ui_loading_text, "[LOADING TEXT]");
   set_stylesheet(ui_server_list, "[SERVER LIST]");
   set_stylesheet(pUiReplayList, "[REPLAY LIST]");
+  set_stylesheet(pUiPackageSelector, "[REPLAY PACKAGES]");
+  set_stylesheet(pUiPackageCategory, "[REPLAY PACKAGES]");
 }
 
 void Lobby::show_loading_overlay()
@@ -507,6 +530,57 @@ void Lobby::select_current_server()
   }
 }
 
+void Lobby::onReplayRowChanged(int row)
+{
+  if (row == -1)
+    return;
+
+  QString lImagePath = ReplayManager::get().getReplayImagePath(mCurrentPackage, mCurrentCategory, pUiReplayList->item(row)->text());
+
+  if(!file_exists(lImagePath))
+  {
+    pUIReplayPreview->set_theme_image("replay_preview.png");
+  }
+  else
+  {
+    pUIReplayPreview->set_image(lImagePath);
+  }
+}
+
+void Lobby::onReplayPackageChanged(int t_index)
+{
+  pUiReplayList->clear();
+  if(t_index == 0)
+  {
+    mCurrentPackage = "";
+    pUiPackageCategory->clear();
+    pUiPackageCategory->addItem("Default");
+  }
+  else
+  {
+    mCurrentPackage = pUiPackageSelector->currentText();
+    pUiPackageCategory->clear();
+    pUiPackageCategory->addItem("Default");
+    pUiPackageCategory->addItems(ReplayManager::get().getPackageCategoryList(mCurrentPackage).toList());
+  }
+}
+
+void Lobby::onReplayCategoryChanged(int t_index)
+{
+  pUiReplayList->clear();
+  if(t_index == 0)
+  {
+    mCurrentCategory = "";
+  }
+  else
+  {
+    mCurrentCategory = pUiPackageCategory->currentText();
+  }
+
+  QStringList lReplays = ReplayManager::get().getReplayList(mCurrentPackage, mCurrentCategory);
+  pUiReplayList->addItems(lReplays);
+}
+
 void Lobby::onToggleGalleryPressed()
 {
   pUiReplayBackground->setVisible(!pUiReplayBackground->isVisible());
@@ -514,7 +588,7 @@ void Lobby::onToggleGalleryPressed()
 
 void Lobby::onPlayReplayPresssed()
 {
-  ReplayManager::get().loadReplayPlayback("replays/" + pUiReplayList->selectedItems().at(0)->text() + ".json", ao_app->constructReplay());
+  ReplayManager::get().loadReplayPlayback(ReplayManager::get().getReplayPath(mCurrentPackage, mCurrentCategory, pUiReplayList->selectedItems().at(0)->text()), ao_app->constructReplay());
 }
 
 void Lobby::toggle_public_server_filter()

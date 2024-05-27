@@ -52,22 +52,3 @@ void AnimationManager::addToQueue(DROAnimation *t_animation)
 {
   mGraphicsRenderQueue.append(t_animation);
 }
-
-void AnimationManager::startQueue()
-{
-  //QtConcurrent::run(this, &AnimationManager::loopRenderQueue);
-
-  //ThAnimationQueue->start();
-}
-
-void AnimationManager::loopRenderQueue()
-{
-  while(true)
-  {
-    if(mGraphicsRenderQueue.count() == 0) continue;
-    for(DROAnimation * animation : mGraphicsRenderQueue)
-    {
-      if(animation->getIsPlaying()) animation->RunAnimation();
-    }
-  }
-}
