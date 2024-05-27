@@ -97,12 +97,14 @@ void TypewriterTextEdit::progressLetter()
 
   for(QStringList mMessageHighlights : m_chatbox_message_highlight_colors)
   {
+    bool lisExistingColor = false;
     if(mColorQueue.count() != 0)
     {
       if(mMessageHighlights[1] == mColorQueue.at(mColorQueue.count() - 1))
       {
         if(l_newChar == mMessageHighlights[0].at(1))
         {
+          lisExistingColor = true;
           mCurrentColor = ' ';
           mColorQueue.removeLast();
           if(mMessageHighlights[2] == "0")
@@ -113,7 +115,9 @@ void TypewriterTextEdit::progressLetter()
         }
       }
     }
-    else if(mMessageHighlights[0].at(0) == l_newChar)
+
+
+    if(mMessageHighlights[0].at(0) == l_newChar && !lisExistingColor)
     {
       QColor text_color;
       text_color.setNamedColor(mMessageHighlights[1]);

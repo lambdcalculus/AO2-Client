@@ -46,12 +46,16 @@ void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
 
 void ReplayScene::setCharacter(QString t_name, QString t_emote, QString t_pre)
 {
+
+  SceneManager::get().RenderTransition();
   ThemeManager::get().getWidget("chatbox")->setVisible(false);
 
   if (!vpVideo->isVisible())
   {
     vpVideo->show();
   }
+
+  SceneManager::get().AnimateTransition();
   vpVideo->play_character_video(mMsgVariables["char"], mMsgVariables["video"]);
 }
 
@@ -107,7 +111,6 @@ void ReplayScene::videoDone()
 
 void ReplayScene::preanim_done()
 {
-  SceneManager::get().RenderTransition();
   if(!mMsgVariables["msg"].trimmed().isEmpty()) ThemeManager::get().getWidget("chatbox")->setVisible(true);
   setText(mMsgVariables["msg"]);
 
@@ -122,7 +125,6 @@ void ReplayScene::preanim_done()
     vpPlayer->set_file_name(pAOApp->get_character_sprite_idle_path(mMsgVariables["char"], mMsgVariables["emote"]));
     vpPlayer->start();
   }
-  SceneManager::get().AnimateTransition();
 }
 
 void ReplayScene::constructWidgets()
