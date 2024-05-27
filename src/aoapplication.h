@@ -55,7 +55,7 @@ public:
   void destruct_lobby();
 
   Courtroom *get_courtroom() const;
-  void constructReplay();
+  ReplayScene *constructReplay();
   void construct_courtroom();
   void destruct_courtroom();
 
@@ -77,7 +77,6 @@ public:
   QVector<QString> m_disabled_packages = {};
   void reload_packages();
   void save_disabled_packages_ini();
-  void read_disabled_packages_ini();
   QString get_base_path();
   QString get_package_path(QString p_package);
   QString get_package_or_base_path(QString p_path);

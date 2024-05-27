@@ -58,3 +58,9 @@ void AOMusicPlayer::stop()
   //    song->stop();
   //}
 }
+
+void AOMusicPlayer::forceStop()
+{
+  if(mCurrentSong != nullptr) mCurrentSong->stop();
+  if(mLastSong != nullptr) mLastSong->stop();
+}

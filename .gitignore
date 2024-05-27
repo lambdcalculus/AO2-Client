@@ -13,3 +13,4 @@ docs/
 *.autosave
 *DS_Store
 *.swp
+/build

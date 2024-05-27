@@ -101,7 +101,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app, QWidget *parent)
   load_audiotracks();
   reset_viewport();
   PairManager::get().SetUserPair(-1, 480);
-  GameManager::get().StartGameLoop();
 }
 
 Courtroom::~Courtroom()
@@ -950,7 +949,7 @@ void Courtroom::on_ic_message_return_pressed()
     lAnimName = wCharaAnimList->currentItem()->text();
   }
 
-  packet_contents.append(lAnimName);
+  //packet_contents.append(lAnimName);
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 
 

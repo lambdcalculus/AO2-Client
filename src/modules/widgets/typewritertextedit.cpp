@@ -16,7 +16,10 @@ void TypewriterTextEdit::setTypewriterTarget(QString t_text)
   mLastUpdate = mStartTime;
   mText = "";
   mRenderedText = "";
+  mCurrentColor = ' ';
   mCurrentIndex = 0;
+
+
   if(t_text.trimmed().isEmpty()) return;
   bool l_ignoreNextLetter = false;
   for (QChar r_char : t_text)
@@ -64,17 +67,49 @@ void TypewriterTextEdit::setTypewriterTarget(QString t_text)
 
 void TypewriterTextEdit::progressLetter()
 {
+  //bool m_chatbox_message_enable_highlighting = (AOApplication::getInstance()->current_theme->read_config_bool("enable_highlighting"));
+
   if((GameManager::get().getUptime() - mLastUpdate) < mBlipRate)
   {
     return;
   };
   if(mCurrentIndex >= mText.count()) return;
   if(mCurrentIndex == 0) pBlipPlayer->blip_tick();
-  mRenderedText.append(mText.at(mCurrentIndex));
-  setText(mRenderedText);
+
+  QTextCharFormat l_currentCharFormat = currentCharFormat();
+
+  QChar l_newChar = mText.at(mCurrentIndex);
+  QVector<QStringList> m_chatbox_message_highlight_colors = AOApplication::getInstance()->get_highlight_colors();
+
+  if(mCurrentColor == ' ')
+  {
+    QColor text_color;
+    text_color.setNamedColor("#F9FFFE");
+    l_currentCharFormat.setForeground(text_color);
+  }
+  for(QStringList mMessageHighlights : m_chatbox_message_highlight_colors)
+  {
+    if(mMessageHighlights[0].at(0) == mCurrentColor)
+    {
+      if(l_newChar == mMessageHighlights[0].at(1))
+      {
+        mCurrentColor = ' ';
+      }
+    }
+    else if(mMessageHighlights[0].at(0) == l_newChar)
+    {
+      QColor text_color;
+      text_color.setNamedColor(mMessageHighlights[1]);
+      l_currentCharFormat.setForeground(text_color);
+      mCurrentColor = l_newChar;
+    }
+  }
+
+  textCursor().insertText(l_newChar, l_currentCharFormat);
+  mRenderedText.append(l_newChar);
+
+  //setText(mRenderedText);
   mCurrentIndex += 1;
-
-
   mLastUpdate = GameManager::get().getUptime();
 }
 

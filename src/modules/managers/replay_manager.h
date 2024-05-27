@@ -17,6 +17,8 @@ public:
     return s_Instance;
   }
 
+  QStringList getReplayList();
+
   void loadReplay();
 
   void startRecording();
@@ -31,8 +33,13 @@ public:
   QString getPlaybackBackground();
   void progressPlayback();
 
+  void clearPackagesReplays();
+  void cachePackageReplays(QString t_package, QVector<QString> t_tags);
+
 
 private:
+  QVector<QString> mPackageNames = {};
+  QHash<QString, QVector<QString>> mPackageReplays = {};
   ReplayManager() {}
   QElapsedTimer mRecorder;
   static ReplayManager s_Instance;

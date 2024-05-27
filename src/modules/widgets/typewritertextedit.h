@@ -38,6 +38,8 @@ private:
   int mLastUpdate = 0;
 
   AOBlipPlayer *pBlipPlayer = nullptr;
+
+  QChar mCurrentColor = ' ';
 };
 
 #endif // TYPEWRITERTEXTEDIT_H

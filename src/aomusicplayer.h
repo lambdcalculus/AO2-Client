@@ -13,6 +13,7 @@ public:
 public slots:
   void play(QString p_song);
   void stop();
+  void forceStop();
 
 private:
   DRAudioStreamFamily::ptr m_family;

@@ -2,7 +2,7 @@
 #define VARIABLEMANAGER_H
 
 #include "drstickerviewer.h"
-#include <QString>'
+#include <QString>
 #include <qmap.h>
 
 

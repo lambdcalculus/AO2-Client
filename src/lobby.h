@@ -74,6 +74,7 @@ private:
 
   AOButton *wReplayPlay = nullptr;
   AOButton *pUiGalleryToggle = nullptr;
+  QListWidget *pUiReplayList = nullptr;
 
   AOButton *ui_refresh = nullptr;
   AOButton *ui_toggle_favorite = nullptr;

@@ -38,6 +38,8 @@
 
 #include <utility>
 
+#include <modules/managers/replay_manager.h>
+
 Lobby::Lobby(AOApplication *p_ao_app)
     : QMainWindow()
 {
@@ -98,6 +100,9 @@ Lobby::Lobby(AOApplication *p_ao_app)
 
   wReplayPlay = new AOButton(pUiReplayBackground, ao_app);
 
+  pUiReplayList = new QListWidget(pUiReplayBackground);
+  pUiReplayList->setContextMenuPolicy(Qt::CustomContextMenu);
+
   connect(ao_app, SIGNAL(reload_theme()), this, SLOT(update_widgets()));
   connect(ao_app, &AOApplication::server_status_changed, this, &Lobby::_p_update_description);
 
@@ -145,6 +150,9 @@ Lobby::Lobby(AOApplication *p_ao_app)
   set_choose_a_server();
 
   EmotionManager::get().wEmoteList = {};
+  pUiReplayList->clear();
+  pUiReplayList->addItems(ReplayManager::get().getReplayList());
+
 }
 
 Lobby::~Lobby()
@@ -219,6 +227,10 @@ void Lobby::update_widgets()
   ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
                                 "font: bold;");
 
+  set_size_and_pos(pUiReplayList, "replay_list", LOBBY_DESIGN_INI, ao_app);
+  ui_server_list->setStyleSheet("background-color: rgba(0, 0, 0, 0);"
+                                "font: bold;");
+
   set_size_and_pos(ui_player_count, "player_count", LOBBY_DESIGN_INI, ao_app);
   ui_player_count->setStyleSheet("font: bold;"
                                  "color: white;"
@@ -264,6 +276,7 @@ void Lobby::set_fonts()
   set_font(ui_chatbox, "chatbox", LOBBY_FONTS_INI, ao_app);
   set_drtextedit_font(ui_loading_text, "loading_text", LOBBY_FONTS_INI, ao_app);
   set_font(ui_server_list, "server_list", LOBBY_FONTS_INI, ao_app);
+  set_font(pUiReplayList, "replay_list", LOBBY_FONTS_INI, ao_app);
 }
 
 void Lobby::set_stylesheet(QWidget *widget, QString target_tag)
@@ -281,6 +294,7 @@ void Lobby::set_stylesheets()
   set_stylesheet(ui_chatbox, "[CHAT BOX]");
   set_stylesheet(ui_loading_text, "[LOADING TEXT]");
   set_stylesheet(ui_server_list, "[SERVER LIST]");
+  set_stylesheet(pUiReplayList, "[REPLAY LIST]");
 }
 
 void Lobby::show_loading_overlay()
@@ -499,7 +513,7 @@ void Lobby::onToggleGalleryPressed()
 
 void Lobby::onPlayReplayPresssed()
 {
-  ao_app->constructReplay();
+  ReplayManager::get().loadReplayPlayback("replays/" + pUiReplayList->selectedItems().at(0)->text() + ".json", ao_app->constructReplay());
 }
 
 void Lobby::toggle_public_server_filter()

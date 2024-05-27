@@ -77,6 +77,7 @@ AOApplication::AOApplication(int &argc, char **argv)
   CharacterManager::get().LoadFavoritesList();
   reload_packages();
   resolve_current_theme();
+  GameManager::get().StartGameLoop();
 }
 
 AOApplication::~AOApplication()
@@ -142,12 +143,13 @@ Courtroom *AOApplication::get_courtroom() const
   return m_courtroom;
 }
 
-void AOApplication::constructReplay()
+ReplayScene *AOApplication::constructReplay()
 {
   isReplayConstructed = true;
   mReplayPlayer = new ReplayScene(this);
   center_widget_to_screen(mReplayPlayer);
   mReplayPlayer->show();
+  return mReplayPlayer;
 }
 
 void AOApplication::construct_courtroom()
