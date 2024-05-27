@@ -14,6 +14,7 @@
 #include <drsplashmovie.h>
 #include <drtextedit.h>
 #include "modules/widgets/typewritertextedit.h"
+#include <mk2/graphicsvideoscreen.h>
 
 class ReplayScene : public QWidget
 {
@@ -31,6 +32,7 @@ public:
   void setBgPosition(QString t_name);
 
 public slots:
+  void videoDone();
   void preanim_done();
 
 private:
@@ -52,6 +54,7 @@ private: //Viewport
   DREffectMovie *vpEffect = nullptr;
   DRSplashMovie *vpWtce = nullptr;
   DRShoutMovie *vpObjection = nullptr;
+  DRVideoScreen *vpVideo = nullptr;
 
   AOSfxPlayer *pSfxPlayer = nullptr;
   AOMusicPlayer *pMusicPlayer = nullptr;

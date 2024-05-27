@@ -1,5 +1,8 @@
 #include "game_manager.h"
+#include "pathing_manager.h"
 #include "replay_manager.h"
+
+#include <modules/json/json_reader.h>
 
 GameManager GameManager::s_Instance;
 
@@ -61,6 +64,40 @@ void GameManager::RunAnimationLoop(AnimTypes t_type)
       if(t_type == eAnimationShout) emit ShoutComplete();
       if(t_type == eAnimationGM) emit JudgeComplete();
     }
+  }
+}
+
+GameEffectData GameManager::getEffect(QString t_name)
+{
+  for(GameEffectData rEffectData : mGameEffects)
+  {
+    if(t_name == rEffectData.mName) return rEffectData;
+  }
+
+  return GameEffectData("<NONE>");
+}
+
+void GameManager::setupGame()
+{
+  setupGameEffects();
+  StartGameLoop();
+}
+
+void GameManager::setupGameEffects()
+{
+  JSONReader lEffectsReader = JSONReader();
+  lEffectsReader.ReadFromFile(PathingManager::get().getBasePath() +  "effects/default/effects.json");
+  mGameEffects = {};
+
+  QJsonArray lEffectsArray = lEffectsReader.mDocument.array();
+  for(QJsonValueRef rEffect : lEffectsArray)
+  {
+    lEffectsReader.SetTargetObject(rEffect.toObject());
+    GameEffectData lEffectData = GameEffectData(lEffectsReader.getStringValue("effect_name"));
+    lEffectData.mLoops = lEffectsReader.getBoolValue("loop");
+    lEffectData.mIgnoresPair = lEffectsReader.getBoolValue("ignore_pair");
+    lEffectData.mLegacyId = lEffectsReader.getIntValue("id");
+    mGameEffects.append(lEffectData);
   }
 }
 

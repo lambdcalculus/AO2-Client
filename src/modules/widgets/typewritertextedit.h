@@ -40,6 +40,7 @@ private:
   AOBlipPlayer *pBlipPlayer = nullptr;
 
   QChar mCurrentColor = ' ';
+  QVector<QString> mColorQueue = {};
 };
 
 #endif // TYPEWRITERTEXTEDIT_H

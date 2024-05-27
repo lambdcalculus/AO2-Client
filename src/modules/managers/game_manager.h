@@ -20,13 +20,21 @@ public:
     return s_Instance;
   }
 
-  void StartGameLoop();
   void StopGameLoop();
 
   void SetPlayerAnimation(GraphicObjectAnimator * t_animation);
   void SetTypeWriter(TypewriterTextEdit * t_writer);
   void SetAnimationGroup(AnimTypes t_type, QVector<GraphicObjectAnimator *> t_animations);
   void RunAnimationLoop(AnimTypes t_type);
+
+  //Data Gathering
+  GameEffectData getEffect(QString t_name);
+
+  //Setup
+  void setupGame();
+
+
+
   int getUptime();
 
 public slots:
@@ -53,6 +61,10 @@ private:
   TypewriterTextEdit *mMessageTypeWriter = nullptr;
   QMap<AnimTypes, QVector<GraphicObjectAnimator *>> mRuntimeAnimation = {};
 
+  QVector<GameEffectData> mGameEffects = {};
+
+  void StartGameLoop();
+  void setupGameEffects();
 };
 
 #endif // GAMEMANAGER_H

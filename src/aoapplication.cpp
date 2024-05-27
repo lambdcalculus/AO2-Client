@@ -77,7 +77,7 @@ AOApplication::AOApplication(int &argc, char **argv)
   CharacterManager::get().LoadFavoritesList();
   reload_packages();
   resolve_current_theme();
-  GameManager::get().StartGameLoop();
+  GameManager::get().setupGame();
 }
 
 AOApplication::~AOApplication()

@@ -18,6 +18,7 @@ void TypewriterTextEdit::setTypewriterTarget(QString t_text)
   mRenderedText = "";
   mCurrentColor = ' ';
   mCurrentIndex = 0;
+  mColorQueue.clear();
 
 
   if(t_text.trimmed().isEmpty()) return;
@@ -81,19 +82,35 @@ void TypewriterTextEdit::progressLetter()
   QChar l_newChar = mText.at(mCurrentIndex);
   QVector<QStringList> m_chatbox_message_highlight_colors = AOApplication::getInstance()->get_highlight_colors();
 
-  if(mCurrentColor == ' ')
+  if(mColorQueue.count() == 0)
   {
     QColor text_color;
     text_color.setNamedColor("#F9FFFE");
     l_currentCharFormat.setForeground(text_color);
   }
+  else
+  {
+    QColor text_color;
+    text_color.setNamedColor(mColorQueue.at(mColorQueue.count() - 1));
+    l_currentCharFormat.setForeground(text_color);
+  }
+
   for(QStringList mMessageHighlights : m_chatbox_message_highlight_colors)
   {
-    if(mMessageHighlights[0].at(0) == mCurrentColor)
+    if(mColorQueue.count() != 0)
     {
-      if(l_newChar == mMessageHighlights[0].at(1))
+      if(mMessageHighlights[1] == mColorQueue.at(mColorQueue.count() - 1))
       {
-        mCurrentColor = ' ';
+        if(l_newChar == mMessageHighlights[0].at(1))
+        {
+          mCurrentColor = ' ';
+          mColorQueue.removeLast();
+          if(mMessageHighlights[2] == "0")
+          {
+            mText.remove(mCurrentIndex, 1);
+            return;
+          }
+        }
       }
     }
     else if(mMessageHighlights[0].at(0) == l_newChar)
@@ -102,7 +119,16 @@ void TypewriterTextEdit::progressLetter()
       text_color.setNamedColor(mMessageHighlights[1]);
       l_currentCharFormat.setForeground(text_color);
       mCurrentColor = l_newChar;
+      mColorQueue.append(mMessageHighlights[1]);
+      if(mMessageHighlights[2] == "0")
+      {
+        textCursor().insertText("", l_currentCharFormat);
+        mText.remove(mCurrentIndex, 1);
+        return;
+      }
     }
+
+
   }
 
   textCursor().insertText(l_newChar, l_currentCharFormat);

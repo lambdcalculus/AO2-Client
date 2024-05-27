@@ -47,32 +47,12 @@ void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
 void ReplayScene::setCharacter(QString t_name, QString t_emote, QString t_pre)
 {
   ThemeManager::get().getWidget("chatbox")->setVisible(false);
-  if(!t_pre.isEmpty())
-  {
-    vpPlayer->set_play_once(true);
-    vpPlayer->set_file_name(pAOApp->get_character_sprite_pre_path(t_name, t_pre));
-    vpPlayer->start();
-  }
 
-  //Process Effects
-  QString l_effect = mMsgVariables["effect"];
-  if(l_effect.trimmed().isEmpty() || l_effect == "0" || l_effect == "-1")
+  if (!vpVideo->isVisible())
   {
-    vpEffect->hide();
+    vpVideo->show();
   }
-  else
-  {
-    vpEffect->show();
-    vpEffect->set_play_once(false);
-    vpEffect->set_file_name(pAOApp->get_effect_anim_path(l_effect));
-    vpEffect->start();
-
-    QString l_overlay_sfx = pAOApp->get_sfx(mMsgVariables["effect"]);
-    pSfxPlayer->play_effect(l_overlay_sfx);
-  }
-
-  //Player Character SFX
-  pSfxPlayer->play_character_effect(t_name, mMsgVariables["sound"]);
+  vpVideo->play_character_video(mMsgVariables["char"], mMsgVariables["video"]);
 }
 
 void ReplayScene::setBackground(QString t_name)
@@ -85,6 +65,44 @@ void ReplayScene::setBgPosition(QString t_name)
 {
   vpBackground->set_file_name(SceneManager::get().getBackgroundPath(t_name));
   vpBackground->start();
+}
+
+void ReplayScene::videoDone()
+{
+  if (vpVideo->isVisible())
+  {
+    vpVideo->hide();
+  }
+
+  if(!mMsgVariables["pre"].isEmpty())
+  {
+    vpPlayer->set_play_once(true);
+    vpPlayer->set_file_name(pAOApp->get_character_sprite_pre_path(mMsgVariables["char"], mMsgVariables["pre"]));
+    vpPlayer->start();
+  }
+
+         //Process Effects
+  QString l_effect = mMsgVariables["effect"];
+
+  GameEffectData effectData = GameManager::get().getEffect(l_effect);
+
+  if(effectData.mName == "<NONE>")
+  {
+    vpEffect->hide();
+  }
+  else
+  {
+    vpEffect->show();
+    vpEffect->set_play_once(!effectData.mLoops);
+    vpEffect->set_file_name(pAOApp->get_effect_anim_path(l_effect));
+    vpEffect->start();
+
+    QString l_overlay_sfx = pAOApp->get_sfx(mMsgVariables["effect"]);
+    pSfxPlayer->play_effect(l_overlay_sfx);
+  }
+
+         //Player Character SFX
+  pSfxPlayer->play_character_effect(mMsgVariables["char"], mMsgVariables["sound"]);
 }
 
 void ReplayScene::preanim_done()
@@ -118,10 +136,12 @@ void ReplayScene::constructWidgets()
   vpBackground = new DRSceneMovie(pAOApp);
   vpPlayer = new DRCharacterMovie(pAOApp);
   vpEffect = new DREffectMovie(pAOApp);
+  vpVideo = new DRVideoScreen(pAOApp);
 
   l_viewport->scene()->addItem(vpBackground);
   l_viewport->scene()->addItem(vpPlayer);
   l_viewport->scene()->addItem(vpEffect);
+  l_viewport->scene()->addItem(vpVideo);
 
   vpBackground->start();
 
@@ -153,6 +173,7 @@ void ReplayScene::constructWidgets()
   set_drtextedit_font(vpMessageShowname, "replay_showname", REPLAYS_FONTS_INI, pAOApp);
 
   //Connections
+  connect(vpVideo, SIGNAL(finished()), this, SLOT(videoDone()));
   connect(vpPlayer, SIGNAL(done()), this, SLOT(preanim_done()));
 
   //Extra Stuff

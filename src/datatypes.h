@@ -6,6 +6,19 @@
 #include <QMap>
 #include <QVector>
 
+class GameEffectData
+{
+public:
+  GameEffectData(QString t_name)
+  {
+    mName = t_name;
+  };
+
+  QString mName = "";
+  bool mLoops = false;
+  bool mIgnoresPair = false;
+  int mLegacyId = -1;
+};
 
 class ReplayOperation
 {
