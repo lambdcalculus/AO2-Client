@@ -52,6 +52,41 @@ QString PathingManager::searchFirstDirectory(QString t_directory)
   return getBasePath() + t_directory;
 }
 
+QStringList PathingManager::searchDirectoryContentsFirst(QString t_directory, QString t_extension, bool t_includeExtension)
+{
+  QStringList lReturnData = {};
+
+  QString lPath = searchFirstDirectory(t_directory);
+  QDir lQDirectory(lPath);
+
+  QStringList l_fileList = {};
+
+  if(t_extension.trimmed().isEmpty())
+  {
+    l_fileList = lQDirectory.entryList();
+  }
+  else
+  {
+    l_fileList = lQDirectory.entryList(QStringList() << "*." + t_extension, QDir::Files);
+  }
+
+
+  for(QString r_fileName : l_fileList)
+  {
+    if (r_fileName.endsWith("." + t_extension))
+    {
+      if(t_includeExtension)
+      {
+        lReturnData.append(r_fileName); continue;
+      }
+      QString baseName = r_fileName.left(r_fileName.length() - ("." + t_extension).length()); // 5 is the length of ".json"
+      lReturnData.append(baseName);
+    }
+  }
+
+  return lReturnData;
+}
+
 QStringList PathingManager::searchAllDirectory(QString t_directory)
 {
   return {};

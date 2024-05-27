@@ -151,7 +151,8 @@ Lobby::Lobby(AOApplication *p_ao_app)
 
   EmotionManager::get().wEmoteList = {};
   pUiReplayList->clear();
-  pUiReplayList->addItems(ReplayManager::get().getReplayList());
+  QStringList lCurrentReplays = ReplayManager::get().getReplayList();
+  pUiReplayList->addItems(lCurrentReplays);
 
 }
 

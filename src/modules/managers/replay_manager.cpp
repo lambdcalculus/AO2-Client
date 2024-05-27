@@ -1,4 +1,5 @@
 #include "replay_manager.h"
+#include "modules/managers/pathing_manager.h"
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -11,25 +12,7 @@ ReplayManager ReplayManager::s_Instance;
 
 QStringList ReplayManager::getReplayList()
 {
-  QStringList l_returnData;
-  QString l_replaysPath = AOApplication::getInstance()->get_base_path() + "replays/" ;
-  QDir l_replaysDirectory(l_replaysPath);
-
-  QStringList l_fileList = l_replaysDirectory.entryList(QStringList() << "*.json", QDir::Files);
-
-  for(QString r_fileName : l_fileList)
-  {
-    if (r_fileName.endsWith(".json"))
-    {
-      QString baseName = r_fileName.left(r_fileName.length() - 5); // 5 is the length of ".json"
-      l_returnData.append(baseName);
-    }
-
-    //QFileInfo l_fileInfo(l_replaysDirectory, r_fileName);
-    //l_returnData.append(l_fileInfo.fileName());
-  }
-
-  return l_returnData;
+  return PathingManager::get().searchDirectoryContentsFirst("replays/", "json", false);
 }
 
 void ReplayManager::startRecording()

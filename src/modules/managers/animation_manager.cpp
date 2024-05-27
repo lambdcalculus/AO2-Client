@@ -1,4 +1,5 @@
 #include "animation_manager.h"
+#include "pathing_manager.h"
 #include "modules/theme/thememanager.h"
 #include <QObject>
 #include <QtConcurrent/QtConcurrent>
@@ -15,12 +16,13 @@ void AnimationManager::loadCharacterAnimations()
 
   mCharacterAnimations = {};
   QListWidget * l_listWidget = ThemeManager::get().getWidgetType<QListWidget>("chara_animations");
+  QStringList lCharacterAnims = PathingManager::get().searchDirectoryContentsFirst("animations/characters/", "json", false);
 
-  mCharaAnimationNames.append("shake");
-  mCharacterAnimations["shake"] = new AnimationReader(eAnimationPlayer, "shake");
-
-  mCharaAnimationNames.append("popdown");
-  mCharacterAnimations["popdown"] = new AnimationReader(eAnimationPlayer, "popdown");
+  for(QString rAnimName : lCharacterAnims)
+  {
+    mCharaAnimationNames.append(rAnimName);
+    mCharacterAnimations[rAnimName] = new AnimationReader(eAnimationPlayer, rAnimName);
+  }
 
   if(l_listWidget != nullptr)
   {

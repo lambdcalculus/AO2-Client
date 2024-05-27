@@ -25,6 +25,7 @@ public:
 
   QString searchFirstFile(QString t_file);
   QString searchFirstDirectory(QString t_directory);
+  QStringList searchDirectoryContentsFirst(QString t_directory, QString t_extension, bool t_includeExtension = true);
   QStringList searchAllDirectory(QString t_directory);
 
   //Packages
