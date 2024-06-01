@@ -16,6 +16,8 @@
 #include "version.h"
 #include "modules/networking/json_packet.h"
 
+#include <modules/managers/game_manager.h>
+
 void AOApplication::connect_to_server(DRServerInfo p_server)
 {
   m_server_socket->connect_to_server(p_server);
@@ -115,6 +117,10 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     m_server_software = l_content.at(1);
 
     send_server_packet(DRPacket("ID", {"DRO", get_version_string()}));
+  }
+  else if (l_header == "FL")
+  {
+    GameManager::get().setServerFunctions(l_content);
   }
   else if (l_header == "CT")
   {

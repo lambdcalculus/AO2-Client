@@ -1,3 +1,4 @@
+#include "game_manager.h"
 #include "replay_manager.h"
 #include "modules/managers/pathing_manager.h"
 #include <QJsonObject>
@@ -86,6 +87,8 @@ void ReplayManager::recordMessage(QStringList t_message)
 
   lNewOperation.mTimestamp = mRecorder.elapsed();
 
+  GameEffectData lEffect = GameManager::get().getEffect(t_message[CMEffectState].toInt());
+
   lNewOperation.mVariables["pre"] = t_message[CMPreAnim];
   lNewOperation.mVariables["char"] = t_message[CMChrName];
   lNewOperation.mVariables["emote"] = t_message[CMEmote];
@@ -97,7 +100,7 @@ void ReplayManager::recordMessage(QStringList t_message)
   lNewOperation.mVariables["video"] = t_message[CMVideoName];
   lNewOperation.mVariables["hide"] = t_message[CMHideCharacter];
   lNewOperation.mVariables["flip"] = t_message[CMFlipState];
-  lNewOperation.mVariables["effect"] = t_message[CMEffectState];
+  lNewOperation.mVariables["effect"] = lEffect.mName;
   lNewOperation.mVariables["shout"] = t_message[CMShoutModifier];
   mCurrentHubReplay.append(lNewOperation);
   saveReplay();

@@ -29,10 +29,15 @@ public:
 
   //Data Gathering
   GameEffectData getEffect(QString t_name);
+  GameEffectData getEffect(int t_id);
 
   //Setup
   void setupGame();
 
+
+  //Server Stuff
+  void setServerFunctions(QStringList tFunctionList);
+  bool usesServerFunction(QString tFunctionName);
 
 
   int getUptime();
@@ -62,6 +67,8 @@ private:
   QMap<AnimTypes, QVector<GraphicObjectAnimator *>> mRuntimeAnimation = {};
 
   QVector<GameEffectData> mGameEffects = {};
+
+  QStringList mServerFeatures = {};
 
   void StartGameLoop();
   void setupGameEffects();

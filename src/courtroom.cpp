@@ -943,13 +943,18 @@ void Courtroom::on_ic_message_return_pressed()
   packet_contents.append(QString::number(ui_hide_character->isChecked()));
 
   // Character Animation
-  QString lAnimName = "";
-  if(wCharaAnimList->currentItem() != nullptr)
+
+  if(GameManager::get().usesServerFunction("v2"))
   {
-    lAnimName = wCharaAnimList->currentItem()->text();
+    QString lAnimName = "";
+    if(wCharaAnimList->currentItem() != nullptr)
+    {
+      lAnimName = wCharaAnimList->currentItem()->text();
+    }
+
+    packet_contents.append(lAnimName);
   }
 
-  //packet_contents.append(lAnimName);
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
 
 

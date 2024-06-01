@@ -77,10 +77,31 @@ GameEffectData GameManager::getEffect(QString t_name)
   return GameEffectData("<NONE>");
 }
 
+GameEffectData GameManager::getEffect(int t_id)
+{
+  for(GameEffectData rEffectData : mGameEffects)
+  {
+    if(t_id == rEffectData.mLegacyId) return rEffectData;
+  }
+
+  return GameEffectData("<NONE>");
+}
+
 void GameManager::setupGame()
 {
   setupGameEffects();
   StartGameLoop();
+}
+
+void GameManager::setServerFunctions(QStringList tFunctionList)
+{
+  mServerFeatures.clear();
+  mServerFeatures = tFunctionList;
+}
+
+bool GameManager::usesServerFunction(QString tFunctionName)
+{
+  return mServerFeatures.contains(tFunctionName);
 }
 
 void GameManager::setupGameEffects()
