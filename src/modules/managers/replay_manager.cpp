@@ -5,7 +5,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QFile>
-#include <AOApplication.h>
+#include <aoapplication.h>
 #include <QDir>
 #include <modules/json/replay_reader.h>
 

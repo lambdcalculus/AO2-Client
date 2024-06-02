@@ -36,6 +36,7 @@
 #include "mk2/spritedynamicreader.h"
 #include "mk2/spriteseekingreader.h"
 #include "modules/managers/animation_manager.h"
+#include "qmath.h"
 #include "src/datatypes.h"
 #include "theme.h"
 
@@ -3133,7 +3134,7 @@ void Courtroom::construct_playerlist_layout()
   float resize = ThemeManager::get().getResize();
   int player_height = (int)((float)50 * resize);
   int y_spacing = f_spacing.y();
-  int max_pages = ceil((SceneManager::get().mPlayerDataList.count() - 1) / m_page_max_player_count);
+  int max_pages = qCeil((SceneManager::get().mPlayerDataList.count() - 1) / m_page_max_player_count);
 
   player_columns = (( (int)((float)ui_player_list->height() * resize) - player_height) / (y_spacing + player_height)) + 1;
 

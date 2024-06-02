@@ -1,8 +1,8 @@
 #ifndef THEMEMANAGER_H
 #define THEMEMANAGER_H
 
-#include <AOButton.h>
 #include <QHash>
+#include <aobutton.h>
 #include <aoimagedisplay.h>
 
 #include <modules/theme/widgets/dro_combo_box.h>

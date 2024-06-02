@@ -1,5 +1,5 @@
 #include "rpnotifymenu.h"
-#include "AOApplication.h"
+#include "aoapplication.h"
 #include "commondefs.h"
 #include "drtheme.h"
 #include "file_functions.h"
