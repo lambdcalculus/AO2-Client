@@ -60,6 +60,7 @@ private:
           {"POS_PRO_ASS", "Prosecutor Assistant"},
           {"SFX_SILENCE", "Silence"},
           {"CHAT_TALK", "Talk"},
+          {"CHAT_CG", "CG"},
           {"CHAT_SHOUT", "Shout"},
           {"CHAT_THINK", "Think"},
           {"COLOR_WHITE", "White"},

@@ -40,9 +40,11 @@ public:
   AOConfig *pConfigAO = nullptr;
 
   //Current Scene
-  void setCurrentSpeaker(QString t_chara, QString t_emote);
+  void setCurrentSpeaker(QString t_chara, QString t_emote, int t_type);
   SpeakerData getCurrentSpeaker();
   SpeakerData getPreviousSpeaker();
+  QString getChatboxType();
+  int getSpeakerType();
 
 private:
   SceneManager() {}
@@ -59,6 +61,7 @@ private:
   //Current Scene
   SpeakerData mCurrentSpeaker = SpeakerData("", "");
   SpeakerData mLastSpeaker = SpeakerData("", "");
+  int mCurrentSpeakerType = 0;
 
 };
 

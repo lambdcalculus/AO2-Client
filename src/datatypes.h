@@ -401,7 +401,9 @@ enum ChatMessage : int32_t
   CMPairChrName,
   CMPairEmote,
   CMPairFlip,
-  CMPairOffsetX
+  CMPairOffsetX,
+  CMKeyframeAnim,
+  CMCharType
 };
 
 enum EmoteMod

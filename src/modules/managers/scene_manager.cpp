@@ -1,8 +1,10 @@
+#include "pair_manager.h"
 #include "scene_manager.h"
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include "aoapplication.h"
 #include "file_functions.h"
+#include "datatypes.h"
 #include "modules/background/background_reader.h"
 #include "modules/background/legacy_background_reader.h"
 #include "modules/managers/variable_manager.h"
@@ -101,12 +103,14 @@ void SceneManager::clearPlayerDataList()
   mPlayerDataList.clear();
 }
 
-void SceneManager::setCurrentSpeaker(QString t_chara, QString t_emote)
+void SceneManager::setCurrentSpeaker(QString t_chara, QString t_emote, int t_type)
 {
   mLastSpeaker = SpeakerData(mCurrentSpeaker.mCharacter, mCurrentSpeaker.mEmote);
   mCurrentSpeaker = SpeakerData(t_chara, t_emote);
+  mCurrentSpeakerType = t_type;
   VariableManager::get().setVariable("speaker", mCurrentSpeaker.mCharacter);
   VariableManager::get().setVariable("speaker_last", mLastSpeaker.mCharacter);
+  VariableManager::get().setVariable("speaker_type", QString::number(t_type));
 }
 
 SpeakerData SceneManager::getCurrentSpeaker()
@@ -117,5 +121,29 @@ SpeakerData SceneManager::getCurrentSpeaker()
 SpeakerData SceneManager::getPreviousSpeaker()
 {
   return mLastSpeaker;
+}
+
+QString SceneManager::getChatboxType()
+{
+
+  if(mCurrentSpeakerType == 1) return "shout";
+  if(mCurrentSpeakerType == 2) return "think";
+  if(mCurrentSpeakerType == 3) return "cg";
+
+  if(!PairManager::get().GetUsePairData()) return "center";
+  else
+  {
+    double l_offset_self = PairManager::get().GetOffsetSelf();
+    double l_offset_pair = PairManager::get().GetOffsetOther();
+
+    if(l_offset_self > l_offset_pair) return "right";
+    else return "left";
+  }
+  return "center";
+}
+
+int SceneManager::getSpeakerType()
+{
+  return mCurrentSpeakerType;
 }
 

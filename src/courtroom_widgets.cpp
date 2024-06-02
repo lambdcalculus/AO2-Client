@@ -360,7 +360,8 @@ void Courtroom::create_widgets()
   {
       LocalizationManager::get().getLocalizationText("CHAT_TALK"),
       LocalizationManager::get().getLocalizationText("CHAT_SHOUT"),
-      LocalizationManager::get().getLocalizationText("CHAT_THINK")
+      LocalizationManager::get().getLocalizationText("CHAT_THINK"),
+      LocalizationManager::get().getLocalizationText("CHAT_CG"),
   };
 
   ui_chat_type_dropdown = setupComboBoxWidget(l_chatTypes, "chat_type", "[CHAT TYPE]");

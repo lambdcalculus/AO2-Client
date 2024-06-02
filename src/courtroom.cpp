@@ -817,6 +817,7 @@ void Courtroom::on_character_ini_changed()
 void Courtroom::on_ic_message_return_pressed()
 {
 
+  bool l_non_legacy_server = GameManager::get().usesServerFunction("v2");
 
   if (ui_ic_chat_message_field->text() == "")
     return;
@@ -843,19 +844,24 @@ void Courtroom::on_ic_message_return_pressed()
   // video_name
   // show_emote
 
+
+  //TO-DO: Implement a new system for think and shout.
+  //if(!l_non_legacy_server)
+  //{
   if(m_current_chat_type == ChatTypes::Think)
   {
-      send_ooc_packet({"/think " + ui_ic_chat_message_field->text()});
-      ui_ic_chat_message_field->clear();
-      return;
+    send_ooc_packet({"/think " + ui_ic_chat_message_field->text()});
+    ui_ic_chat_message_field->clear();
+    return;
   }
 
   if(m_current_chat_type == ChatTypes::Shout)
   {
-      send_ooc_packet({"/shout " + ui_ic_chat_message_field->text()});
-      ui_ic_chat_message_field->clear();
-      return;
+    send_ooc_packet({"/shout " + ui_ic_chat_message_field->text()});
+    ui_ic_chat_message_field->clear();
+    return;
   }
+  //}
 
   QStringList packet_contents;
 
@@ -944,7 +950,7 @@ void Courtroom::on_ic_message_return_pressed()
 
   // Character Animation
 
-  if(GameManager::get().usesServerFunction("v2"))
+  if(l_non_legacy_server)
   {
     QString lAnimName = "";
     if(wCharaAnimList->currentItem() != nullptr)
@@ -953,6 +959,7 @@ void Courtroom::on_ic_message_return_pressed()
     }
 
     packet_contents.append(lAnimName);
+    packet_contents.append(QString::number((int)m_current_chat_type));
   }
 
   ao_app->send_server_packet(DRPacket("MS", packet_contents));
@@ -1004,7 +1011,12 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
     PairManager::get().SetPairData(p_chatmessage[CMPairChrName], p_chatmessage[CMPairEmote], p_chatmessage[CMOffsetX].toInt(), p_chatmessage[CMPairOffsetX].toInt(), p_chatmessage[CMPairFlip].toInt() == 1);
   }
 
-  SceneManager::get().setCurrentSpeaker(p_chatmessage[CMChrName], p_chatmessage[CMEmote]);
+  int l_character_type = 0;
+  if(!p_chatmessage[CMCharType].trimmed().isEmpty())
+  {
+    l_character_type = p_chatmessage[CMCharType].toInt();
+  }
+  SceneManager::get().setCurrentSpeaker(p_chatmessage[CMChrName], p_chatmessage[CMEmote], l_character_type);
 
   ReplayManager::get().recordMessage(p_chatmessage);
   CharacterData *l_speakerData = CharacterManager::get().ReadCharacter(p_chatmessage[CMChrName]);
@@ -1318,9 +1330,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   double selfOffset = PairManager::get().GetOffsetSelf();
   double otherOffset = PairManager::get().GetOffsetOther();
 
-  QString offsetTextbox = "left";
-
-  if(selfOffset > otherOffset) offsetTextbox = "right";
+  QString l_chatbox_type_name = SceneManager::get().getChatboxType();
 
   ui_vp_player_char->setPos(selfOffset, ui_vp_player_char->y());
   ui_vp_player_pair->setPos(otherOffset, ui_vp_player_pair->y());
@@ -1348,29 +1358,18 @@ void Courtroom::handle_chatmessage_2() // handles IC
     if(!PairManager::get().GetUsePairData())
     {
       ui_vp_player_pair->hide();
-      pos_size_type showname = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("showname", "center"), ThemeManager::get().getViewporResize());
-      pos_size_type l_MessagePos = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("message", "center"), ThemeManager::get().getViewporResize());
-
-      ui_vp_showname->move(showname.x, showname.y);
-      ui_vp_showname->resize(showname.width, showname.height);
-      ui_vp_message->move(l_MessagePos.x, l_MessagePos.y);
-      ui_vp_message->resize(l_MessagePos.width, l_MessagePos.height);
-      offsetTextbox = "center";
-    }
-    else
-    {
-      pos_size_type showname = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("showname", offsetTextbox), ThemeManager::get().getViewporResize());
-      pos_size_type l_MessagePos = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("message", offsetTextbox), ThemeManager::get().getViewporResize());
-
-      ui_vp_showname->move(showname.x, showname.y);
-      ui_vp_showname->resize(showname.width, showname.height);
-      ui_vp_message->move(l_MessagePos.x, l_MessagePos.y);
-      ui_vp_message->resize(l_MessagePos.width, l_MessagePos.height);
     }
 
+    pos_size_type showname = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("showname", l_chatbox_type_name), ThemeManager::get().getViewporResize());
+    pos_size_type l_MessagePos = ThemeManager::get().resizePosition(PairManager::get().GetElementAlignment("message", l_chatbox_type_name), ThemeManager::get().getViewporResize());
 
-    setShownameFont(ui_vp_showname, "showname", offsetTextbox, ao_app);
-    setShownameFont(ui_vp_message, "message", offsetTextbox, ao_app);
+    ui_vp_showname->move(showname.x, showname.y);
+    ui_vp_showname->resize(showname.width, showname.height);
+    ui_vp_message->move(l_MessagePos.x, l_MessagePos.y);
+    ui_vp_message->resize(l_MessagePos.width, l_MessagePos.height);
+
+    setShownameFont(ui_vp_showname, "showname", l_chatbox_type_name, ao_app);
+    setShownameFont(ui_vp_message, "message", l_chatbox_type_name, ao_app);
   }
 
   if (m_shout_reload_theme)
@@ -1381,7 +1380,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
 
   const QString l_chatbox_name = ao_app->get_chat(m_chatmessage[CMChrName]);
   const bool l_is_self = (ao_config->log_display_self_highlight_enabled() && m_speaker_chr_id == m_chr_id);
-  ui_vp_chatbox->set_chatbox_image(l_chatbox_name, l_is_self, chatmessage_is_empty, offsetTextbox);
+  ui_vp_chatbox->set_chatbox_image(l_chatbox_name, l_is_self, chatmessage_is_empty, l_chatbox_type_name);
 
   if (!m_msg_is_first_person)
   {

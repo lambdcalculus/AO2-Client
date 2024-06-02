@@ -96,8 +96,8 @@ public:
     Talk,
     Shout,
     Think,
-    Whisper,
-    Party
+    CG,
+    Narrator
   };
 
   enum class ReportCardReason
@@ -362,7 +362,7 @@ private:
   QString icchatlogsfilename = QDateTime::currentDateTime().toString("'logs/'yyyy-MM-dd (hh.mm.ss.z)'.txt'");
 
   static const int MINIMUM_MESSAGE_SIZE = 15;
-  static const int OPTIMAL_MESSAGE_SIZE = 24;
+  static const int OPTIMAL_MESSAGE_SIZE = 26;
   QStringList m_pre_chatmessage;
   GameState m_game_state = GameState::Finished;
 
