@@ -1,7 +1,7 @@
 #include "theme_mode_reader.h"
 #include "file_functions.h"
 #include "modules/managers/localization_manager.h"
-#include <AOApplication.h>
+#include <aoapplication.h>
 #include <QDir>
 
 ThemeModeReader::ThemeModeReader(QString filePath)

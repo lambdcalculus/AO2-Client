@@ -1,7 +1,7 @@
 #ifndef CHARACTERSELECTWIDGET_H
 #define CHARACTERSELECTWIDGET_H
 
-#include <AOApplication.h>
+#include <aoapplication.h>
 #include <QObject>
 #include <QWidget>
 
