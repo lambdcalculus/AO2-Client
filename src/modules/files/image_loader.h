@@ -3,7 +3,7 @@
 
 #include <QThread>
 #include <QObject>
-#include <AOPixmap.h>
+#include <aopixmap.h>
 #include "QDebug"
 
 class ImageLoader : public QObject

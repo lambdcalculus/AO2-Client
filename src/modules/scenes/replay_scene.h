@@ -6,7 +6,7 @@
 #include <drcharactermovie.h>
 #include "drgraphicscene.h"
 #include "drscenemovie.h"
-#include <AOSfxPlayer.h>
+#include <aosfxplayer.h>
 #include <aoapplication.h>
 #include <aomusicplayer.h>
 #include <dreffectmovie.h>

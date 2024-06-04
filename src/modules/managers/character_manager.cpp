@@ -4,7 +4,7 @@
 #include "file_functions.h"
 #include "emotion_manager.h"
 
-#include <AOApplication.h>
+#include <aoapplication.h>
 #include <QCheckBox>
 #include <QFile>
 #include "courtroom.h"

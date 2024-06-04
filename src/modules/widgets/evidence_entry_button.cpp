@@ -1,5 +1,5 @@
 #include "evidence_entry_button.h"
-#include "AOApplication.h"
+#include "aoapplication.h"
 #include "commondefs.h"
 #include "modules/managers/evidence_manager.h"
 #include "theme.h"

@@ -1,7 +1,7 @@
 #ifndef EMOTIONMANAGER_H
 #define EMOTIONMANAGER_H
 
-#include <AOEmoteButton.h>
+#include <aoemotebutton.h>
 #include "modules/theme/widgets/droemotebuttons.h"
 
 
