@@ -10,7 +10,6 @@ KeyframePlayer::KeyframePlayer(QWidget *parent) : DRGraphicsView(parent)
 {
   setStyleSheet("background: transparent;");
   setBackgroundBrush(Qt::transparent);
-  AnimationManager::get().setScene(this);
 
   connect(&GameManager::get(), SIGNAL(ShoutComplete()), this, SLOT(animationComplete()));
   connect(&GameManager::get(), SIGNAL(JudgeComplete()), this, SLOT(animationComplete()));

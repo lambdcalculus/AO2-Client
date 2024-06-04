@@ -330,7 +330,7 @@ void ThemeManager::createButtonWidget(QString t_name, QWidget *t_parent)
   lButton->show();
 }
 
-void ThemeManager::createImageWidget(QString t_name, QString t_image, bool visible, QWidget *t_parent)
+AOImageDisplay *ThemeManager::createImageWidget(QString t_name, QString t_image, bool visible, QWidget *t_parent)
 {
   AOImageDisplay *l_image = new AOImageDisplay(t_parent, AOApplication::getInstance());
   autoWidgetDimensions(l_image, t_name, REPLAYS);
@@ -339,6 +339,8 @@ void ThemeManager::createImageWidget(QString t_name, QString t_image, bool visib
 
   if(!visible) l_image->hide();
   else l_image->show();
+
+  return l_image;
 }
 
 void ThemeManager::createComboboxWidget(QString t_name)

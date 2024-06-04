@@ -20,27 +20,19 @@ public:
     return s_Instance;
   }
 
-  void loadCharacterAnimations();
-  QVector<DROAnimationKeyframe> getCharacterFrames(QString t_name);
-  bool getCharacterLoop(QString t_name);
-
-  void setScene(KeyframePlayer * t_scene);
-  void addToQueue(DROAnimation * t_animation);
+  //Player Animation Management
+  void CachePlayerAnimations();
+  QVector<DROAnimationKeyframe> GetPlayerFrames(QString t_name);
+  bool GetPlayerAnimLoops(QString t_name);
 
 private:
-  QThread *ThAnimationQueue = nullptr;
-
-  QMap<QString, AnimationReader*> mCharacterAnimations = {};
-  QStringList mCharaAnimationNames = {};
-  KeyframePlayer *mShoutsScene = nullptr;
-  QVector<DROAnimation *> mGraphicsRenderQueue = {};
-
-private:
-  AnimationManager()
-  {
-
-  }
+  AnimationManager() { }
   static AnimationManager s_Instance;
+
+
+  QMap<QString, AnimationReader*> m_PlayerAnimations = {};
+  QStringList m_CachedPlayerAnimNames = {};
+  QVector<DROAnimation *> mGraphicsRenderQueue = {};
 
 };
 

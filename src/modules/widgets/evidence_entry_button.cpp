@@ -22,11 +22,11 @@ void EvidenceEntryButton::setEvidenceId(int t_id)
   mEvidenceId = t_id;
   wEvidenceName->move(0, 0);
   wEvidenceName->resize(this->width(), this->height());
-  wEvidenceName->setPlainText(EvidenceManager::get().getEvidenceName(mEvidenceId));
+  wEvidenceName->setPlainText(EvidenceManager::get().GetEvidenceName(mEvidenceId));
 }
 
 void EvidenceEntryButton::on_clicked()
 {
   if(mEvidenceId < 0) return;
-  EvidenceManager::get().updateSelectedEvidence(mEvidenceId);
+  EvidenceManager::get().SelectEvidence(mEvidenceId);
 }

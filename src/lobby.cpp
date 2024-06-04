@@ -588,7 +588,7 @@ void Lobby::onToggleGalleryPressed()
 
 void Lobby::onPlayReplayPresssed()
 {
-  ReplayManager::get().loadReplayPlayback(ReplayManager::get().getReplayPath(mCurrentPackage, mCurrentCategory, pUiReplayList->selectedItems().at(0)->text()), ao_app->constructReplay());
+  ReplayManager::get().PlaybackLoadFile(ReplayManager::get().getReplayPath(mCurrentPackage, mCurrentCategory, pUiReplayList->selectedItems().at(0)->text()), ao_app->constructReplay());
 }
 
 void Lobby::toggle_public_server_filter()

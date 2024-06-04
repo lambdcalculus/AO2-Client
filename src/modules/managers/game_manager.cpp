@@ -9,46 +9,46 @@ GameManager GameManager::s_Instance;
 void GameManager::StartGameLoop()
 {
   StopGameLoop();
-  ReplayManager::get().startRecording();
-  connect(&mFrameTimer, &QTimer::timeout, this, &GameManager::RunGameLoop);
-  mFrameTimer.setInterval(1000 / mFPS);
-  mFrameTimer.start();
+  ReplayManager::get().RecordingStart();
+  connect(&m_FrameTimer, &QTimer::timeout, this, &GameManager::RunGameLoop);
+  m_FrameTimer.setInterval(1000 / m_FramesPerSecond);
+  m_FrameTimer.start();
 }
 
 void GameManager::StopGameLoop()
 {
-  mMessageTypeWriter = nullptr;
-  mFrameTimer.stop();
+  m_WidgetTypeWriter = nullptr;
+  m_FrameTimer.stop();
 }
 
 void GameManager::SetPlayerAnimation(GraphicObjectAnimator *t_animation)
 {
-  mPlayerAnimation = t_animation;
+  m_PlayerAnimation = t_animation;
 }
 
 void GameManager::SetTypeWriter(TypewriterTextEdit *t_writer)
 {
-  mMessageTypeWriter = t_writer;
+  m_WidgetTypeWriter = t_writer;
 }
 
 void GameManager::SetAnimationGroup(AnimTypes t_type, QVector<GraphicObjectAnimator *> t_animations)
 {
-  mRuntimeAnimation[t_type] = t_animations;
+  m_GraphicObjectAnimations[t_type] = t_animations;
 }
 
 void GameManager::RunAnimationLoop(AnimTypes t_type)
 {
-  if(mMessageTypeWriter != nullptr)
+  if(m_WidgetTypeWriter != nullptr)
   {
-    if(!mMessageTypeWriter->isTextRendered())
+    if(!m_WidgetTypeWriter->isTextRendered())
     {
-      mMessageTypeWriter->progressLetter();
+      m_WidgetTypeWriter->progressLetter();
     }
   }
-  if(mRuntimeAnimation.contains(t_type))
+  if(m_GraphicObjectAnimations.contains(t_type))
   {
     bool lAllAnimationsDone = true;
-    for(GraphicObjectAnimator * r_anim : mRuntimeAnimation[t_type])
+    for(GraphicObjectAnimator * r_anim : m_GraphicObjectAnimations[t_type])
     {
       if(r_anim->getAnimation()->getIsPlaying())
       {
@@ -60,7 +60,7 @@ void GameManager::RunAnimationLoop(AnimTypes t_type)
 
     if(lAllAnimationsDone)
     {
-      mRuntimeAnimation[t_type] = {};
+      m_GraphicObjectAnimations[t_type] = {};
       if(t_type == eAnimationShout) emit ShoutComplete();
       if(t_type == eAnimationGM) emit JudgeComplete();
     }
@@ -69,7 +69,7 @@ void GameManager::RunAnimationLoop(AnimTypes t_type)
 
 GameEffectData GameManager::getEffect(QString t_name)
 {
-  for(GameEffectData rEffectData : mGameEffects)
+  for(GameEffectData rEffectData : m_GameEffects)
   {
     if(t_name == rEffectData.mName) return rEffectData;
   }
@@ -79,7 +79,7 @@ GameEffectData GameManager::getEffect(QString t_name)
 
 GameEffectData GameManager::getEffect(int t_id)
 {
-  for(GameEffectData rEffectData : mGameEffects)
+  for(GameEffectData rEffectData : m_GameEffects)
   {
     if(t_id == rEffectData.mLegacyId) return rEffectData;
   }
@@ -95,20 +95,20 @@ void GameManager::setupGame()
 
 void GameManager::setServerFunctions(QStringList tFunctionList)
 {
-  mServerFeatures.clear();
-  mServerFeatures = tFunctionList;
+  m_ServerFeatures.clear();
+  m_ServerFeatures = tFunctionList;
 }
 
 bool GameManager::usesServerFunction(QString tFunctionName)
 {
-  return mServerFeatures.contains(tFunctionName);
+  return m_ServerFeatures.contains(tFunctionName);
 }
 
 void GameManager::setupGameEffects()
 {
   JSONReader lEffectsReader = JSONReader();
   lEffectsReader.ReadFromFile(PathingManager::get().getBasePath() +  "effects/default/effects.json");
-  mGameEffects = {};
+  m_GameEffects = {};
 
   QJsonArray lEffectsArray = lEffectsReader.mDocument.array();
   for(QJsonValueRef rEffect : lEffectsArray)
@@ -118,33 +118,33 @@ void GameManager::setupGameEffects()
     lEffectData.mLoops = lEffectsReader.getBoolValue("loop");
     lEffectData.mIgnoresPair = lEffectsReader.getBoolValue("ignore_pair");
     lEffectData.mLegacyId = lEffectsReader.getIntValue("id");
-    mGameEffects.append(lEffectData);
+    m_GameEffects.append(lEffectData);
   }
 }
 
 int GameManager::getUptime()
 {
-  return mUptime;
+  return m_GameUptime;
 }
 
 void GameManager::RunGameLoop()
 {
-  if(!mFlgUpdateRunning)
+  if(!m_IsUpdateRunning)
   {
-    mUptime += 1000 / mFPS;
-    mFlgUpdateRunning = true;
+    m_GameUptime += 1000 / m_FramesPerSecond;
+    m_IsUpdateRunning = true;
 
-    if(mPlayerAnimation != nullptr)
+    if(m_PlayerAnimation != nullptr)
     {
-      mPlayerAnimation->getAnimation()->RunAnimation();
-      mPlayerAnimation->updateAnimation();
+      m_PlayerAnimation->getAnimation()->RunAnimation();
+      m_PlayerAnimation->updateAnimation();
     }
 
     RunAnimationLoop(eAnimationShout);
     RunAnimationLoop(eAnimationGM);
 
 
-    mFlgUpdateRunning = false;
+    m_IsUpdateRunning = false;
     emit FrameComplete();
   }
 }

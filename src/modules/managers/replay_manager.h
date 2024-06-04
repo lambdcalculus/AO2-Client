@@ -17,45 +17,56 @@ public:
     return s_Instance;
   }
 
+  //Replay Recording Functions
+  void RecordingStart();
+  void RecordChangeMusic(QString t_music);
+  void RecordChangeBackground(QString t_bgn);
+  void RecordMessageIC(QStringList t_message);
+  void RecordMessageOOC(QString t_message);
+  void RecordChangeWeather(QString t_weather);
+  void RecordChangeGamemode(QString t_gamemode);
+  void RecordChangeHour(int t_hour);
+  void RecordChangeTOD(QString t_tod);
+  void RecordingSave();
+
+
+  //Playback Functions
+  void PlaybackLoadFile(QString t_name, ReplayScene *p_scene);
+  void PlaybackProgressManual();
+
+
+  //Playback Metadata Functions
   QStringList getReplayList(QString t_package, QString t_category);
   QString getReplayPath(QString t_package, QString t_category, QString t_name);
   QString getReplayImagePath(QString t_package, QString t_category, QString t_name);
 
-  void loadReplay();
-
-  void startRecording();
-  void recordMusicOP(QString t_music);
-  void recordArea(QString t_bgn);
-  void recordMessage(QStringList t_message);
-
-  void saveReplay();
-
-
-  void loadReplayPlayback(QString t_name, ReplayScene *p_scene);
-  QString getPlaybackBackground();
-  void progressPlayback();
-
-  void clearPackagesReplays();
-  void cachePackageReplays(QString t_package, QVector<QString> t_tags);
+  //Package Functions
   QStringList getPackageNames();
   QVector<QString> getPackageCategoryList(QString t_package);
 
+  void ResetPackagesCache();
+  void CachePackageReplays(QString t_package, QVector<QString> t_tags);
+
 
 private:
-  QVector<QString> mPackageNames = {};
-  QHash<QString, QVector<QString>> mPackageReplays = {};
   ReplayManager() {}
-  QElapsedTimer mRecorder;
   static ReplayManager s_Instance;
 
-  QString mReplayFilePath = "replays/replay.json";
+  ReplayScene *p_SceneReplay = nullptr;
 
-  QVector<ReplayOperation> mCurrentHubReplay = {};
+  //Packages
+  QVector<QString> m_PackagesContaining = {};
+  QHash<QString, QVector<QString>> m_PackageCategories = {};
 
+  //Recording
+  QElapsedTimer m_TimerRecorder;
+  QString m_FilePathOutput = "replays/replay.json";
+  QVector<ReplayOperation> m_ReplayOperationsRecorded = {};
 
-  ReplayScene *mReplayScene = nullptr;
-  int mCurrentPlaybackIndex = 0;
-  QVector<ReplayOperation> mPlaybackReplay = {};
+  //Playback
+  int m_PlaybackPositionIndex = 0;
+  QVector<ReplayOperation> m_ReplayOperationsPlayback = {};
+
 
 };
 

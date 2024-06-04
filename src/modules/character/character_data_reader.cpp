@@ -16,7 +16,6 @@ void CharacterDataReader::loadCharacter(QString t_folder)
   mShowname = getStringValue("showname");
   mGender = getStringValue("gender");
   mSide = getStringValue("side");
-  mHeight = getDoubleValue("height");
 
   loadOutfits();
 }
@@ -87,5 +86,5 @@ void CharacterDataReader::switchOutfit(QString t_outfit)
 
 double CharacterDataReader::getHeight()
 {
-  return mHeight;
+  return 0;
 }

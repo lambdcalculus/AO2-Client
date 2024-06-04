@@ -197,7 +197,7 @@ void Courtroom::create_widgets()
   wEvidenceDescription->setReadOnly(true);
   wEvidenceDescription->set_auto_align(false);
 
-  EvidenceManager::get().setEvidenceText("Leon's Body\n\nCorpse Corpse");
+  EvidenceManager::get().SetEvidenceDescription("");
 
   ui_ooc_chatlog = new DRChatLog(this);
   ui_ooc_chatlog->setReadOnly(true);

@@ -13,80 +13,80 @@ SceneManager SceneManager::s_Instance;
 
 void SceneManager::execLoadPlayerBackground(QString t_backgroundName)
 {
-  mBackgroundName = t_backgroundName;
+  m_BackgroundName = t_backgroundName;
   const QString l_backgroundJSONPath = AOApplication::getInstance()->find_asset_path(AOApplication::getInstance()->get_background_path(t_backgroundName) + "/" + "background.json");
   if(file_exists(l_backgroundJSONPath))
   {
-    pCurrentBackground = new BackgroundReader();
+    p_BackgroundCurrent = new BackgroundReader();
   }
   else
   {
-    pCurrentBackground = new LegacyBackgroundReader();
+    p_BackgroundCurrent = new LegacyBackgroundReader();
   }
 
-  pCurrentBackground->execLoadBackground(t_backgroundName);
+  p_BackgroundCurrent->execLoadBackground(t_backgroundName);
 }
 
 int SceneManager::getBackgroundPosition()
 {
-  if(pCurrentBackground == nullptr) return 0;
-  return pCurrentBackground->getVerticalPosition(0);
+  if(p_BackgroundCurrent == nullptr) return 0;
+  return p_BackgroundCurrent->getVerticalPosition(0);
 }
 
 QString SceneManager::getBackgroundPath(QString t_position)
 {
-  if(pCurrentBackground == nullptr) return "";
-  QString l_filename = pCurrentBackground->getBackgroundFilename(t_position);
-  return AOApplication::getInstance()->get_background_sprite_path(mBackgroundName, l_filename);
+  if(p_BackgroundCurrent == nullptr) return "";
+  QString l_filename = p_BackgroundCurrent->getBackgroundFilename(t_position);
+  return AOApplication::getInstance()->get_background_sprite_path(m_BackgroundName, l_filename);
 }
 
 QString SceneManager::getForegroundPath(QString t_position)
 {
-  if(pCurrentBackground == nullptr) return "";
-  QString l_filename = pCurrentBackground->getForegroundFilename(t_position);
-  return AOApplication::getInstance()->get_background_sprite_path(mBackgroundName, l_filename);
+  if(p_BackgroundCurrent == nullptr) return "";
+  QString l_filename = p_BackgroundCurrent->getForegroundFilename(t_position);
+  return AOApplication::getInstance()->get_background_sprite_path(m_BackgroundName, l_filename);
 }
 
 DRBackgroundSettings SceneManager::getBackgroundSettings()
 {
-  if(pCurrentBackground == nullptr) return DRBackgroundSettings();
-  return pCurrentBackground->getSettings();
+  if(p_BackgroundCurrent == nullptr) return DRBackgroundSettings();
+  return p_BackgroundCurrent->getSettings();
 }
 
 AOLabel *SceneManager::CreateTransition(QWidget *parents, AOApplication *ao_app, DRGraphicsView *viewport)
 {
-  pUiTransition = new AOLabel(parents, ao_app);
+  p_WidgetTransition = new AOLabel(parents, ao_app);
 
-  pViewport = viewport;
+  p_WidgetViewport = viewport;
 
-  pUiTransition->move(pViewport->x(), pViewport->y());
-  pUiTransition->resize(pViewport->width(), pViewport->height());
+  p_WidgetTransition->move(p_WidgetViewport->x(), p_WidgetViewport->y());
+  p_WidgetTransition->resize(p_WidgetViewport->width(), p_WidgetViewport->height());
 
-  return pUiTransition;
+  return p_WidgetTransition;
 }
 
 AOLabel *SceneManager::GetTransition()
 {
-  return pUiTransition;
+  return p_WidgetTransition;
 }
 
 void SceneManager::RenderTransition()
 {
-  QImage image(pViewport->scene()->sceneRect().size().toSize(), QImage::Format_ARGB32);
+  QImage image(p_WidgetViewport->scene()->sceneRect().size().toSize(), QImage::Format_ARGB32);
   image.fill(Qt::transparent);
 
   QPainter painter(&image);
-  pViewport->scene()->render(&painter);
-  pUiTransition->setPixmap(QPixmap::fromImage(image));
+  p_WidgetViewport->scene()->render(&painter);
+  p_WidgetTransition->setPixmap(QPixmap::fromImage(image));
 }
 
 void SceneManager::AnimateTransition()
 {
   QGraphicsOpacityEffect *eff = new QGraphicsOpacityEffect();
-  pUiTransition->setGraphicsEffect(eff);
+  p_WidgetTransition->setGraphicsEffect(eff);
 
   QPropertyAnimation *a = new QPropertyAnimation(eff, "opacity");
-  a->setDuration(mFadeDuration);
+  a->setDuration(m_FadeDuration);
   a->setStartValue(1);
   a->setEndValue(0);
   a->setEasingCurve(QEasingCurve::OutBack);
@@ -95,7 +95,7 @@ void SceneManager::AnimateTransition()
 
 void SceneManager::setFadeDuration(int duration)
 {
-  mFadeDuration = duration;
+  m_FadeDuration = duration;
 }
 
 void SceneManager::clearPlayerDataList()
@@ -105,30 +105,30 @@ void SceneManager::clearPlayerDataList()
 
 void SceneManager::setCurrentSpeaker(QString t_chara, QString t_emote, int t_type)
 {
-  mLastSpeaker = SpeakerData(mCurrentSpeaker.mCharacter, mCurrentSpeaker.mEmote);
-  mCurrentSpeaker = SpeakerData(t_chara, t_emote);
-  mCurrentSpeakerType = t_type;
-  VariableManager::get().setVariable("speaker", mCurrentSpeaker.mCharacter);
-  VariableManager::get().setVariable("speaker_last", mLastSpeaker.mCharacter);
+  m_SpeakerLast = SpeakerData(m_SpeakerCurrent.mCharacter, m_SpeakerCurrent.mEmote);
+  m_SpeakerCurrent = SpeakerData(t_chara, t_emote);
+  m_SpeakerType = t_type;
+  VariableManager::get().setVariable("speaker", m_SpeakerCurrent.mCharacter);
+  VariableManager::get().setVariable("speaker_last", m_SpeakerLast.mCharacter);
   VariableManager::get().setVariable("speaker_type", QString::number(t_type));
 }
 
-SpeakerData SceneManager::getCurrentSpeaker()
+SpeakerData SceneManager::getSpeakerCurrent()
 {
-  return mCurrentSpeaker;
+  return m_SpeakerCurrent;
 }
 
-SpeakerData SceneManager::getPreviousSpeaker()
+SpeakerData SceneManager::getSpeakerPrevious()
 {
-  return mLastSpeaker;
+  return m_SpeakerLast;
 }
 
 QString SceneManager::getChatboxType()
 {
 
-  if(mCurrentSpeakerType == 1) return "shout";
-  if(mCurrentSpeakerType == 2) return "think";
-  if(mCurrentSpeakerType == 3) return "cg";
+  if(m_SpeakerType == 1) return "shout";
+  if(m_SpeakerType == 2) return "think";
+  if(m_SpeakerType == 3) return "cg";
 
   if(!PairManager::get().GetUsePairData()) return "center";
   else
@@ -144,6 +144,6 @@ QString SceneManager::getChatboxType()
 
 int SceneManager::getSpeakerType()
 {
-  return mCurrentSpeakerType;
+  return m_SpeakerType;
 }
 

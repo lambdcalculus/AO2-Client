@@ -9,46 +9,39 @@
 
 AnimationManager AnimationManager::s_Instance;
 
-void AnimationManager::loadCharacterAnimations()
+void AnimationManager::CachePlayerAnimations()
 {
-  mCharaAnimationNames.clear();
-  mCharaAnimationNames.append("Default");
+  m_CachedPlayerAnimNames.clear();
+  m_CachedPlayerAnimNames.append("Default");
 
-  mCharacterAnimations = {};
+  m_PlayerAnimations = {};
   QListWidget * l_listWidget = ThemeManager::get().getWidgetType<QListWidget>("chara_animations");
   QStringList lCharacterAnims = PathingManager::get().searchDirectoryContentsFirst("animations/characters/", "json", false);
 
   for(QString rAnimName : lCharacterAnims)
   {
-    mCharaAnimationNames.append(rAnimName);
-    mCharacterAnimations[rAnimName] = new AnimationReader(eAnimationPlayer, rAnimName);
+    m_CachedPlayerAnimNames.append(rAnimName);
+    m_PlayerAnimations[rAnimName] = new AnimationReader(eAnimationPlayer, rAnimName);
   }
 
   if(l_listWidget != nullptr)
   {
     l_listWidget->clear();
-    l_listWidget->addItems(mCharaAnimationNames);
+    l_listWidget->addItems(m_CachedPlayerAnimNames);
   }
 }
 
-QVector<DROAnimationKeyframe> AnimationManager::getCharacterFrames(QString t_name)
+QVector<DROAnimationKeyframe> AnimationManager::GetPlayerFrames(QString t_name)
 {
-  if(mCharacterAnimations.contains(t_name)) return mCharacterAnimations[t_name]->getFrames("player");
+  //TO-DO: I want to allow character folders to have their own animation files that can be overwritten if needed, similar to how shouts work.
+  if(m_PlayerAnimations.contains(t_name)) return m_PlayerAnimations[t_name]->getFrames("player");
   return {};
 }
 
-bool AnimationManager::getCharacterLoop(QString t_name)
+bool AnimationManager::GetPlayerAnimLoops(QString t_name)
 {
-  if(mCharacterAnimations.contains(t_name)) return mCharacterAnimations[t_name]->getCanLoop();
+  if(m_PlayerAnimations.contains(t_name)) return m_PlayerAnimations[t_name]->getCanLoop();
   return true;
 }
 
-void AnimationManager::setScene(KeyframePlayer *t_scene)
-{
-  mShoutsScene = t_scene;
-}
 
-void AnimationManager::addToQueue(DROAnimation *t_animation)
-{
-  mGraphicsRenderQueue.append(t_animation);
-}

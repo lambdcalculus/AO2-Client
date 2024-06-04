@@ -113,7 +113,7 @@ void JsonPacket::ProcessPairPacket(JSONReader& jsonReader)
 void JsonPacket::ProcessEvidencePacket(JSONReader &jsonReader)
 {
   QJsonArray playerArray = jsonReader.getArrayValue("data");
-  EvidenceManager::get().clearEvidence();
+  EvidenceManager::get().DestroyAllEvidence();
   for(QJsonValueRef ref : playerArray)
   {
     jsonReader.SetTargetObject(ref.toObject());
@@ -122,7 +122,7 @@ void JsonPacket::ProcessEvidencePacket(JSONReader &jsonReader)
     QString l_evidenceDescription = jsonReader.getStringValue("description");
     QString l_evidenceImage = jsonReader.getStringValue("image");
 
-    EvidenceManager::get().addEvidence(l_evidenceName, l_evidenceDescription, l_evidenceImage);
+    EvidenceManager::get().CreateEvidence(l_evidenceName, l_evidenceDescription, l_evidenceImage);
   }
   if(AOApplication::getInstance()->m_courtroom != nullptr)
     AOApplication::getInstance()->m_courtroom->buildEvidenceList();

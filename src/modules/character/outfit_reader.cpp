@@ -19,7 +19,6 @@ OutfitReader::OutfitReader(QString t_character, QString t_outfit)
 void OutfitReader::ReadSettings()
 {
   SetTargetObject("settings");
-  mHeight = getDoubleValue("height");
 }
 
 void OutfitReader::ReadEmotes()
@@ -51,5 +50,5 @@ void OutfitReader::ReadEmotes()
 
 double OutfitReader::getOutfitHeight()
 {
-  return mHeight;
+  return 0;
 }

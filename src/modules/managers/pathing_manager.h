@@ -41,9 +41,9 @@ private:
 
   QStringList searchDirectoryContents(QString t_directory, QString t_extension, bool t_includeExtension = true);
 
-  QStringList mDisabledPackages = {};
-  QStringList mLocalPackages = {};
-  QStringList mMountedPackages = {};
+  QStringList m_PackagesDisabled = {};
+  QStringList m_PackagesLocal = {};
+  QStringList m_PackagesMounted = {};
 
 };
 

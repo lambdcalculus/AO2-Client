@@ -54,21 +54,24 @@ private:
   GameManager() {}
   static GameManager s_Instance;
 
-  //Frame Loop Variables
-  int mFPS = 60;
-  bool mFlgUpdateRunning = false;
-  QTimer mFrameTimer;
+  //Game Loop Variables
+  int m_FramesPerSecond = 60;
+  bool m_IsUpdateRunning = false;
 
-  int mUptime = 0;
+  //Game Timings
+  QTimer m_FrameTimer;
+  int m_GameUptime = 0;
 
-  GraphicObjectAnimator *mPlayerAnimation = nullptr;
+  //Widgets
+  TypewriterTextEdit *m_WidgetTypeWriter = nullptr;
 
-  TypewriterTextEdit *mMessageTypeWriter = nullptr;
-  QMap<AnimTypes, QVector<GraphicObjectAnimator *>> mRuntimeAnimation = {};
+  //Animations
+  GraphicObjectAnimator *m_PlayerAnimation = nullptr;
+  QMap<AnimTypes, QVector<GraphicObjectAnimator *>> m_GraphicObjectAnimations = {};
 
-  QVector<GameEffectData> mGameEffects = {};
-
-  QStringList mServerFeatures = {};
+  //Data
+  QVector<GameEffectData> m_GameEffects = {};
+  QStringList m_ServerFeatures = {};
 
   void StartGameLoop();
   void setupGameEffects();

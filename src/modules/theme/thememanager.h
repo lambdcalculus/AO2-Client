@@ -91,7 +91,7 @@ public:
   //Create Widgets
   void clearWidgets();
   void createButtonWidget(QString t_name, QWidget *t_parent = nullptr);
-  void createImageWidget(QString t_name, QString t_image, bool visible, QWidget *t_parent = nullptr);
+  AOImageDisplay *createImageWidget(QString t_name, QString t_image, bool visible, QWidget *t_parent = nullptr);
   void createComboboxWidget(QString t_name);
 
 private:

@@ -56,36 +56,36 @@ QString ReplayManager::getReplayImagePath(QString t_package, QString t_category,
   return t_path;
 }
 
-void ReplayManager::startRecording()
+void ReplayManager::RecordingStart()
 {
-  QString mFileName = QDateTime::currentDateTime().toString("yyyy-MM-dd (hh.mm.ss.z)'.json'");
-  mReplayFilePath =  AOApplication::getInstance()->get_base_path() + "replays/" + mFileName;
-  mRecorder.start();
+  QString l_FileName = QDateTime::currentDateTime().toString("yyyy-MM-dd (hh.mm.ss.z)'.json'");
+  m_FilePathOutput =  AOApplication::getInstance()->get_base_path() + "replays/" + l_FileName;
+  m_TimerRecorder.start();
 }
 
-void ReplayManager::recordMusicOP(QString t_music)
+void ReplayManager::RecordChangeMusic(QString t_music)
 {
   ReplayOperation lNewOperation = ReplayOperation("bgm");
-  lNewOperation.mTimestamp = mRecorder.elapsed();
+  lNewOperation.mTimestamp = m_TimerRecorder.elapsed();
   lNewOperation.mVariables["track"] = t_music;
-  mCurrentHubReplay.append(lNewOperation);
-  saveReplay();
+  m_ReplayOperationsRecorded.append(lNewOperation);
+  RecordingSave();
 }
 
-void ReplayManager::recordArea(QString t_bgn)
+void ReplayManager::RecordChangeBackground(QString t_bgn)
 {
   ReplayOperation lNewOperation = ReplayOperation("bg");
-  lNewOperation.mTimestamp = mRecorder.elapsed();
+  lNewOperation.mTimestamp = m_TimerRecorder.elapsed();
   lNewOperation.mVariables["name"] = t_bgn;
-  mCurrentHubReplay.append(lNewOperation);
-  saveReplay();
+  m_ReplayOperationsRecorded.append(lNewOperation);
+  RecordingSave();
 }
 
-void ReplayManager::recordMessage(QStringList t_message)
+void ReplayManager::RecordMessageIC(QStringList t_message)
 {
   ReplayOperation lNewOperation = ReplayOperation("msg");
 
-  lNewOperation.mTimestamp = mRecorder.elapsed();
+  lNewOperation.mTimestamp = m_TimerRecorder.elapsed();
 
   GameEffectData lEffect = GameManager::get().getEffect(t_message[CMEffectState].toInt());
 
@@ -102,17 +102,42 @@ void ReplayManager::recordMessage(QStringList t_message)
   lNewOperation.mVariables["flip"] = t_message[CMFlipState];
   lNewOperation.mVariables["effect"] = lEffect.mName;
   lNewOperation.mVariables["shout"] = t_message[CMShoutModifier];
-  mCurrentHubReplay.append(lNewOperation);
-  saveReplay();
+  m_ReplayOperationsRecorded.append(lNewOperation);
+  RecordingSave();
 }
 
-void ReplayManager::saveReplay()
+void ReplayManager::RecordMessageOOC(QString t_message)
+{
+  //TO-DO: Implement
+}
+
+void ReplayManager::RecordChangeWeather(QString t_weather)
+{
+  //TO-DO: Implement
+}
+
+void ReplayManager::RecordChangeGamemode(QString t_gamemode)
+{
+  //TO-DO: Implement
+}
+
+void ReplayManager::RecordChangeHour(int t_hour)
+{
+  //TO-DO: Implement
+}
+
+void ReplayManager::RecordChangeTOD(QString t_tod)
+{
+  //TO-DO: Implement
+}
+
+void ReplayManager::RecordingSave()
 {
   QJsonObject lReplayJson;
 
   QJsonArray lReplayOperations;
 
-  for(ReplayOperation rOperation : mCurrentHubReplay)
+  for(ReplayOperation rOperation : m_ReplayOperationsRecorded)
   {
     QJsonObject rNewOperations;
     rNewOperations["op"] = rOperation.mOperation;
@@ -132,7 +157,7 @@ void ReplayManager::saveReplay()
 
   QJsonDocument lOutputJson(lReplayJson);
 
-  QFile file(mReplayFilePath);
+  QFile file(m_FilePathOutput);
 
   if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
   {
@@ -146,70 +171,65 @@ void ReplayManager::saveReplay()
   file.close();
 }
 
-void ReplayManager::loadReplayPlayback(QString t_name, ReplayScene *p_scene)
+void ReplayManager::PlaybackLoadFile(QString t_name, ReplayScene *p_scene)
 {
-  mCurrentPlaybackIndex = 0;
-  mReplayScene = p_scene;
+  m_PlaybackPositionIndex = 0;
+  p_SceneReplay = p_scene;
   ReplayReader l_reader = ReplayReader(t_name);
-  mPlaybackReplay = l_reader.getOperations();
+  m_ReplayOperationsPlayback = l_reader.getOperations();
   return;
 }
 
-QString ReplayManager::getPlaybackBackground()
+void ReplayManager::PlaybackProgressManual()
 {
-  return "FTOD/Island 5/SurfaceCaveView";
-}
-
-void ReplayManager::progressPlayback()
-{
-  if(mPlaybackReplay.count() > (mCurrentPlaybackIndex + 1))
+  if(m_ReplayOperationsPlayback.count() > (m_PlaybackPositionIndex + 1))
   {
-    mCurrentPlaybackIndex += 1;
-    QString mOp = mPlaybackReplay[mCurrentPlaybackIndex].mOperation;
+    m_PlaybackPositionIndex += 1;
+    QString mOp = m_ReplayOperationsPlayback[m_PlaybackPositionIndex].mOperation;
 
     if(mOp == "msg")
     {
-      mReplayScene->setBgPosition(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["pos"]);
-      mReplayScene->setMsgOperation(mPlaybackReplay[mCurrentPlaybackIndex].mVariables);
+      p_SceneReplay->setBgPosition(m_ReplayOperationsPlayback[m_PlaybackPositionIndex].mVariables["pos"]);
+      p_SceneReplay->setMsgOperation(m_ReplayOperationsPlayback[m_PlaybackPositionIndex].mVariables);
     }
 
     if(mOp == "bg")
     {
-      mReplayScene->setBackground(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["name"]);
+      p_SceneReplay->setBackground(m_ReplayOperationsPlayback[m_PlaybackPositionIndex].mVariables["name"]);
     }
 
     if(mOp == "bgm")
     {
-      mReplayScene->playSong(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["track"]);
+      p_SceneReplay->playSong(m_ReplayOperationsPlayback[m_PlaybackPositionIndex].mVariables["track"]);
     }
 
-    if(mOp != "msg") progressPlayback();
+    if(mOp != "msg") PlaybackProgressManual();
   }
 
 }
 
-void ReplayManager::clearPackagesReplays()
+void ReplayManager::ResetPackagesCache()
 {
-  mPackageNames.clear();
-  mPackageReplays.clear();
-  mPackageNames.append("Local Recordings");
+  m_PackagesContaining.clear();
+  m_PackageCategories.clear();
+  m_PackagesContaining.append("Local Recordings");
 }
 
-void ReplayManager::cachePackageReplays(QString t_package, QVector<QString> t_tags)
+void ReplayManager::CachePackageReplays(QString t_package, QVector<QString> t_tags)
 {
-  if(!mPackageNames.contains(t_package))
+  if(!m_PackagesContaining.contains(t_package))
   {
-    mPackageNames.append(t_package);
-    mPackageReplays[t_package] = t_tags;
+    m_PackagesContaining.append(t_package);
+    m_PackageCategories[t_package] = t_tags;
   }
 }
 
 QStringList ReplayManager::getPackageNames()
 {
-  return mPackageNames.toList();
+  return m_PackagesContaining.toList();
 }
 
 QVector<QString> ReplayManager::getPackageCategoryList(QString t_package)
 {
-  return mPackageReplays[t_package];
+  return m_PackageCategories[t_package];
 }

@@ -21,7 +21,6 @@ private:
   void loadOutfits();
   QMap<QString, OutfitReader*> mOutfits = {};
   QStringList mOutfitNames = {};
-  double mHeight = 0;
 
   QVector<DREmote> getEmotes();
 

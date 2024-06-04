@@ -336,7 +336,7 @@ void Courtroom::enter_courtroom(int p_cid)
   const QString l_chr_name = get_character_ini();
 
   CharacterManager::get().SwitchCharacter(l_chr_name);
-  AnimationManager::get().loadCharacterAnimations();
+  AnimationManager::get().CachePlayerAnimations();
   CharacterData *l_selectedCharacter = CharacterManager::get().p_SelectedCharacter;
 
   if (is_spectating())
@@ -540,7 +540,7 @@ DRAreaBackground Courtroom::get_background()
 
 void Courtroom::set_background(DRAreaBackground p_background)
 {
-  ReplayManager::get().recordArea(p_background.background);
+  ReplayManager::get().RecordChangeBackground(p_background.background);
   m_background = p_background;
 
   QStringList l_background_list{m_background.background};
@@ -1018,7 +1018,7 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
   }
   SceneManager::get().setCurrentSpeaker(p_chatmessage[CMChrName], p_chatmessage[CMEmote], l_character_type);
 
-  ReplayManager::get().recordMessage(p_chatmessage);
+  ReplayManager::get().RecordMessageIC(p_chatmessage);
   CharacterData *l_speakerData = CharacterManager::get().ReadCharacter(p_chatmessage[CMChrName]);
 
   QString l_showname = p_chatmessage[CMShowName];
@@ -1338,13 +1338,13 @@ void Courtroom::handle_chatmessage_2() // handles IC
          //TO-DO: Replace with proper networking.
   if(wCharaAnimList->currentItem() != nullptr)
   {
-    QVector<DROAnimationKeyframe> t_frames = AnimationManager::get().getCharacterFrames(wCharaAnimList->currentItem()->text());
+    QVector<DROAnimationKeyframe> t_frames = AnimationManager::get().GetPlayerFrames(wCharaAnimList->currentItem()->text());
     if(t_frames.isEmpty())
     {
       aniPlayerChar->getAnimation();
     }
     aniPlayerChar->setKeyframes(t_frames);
-    aniPlayerChar->startAnimation(AnimationManager::get().getCharacterLoop(wCharaAnimList->currentItem()->text()));
+    aniPlayerChar->startAnimation(AnimationManager::get().GetPlayerAnimLoops(wCharaAnimList->currentItem()->text()));
     GameManager::get().SetPlayerAnimation(aniPlayerChar);
   }
 
@@ -2174,7 +2174,7 @@ void Courtroom::handle_song(QStringList p_contents)
 
   m_music_player->play(l_song);
 
-  ReplayManager::get().recordMusicOP(l_song);
+  ReplayManager::get().RecordChangeMusic(l_song);
 
   DRAudiotrackMetadata l_song_meta(l_song);
   if (l_chr_id >= 0 && l_chr_id < CharacterManager::get().mServerCharacters.length())
@@ -2883,13 +2883,13 @@ void Courtroom::OnCharRandomClicked()
 
 void Courtroom::onEvidenceLeftClicked()
 {
-  EvidenceManager::get().addCurrentPage(-1);
+  EvidenceManager::get().AddCurrentPage(-1);
   buildEvidenceList();
 }
 
 void Courtroom::onEvidenceRightClicked()
 {
-  EvidenceManager::get().addCurrentPage(1);
+  EvidenceManager::get().AddCurrentPage(1);
   buildEvidenceList();
 }
 
@@ -3105,7 +3105,7 @@ void Courtroom::constructEvidenceList()
 void Courtroom::buildEvidenceList()
 {
   set_size_and_pos(wEvidenceList, "evidence_list", COURTROOM_DESIGN_INI, ao_app);
-  int l_currentPage = EvidenceManager::get().getCurrentPage();
+  int l_currentPage = EvidenceManager::get().GetCurrentPage();
   bool l_morePages = wEvidenceList->buildList(l_currentPage);
 
   wEvidenceRight->setVisible(l_morePages);

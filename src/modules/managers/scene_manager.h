@@ -20,10 +20,10 @@ public:
   }
 
   void execLoadPlayerBackground(QString t_backgroundName);
+  DRBackgroundSettings getBackgroundSettings();
   int getBackgroundPosition();
   QString getBackgroundPath(QString t_position);
   QString getForegroundPath(QString t_position);
-  DRBackgroundSettings getBackgroundSettings();
 
 
   AOLabel *CreateTransition(QWidget *parents, AOApplication* ao_app, DRGraphicsView *viewport);
@@ -41,27 +41,28 @@ public:
 
   //Current Scene
   void setCurrentSpeaker(QString t_chara, QString t_emote, int t_type);
-  SpeakerData getCurrentSpeaker();
-  SpeakerData getPreviousSpeaker();
-  QString getChatboxType();
   int getSpeakerType();
+  SpeakerData getSpeakerCurrent();
+  SpeakerData getSpeakerPrevious();
+  QString getChatboxType();
 
 private:
   SceneManager() {}
   static SceneManager s_Instance;
 
-  int mFadeDuration = 200;
-  AOLabel *pUiTransition = nullptr;
-  DRGraphicsView *pViewport = nullptr;
 
+  //Widgets
+  AOLabel *p_WidgetTransition = nullptr;
+  DRGraphicsView *p_WidgetViewport = nullptr;
 
-  QString mBackgroundName = "";
-  BackgroundData *pCurrentBackground = nullptr;
+  int m_FadeDuration = 200;
 
   //Current Scene
-  SpeakerData mCurrentSpeaker = SpeakerData("", "");
-  SpeakerData mLastSpeaker = SpeakerData("", "");
-  int mCurrentSpeakerType = 0;
+  QString m_BackgroundName = "";
+  BackgroundData *p_BackgroundCurrent = nullptr;
+  SpeakerData   m_SpeakerCurrent = SpeakerData("", "");
+  SpeakerData   m_SpeakerLast = SpeakerData("", "");
+  int m_SpeakerType = 0;
 
 };
 

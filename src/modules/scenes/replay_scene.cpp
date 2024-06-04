@@ -189,7 +189,7 @@ void ReplayScene::keyPressEvent(QKeyEvent *event)
   if (event->key() == Qt::Key_Space)
   {
     qDebug() << "Spacebar pressed!";
-    ReplayManager::get().progressPlayback();
+    ReplayManager::get().PlaybackProgressManual();
   }
   else
   {

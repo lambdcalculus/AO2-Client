@@ -27,7 +27,7 @@ bool EvidenceList::buildList(int t_page)
 
   int l_startIndex = l_maxEntries * t_page;
 
-  int l_evidenceCount = EvidenceManager::get().getEvidenceCount();
+  int l_evidenceCount = EvidenceManager::get().GetEvidenceCount();
 
   int endLoopIndex = l_startIndex + l_maxEntries;
   if (endLoopIndex > l_evidenceCount) {

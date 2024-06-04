@@ -13,25 +13,29 @@ public:
     return s_Instance;
   }
 
-  int getEvidenceCount();
-  QString getEvidenceName(int t_id);
-  void updateSelectedEvidence(int t_id);
+  //Evidence Data Management
+  void DestroyEvidence();
+  void DestroyAllEvidence();
+  void CreateEvidence(QString t_name, QString t_desc, QString t_image);
+  int GetEvidenceCount();
+  QString GetEvidenceName(int t_id);
 
-  void createDebugEvidence();
-  void clearEvidence();
-  void addEvidence(QString t_name, QString t_desc, QString t_image);
-  void removeEvidence();
-  void setEvidenceText(QString t_text);
+  //Widget Management
+  void SelectEvidence(int t_id);
+  void SetEvidenceDescription(QString t_text);
 
-  int getCurrentPage();
-  void setCurrentPage(int t_type);
-  void addCurrentPage(int t_type);
+  //Page Management
+  int GetCurrentPage();
+  void SetCurrentPage(int t_type);
+  void AddCurrentPage(int t_type);
 
 private:
   EvidenceManager() {}
   static EvidenceManager s_Instance;
-  int mCurrentPage = 0;
-  QVector<EvidenceData> mEvidenceList = {};
+
+private:
+  QVector<EvidenceData> m_EvidenceList = {};
+  int m_PageCurrentID = 0;
 };
 
 #endif // EVIDENCEMANAGER_H

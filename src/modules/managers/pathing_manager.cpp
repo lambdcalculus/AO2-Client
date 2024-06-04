@@ -36,9 +36,9 @@ QString PathingManager::searchFirstFile(QString t_file)
 
 QString PathingManager::searchFirstDirectory(QString t_directory)
 {
-  for (QString r_PackageName : mLocalPackages)
+  for (QString r_PackageName : m_PackagesLocal)
   {
-    if(!mDisabledPackages.contains(r_PackageName))
+    if(!m_PackagesDisabled.contains(r_PackageName))
     {
       QString package_path = getPackagePath(r_PackageName) + t_directory;
       if(dir_exists(package_path))
@@ -78,9 +78,9 @@ QStringList PathingManager::searchAllDirectory(QString t_directory)
 void PathingManager::refreshLocalPackages()
 {
   CharacterManager::get().ResetPackages();
-  ReplayManager::get().clearPackagesReplays();
+  ReplayManager::get().ResetPackagesCache();
 
-  mLocalPackages.clear();
+  m_PackagesLocal.clear();
 
   QString lPackagesPath = getRunningPath() + "/packages/";
   QDir lPackagesQDir(lPackagesPath);
@@ -95,7 +95,7 @@ void PathingManager::refreshLocalPackages()
       QString packageBaseName = packages_fileinfo.at(i).baseName();
       if(!packageBaseName.isEmpty())
       {
-        mLocalPackages.append(packageBaseName);
+        m_PackagesLocal.append(packageBaseName);
 
         QDir package_dir(packages_fileinfo.at(i).absoluteFilePath() + "/characters");
         if (package_dir.exists())
@@ -116,7 +116,7 @@ void PathingManager::refreshLocalPackages()
         {
           QVector<QString> l_replayGroups;
           QStringList l_folderGroups = l_replaysDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-          ReplayManager::get().cachePackageReplays(packageBaseName, l_folderGroups.toVector());
+          ReplayManager::get().CachePackageReplays(packageBaseName, l_folderGroups.toVector());
         }
       }
     }
@@ -127,7 +127,7 @@ void PathingManager::refreshLocalPackages()
 
 void PathingManager::refreshDisabledPackages()
 {
-  mDisabledPackages.clear();
+  m_PackagesDisabled.clear();
 
   const QString l_ini_path = getBasePath() + BASE_PACKAGES_INI;
   QFile l_packages_ini(l_ini_path);
@@ -137,19 +137,19 @@ void PathingManager::refreshDisabledPackages()
     while (!in.atEnd())
     {
       QString l_line = in.readLine().trimmed();
-      if(mLocalPackages.contains(l_line)) mDisabledPackages.append(l_line);
+      if(m_PackagesLocal.contains(l_line)) m_PackagesDisabled.append(l_line);
     }
   }
 }
 
 QStringList PathingManager::getPackageNames()
 {
-  return mLocalPackages;
+  return m_PackagesLocal;
 }
 
 QStringList PathingManager::getDisabledPackages()
 {
-  return mDisabledPackages;
+  return m_PackagesDisabled;
 }
 
 QStringList PathingManager::searchDirectoryContents(QString t_directory, QString t_extension, bool t_includeExtension)
