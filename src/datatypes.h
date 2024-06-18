@@ -1,10 +1,22 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
+#include "modules/globals/dro_math.h"
+#include "qdebug.h"
 #include "qvector2d.h"
 #include <QDateTime>
 #include <QMap>
 #include <QVector>
+
+
+enum class ChatTypes
+{
+  Talk,
+  Shout,
+  Think,
+  CG,
+  Narrator
+};
 
 class GameEffectData
 {
@@ -154,6 +166,8 @@ public:
   QString sound_file;
   int sound_delay = 0;
   QString video_file;
+  QString outfitName = "";
+  QString emoteName = "";
 };
 
 class DRAreaBackground
@@ -376,6 +390,35 @@ enum ChatCharaType : int32_t
 };
 
 
+enum MessagePacket : int32_t
+{
+  eMsClientToggles,
+  eMsCharacterId,
+  eMsCharacterFolder,
+  eMsCharacterOutfit,
+  eMsPreAnim,
+  eMsCharacterEmote,
+  eMsShowname,
+  eMsTextContents,
+  eMsSoundEffect,
+  eMsSoundDelay,
+  eMsTextColour,
+  eMsShout,
+  eMsEffects,
+  eMsAnimation,
+  eMsEvidenceName,
+  eMsVideo,
+  eMsClientId,
+  eMsServerToggles,
+  eMsAreaPosition,
+  eMsOffsetX,
+  eMsOffsetY,
+  eMsPairCharaFolder,
+  eMsPairCharaEmote,
+  eMsPairOffsetX,
+  eMsPairOffsetY
+};
+
 enum ChatMessage : int32_t
 {
   CMDeskModifier = 0,
@@ -413,6 +456,7 @@ enum EmoteMod
   ZoomEmoteMod = 5,
   PreZoomEmoteMod = 6,
 };
+
 
 namespace DR
 {

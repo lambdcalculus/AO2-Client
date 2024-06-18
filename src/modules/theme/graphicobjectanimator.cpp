@@ -22,15 +22,15 @@ void GraphicObjectAnimator::startAnimation(bool t_loop)
 
 void GraphicObjectAnimator::updateAnimation()
 {
-  if(!mAnimationPlayer->getIsPlaying()) return;
+  if(!mAnimationPlayer->GetCurrentlyRunning()) return;
 
-  float posX = mAnimationPlayer->getValue(ePOS_X);
-  float posY = mAnimationPlayer->getValue(ePOS_Y);
+  float posX = mAnimationPlayer->GetCurrentValue(ePOS_X);
+  float posY = mAnimationPlayer->GetCurrentValue(ePOS_Y);
 
-  float lRotation = mAnimationPlayer->getValue(eROTATION);
-  float lAlpha = mAnimationPlayer->getValue(eALPHA);
+  float lRotation = mAnimationPlayer->GetCurrentValue(eROTATION);
+  float lAlpha = mAnimationPlayer->GetCurrentValue(eALPHA);
 
-  float lScale = mAnimationPlayer->getValue(eSCALE);
+  float lScale = mAnimationPlayer->GetCurrentValue(eSCALE);
 
   mTargetWidget->setX(posX);
   mTargetWidget->setY(posY);
@@ -69,7 +69,7 @@ void GraphicObjectAnimator::addKeyframe(qint64 time, AnimationVariableTypes type
 void GraphicObjectAnimator::setKeyframes(QVector<DROAnimationKeyframe> t_frames)
 {
   if(t_frames.isEmpty()) mTargetWidget->setCurrentAnimation(nullptr);
-  mAnimationPlayer->setKeyframes(t_frames);
+  mAnimationPlayer->SetKeyframes(t_frames);
 }
 
 DROAnimation *GraphicObjectAnimator::getAnimation()

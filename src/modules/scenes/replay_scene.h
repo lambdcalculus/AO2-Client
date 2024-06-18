@@ -13,8 +13,10 @@
 #include <drshoutmovie.h>
 #include <drsplashmovie.h>
 #include <drtextedit.h>
+#include <qslider.h>
 #include "modules/widgets/typewritertextedit.h"
 #include <mk2/graphicsvideoscreen.h>
+#include <modules/widgets/droviewportwidget.h>
 
 class ReplayScene : public QWidget
 {
@@ -27,13 +29,15 @@ public:
   void playSong(QString t_song);
   void setText(QString t_dialogue);
   void setMsgOperation(QMap<QString, QString> t_vars);
-  void setCharacter(QString t_name, QString t_emote, QString t_pre);
   void setBackground(QString t_name);
-  void setBgPosition(QString t_name);
+
+
+  void SetupReplayMetadata(int t_operationsCount);
 
 public slots:
   void videoDone();
   void preanim_done();
+  void OnScrubberSliderReleased();
 
 private:
   AOApplication *pAOApp = nullptr;
@@ -46,22 +50,16 @@ private:
 protected:
   void keyPressEvent(QKeyEvent *event) override;
 
-private: //Viewport
-  DRSceneMovie *vpBackground = nullptr;
-  DRCharacterMovie *vpPlayer = nullptr;
+private:
+  //Viewport
+  DROViewportWidget *m_Viewport = nullptr;
 
-  //Animations
-  DREffectMovie *vpEffect = nullptr;
-  DRSplashMovie *vpWtce = nullptr;
-  DRShoutMovie *vpObjection = nullptr;
-  DRVideoScreen *vpVideo = nullptr;
-
-  AOSfxPlayer *pSfxPlayer = nullptr;
-  AOMusicPlayer *pMusicPlayer = nullptr;
   DRTextEdit *vpShowname = nullptr;
   TypewriterTextEdit *vpMessage = nullptr;
   DRTextEdit *vpMessageShowname = nullptr;
+  QSlider *m_PlaybackScrubber = nullptr;
 
+  //To Be Moved
 
 };
 

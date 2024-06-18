@@ -38,8 +38,8 @@ bool EvidenceList::buildList(int t_page)
   {
     int r_relativePosition = i - l_startIndex;
     EvidenceEntryButton *l_newButton = new EvidenceEntryButton(this, AOApplication::getInstance());
-    ThemeManager::get().setWidgetPosition(l_newButton, 0, r_relativePosition * (l_buttonHeight + l_verticalSpacing));
-    ThemeManager::get().setWidgetDimensions(l_newButton, 225, l_buttonHeight);
+    ThemeManager::get().AdjustWidgetTransform(l_newButton, 0, r_relativePosition * (l_buttonHeight + l_verticalSpacing));
+    ThemeManager::get().AdjustWidgetDimensions(l_newButton, 225, l_buttonHeight);
     l_newButton->set_image("evidence_item.png");
     l_newButton->setEvidenceId(i);
     l_newButton->show();

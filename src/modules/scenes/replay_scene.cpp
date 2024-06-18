@@ -5,13 +5,15 @@
 #include "qevent.h"
 #include "modules/managers/game_manager.h"
 
+#include <modules/managers/audio_manager.h>
 #include <modules/managers/replay_manager.h>
+
+#include <modules/networking/download_manager.h>
+#include <modules/networking/network_downloader.h>
 
 ReplayScene::ReplayScene(AOApplication *p_ao_app, QWidget *parent) : QWidget(parent)
 {
   pAOApp = p_ao_app;
-  pMusicPlayer = new AOMusicPlayer(pAOApp, this);
-  pSfxPlayer = new AOSfxPlayer(pAOApp, this);
   constructWidgets();
   setWindowTitle("Replay");
   setFocusPolicy(Qt::StrongFocus);
@@ -21,13 +23,11 @@ ReplayScene::ReplayScene(AOApplication *p_ao_app, QWidget *parent) : QWidget(par
 ReplayScene::~ReplayScene()
 {
   GameManager::get().SetTypeWriter(nullptr);
-  pMusicPlayer->forceStop();
-  delete pMusicPlayer;
 }
 
 void ReplayScene::playSong(QString t_song)
 {
-  pMusicPlayer->play(t_song);
+  AudioManager::get().BGMPlay(t_song);
 }
 
 void ReplayScene::setText(QString t_dialogue)
@@ -38,125 +38,76 @@ void ReplayScene::setText(QString t_dialogue)
 void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
 {
   mMsgVariables = t_vars;
+
+  ICMessageData *m_MessageData = new ICMessageData({}, false);
+  m_MessageData->m_ShowName = mMsgVariables["showname"];
+  m_MessageData->m_CharacterFolder = mMsgVariables["char"];
+  m_MessageData->m_SFXName = mMsgVariables["sound"];
+  m_MessageData->m_CharacterEmotion = mMsgVariables["emote"];
+  m_MessageData->m_PreAnimation = mMsgVariables["pre"];
+  m_MessageData->m_VideoName = mMsgVariables["video"];
+  m_MessageData->m_AreaPosition = mMsgVariables["pos"];
+  m_MessageData->m_HideCharacter = mMsgVariables["hide"] == "1";
+  m_MessageData->m_IsFlipped = mMsgVariables["flip"] == "1";
+  m_MessageData->m_EffectData = GameManager::get().getEffect(mMsgVariables["effect"]);
+
   setText("");
   vpMessageShowname->setText(mMsgVariables["showname"]);
-  setCharacter(mMsgVariables["char"], mMsgVariables["emote"], mMsgVariables["pre"]);
-  //mReplayScene->setText(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["msg"]);
-}
 
-void ReplayScene::setCharacter(QString t_name, QString t_emote, QString t_pre)
-{
-
-  SceneManager::get().RenderTransition();
   ThemeManager::get().getWidget("chatbox")->setVisible(false);
 
-  if (!vpVideo->isVisible())
-  {
-    vpVideo->show();
-  }
+  m_Viewport->ProcessIncomingMessage(m_MessageData);
 
-  SceneManager::get().AnimateTransition();
-  vpVideo->play_character_video(mMsgVariables["char"], mMsgVariables["video"]);
+  //mReplayScene->setText(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["msg"]);
 }
 
 void ReplayScene::setBackground(QString t_name)
 {
   SceneManager::get().execLoadPlayerBackground(t_name);
-  setBgPosition("wit");
+  m_Viewport->UpdateBackground("wit");
 }
 
-void ReplayScene::setBgPosition(QString t_name)
+void ReplayScene::SetupReplayMetadata(int t_operationsCount)
 {
-  vpBackground->set_file_name(SceneManager::get().getBackgroundPath(t_name));
-  vpBackground->start();
+  m_PlaybackScrubber->setMinimum(0);
+  m_PlaybackScrubber->setMaximum(t_operationsCount - 1);
 }
+
 
 void ReplayScene::videoDone()
 {
-  if (vpVideo->isVisible())
-  {
-    vpVideo->hide();
-  }
 
-  if(!mMsgVariables["pre"].isEmpty())
-  {
-    vpPlayer->set_play_once(true);
-    vpPlayer->set_file_name(pAOApp->get_character_sprite_pre_path(mMsgVariables["char"], mMsgVariables["pre"]));
-    vpPlayer->start();
-  }
-
-         //Process Effects
-  QString l_effect = mMsgVariables["effect"];
-
-  GameEffectData effectData = GameManager::get().getEffect(l_effect);
-
-  if(effectData.mName == "<NONE>")
-  {
-    vpEffect->hide();
-  }
-  else
-  {
-    vpEffect->show();
-    vpEffect->set_play_once(!effectData.mLoops);
-    vpEffect->set_file_name(pAOApp->get_effect_anim_path(l_effect));
-    vpEffect->start();
-
-    QString l_overlay_sfx = pAOApp->get_sfx(mMsgVariables["effect"]);
-    pSfxPlayer->play_effect(l_overlay_sfx);
-  }
-
-         //Player Character SFX
-  pSfxPlayer->play_character_effect(mMsgVariables["char"], mMsgVariables["sound"]);
 }
 
 void ReplayScene::preanim_done()
 {
   if(!mMsgVariables["msg"].trimmed().isEmpty()) ThemeManager::get().getWidget("chatbox")->setVisible(true);
   setText(mMsgVariables["msg"]);
+}
 
-  if(mMsgVariables["hide"] == "1")
-  {
-    vpPlayer->hide();
-  }
-  else
-  {
-    vpPlayer->show();
-    vpPlayer->set_play_once(false);
-    vpPlayer->set_file_name(pAOApp->get_character_sprite_idle_path(mMsgVariables["char"], mMsgVariables["emote"]));
-    vpPlayer->start();
-  }
+void ReplayScene::OnScrubberSliderReleased()
+{
+  ReplayManager::get().PlaybackProgressSlider(m_PlaybackScrubber->value());
 }
 
 void ReplayScene::constructWidgets()
 {
-  ThemeManager::get().SetWidgetNames({});
+  ThemeManager::get().RegisterWidgetGenericBulk({});
 
-  DRGraphicsView *l_viewport = new DRGraphicsView(this);
-  ThemeManager::get().autoWidgetDimensions(l_viewport, "viewport", REPLAYS);
-  ThemeManager::get().addWidgetName("viewport", l_viewport);
+  m_Viewport = new DROViewportWidget(this);
+  ThemeManager::get().AutoAdjustWidgetDimensions(m_Viewport, "viewport", REPLAYS);
+  ThemeManager::get().RegisterWidgetGeneric("viewport", m_Viewport);
 
-  vpBackground = new DRSceneMovie(pAOApp);
-  vpPlayer = new DRCharacterMovie(pAOApp);
-  vpEffect = new DREffectMovie(pAOApp);
-  vpVideo = new DRVideoScreen(pAOApp);
-
-  l_viewport->scene()->addItem(vpBackground);
-  l_viewport->scene()->addItem(vpPlayer);
-  l_viewport->scene()->addItem(vpEffect);
-  l_viewport->scene()->addItem(vpVideo);
-
-  vpBackground->start();
-
-  SceneManager::get().CreateTransition(this, pAOApp, l_viewport);
+  m_Viewport->ConstructViewport(REPLAYS);
 
   //UI Images
-  ThemeManager::get().createImageWidget("chatbox", "replay_chatmed.png", false, this);
-  ThemeManager::get().createImageWidget("vp_overlay", "replay_overlay.png", true, this);
+  ThemeManager::get().CreateWidgetImageDisplay("chatbox", "replay_chatmed.png", false, this);
+  ThemeManager::get().CreateWidgetImageDisplay("vp_overlay", "replay_overlay.png", true, this);
 
   //Messagebox
   vpMessage = new TypewriterTextEdit(ThemeManager::get().getWidget("chatbox"));
-  ThemeManager::get().autoWidgetDimensions(vpMessage, "replay_message", REPLAYS);
-  ThemeManager::get().addWidgetName("replay_message", vpMessage);
+  ThemeManager::get().AutoAdjustWidgetDimensions(vpMessage, "replay_message", REPLAYS);
+  ThemeManager::get().RegisterWidgetGeneric("replay_message", vpMessage);
   vpMessage->setFrameStyle(QFrame::NoFrame);
   vpMessage->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   vpMessage->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -166,17 +117,25 @@ void ReplayScene::constructWidgets()
 
   //Showname
   vpMessageShowname = new DRTextEdit(ThemeManager::get().getWidget("chatbox"));
-  ThemeManager::get().autoWidgetDimensions(vpMessageShowname, "replay_showname", REPLAYS);
-  ThemeManager::get().addWidgetName("replay_showname", vpMessageShowname);
+  ThemeManager::get().AutoAdjustWidgetDimensions(vpMessageShowname, "replay_showname", REPLAYS);
+  ThemeManager::get().RegisterWidgetGeneric("replay_showname", vpMessageShowname);
   vpMessageShowname->setFrameStyle(QFrame::NoFrame);
   vpMessageShowname->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   vpMessageShowname->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   vpMessageShowname->setReadOnly(true);
   set_drtextedit_font(vpMessageShowname, "replay_showname", REPLAYS_FONTS_INI, pAOApp);
 
+
+  //Replay Controls
+  m_PlaybackScrubber = new QSlider(Qt::Horizontal, this);
+  ThemeManager::get().AutoAdjustWidgetDimensions(m_PlaybackScrubber, "scrubber", REPLAYS);
+  ThemeManager::get().RegisterWidgetGeneric("scrubber", m_PlaybackScrubber);
+
+
   //Connections
-  connect(vpVideo, SIGNAL(finished()), this, SLOT(videoDone()));
-  connect(vpPlayer, SIGNAL(done()), this, SLOT(preanim_done()));
+  connect(m_Viewport, SIGNAL(VideoDone()), this, SLOT(videoDone()));
+  connect(m_Viewport, SIGNAL(PreanimDone()), this, SLOT(preanim_done()));
+  connect(m_PlaybackScrubber, SIGNAL(sliderReleased()), this, SLOT(OnScrubberSliderReleased()));
 
   //Extra Stuff
          //ThemeManager::get().createButtonWidget("return_to_lobby", this);
@@ -188,7 +147,6 @@ void ReplayScene::keyPressEvent(QKeyEvent *event)
 {
   if (event->key() == Qt::Key_Space)
   {
-    qDebug() << "Spacebar pressed!";
     ReplayManager::get().PlaybackProgressManual();
   }
   else

@@ -6,7 +6,7 @@ OutfitReader::OutfitReader(QString t_character, QString t_outfit)
 {
   mOutfitName = t_outfit;
   mCharacterName = t_character;
-  mOutfitPath = AOApplication::getInstance()->get_character_folder_path(t_character) + "/" + t_outfit;
+  mOutfitPath = AOApplication::getInstance()->get_character_folder_path(t_character) + "/outfits/" + t_outfit;
 
   if(!file_exists(mOutfitPath + "/outfit.json")) return;
 
@@ -38,7 +38,9 @@ void OutfitReader::ReadEmotes()
 
     l_newEmote.comment = l_emoteName;
     l_newEmote.anim = "";
-    l_newEmote.dialog = mOutfitName + "/" + l_emoteName;
+    l_newEmote.outfitName = mOutfitName;
+    l_newEmote.emoteName = l_emoteName;
+    l_newEmote.dialog = "outfits/" + mOutfitName + "/" + l_emoteName;
     if(l_emoteData.toObject().contains("image")) l_newEmote.dialog = mOutfitName + "/" + getStringValue("image");
     l_newEmote.modifier = 0;
     l_newEmote.desk_modifier = true;

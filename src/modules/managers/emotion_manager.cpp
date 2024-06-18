@@ -54,8 +54,8 @@ void EmotionManager::refreshEmoteSelection(bool t_switchedCharacter)
   const int l_prev_emote_count = mEmoteList.count();
   mEmoteList = CharacterManager::get().p_SelectedCharacter->getEmotes();
   
-  QComboBox* l_emoteCombobox = ThemeManager::get().getWidgetType<QComboBox>("emote_dropdown");
-  QCheckBox* l_preCheckbox = ThemeManager::get().getWidgetType<QCheckBox>("pre");
+  QComboBox* l_emoteCombobox = ThemeManager::get().GetWidgetType<QComboBox>("emote_dropdown");
+  QCheckBox* l_preCheckbox = ThemeManager::get().GetWidgetType<QCheckBox>("pre");
 
   const QString l_prev_emote = l_emoteCombobox->currentText();
 
@@ -78,7 +78,7 @@ void EmotionManager::resetEmotePage()
   mEmoteID = 0;
   mCurrentEmotePage = 0;
 
-  QComboBox* l_emoteCombobox = ThemeManager::get().getWidgetType<QComboBox>("emote_dropdown");
+  QComboBox* l_emoteCombobox = ThemeManager::get().GetWidgetType<QComboBox>("emote_dropdown");
 
   if (l_emoteCombobox != nullptr)
   {
@@ -91,8 +91,8 @@ void EmotionManager::resetEmotePage()
 void EmotionManager::refreshEmotePage(const bool t_scrollToCurrentEmote)
 {
 
-  AOButton* l_emotesLeft = ThemeManager::get().GetButton("emote_left");
-  AOButton* l_emotesRight = ThemeManager::get().GetButton("emote_right");
+  AOButton* l_emotesLeft = ThemeManager::get().GetWidgetType<AOButton>("emote_left");
+  AOButton* l_emotesRight = ThemeManager::get().GetWidgetType<AOButton>("emote_right");
 
   l_emotesLeft->hide();
   l_emotesRight->hide();
@@ -177,7 +177,7 @@ void EmotionManager::execSelectEmote(int t_id)
 
   const int emote_mod = l_emote.modifier;
   
-  QCheckBox* l_preCheckbox = ThemeManager::get().getWidgetType<QCheckBox>("pre");
+  QCheckBox* l_preCheckbox = ThemeManager::get().GetWidgetType<QCheckBox>("pre");
   if (l_prev_emote_id == mEmoteID)
     l_preCheckbox->setChecked(!l_preCheckbox->isChecked());
   else

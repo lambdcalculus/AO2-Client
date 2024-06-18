@@ -7,112 +7,112 @@ DROAnimation::DROAnimation()
 
 void DROAnimation::RunAnimation()
 {
-  if (!mCurrentlyPlaying || keyFrames.empty()) return;
+  if (!m_IsRunning || m_AnimationKeyframes.empty()) return;
 
-  mElapsedTime = timer.elapsed();
+  m_TimeElapsed = m_AnimationTimer.elapsed();
 
-  while(keyFrames.at(mCurrentKeyframe).Time <= mElapsedTime)
+  while(m_AnimationKeyframes.at(m_KeyframeIndex).Time <= m_TimeElapsed)
   {
     //Return and stop the animation if the keyframe count is at the end.
-    if(keyFrames.count() == mCurrentKeyframe + 1) { mCurrentlyPlaying = false; mCurrentKeyframe += 1;  if(isLoop) Start(isLoop); return; }
+    if(m_AnimationKeyframes.count() == m_KeyframeIndex + 1) { m_IsRunning = false; m_KeyframeIndex += 1;  if(m_AnimationLoops) Start(m_AnimationLoops); return; }
 
-    mCurrentKeyframe += 1;
+    m_KeyframeIndex += 1;
 
            //Set the last keyframe for the current variable and look for the next one.
-    mVarLastKeyframe[keyFrames.at(mCurrentKeyframe - 1).Type] = mVarNextKeyframe[keyFrames.at(mCurrentKeyframe - 1).Type];
-    SetNextKeyframe(keyFrames.at(mCurrentKeyframe - 1).Type);
+    m_PreviousValues[m_AnimationKeyframes.at(m_KeyframeIndex - 1).Type] = m_UpcomingValues[m_AnimationKeyframes.at(m_KeyframeIndex - 1).Type];
+    SetNextKeyframe(m_AnimationKeyframes.at(m_KeyframeIndex - 1).Type);
   }
 }
 
 void DROAnimation::SetNextKeyframe(AnimationVariableTypes animType)
 {
-  for(int i = mCurrentKeyframe; i < keyFrames.count(); i++)
+  for(int i = m_KeyframeIndex; i < m_AnimationKeyframes.count(); i++)
   {
-    if(keyFrames.at(i).Type == animType)
+    if(m_AnimationKeyframes.at(i).Type == animType)
     {
-      mVarNextKeyframe[animType] = i;
+      m_UpcomingValues[animType] = i;
       return;
     }
   }
-  mVarNextKeyframe[animType] = -1;
+  m_UpcomingValues[animType] = -1;
 }
 
 void DROAnimation::Start(bool loop)
 {
   Stop();
-  if(keyFrames.count() == 0) return;
-  mVarNextKeyframe = {};
-  mVarLastKeyframe = {};
-  mCurrentKeyframe = 0;
+  if(m_AnimationKeyframes.count() == 0) return;
+  m_UpcomingValues = {};
+  m_PreviousValues = {};
+  m_KeyframeIndex = 0;
 
-  isLoop = loop;
+  m_AnimationLoops = loop;
 
   int keyframeIndex = 0;
-  for(DROAnimationKeyframe keyframe : keyFrames)
+  for(DROAnimationKeyframe keyframe : m_AnimationKeyframes)
   {
-    if(!mVarNextKeyframe.contains(keyframe.Type))
+    if(!m_UpcomingValues.contains(keyframe.Type))
     {
-      mVarNextKeyframe[keyframe.Type] = keyframeIndex;
-      mVarLastKeyframe[keyframe.Type] = -1;
+      m_UpcomingValues[keyframe.Type] = keyframeIndex;
+      m_PreviousValues[keyframe.Type] = -1;
     }
 
     keyframeIndex += 1;
   }
-  mCurrentlyPlaying = true;
-  timer.start();
+  m_IsRunning = true;
+  m_AnimationTimer.start();
 
 }
 
 void DROAnimation::Stop()
 {
-  mCurrentlyPlaying = false;
-  mCurrentKeyframe = 0;
+  m_IsRunning = false;
+  m_KeyframeIndex = 0;
 }
 
 void DROAnimation::Pause()
 {
-  mCurrentlyPlaying = false;
+  m_IsRunning = false;
 }
 
-bool DROAnimation::getIsPlaying()
+bool DROAnimation::GetCurrentlyRunning()
 {
-  return mCurrentlyPlaying;
+  return m_IsRunning;
 }
 
 void DROAnimation::AddKeyframe(qint64 time, AnimationVariableTypes type, float value, AnimCurveType fin, AnimCurveType fout)
 {
   DROAnimationKeyframe keyframe = DROAnimationKeyframe(time, type, value, fin, fout);
-  keyFrames.append(keyframe);
+  m_AnimationKeyframes.append(keyframe);
 }
 
-void DROAnimation::setKeyframes(QVector<DROAnimationKeyframe> t_frames)
+void DROAnimation::SetKeyframes(QVector<DROAnimationKeyframe> t_frames)
 {
   Stop();
-  keyFrames = t_frames;
+  m_AnimationKeyframes = t_frames;
 }
 
-float DROAnimation::getValue(AnimationVariableTypes type)
+float DROAnimation::GetCurrentValue(AnimationVariableTypes type)
 {
-  if(keyFrames.count() == 0) return 0;
-  if(mVarNextKeyframe.contains(type))
+  if(m_AnimationKeyframes.count() == 0) return 0;
+  if(m_UpcomingValues.contains(type))
   {
     //Return last value if no more keyframes.
-    if(mVarNextKeyframe[type] == -1)
+    if(m_UpcomingValues[type] == -1)
     {
-      if(mVarLastKeyframe[type] != -1)
+      if(m_PreviousValues[type] != -1)
       {
-        return keyFrames.at(mVarLastKeyframe[type]).Value;
+        return m_AnimationKeyframes.at(m_PreviousValues[type]).Value;
       }
       return 9999999;
     }
 
            //Return first value if no keyframes yet.
     {
-      if(mVarLastKeyframe[type] == -1)
+      if(m_PreviousValues[type] == -1)
       {
-        if(mVarNextKeyframe[type] != -1)
+        if(m_UpcomingValues[type] != -1)
         {
-          return keyFrames.at(mVarNextKeyframe[type]).Value;
+          return m_AnimationKeyframes.at(m_UpcomingValues[type]).Value;
         }
         return 9999999;
       }
@@ -120,28 +120,28 @@ float DROAnimation::getValue(AnimationVariableTypes type)
 
            //Do math now that the -1 values are sorted.
 
-    float lastValue = keyFrames.at(mVarLastKeyframe[type]).Value;
-    qint64 lastTime = keyFrames.at(mVarLastKeyframe[type]).Time;
-    float nextValue = keyFrames.at(mVarNextKeyframe[type]).Value;
-    qint64 nextTime = keyFrames.at(mVarNextKeyframe[type]).Time;
-    AnimCurveType fadeIn = keyFrames.at(mVarLastKeyframe[type]).FadeIn;
-    AnimCurveType fadeOut = keyFrames.at(mVarLastKeyframe[type]).FadeOut;
+    float lastValue = m_AnimationKeyframes.at(m_PreviousValues[type]).Value;
+    qint64 lastTime = m_AnimationKeyframes.at(m_PreviousValues[type]).Time;
+    float nextValue = m_AnimationKeyframes.at(m_UpcomingValues[type]).Value;
+    qint64 nextTime = m_AnimationKeyframes.at(m_UpcomingValues[type]).Time;
+    AnimCurveType fadeIn = m_AnimationKeyframes.at(m_PreviousValues[type]).FadeIn;
+    AnimCurveType fadeOut = m_AnimationKeyframes.at(m_PreviousValues[type]).FadeOut;
 
            //Skip math if already at last time
-    if(mElapsedTime >= nextTime)
+    if(m_TimeElapsed >= nextTime)
     {
       return lastValue;
     }
 
            //Okay *now* do math.
     qint64 total_duration = nextTime - lastTime;
-    qint64 duration_passed = mElapsedTime - lastTime;
+    qint64 duration_passed = m_TimeElapsed - lastTime;
     float duration_percantage = (float)duration_passed / (float)total_duration;
     float distance = nextValue - lastValue;
     //Caluclate the value differances
     if(fadeIn == NONE)
     {
-      if (mElapsedTime >= nextTime)
+      if (m_TimeElapsed >= nextTime)
       {
         return nextValue;
       }
@@ -193,7 +193,7 @@ float DROAnimation::getValue(AnimationVariableTypes type)
   }
 }
 
-int DROAnimation::getCurrentFrame()
+int DROAnimation::GetCurrentFrame()
 {
-  return mCurrentKeyframe;
+  return m_KeyframeIndex;
 }

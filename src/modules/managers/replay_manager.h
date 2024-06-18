@@ -4,6 +4,7 @@
 #include <QElapsedTimer>
 #include <QTimer>
 #include <datatypes.h>
+#include "scene_manager.h"
 
 #include <modules/scenes/replay_scene.h>
 
@@ -21,11 +22,11 @@ public:
   void RecordingStart();
   void RecordChangeMusic(QString t_music);
   void RecordChangeBackground(QString t_bgn);
-  void RecordMessageIC(QStringList t_message);
-  void RecordMessageOOC(QString t_message);
+  void RecordMessageIC(ICMessageData *m_Message);
+  void RecordMessageOOC(QString t_name, QString t_message);
   void RecordChangeWeather(QString t_weather);
   void RecordChangeGamemode(QString t_gamemode);
-  void RecordChangeHour(int t_hour);
+  void RecordChangeHour(QString t_hour);
   void RecordChangeTOD(QString t_tod);
   void RecordingSave();
 
@@ -33,6 +34,7 @@ public:
   //Playback Functions
   void PlaybackLoadFile(QString t_name, ReplayScene *p_scene);
   void PlaybackProgressManual();
+  void PlaybackProgressSlider(int t_index);
 
 
   //Playback Metadata Functions

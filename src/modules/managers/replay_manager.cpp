@@ -81,34 +81,37 @@ void ReplayManager::RecordChangeBackground(QString t_bgn)
   RecordingSave();
 }
 
-void ReplayManager::RecordMessageIC(QStringList t_message)
+void ReplayManager::RecordMessageIC(ICMessageData *m_Message)
 {
   ReplayOperation lNewOperation = ReplayOperation("msg");
 
   lNewOperation.mTimestamp = m_TimerRecorder.elapsed();
 
-  GameEffectData lEffect = GameManager::get().getEffect(t_message[CMEffectState].toInt());
-
-  lNewOperation.mVariables["pre"] = t_message[CMPreAnim];
-  lNewOperation.mVariables["char"] = t_message[CMChrName];
-  lNewOperation.mVariables["emote"] = t_message[CMEmote];
-  lNewOperation.mVariables["msg"] = t_message[CMMessage];
-  lNewOperation.mVariables["pos"] = t_message[CMPosition];
-  lNewOperation.mVariables["sound"] = t_message[CMSoundName];
-  lNewOperation.mVariables["color"] = t_message[CMTextColor];
-  lNewOperation.mVariables["showname"] = t_message[CMShowName];
-  lNewOperation.mVariables["video"] = t_message[CMVideoName];
-  lNewOperation.mVariables["hide"] = t_message[CMHideCharacter];
-  lNewOperation.mVariables["flip"] = t_message[CMFlipState];
-  lNewOperation.mVariables["effect"] = lEffect.mName;
-  lNewOperation.mVariables["shout"] = t_message[CMShoutModifier];
+  lNewOperation.mVariables["pre"] = m_Message->m_PreAnimation;
+  lNewOperation.mVariables["char"] = m_Message->m_CharacterFolder;
+  lNewOperation.mVariables["emote"] = m_Message->m_CharacterEmotion;
+  lNewOperation.mVariables["msg"] = m_Message->m_MessageContents;
+  lNewOperation.mVariables["pos"] = m_Message->m_AreaPosition;
+  lNewOperation.mVariables["sound"] = m_Message->m_SFXName;
+  lNewOperation.mVariables["color"] = QString::number(m_Message->m_TextColor);
+  lNewOperation.mVariables["showname"] = m_Message->m_ShowName;
+  lNewOperation.mVariables["video"] = m_Message->m_VideoName;
+  lNewOperation.mVariables["hide"] = QString::number(m_Message->m_HideCharacter);
+  lNewOperation.mVariables["flip"] = QString::number(m_Message->m_IsFlipped);
+  lNewOperation.mVariables["effect"] = m_Message->m_EffectData.mName;
+  lNewOperation.mVariables["shout"] = QString::number(m_Message->m_ShoutModifier);
   m_ReplayOperationsRecorded.append(lNewOperation);
   RecordingSave();
 }
 
-void ReplayManager::RecordMessageOOC(QString t_message)
+void ReplayManager::RecordMessageOOC(QString t_name, QString t_message)
 {
-  //TO-DO: Implement
+  ReplayOperation lNewOperation = ReplayOperation("ooc");
+  lNewOperation.mTimestamp = m_TimerRecorder.elapsed();
+  lNewOperation.mVariables["name"] = t_name;
+  lNewOperation.mVariables["msg"] = t_message;
+  m_ReplayOperationsRecorded.append(lNewOperation);
+  RecordingSave();
 }
 
 void ReplayManager::RecordChangeWeather(QString t_weather)
@@ -121,14 +124,22 @@ void ReplayManager::RecordChangeGamemode(QString t_gamemode)
   //TO-DO: Implement
 }
 
-void ReplayManager::RecordChangeHour(int t_hour)
+void ReplayManager::RecordChangeHour(QString t_hour)
 {
-  //TO-DO: Implement
+  ReplayOperation lNewOperation = ReplayOperation("clock");
+  lNewOperation.mTimestamp = m_TimerRecorder.elapsed();
+  lNewOperation.mVariables["hour"] = t_hour;
+  m_ReplayOperationsRecorded.append(lNewOperation);
+  RecordingSave();
 }
 
 void ReplayManager::RecordChangeTOD(QString t_tod)
 {
-  //TO-DO: Implement
+  ReplayOperation lNewOperation = ReplayOperation("TOD");
+  lNewOperation.mTimestamp = m_TimerRecorder.elapsed();
+  lNewOperation.mVariables["value"] = t_tod;
+  m_ReplayOperationsRecorded.append(lNewOperation);
+  RecordingSave();
 }
 
 void ReplayManager::RecordingSave()
@@ -166,6 +177,7 @@ void ReplayManager::RecordingSave()
   }
 
   QTextStream out(&file);
+  out.setCodec("UTF-8");
   out << lOutputJson.toJson();
 
   file.close();
@@ -177,6 +189,8 @@ void ReplayManager::PlaybackLoadFile(QString t_name, ReplayScene *p_scene)
   p_SceneReplay = p_scene;
   ReplayReader l_reader = ReplayReader(t_name);
   m_ReplayOperationsPlayback = l_reader.getOperations();
+
+  p_scene->SetupReplayMetadata(m_ReplayOperationsPlayback.count());
   return;
 }
 
@@ -189,7 +203,6 @@ void ReplayManager::PlaybackProgressManual()
 
     if(mOp == "msg")
     {
-      p_SceneReplay->setBgPosition(m_ReplayOperationsPlayback[m_PlaybackPositionIndex].mVariables["pos"]);
       p_SceneReplay->setMsgOperation(m_ReplayOperationsPlayback[m_PlaybackPositionIndex].mVariables);
     }
 
@@ -204,6 +217,40 @@ void ReplayManager::PlaybackProgressManual()
     }
 
     if(mOp != "msg") PlaybackProgressManual();
+  }
+
+}
+
+void ReplayManager::PlaybackProgressSlider(int t_index)
+{
+  m_PlaybackPositionIndex = t_index;
+
+  int l_position = t_index;
+  bool m_BGFound = false;
+  bool m_BGMFound = false;
+  bool m_MSGFound = false;
+
+  while(l_position != 0)
+  {
+    QString l_currentOp = m_ReplayOperationsPlayback[l_position].mOperation;
+    if(l_currentOp == "bgm" && !m_BGMFound)
+    {
+      p_SceneReplay->playSong(m_ReplayOperationsPlayback[l_position].mVariables["track"]);
+      m_BGMFound = true;
+    }
+    if(l_currentOp == "bg" && !m_BGFound)
+    {
+      p_SceneReplay->setBackground(m_ReplayOperationsPlayback[l_position].mVariables["name"]);
+      m_BGFound = true;
+    }
+    if(l_currentOp == "msg" && !m_MSGFound)
+    {
+      p_SceneReplay->setMsgOperation(m_ReplayOperationsPlayback[l_position].mVariables);
+      m_MSGFound = true;
+    }
+
+    l_position -= 1;
+    if(m_BGFound && m_BGMFound && m_MSGFound) l_position = 0;
   }
 
 }

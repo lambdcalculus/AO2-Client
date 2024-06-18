@@ -43,7 +43,7 @@ void TabToggleButton::setActiveStatus(bool t_isActive)
 void TabToggleButton::on_clicked()
 {
   if(mIsDetatched) return;
-  ThemeManager::get().toggleTab(mTabName, mTabGroup);
+  ThemeManager::get().ToggleTab(mTabName, mTabGroup);
 }
 
 void TabToggleButton::displayContextMenu(QPoint t_position)
@@ -58,6 +58,6 @@ void TabToggleButton::displayContextMenu(QPoint t_position)
 void TabToggleButton::detatchTab()
 {
   if(mIsDetatched) return;
-  ThemeManager::get().detatchTab(mTabName);
+  ThemeManager::get().DetatchTab(mTabName);
   mIsDetatched = true;
 }

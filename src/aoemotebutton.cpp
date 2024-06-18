@@ -17,7 +17,7 @@ AOEmoteButton::AOEmoteButton(QWidget *p_parent, AOApplication *p_ao_app, int p_x
   ao_app = p_ao_app;
 
   this->move(p_x, p_y);
-  this->resize((int)((float)40 * ThemeManager::get().getResize()), (int)((float)40 * ThemeManager::get().getResize()));
+  this->resize((int)((float)40 * ThemeManager::get().GetResizeClient()), (int)((float)40 * ThemeManager::get().GetResizeClient()));
 
   ui_selected = new QLabel(this);
   ui_selected->resize(size());

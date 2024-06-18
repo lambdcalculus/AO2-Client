@@ -92,6 +92,7 @@ HEADERS += \
   src/modules/character/outfit_reader.h \
   src/modules/debug/time_debugger.h \
   src/modules/files/image_loader.h \
+  src/modules/globals/dro_math.h \
   src/modules/json/animation_reader.h \
   src/modules/json/json_reader.h \
   src/modules/json/localization_reader.h \
@@ -100,6 +101,7 @@ HEADERS += \
   src/modules/json/theme_module_reader.h \
   src/modules/json/theme_reader.h \
   src/modules/managers/animation_manager.h \
+  src/modules/managers/audio_manager.h \
   src/modules/managers/character_manager.h \
   src/modules/managers/emotion_manager.h \
   src/modules/managers/evidence_manager.h \
@@ -123,6 +125,7 @@ HEADERS += \
   src/modules/theme/widgets/dro_line_edit.h \
   src/modules/theme/widgets/droemotebuttons.h \
   src/modules/theme/widgets/tab_toggle_button.h \
+  src/modules/widgets/droviewportwidget.h \
   src/modules/widgets/evidence_entry_button.h \
   src/modules/widgets/evidence_list.h \
   src/modules/widgets/keyframe_player.h \
@@ -219,6 +222,7 @@ SOURCES += \
   src/modules/character/outfit_reader.cpp \
   src/modules/debug/time_debugger.cpp \
   src/modules/files/image_loader.cpp \
+  src/modules/globals/dro_math.cpp \
   src/modules/json/animation_reader.cpp \
   src/modules/json/json_reader.cpp \
   src/modules/json/localization_reader.cpp \
@@ -227,6 +231,7 @@ SOURCES += \
   src/modules/json/theme_module_reader.cpp \
   src/modules/json/theme_reader.cpp \
   src/modules/managers/animation_manager.cpp \
+  src/modules/managers/audio_manager.cpp \
   src/modules/managers/character_manager.cpp \
   src/modules/managers/emotion_manager.cpp \
   src/modules/managers/evidence_manager.cpp \
@@ -250,6 +255,7 @@ SOURCES += \
   src/modules/theme/widgets/dro_line_edit.cpp \
   src/modules/theme/widgets/droemotebuttons.cpp \
   src/modules/theme/widgets/tab_toggle_button.cpp \
+  src/modules/widgets/droviewportwidget.cpp \
   src/modules/widgets/evidence_entry_button.cpp \
   src/modules/widgets/evidence_list.cpp \
   src/modules/widgets/keyframe_player.cpp \

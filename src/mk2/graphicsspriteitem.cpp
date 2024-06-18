@@ -182,9 +182,9 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
   {
     if(mWidgetAnimation != nullptr)
     {
-      int lWidth = mWidgetAnimation->getValue(eVarWidth);
-      int lHeight = mWidgetAnimation->getValue(eVarHeight);
-      if(lWidth != 9999999 && lHeight != 9999999 && mWidgetAnimation->getIsPlaying())
+      int lWidth = mWidgetAnimation->GetCurrentValue(eVarWidth);
+      int lHeight = mWidgetAnimation->GetCurrentValue(eVarHeight);
+      if(lWidth != 9999999 && lHeight != 9999999 && mWidgetAnimation->GetCurrentlyRunning())
       {
         l_image = l_image.scaled(QSize(lWidth, lHeight), Qt::IgnoreAspectRatio);
         update();

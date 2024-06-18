@@ -91,15 +91,6 @@ public:
     GM,
   };
 
-  enum class ChatTypes
-  {
-    Talk,
-    Shout,
-    Think,
-    CG,
-    Narrator
-  };
-
   enum class ReportCardReason
   {
     None = 0,
@@ -378,7 +369,6 @@ private:
   QString m_speaker_showname;
   bool m_hide_character = false;
   bool m_play_pre = false;
-  bool m_play_zoom = false;
   bool chatmessage_is_empty = false;
 
   QString previous_ic_message;
@@ -694,7 +684,6 @@ private:
   void create_widgets();
 
   QComboBox* setupComboBoxWidget(const QStringList& items, QString name, QString cssHeader);
-  AOButton* setupButtonWidget(const QString name, QString image, QString fallback, QWidget* parent = nullptr);
   QLineEdit* setupLineEditWidget(const QString name, QString image, QString legacy_css, QString text, QWidget* parent = nullptr);
 
 
@@ -963,11 +952,10 @@ private:
   AOSfxPlayer *m_effects_player = nullptr;
   AOShoutPlayer *m_shouts_player = nullptr;
   AOSystemPlayer *m_system_player = nullptr;
-  AOMusicPlayer *m_music_player = nullptr;
   AOBlipPlayer *m_blips_player = nullptr;
   bool is_audio_muted = false;
 
-  // QWidget interface
+  ICMessageData *m_CurrentMessageData = new ICMessageData({}, false);
 
 protected:
   void changeEvent(QEvent *) override;

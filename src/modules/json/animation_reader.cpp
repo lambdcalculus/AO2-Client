@@ -128,11 +128,11 @@ QString AnimationReader::getImageName(QString t_name)
   {
     if(mVariableImages[t_name] == "speaker")
     {
-      return "character/" + VariableManager::get().getVariable("speaker") + ".png";
+      return "character/" + VariableManager::get().getVariable("speaker_chara") + ".png";
     }
     else if(mVariableImages[t_name] == "speaker_previous")
     {
-      return "character/" + VariableManager::get().getVariable("speaker_last") + ".png";
+      return "character/" + VariableManager::get().getVariable("speaker_chara_last") + ".png";
     }
   }
   if(mImageNames.contains(t_name)) return mImageNames[t_name];

@@ -20,11 +20,11 @@ void WidgetAnimator::startAnimation()
 void WidgetAnimator::updateAnimation()
 {
   mAnimationPlayer->RunAnimation();
-  int posX = mAnimationPlayer->getValue(ePOS_X);
-  int posY = mAnimationPlayer->getValue(ePOS_Y);
+  int posX = mAnimationPlayer->GetCurrentValue(ePOS_X);
+  int posY = mAnimationPlayer->GetCurrentValue(ePOS_Y);
   mTargetWidget->move(posX, posY);
 
-  if(mAnimationPlayer->getIsPlaying())
+  if(mAnimationPlayer->GetCurrentlyRunning())
   {
     QTimer::singleShot(1000 / mFrameRate, this, SLOT(updateAnimation()));
   }
@@ -39,5 +39,5 @@ void WidgetAnimator::addKeyframe(qint64 time, AnimationVariableTypes type, float
 
 void WidgetAnimator::setKeyframes(QVector<DROAnimationKeyframe> t_frames)
 {
-  mAnimationPlayer->setKeyframes(t_frames);
+  mAnimationPlayer->SetKeyframes(t_frames);
 }

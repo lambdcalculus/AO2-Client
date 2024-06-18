@@ -30,8 +30,8 @@ void Courtroom::construct_emotes()
   ui_emotes = new DROEmoteButtons(this);
   EmotionManager::get().setEmotesPanel(ui_emotes);
 
-  ui_emote_left = setupButtonWidget("emote_left", "arrow_left.png", "");
-  ui_emote_right = setupButtonWidget("emote_right", "arrow_right.png", "");
+  ui_emote_left = ThemeManager::get().CreateWidgetButton(COURTROOM, "emote_left", "arrow_left.png", "", this);
+  ui_emote_right = ThemeManager::get().CreateWidgetButton(COURTROOM, "emote_right", "arrow_right.png", "", this);
 
   ui_emote_preview = new DRGraphicsView(nullptr);
   ui_emote_preview->setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint | Qt::BypassGraphicsProxyWidget);
@@ -69,7 +69,7 @@ void Courtroom::construct_emote_page_layout()
 
   QPoint f_spacing = ao_app->current_theme->get_widget_settings_spacing("emotes", "courtroom", "emote_button_spacing");
 
-  int buttonResize = (int)((float)40 * ThemeManager::get().getResize());
+  int buttonResize = (int)((float)40 * ThemeManager::get().GetResizeClient());
   const int button_width = buttonResize;
   int x_spacing = f_spacing.x();
   int x_mod_count = 0;

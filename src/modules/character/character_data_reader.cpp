@@ -22,9 +22,9 @@ void CharacterDataReader::loadCharacter(QString t_folder)
 
 QString CharacterDataReader::getEmoteButton(DREmote t_emote, bool t_enabled)
 {
-  QString l_texture = AOApplication::getInstance()->get_character_path(t_emote.character, QString(mOutfit + "/emotions/" + t_emote.comment + ".png").arg(t_emote.key));
+  QString l_texture = AOApplication::getInstance()->get_character_path(t_emote.character, QString("outfits/" + mOutfit + "/emotions/" + t_emote.comment + ".png").arg(t_emote.key));
 
-  if(t_enabled) l_texture = AOApplication::getInstance()->get_character_path(t_emote.character, QString(mOutfit + "/emotions/" + t_emote.comment + "_on.png"));
+  if(t_enabled) l_texture = AOApplication::getInstance()->get_character_path(t_emote.character, QString("outfits/" + mOutfit + "/emotions/" + t_emote.comment + "_on.png"));
 
   return l_texture;
 }
@@ -32,7 +32,7 @@ QString CharacterDataReader::getEmoteButton(DREmote t_emote, bool t_enabled)
 void CharacterDataReader::loadOutfits()
 {
   mOutfitNames.clear();
-  QDir l_outfitsDirectory(AOApplication::getInstance()->get_character_folder_path(mFolder));
+  QDir l_outfitsDirectory(AOApplication::getInstance()->get_character_folder_path(mFolder) + "/outfits");
 
   QStringList l_outfitSubDirectories = l_outfitsDirectory.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -70,7 +70,7 @@ QVector<DREmote> CharacterDataReader::getEmotes()
 
 QString CharacterDataReader::getSelectedImage(DREmote t_emote)
 {
-  QString l_texture = AOApplication::getInstance()->get_character_path(t_emote.character, QString(mOutfit + "/emotions/selected.png"));
+  QString l_texture = AOApplication::getInstance()->get_character_path(t_emote.character, QString("outfits/" + mOutfit + "/emotions/selected.png"));
   return l_texture;
 }
 

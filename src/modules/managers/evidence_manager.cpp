@@ -27,7 +27,7 @@ void EvidenceManager::SelectEvidence(int t_id)
     SetEvidenceDescription(mText);
   }
 
-  AOImageDisplay* l_evidenceImage = ThemeManager::get().getWidgetType<AOImageDisplay>("evidence_image");
+  AOImageDisplay* l_evidenceImage = ThemeManager::get().GetWidgetType<AOImageDisplay>("evidence_image");
   if(l_evidenceImage == nullptr) return;
 
   QString l_imagePath = AOApplication::getInstance()->get_base_file_path("evidence/" + m_EvidenceList[t_id].mImage);
@@ -62,7 +62,7 @@ void EvidenceManager::DestroyEvidence()
 
 void EvidenceManager::SetEvidenceDescription(QString t_text)
 {
-  DRTextEdit* l_evidenceText = ThemeManager::get().getWidgetType<DRTextEdit>("evidence_description");
+  DRTextEdit* l_evidenceText = ThemeManager::get().GetWidgetType<DRTextEdit>("evidence_description");
   if(l_evidenceText != nullptr)
   {
     l_evidenceText->setText(t_text);

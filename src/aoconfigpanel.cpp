@@ -615,7 +615,7 @@ void AOConfigPanel::update_theme_controls()
 
 void AOConfigPanel::on_switch_theme_clicked()
 {
-  ThemeManager::get().toggleReload();
+  ThemeManager::get().QueueFullReload();
   m_config->set_theme(ui_theme->currentText());
 }
 
@@ -642,7 +642,7 @@ void AOConfigPanel::on_check_for_updates_clicked()
 
 void AOConfigPanel::on_reload_theme_clicked()
 {
-  ThemeManager::get().toggleReload();
+  ThemeManager::get().QueueFullReload();
   Q_EMIT reload_theme();
 }
 

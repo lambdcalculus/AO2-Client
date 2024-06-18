@@ -75,11 +75,39 @@ void DRAudioStream::stop()
 
 std::optional<DRAudioError> DRAudioStream::set_file_name(QString p_file_name)
 {
+  m_byteData.clear();
+  m_url.clear();
   m_filename = p_file_name;
   m_init_state = InitNotDone;
   if (!ensure_init())
   {
     return DRAudioError("failed to set file: " + p_file_name);
+  }
+  emit file_name_changed(m_filename);
+  return std::nullopt;
+}
+
+std::optional<DRAudioError> DRAudioStream::SetWebAddress(QString t_url)
+{
+  m_url = t_url;
+  m_filename.clear();
+  m_init_state = InitNotDone;
+  if (!ensure_init())
+  {
+    return DRAudioError("failed to set file: " + t_url);
+  }
+  emit file_name_changed(m_filename);
+  return std::nullopt;
+}
+
+std::optional<DRAudioError> DRAudioStream::setByteData(QByteArray t_data)
+{
+  m_filename.clear();
+  m_byteData = t_data;
+  m_init_state = InitNotDone;
+  if (!ensure_init())
+  {
+    return DRAudioError("failed to set bgm byte data");
   }
   emit file_name_changed(m_filename);
   return std::nullopt;
@@ -194,14 +222,23 @@ bool DRAudioStream::ensure_init()
     return m_init_state == InitFinished;
   m_init_state = InitError;
 
-  if (m_filename.isEmpty())
-    return false;
-
   HSTREAM l_hstream;
-  if (m_filename.endsWith("opus", Qt::CaseInsensitive))
-    l_hstream = BASS_OPUS_StreamCreateFile(FALSE, m_filename.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+
+  if(!m_url.isEmpty())
+  {
+    l_hstream = BASS_StreamCreateURL(reinterpret_cast<const WCHAR*>(m_url.utf16()), 0, 0, nullptr, nullptr);
+  }
+  else if (m_filename.isEmpty())
+  {
+    return false;
+  }
   else
-    l_hstream = BASS_StreamCreateFile(FALSE, m_filename.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE | BASS_STREAM_PRESCAN);
+  {
+    if (m_filename.endsWith("opus", Qt::CaseInsensitive))
+      l_hstream = BASS_OPUS_StreamCreateFile(FALSE, m_filename.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+    else
+      l_hstream = BASS_StreamCreateFile(FALSE, m_filename.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE | BASS_STREAM_PRESCAN);
+  }
 
   if (!l_hstream)
   {
@@ -215,6 +252,7 @@ bool DRAudioStream::ensure_init()
   m_init_state = InitFinished;
   init_loop();
   update_volume();
+
   return true;
 }
 

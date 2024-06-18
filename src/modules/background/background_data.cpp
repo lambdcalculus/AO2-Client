@@ -1,5 +1,7 @@
 #include "background_data.h"
 
+#include <aoapplication.h>
+
 BackgroundData::BackgroundData()
 {
 
@@ -18,6 +20,10 @@ QString BackgroundData::getBackgroundFilename(QString t_position)
     {
       return mPositions[t_position].mBackground;
     }
+  }
+  if(m_LegacyPositionMap.contains(t_position))
+  {
+    return m_LegacyPositionMap[t_position].get_back() + ".png";
   }
 
   return "";

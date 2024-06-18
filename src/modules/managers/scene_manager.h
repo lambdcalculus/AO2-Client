@@ -4,10 +4,67 @@
 #include "src/aolabel.h"
 #include "src/drgraphicscene.h"
 #include "datatypes.h"
+#include "game_manager.h"
 #include <mk2/drplayer.h>
 #include "modules/background/background_data.h"
 
 #include <aoconfig.h>
+
+
+
+class ICMessageData
+{
+public:
+  ICMessageData(QStringList t_messageData, bool t_legacy);;
+
+  QStringList LegacyPacketContents();
+
+  QStringList PacketContents();
+
+  bool m_DeskModifier = true;
+  bool m_IsFlipped = false;
+  bool m_HideCharacter = true;
+
+  bool m_UsesPreAnimation = false;
+
+  bool m_PairIsFlipped = false;
+  bool m_PairIsHidden = false;
+
+  QString m_PreAnimation = "";
+  QString m_CharacterFolder = "";
+  QString m_CharacterOutfit = "";
+  QString m_CharacterEmotion = "";
+
+  QString m_MessageContents = "";
+  QString m_AreaPosition = "wit";
+  QString m_SFXName = "";
+
+  QString m_ShowName = "";
+  QString m_VideoName = "";
+  GameEffectData m_EffectData = GameEffectData("");
+
+  QString m_PairCharacterFolder = "";
+  QString m_PairCharacterEmotion = "";
+
+  QString m_KeyframeAnimation = "";
+
+  int m_EmoteModifier = 0; //CMEmoteModifier - Obsolete?
+  int m_CharacterServerId = 0;
+  int m_SFXDelay = 0;
+  int m_ShoutModifier = 0;
+  int m_EvidenceId = 0;
+
+
+  int m_EffectState = 0;
+  int m_TextColor = 0;
+  int m_ClientId = 0;
+  int m_OffsetX = 0;
+
+
+  int m_PairOffsetX = 0;
+  ChatTypes m_ChatType = ChatTypes::Talk;
+
+};
 
 class SceneManager
 {
@@ -18,6 +75,10 @@ public:
   {
     return s_Instance;
   }
+
+
+  ICMessageData *ProcessIncomingMessage(QStringList t_message);
+
 
   void execLoadPlayerBackground(QString t_backgroundName);
   DRBackgroundSettings getBackgroundSettings();
@@ -46,6 +107,21 @@ public:
   SpeakerData getSpeakerPrevious();
   QString getChatboxType();
 
+public:
+  ICMessageData *GetMessageData()
+  {
+    if(m_CurrentMessageData == nullptr)
+    {
+      m_CurrentMessageData = new ICMessageData({}, false);
+    }
+    return m_CurrentMessageData;
+  }
+
+  QString GetSpeakerAnimation()
+  {
+    return m_CurrentMessageData->m_KeyframeAnimation;
+  }
+
 private:
   SceneManager() {}
   static SceneManager s_Instance;
@@ -64,6 +140,11 @@ private:
   SpeakerData   m_SpeakerLast = SpeakerData("", "");
   int m_SpeakerType = 0;
 
+  //Current Speaker
+  ICMessageData *m_CurrentMessageData = nullptr;
+
+
 };
+
 
 #endif // SCENEMANAGER_H

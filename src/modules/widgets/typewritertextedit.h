@@ -21,11 +21,10 @@ public:
   TypewriterTextEdit(QWidget *p_parent = nullptr);
 
   void setTypewriterTarget(QString t_text);
-  void progressLetter();
-  bool isTextRendered();
+  void UpdateDisplay();
+  bool GetTypingComplete();
 
 private:
-  QMap<int, TypeWriterAction> mTypeWriterActions = {};
 
   int mCurrentIndex = 0;
 
@@ -33,14 +32,16 @@ private:
   QString mRenderedText = "";
 
   //Timings
-  int mStartTime = 0;
-  int mBlipRate = 30;
-  int mLastUpdate = 0;
+  int m_TimingFirstUpdate = 0;
+  int m_TimingLastUpdate = 0;
 
-  AOBlipPlayer *pBlipPlayer = nullptr;
+  //Blips
+  AOBlipPlayer *p_BlipAudioPlayer = nullptr;
+  int mBlipRate = 30;
 
   QChar mCurrentColor = ' ';
-  QVector<QString> mColorQueue = {};
+  QVector<QString> m_QueuedHighlights = {};
+  QMap<int, TypeWriterAction> m_QueuedActions = {};
 };
 
 #endif // TYPEWRITERTEXTEDIT_H

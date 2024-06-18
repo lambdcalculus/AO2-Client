@@ -77,12 +77,11 @@ void Courtroom::create_widgets()
   m_system_player = new AOSystemPlayer(ao_app, this);
   m_effects_player = new AOSfxPlayer(ao_app, this);
   m_shouts_player = new AOShoutPlayer(ao_app, this);
-  m_music_player = new AOMusicPlayer(ao_app, this);
   m_blips_player = new AOBlipPlayer(ao_app, this);
 
   ui_background = new AOImageDisplay(this, ao_app);
 
-  ThemeManager::get().setCourtroomBackground(ui_background);
+  ThemeManager::get().RegisterCourtroomBackground(ui_background);
 
 
   ui_viewport = new DRGraphicsView(this);
@@ -184,8 +183,8 @@ void Courtroom::create_widgets()
   ui_ic_chatlog = new DRTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
   ui_ic_chatlog->set_auto_align(false);
-  ui_ic_chatlog_scroll_topdown = setupButtonWidget("ic_chatlog_scroll_topdown", "ic_chatlog_scroll_topdown.png", "");
-  ui_ic_chatlog_scroll_bottomup = setupButtonWidget("ic_chatlog_scroll_bottomup", "ic_chatlog_scroll_bottomup.png", "");
+  ui_ic_chatlog_scroll_topdown = ThemeManager::get().CreateWidgetButton(COURTROOM, "ic_chatlog_scroll_topdown", "ic_chatlog_scroll_topdown.png", "", this);
+  ui_ic_chatlog_scroll_bottomup = ThemeManager::get().CreateWidgetButton(COURTROOM, "ic_chatlog_scroll_bottomup", "ic_chatlog_scroll_bottomup.png", "", this);
 
   ui_area_desc = new DRTextEdit(this);
   ui_area_desc->setReadOnly(true);
@@ -288,27 +287,27 @@ void Courtroom::create_widgets()
   ui_defense_bar = new AOImageDisplay(this, ao_app);
   ui_prosecution_bar = new AOImageDisplay(this, ao_app);
 
-  ui_shout_up = setupButtonWidget("shout_up", "shoutup.png", "");
+  ui_shout_up = ThemeManager::get().CreateWidgetButton(COURTROOM, "shout_up", "shoutup.png", "", this);
   ui_shout_up->setProperty("cycle_id", 1);
-  ui_shout_down = setupButtonWidget("shout_down", "shoutdown.png", "");
+  ui_shout_down = ThemeManager::get().CreateWidgetButton(COURTROOM, "shout_down", "shoutdown.png", "", this);
   ui_shout_down->setProperty("cycle_id", 0);
 
-  ui_effect_down = setupButtonWidget("effect_down", "effectdown.png", "");
+  ui_effect_down = ThemeManager::get().CreateWidgetButton(COURTROOM, "effect_down", "effectdown.png", "", this);
   ui_effect_down->setProperty("cycle_id", 2);
-  ui_effect_up = setupButtonWidget("effect_up", "effectup.png", "");
+  ui_effect_up = ThemeManager::get().CreateWidgetButton(COURTROOM, "effect_up", "effectup.png", "", this);
   ui_effect_up->setProperty("cycle_id", 3);
 
-  ui_wtce_up = setupButtonWidget("wtce_up", "wtceup.png", "");
+  ui_wtce_up = ThemeManager::get().CreateWidgetButton(COURTROOM, "wtce_up", "wtceup.png", "", this);
   ui_wtce_up->setProperty("cycle_id", 5);
-  ui_wtce_down = setupButtonWidget("wtce_down", "wtcedown.png", "");
+  ui_wtce_down = ThemeManager::get().CreateWidgetButton(COURTROOM, "wtce_down", "wtcedown.png", "", this);
   ui_wtce_down->setProperty("cycle_id", 4);
 
-  ui_change_character = setupButtonWidget("change_character", "changecharacter.png", "Change Character");
-  ui_call_mod = setupButtonWidget("call_mod", "callmod.png", LocalizationManager::get().getLocalizationText("PING_MODS"));
-  ui_switch_area_music = setupButtonWidget("switch_area_music", "switch_area_music.png", "A/M");
+  ui_change_character = ThemeManager::get().CreateWidgetButton(COURTROOM, "change_character", "changecharacter.png", "Change Character", this);
+  ui_call_mod = ThemeManager::get().CreateWidgetButton(COURTROOM, "call_mod", "callmod.png", LocalizationManager::get().getLocalizationText("PING_MODS"), this);
+  ui_switch_area_music = ThemeManager::get().CreateWidgetButton(COURTROOM, "switch_area_music", "switch_area_music.png", "A/M", this);
 
-  ui_config_panel = setupButtonWidget("config_panel", "config_panel.png", "Config");
-  ui_note_button = setupButtonWidget("note_button", "notebutton.png", "Notes");
+  ui_config_panel = ThemeManager::get().CreateWidgetButton(COURTROOM, "config_panel", "config_panel.png", "Config", this);
+  ui_note_button = ThemeManager::get().CreateWidgetButton(COURTROOM, "note_button", "notebutton.png", "Notes", this);
 
 
   ui_label_images.resize(label_images.size());
@@ -335,11 +334,11 @@ void Courtroom::create_widgets()
   ui_checks.push_back(ui_flip);
   ui_checks.push_back(ui_hide_character);
 
-  ui_defense_plus = setupButtonWidget("defense_plus", "defplus.png", "");
-  ui_defense_minus = setupButtonWidget("defense_minus", "defminus.png", "");
+  ui_defense_plus = ThemeManager::get().CreateWidgetButton(COURTROOM, "defense_plus", "defplus.png", "", this);
+  ui_defense_minus = ThemeManager::get().CreateWidgetButton(COURTROOM, "defense_minus", "defminus.png", "", this);
 
-  ui_prosecution_plus = setupButtonWidget("prosecution_plus", "proplus.png", "");
-  ui_prosecution_minus = setupButtonWidget("prosecution_minus", "prominus.png", "");
+  ui_prosecution_plus = ThemeManager::get().CreateWidgetButton(COURTROOM, "prosecution_plus", "proplus.png", "", this);
+  ui_prosecution_minus = ThemeManager::get().CreateWidgetButton(COURTROOM, "prosecution_minus", "prominus.png", "", this);
 
   //Setup Combo Boxes
   QStringList l_colorNames =
@@ -376,14 +375,14 @@ void Courtroom::create_widgets()
   ui_timers[0] = new AOTimer(this);
 
 
-  wEvidenceLeft = setupButtonWidget("evidence_left", "arrow_left.png", "<-");
-  wEvidenceRight = setupButtonWidget("evidence_right", "arrow_right.png", "<-");
-  wEvidencePresent = setupButtonWidget("evidence_present", "evidence_present.png", "Present");
+  wEvidenceLeft = ThemeManager::get().CreateWidgetButton(COURTROOM, "evidence_left", "arrow_left.png", "<-", this);
+  wEvidenceRight = ThemeManager::get().CreateWidgetButton(COURTROOM, "evidence_right", "arrow_right.png", "<-", this);
+  wEvidencePresent = ThemeManager::get().CreateWidgetButton(COURTROOM, "evidence_present", "evidence_present.png", "Present", this);
 
 
-  ui_player_list_left = setupButtonWidget("player_list_left", "arrow_left.png", "<-");
-  ui_player_list_right = setupButtonWidget("player_list_right", "arrow_right.png", "->");
-  ui_area_look = setupButtonWidget("area_look", "area_look.png", LocalizationManager::get().getLocalizationText("TITLE_LOOK"));
+  ui_player_list_left = ThemeManager::get().CreateWidgetButton(COURTROOM, "player_list_left", "arrow_left.png", "<-", this);
+  ui_player_list_right = ThemeManager::get().CreateWidgetButton(COURTROOM, "player_list_right", "arrow_right.png", "->", this);
+  ui_area_look = ThemeManager::get().CreateWidgetButton(COURTROOM, "area_look", "area_look.png", LocalizationManager::get().getLocalizationText("TITLE_LOOK"), this);
 
   constructEvidenceList();
   construct_playerlist();
@@ -398,22 +397,10 @@ QComboBox *Courtroom::setupComboBoxWidget(const QStringList& items, QString name
   DROComboBox *comboBox = new DROComboBox(this, ao_app);
   comboBox->addItems(items);
   comboBox->setWidgetInfo(name, cssHeader, "courtroom");
-  ThemeManager::get().addComboBox(name, comboBox);
+  ThemeManager::get().RegisterWidgetComboBox(name, comboBox);
   return comboBox;
 }
 
-AOButton *Courtroom::setupButtonWidget(const QString name, QString image, QString fallback, QWidget* parent)
-{
-  AOButton *button;
-  if(parent == nullptr) button = new AOButton(this, ao_app);
-  else button = new AOButton(parent, ao_app);
-
-  button->set_theme_image(name, image, "courtroom", fallback);
-
-  ThemeManager::get().addButton(name, button);
-  return button;
-
-}
 
 QLineEdit *Courtroom::setupLineEditWidget(const QString name, QString placeholder, QString legacy_css, QString text,  QWidget *parent)
 {
@@ -429,7 +416,7 @@ QLineEdit *Courtroom::setupLineEditWidget(const QString name, QString placeholde
   lineEdit->setPlaceholderText(placeholder);
   lineEdit->setText(text);
 
-  ThemeManager::get().addLineEdit(name, lineEdit);
+  ThemeManager::get().RegisterWidgetLineEdit(name, lineEdit);
 
   return lineEdit;
 }
@@ -748,7 +735,7 @@ void Courtroom::reset_widget_names()
       {"shouts_player", wShoutsLayer}
   };
 
-    ThemeManager::get().SetWidgetNames(widget_names);
+    ThemeManager::get().RegisterWidgetGenericBulk(widget_names);
 }
 
 void Courtroom::insert_widget_name(QString p_widget_name, QWidget *p_widget)
@@ -769,7 +756,7 @@ void Courtroom::insert_widget_names(QVector<QString> &p_name_list, QVector<QWidg
 
 void Courtroom::setupWidgetTabs()
 {
-  ThemeManager::get().createTabParent();
+  ThemeManager::get().CreateTabWidgets();
 }
 
 void Courtroom::set_widget_names()
@@ -789,7 +776,7 @@ void Courtroom::set_widget_names()
   for (auto *i_block : qAsConst(ui_free_blocks))
   {
     widget_names.insert(i_block->objectName(), i_block);
-    ThemeManager::get().addWidgetName(i_block->objectName(), i_block);
+    ThemeManager::get().RegisterWidgetGeneric(i_block->objectName(), i_block);
   }
 
   // timers are special children
@@ -819,7 +806,7 @@ void Courtroom::set_widget_layers()
 
     for(QString l_child_name : widget_layers)
     {
-      if(l_child_name == "char_select") ThemeManager::get().execLayerTabs();
+      if(l_child_name == "char_select") ThemeManager::get().ParentWidgetsToTabs();
       if(count != 0)
       {
         l_parent_name = widget_layers[0];
@@ -998,10 +985,10 @@ void Courtroom::set_widgets()
 
   TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Set Background");
 
-  ThemeManager::get().refreshButtons();
+  ThemeManager::get().RefreshWidgetsButton();
   TimeDebugger::get().CheckpointTimer("Courtroom Setup", "SetWidget-BUttons");
-  ThemeManager::get().refreshLineEdit();
-  ThemeManager::get().refreshComboBox();
+  ThemeManager::get().RefreshWidgetsLineEdit();
+  ThemeManager::get().RefreshWidgetsComboBox();
   TimeDebugger::get().CheckpointTimer("Courtroom Setup", "SetWidget-ComboBox");
 
   setupWidgetElement(ui_viewport, "viewport");
@@ -1124,7 +1111,7 @@ void Courtroom::set_widgets()
 
 
 
-  if(ThemeManager::get().getReloadPending())
+  if(ThemeManager::get().GetFullReloadQueued())
   {
     { // emote preview
       pos_size_type l_emote_preview_size = ao_app->get_element_dimensions("emote_preview", COURTROOM_DESIGN_INI);
@@ -1182,7 +1169,7 @@ void Courtroom::set_widgets()
   {
     set_size_and_pos(ui_effects[i], effect_names[i], COURTROOM_DESIGN_INI, ao_app);
 
-    ThemeManager::get().addWidgetName(effect_names[i], ui_effects[i]);
+    ThemeManager::get().RegisterWidgetGeneric(effect_names[i], ui_effects[i]);
   }
   reset_effect_buttons();
 
@@ -1203,7 +1190,7 @@ void Courtroom::set_widgets()
   for (int i = 0; i < wtce_names.size(); ++i)
   {
     set_size_and_pos(ui_wtce[i], wtce_names[i], COURTROOM_DESIGN_INI, ao_app);
-    ThemeManager::get().addWidgetName(wtce_names[i], ui_wtce[i]);
+    ThemeManager::get().RegisterWidgetGeneric(wtce_names[i], ui_wtce[i]);
   }
 
   if (ao_app->current_theme->read_config_bool("enable_single_wtce")) // courtroom_config.ini necessary
@@ -1263,7 +1250,7 @@ void Courtroom::set_widgets()
   for (int i = 0; i < ui_label_images.size(); ++i)
   {
     set_size_and_pos(ui_label_images[i], label_images[i].toLower() + "_image", COURTROOM_DESIGN_INI, ao_app);
-    ThemeManager::get().addWidgetName(label_images[i].toLower() + "_image", ui_label_images[i]);
+    ThemeManager::get().RegisterWidgetGeneric(label_images[i].toLower() + "_image", ui_label_images[i]);
   }
 
   if (ao_app->current_theme->read_config_bool("enable_label_images"))
@@ -1534,7 +1521,7 @@ void Courtroom::delete_widget(QWidget *p_widget)
   // remove the widget from recorded names
   QString l_widgetName = p_widget->objectName();
   widget_names.remove(l_widgetName);
-  ThemeManager::get().execRemoveWidget(l_widgetName);
+  ThemeManager::get().UnregisterWidget(l_widgetName);
 
   // transfer the children to our grandparent since our parent is about to be deleted
   QWidget *grand_parent = p_widget->parentWidget();
@@ -1621,7 +1608,7 @@ void Courtroom::load_free_blocks()
     l_block->setObjectName(l_block_name);
     ui_free_blocks.append(l_block);
     widget_names.insert(l_block_name, l_block);
-    ThemeManager::get().addWidgetName(l_block_name, l_block);
+    ThemeManager::get().RegisterWidgetGeneric(l_block_name, l_block);
   }
 }
 

@@ -110,7 +110,7 @@ Lobby *AOApplication::get_lobby() const
 
 void AOApplication::construct_lobby()
 {
-  ThemeManager::get().clearWidgets();
+  ThemeManager::get().UnregisterWidgetsAll();
   if (is_lobby_constructed)
   {
     qDebug() << "W: lobby was attempted constructed when it already exists";
@@ -399,6 +399,20 @@ QString AOApplication::get_theme_sprite_path(QString p_file_name, QString p_char
   }
 
   return l_file_path;
+}
+
+QString AOApplication::GetFirstThemeSpritePath(QStringList t_FilePaths)
+{
+  for(QString r_FilePath : t_FilePaths)
+  {
+    QString l_FoundAssetPath = find_theme_asset_path(r_FilePath, animated_or_static_extensions());
+    if (!l_FoundAssetPath.isEmpty())
+    {
+      return l_FoundAssetPath;
+    }
+  }
+
+  return find_theme_asset_path("placeholder", animated_or_static_extensions());
 }
 
 QString AOApplication::get_theme_sprite_path(QString file_name)

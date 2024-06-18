@@ -15,7 +15,7 @@ void AnimationManager::CachePlayerAnimations()
   m_CachedPlayerAnimNames.append("Default");
 
   m_PlayerAnimations = {};
-  QListWidget * l_listWidget = ThemeManager::get().getWidgetType<QListWidget>("chara_animations");
+  QListWidget * l_listWidget = ThemeManager::get().GetWidgetType<QListWidget>("chara_animations");
   QStringList lCharacterAnims = PathingManager::get().searchDirectoryContentsFirst("animations/characters/", "json", false);
 
   for(QString rAnimName : lCharacterAnims)

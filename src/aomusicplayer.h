@@ -11,6 +11,7 @@ public:
   AOMusicPlayer(AOApplication *p_ao_app, QObject *p_parent = nullptr);
 
 public slots:
+  void play_streamed(QString t_url);
   void play(QString p_song);
   void stop();
   void forceStop();

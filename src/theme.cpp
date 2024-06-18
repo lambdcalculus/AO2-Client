@@ -103,7 +103,7 @@ void set_font(QWidget *p_widget, QString p_identifier, QString ini_file, AOAppli
 
   if(ao_app->current_theme->m_jsonLoaded)
   {
-    widgetFontStruct fontdata = ThemeManager::get().mCurrentThemeReader.getFont(l_scene, p_identifier);
+    widgetFontStruct fontdata = ThemeManager::get().mCurrentThemeReader.GetFontData(l_scene, p_identifier);
     font_name = fontdata.font;
     is_bold = fontdata.bold;
     is_antialias = fontdata.sharp;
@@ -155,7 +155,7 @@ void set_drtextedit_font(DRTextEdit *p_widget, QString p_identifier, QString p_i
 
   if(ao_app->current_theme->m_jsonLoaded)
   {
-    outline = ThemeManager::get().mCurrentThemeReader.getFont(COURTROOM, p_identifier).outline;
+    outline = ThemeManager::get().mCurrentThemeReader.GetFontData(COURTROOM, p_identifier).outline;
   }
   else
   {
@@ -213,9 +213,9 @@ void set_sticker_play_once(DRStickerViewer *p_sticker, QString p_identifier, QSt
 
 void setShownameFont(DRTextEdit *widget, QString identifier, QString align, AOApplication *ao_app)
 {
-  widgetFontStruct fontData = ThemeManager::get().mCurrentThemeReader.getPairingFont(identifier, align);
+  widgetFontStruct fontData = ThemeManager::get().mCurrentThemeReader.GetFontDataPairing(identifier, align);
 
-  fontData.size = static_cast<int>(fontData.size * ThemeManager::get().getViewporResize());
+  fontData.size = static_cast<int>(fontData.size * ThemeManager::get().GetResizeViewport());
 
   setThemeFont(widget, fontData, ao_app);
 

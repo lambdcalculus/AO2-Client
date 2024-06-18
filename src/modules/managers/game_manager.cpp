@@ -1,3 +1,4 @@
+#include "audio_manager.h"
 #include "game_manager.h"
 #include "pathing_manager.h"
 #include "replay_manager.h"
@@ -40,9 +41,9 @@ void GameManager::RunAnimationLoop(AnimTypes t_type)
 {
   if(m_WidgetTypeWriter != nullptr)
   {
-    if(!m_WidgetTypeWriter->isTextRendered())
+    if(!m_WidgetTypeWriter->GetTypingComplete())
     {
-      m_WidgetTypeWriter->progressLetter();
+      m_WidgetTypeWriter->UpdateDisplay();
     }
   }
   if(m_GraphicObjectAnimations.contains(t_type))
@@ -50,7 +51,7 @@ void GameManager::RunAnimationLoop(AnimTypes t_type)
     bool lAllAnimationsDone = true;
     for(GraphicObjectAnimator * r_anim : m_GraphicObjectAnimations[t_type])
     {
-      if(r_anim->getAnimation()->getIsPlaying())
+      if(r_anim->getAnimation()->GetCurrentlyRunning())
       {
         lAllAnimationsDone = false;
         r_anim->getAnimation()->RunAnimation();
@@ -91,6 +92,7 @@ void GameManager::setupGame()
 {
   setupGameEffects();
   StartGameLoop();
+  AudioManager::get().InitializeAudio();
 }
 
 void GameManager::setServerFunctions(QStringList tFunctionList)

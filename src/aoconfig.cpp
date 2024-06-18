@@ -20,6 +20,9 @@
 
 #include <modules/theme/thememanager.h>
 
+#include <modules/managers/replay_manager.h>
+#include <modules/managers/variable_manager.h>
+
 /*!
     We have to suffer through a lot of boilerplate code
     but hey, when has ao2 ever cared?
@@ -232,7 +235,7 @@ void AOConfigPrivate::load_file()
   blip_rate = cfg.value("blip_rate", 1000000000).toInt();
   punctuation_delay = cfg.value("punctuation_delay", 110).toInt();
   theme_resize = cfg.value("theme_resize", 1).toDouble();
-  ThemeManager::get().setResize(theme_resize);
+  ThemeManager::get().SetResizeClient(theme_resize);
   fade_duration = cfg.value("fade_duration", 200).toInt();
   SceneManager::get().setFadeDuration(fade_duration);
   blank_blips = cfg.value("blank_blips").toBool();
@@ -921,6 +924,8 @@ void AOConfig::set_timeofday(QString p_string)
     return;
   d->timeofday = p_string;
   d->invoke_signal("timeofday_changed", Q_ARG(QString, p_string));
+  VariableManager::get().setVariable("time_period", p_string);
+  ReplayManager::get().RecordChangeTOD(p_string);
 }
 
 void AOConfig::set_manual_timeofday(QString p_string)
@@ -929,6 +934,8 @@ void AOConfig::set_manual_timeofday(QString p_string)
     return;
   d->manual_timeofday = p_string;
   d->invoke_signal("manual_timeofday_changed", Q_ARG(QString, p_string));
+  VariableManager::get().setVariable("time_period", p_string);
+  ReplayManager::get().RecordChangeTOD(p_string);
 }
 
 void AOConfig::set_manual_timeofday_selection_enabled(bool p_enabled)
@@ -1232,7 +1239,7 @@ void AOConfig::setThemeResize(double resize)
   if (d->theme_resize == resize)
     return;
   d->theme_resize = resize;
-  ThemeManager::get().setResize(resize);
+  ThemeManager::get().SetResizeClient(resize);
   d->invoke_signal("theme_resize_changed", Q_ARG(double, resize));
 }
 

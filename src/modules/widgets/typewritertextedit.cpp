@@ -6,19 +6,19 @@
 
 TypewriterTextEdit::TypewriterTextEdit(QWidget *p_parent) : DRTextEdit(p_parent)
 {
-  pBlipPlayer = new AOBlipPlayer(AOApplication::getInstance(), this);
-  pBlipPlayer->set_blips("sfx-blipmale.wav");
+  p_BlipAudioPlayer = new AOBlipPlayer(AOApplication::getInstance(), this);
+  p_BlipAudioPlayer->set_blips("sfx-blipmale.wav");
 }
 
 void TypewriterTextEdit::setTypewriterTarget(QString t_text)
 {
   setText("");
-  mLastUpdate = mStartTime;
+  m_TimingLastUpdate = m_TimingFirstUpdate;
   mText = "";
   mRenderedText = "";
   mCurrentColor = ' ';
   mCurrentIndex = 0;
-  mColorQueue.clear();
+  m_QueuedHighlights.clear();
 
 
   if(t_text.trimmed().isEmpty()) return;
@@ -37,18 +37,18 @@ void TypewriterTextEdit::setTypewriterTarget(QString t_text)
     {
       if(f_character == Qt::Key_BraceRight)
       {
-        mTypeWriterActions[mText.count()] = eTypeWriterSpeedUp;
+        m_QueuedActions[mText.count()] = eTypeWriterSpeedUp;
       }
       else
       {
-        mTypeWriterActions[mText.count()] = eTypeWriterSpeedDown;
+        m_QueuedActions[mText.count()] = eTypeWriterSpeedDown;
       }
       continue;
     }
     else if (l_ignoreNextLetter && f_character == 's')
     {
       l_ignoreNextLetter = false;
-      mTypeWriterActions[mText.count()] = eTypeWriterShake;
+      m_QueuedActions[mText.count()] = eTypeWriterShake;
       continue;
     }
     else if (f_character == Qt::Key_Space)
@@ -61,28 +61,28 @@ void TypewriterTextEdit::setTypewriterTarget(QString t_text)
     }
     l_ignoreNextLetter = false;
   }
-  progressLetter();
-  progressLetter();
-  progressLetter();
+  UpdateDisplay();
+  UpdateDisplay();
+  UpdateDisplay();
 }
 
-void TypewriterTextEdit::progressLetter()
+void TypewriterTextEdit::UpdateDisplay()
 {
   //bool m_chatbox_message_enable_highlighting = (AOApplication::getInstance()->current_theme->read_config_bool("enable_highlighting"));
 
-  if((GameManager::get().getUptime() - mLastUpdate) < mBlipRate)
+  if((GameManager::get().getUptime() - m_TimingLastUpdate) < mBlipRate)
   {
     return;
   };
   if(mCurrentIndex >= mText.count()) return;
-  if(mCurrentIndex == 0) pBlipPlayer->blip_tick();
+  if(mCurrentIndex == 0) p_BlipAudioPlayer->blip_tick();
 
   QTextCharFormat l_currentCharFormat = currentCharFormat();
 
   QChar l_newChar = mText.at(mCurrentIndex);
   QVector<QStringList> m_chatbox_message_highlight_colors = AOApplication::getInstance()->get_highlight_colors();
 
-  if(mColorQueue.count() == 0)
+  if(m_QueuedHighlights.count() == 0)
   {
     QColor text_color;
     text_color.setNamedColor("#F9FFFE");
@@ -91,22 +91,22 @@ void TypewriterTextEdit::progressLetter()
   else
   {
     QColor text_color;
-    text_color.setNamedColor(mColorQueue.at(mColorQueue.count() - 1));
+    text_color.setNamedColor(m_QueuedHighlights.at(m_QueuedHighlights.count() - 1));
     l_currentCharFormat.setForeground(text_color);
   }
 
   for(QStringList mMessageHighlights : m_chatbox_message_highlight_colors)
   {
     bool lisExistingColor = false;
-    if(mColorQueue.count() != 0)
+    if(m_QueuedHighlights.count() != 0)
     {
-      if(mMessageHighlights[1] == mColorQueue.at(mColorQueue.count() - 1))
+      if(mMessageHighlights[1] == m_QueuedHighlights.at(m_QueuedHighlights.count() - 1))
       {
         if(l_newChar == mMessageHighlights[0].at(1))
         {
           lisExistingColor = true;
           mCurrentColor = ' ';
-          mColorQueue.removeLast();
+          m_QueuedHighlights.removeLast();
           if(mMessageHighlights[2] == "0")
           {
             mText.remove(mCurrentIndex, 1);
@@ -123,7 +123,7 @@ void TypewriterTextEdit::progressLetter()
       text_color.setNamedColor(mMessageHighlights[1]);
       l_currentCharFormat.setForeground(text_color);
       mCurrentColor = l_newChar;
-      mColorQueue.append(mMessageHighlights[1]);
+      m_QueuedHighlights.append(mMessageHighlights[1]);
       if(mMessageHighlights[2] == "0")
       {
         textCursor().insertText("", l_currentCharFormat);
@@ -140,10 +140,10 @@ void TypewriterTextEdit::progressLetter()
 
   //setText(mRenderedText);
   mCurrentIndex += 1;
-  mLastUpdate = GameManager::get().getUptime();
+  m_TimingLastUpdate = GameManager::get().getUptime();
 }
 
-bool TypewriterTextEdit::isTextRendered()
+bool TypewriterTextEdit::GetTypingComplete()
 {
   return mRenderedText == mText;
 }

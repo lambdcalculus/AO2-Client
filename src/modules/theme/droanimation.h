@@ -8,31 +8,35 @@ class DROAnimation
 public:
   DROAnimation();
   void RunAnimation();
+
+  bool GetCurrentlyRunning();
+  float GetCurrentValue(AnimationVariableTypes type);
+
   void SetNextKeyframe(AnimationVariableTypes animType);
 
   void Start(bool loop);
   void Stop();
   void Pause();
-  bool getIsPlaying();
+
   void AddKeyframe(qint64 time, AnimationVariableTypes type, float value, AnimCurveType fin, AnimCurveType fout);
-  void setKeyframes(QVector<DROAnimationKeyframe> t_frames);
+  void SetKeyframes(QVector<DROAnimationKeyframe> t_frames);
 
-  float getValue(AnimationVariableTypes type);
-
-  int getCurrentFrame();
+  int GetCurrentFrame();
 
 private:
-  qint64 mElapsedTime = 0;
-  int mCurrentKeyframe = 0;
-  bool mCurrentlyPlaying = false;
-  bool isLoop = true;
-  QElapsedTimer timer = QElapsedTimer();
 
-  QHash<AnimationVariableTypes, int> mVarNextKeyframe = {};
-  QHash<AnimationVariableTypes, int> mVarLastKeyframe = {};
-  QHash<AnimationVariableTypes, float> mVarValues = {};
+  QElapsedTimer m_AnimationTimer = QElapsedTimer();
+  qint64 m_TimeElapsed = 0;
+  bool m_IsRunning = false;
 
-  QVector<DROAnimationKeyframe> keyFrames = {};
+  bool m_AnimationLoops = true;
+
+  int m_KeyframeIndex = 0;
+  QVector<DROAnimationKeyframe> m_AnimationKeyframes = {};
+
+  QHash<AnimationVariableTypes, int> m_UpcomingValues = {};
+  QHash<AnimationVariableTypes, int> m_PreviousValues = {};
+  QHash<AnimationVariableTypes, float> m_CurrentValues = {};
 };
 
 #endif // DROANIMATION_H

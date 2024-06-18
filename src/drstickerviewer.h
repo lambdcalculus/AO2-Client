@@ -17,7 +17,9 @@ public:
 
   void set_theme_image(QString p_file_name, QString p_character);
 
-  void set_theme_image(QString p_file_name);
+  bool set_theme_image(QString p_file_name);
+
+  bool setFreeblockImage(QString p_file_name, QString t_fallblockName);
 
   void set_chatbox_image(QString p_chatbox_name, bool p_is_self, bool chatmessage_is_empty, QString pair);
 

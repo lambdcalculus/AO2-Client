@@ -8,9 +8,10 @@
 
 ThemeManager ThemeManager::s_Instance;
 
-void ThemeManager::createTabParent()
+void ThemeManager::CreateTabWidgets()
 {
-  waTabWidgets = {};
+  m_TabDeletionQueue = m_TabWidgets;
+  m_TabWidgets = {};
 
   for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
   {
@@ -21,67 +22,75 @@ void ThemeManager::createTabParent()
     QString l_buttonName = r_tabInfo.m_Name + "_toggle";
     QString l_panelName = r_tabInfo.m_Name + "_panel";
 
-    pos_size_type l_panelPosition = mCurrentThemeReader.getWidgetPosition(COURTROOM, l_panelName);
-    pos_size_type l_buttonDimensions = mCurrentThemeReader.getWidgetPosition(COURTROOM, l_buttonName);
+    pos_size_type l_panelPosition = mCurrentThemeReader.GetWidgetTransform(COURTROOM, l_panelName);
+    pos_size_type l_buttonDimensions = mCurrentThemeReader.GetWidgetTransform(COURTROOM, l_buttonName);
 
 
     l_newTab->move(l_panelPosition.x, l_panelPosition.y);
     l_newTab->resize(l_panelPosition.width, l_panelPosition.height);
     l_newTab->setBackgroundImage(r_tabInfo.m_Name);
 
-    addWidgetName(l_panelName, l_newTab);
+    RegisterWidgetGeneric(l_panelName, l_newTab);
 
-    if(waTabWidgets.contains(r_tabInfo.m_Name))delete waTabWidgets[r_tabInfo.m_Name];
+    if(m_TabWidgets.contains(r_tabInfo.m_Name))delete m_TabWidgets[r_tabInfo.m_Name];
 
-    waTabWidgets[r_tabInfo.m_Name] = l_newTab;
+    m_TabWidgets[r_tabInfo.m_Name] = l_newTab;
 
     TabToggleButton *l_newButton = new TabToggleButton(l_courtroom, AOApplication::getInstance());
     l_newButton->setTabName(r_tabInfo.m_Name);
     l_newButton->setTabGroup(r_tabInfo.m_Group);
     l_newButton->show();
 
-    setWidgetDimensions(l_newButton, l_buttonDimensions.width, l_buttonDimensions.height);
-    setWidgetPosition(l_newButton, l_buttonDimensions.x, l_buttonDimensions.y);
+    AdjustWidgetDimensions(l_newButton, l_buttonDimensions.width, l_buttonDimensions.height);
+    AdjustWidgetTransform(l_newButton, l_buttonDimensions.x, l_buttonDimensions.y);
 
-    addWidgetName(l_buttonName,  l_newButton);
-    addButton(l_buttonName, l_newButton);
+    RegisterWidgetGeneric(l_buttonName,  l_newButton);
+    RegisterWidgetButton(l_buttonName, l_newButton);
   };
 
 }
 
-void ThemeManager::execLayerTabs()
+void ThemeManager::ParentWidgetsToTabs()
 {
   for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
   {
-    if(waTabWidgets.contains(r_tabInfo.m_Name))
+    if(m_TabWidgets.contains(r_tabInfo.m_Name))
     {
       for(QString r_WidgetName : r_tabInfo.m_WidgetContents)
       {
         QWidget *l_ChildWidget = getWidget(r_WidgetName);
         if(l_ChildWidget != nullptr)
         {
-          l_ChildWidget->setParent(waTabWidgets[r_tabInfo.m_Name]);
+          l_ChildWidget->setParent(m_TabWidgets[r_tabInfo.m_Name]);
         }
       }
-      waTabWidgets[r_tabInfo.m_Name]->raise();
-      waTabWidgets[r_tabInfo.m_Name]->hide();
+      m_TabWidgets[r_tabInfo.m_Name]->raise();
+      m_TabWidgets[r_tabInfo.m_Name]->hide();
     }
   };
 
+  QMap<QString, QWidget *>::iterator it;
+
+  for (it = m_TabDeletionQueue.begin(); it != m_TabDeletionQueue.end(); ++it)
+  {
+    QWidget *value = it.value();
+    delete value;
+  }
+
 }
 
-void ThemeManager::resetSelectedTabs()
+void ThemeManager::ResetTabSelection()
 {
   QStringList l_resetTabs = {};
   for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
   {
     if(l_resetTabs.contains(r_tabInfo.m_Group)) continue;
-    toggleTab(r_tabInfo.m_Name, r_tabInfo.m_Group);
+    ToggleTab(r_tabInfo.m_Name, r_tabInfo.m_Group);
     l_resetTabs.append(r_tabInfo.m_Group);
   }
 }
 
-void ThemeManager::toggleTab(QString t_tabName, QString t_tabGroup)
+void ThemeManager::ToggleTab(QString t_tabName, QString t_tabGroup)
 {
   for(ThemeTabInfo r_tabInfo : ThemeManager::get().getTabsInfo())
   {
@@ -105,11 +114,11 @@ void ThemeManager::toggleTab(QString t_tabName, QString t_tabGroup)
       QString l_bg_image = AOApplication::getInstance()->find_theme_asset_path("courtroombackground_" + t_tabName + ".png");
       if (!l_bg_image.isEmpty())
       {
-        wCourtroomBackground->set_theme_image("courtroombackground_" + t_tabName + ".png");
+        m_WidgetCourtroomBackground->set_theme_image("courtroombackground_" + t_tabName + ".png");
       }
       else
       {
-        wCourtroomBackground->set_theme_image("courtroombackground.png");
+        m_WidgetCourtroomBackground->set_theme_image("courtroombackground.png");
       }
 
 
@@ -128,7 +137,7 @@ void ThemeManager::toggleTab(QString t_tabName, QString t_tabGroup)
 
 }
 
-void ThemeManager::detatchTab(QString t_tabName)
+void ThemeManager::DetatchTab(QString t_tabName)
 {
   QString l_panelName = t_tabName + "_panel";
   QWidget *l_widget = getWidget(l_panelName);
@@ -143,7 +152,7 @@ void ThemeManager::detatchTab(QString t_tabName)
   }
 }
 
-void ThemeManager::execRemoveWidget(QString t_name)
+void ThemeManager::UnregisterWidget(QString t_name)
 {
   if(m_WidgetNames.contains(t_name)) m_WidgetNames.remove(t_name);
 }
@@ -151,10 +160,10 @@ void ThemeManager::execRemoveWidget(QString t_name)
 
 void ThemeManager::loadTheme(QString theme_name)
 {
-  if(mRequiresReload)
+  if(m_FullReloadQueued)
   {
     mCurrentThemeReader.LoadTheme(theme_name);
-    mRequiresReload = false;
+    m_FullReloadQueued = false;
   }
 }
 
@@ -163,40 +172,40 @@ void ThemeManager::LoadGamemode(QString gamemode)
   mCurrentThemeReader.SetGamemode(gamemode);
 }
 
-void ThemeManager::setWidgetPosition(QWidget *t_widget, int t_x, int t_y)
+void ThemeManager::AdjustWidgetTransform(QWidget *t_widget, int t_x, int t_y)
 {
-  int l_PositionX = static_cast<int>(t_x * mClientResize);
-  int l_PositionY = static_cast<int>(t_y * mClientResize);
+  int l_PositionX = static_cast<int>(t_x * m_ResizeClient);
+  int l_PositionY = static_cast<int>(t_y * m_ResizeClient);
 
   t_widget->move(l_PositionX, l_PositionY);
 }
 
-void ThemeManager::setWidgetDimensions(QWidget *t_widget, int t_width, int t_height)
+void ThemeManager::AdjustWidgetDimensions(QWidget *t_widget, int t_width, int t_height)
 {
-  int l_PositionWidth = static_cast<int>(t_width * mClientResize);
-  int l_PositionHeight = static_cast<int>(t_height * mClientResize);
+  int l_PositionWidth = static_cast<int>(t_width * m_ResizeClient);
+  int l_PositionHeight = static_cast<int>(t_height * m_ResizeClient);
 
   t_widget->resize(l_PositionWidth, l_PositionHeight);
 }
 
-void ThemeManager::autoWidgetDimensions(QWidget *t_widget, QString t_name, ThemeSceneType t_scene)
+void ThemeManager::AutoAdjustWidgetDimensions(QWidget *t_widget, QString t_name, ThemeSceneType t_scene)
 {
-  pos_size_type lPositionData = mCurrentThemeReader.getWidgetPosition(t_scene, t_name);
-  lPositionData.width = static_cast<int>(lPositionData.width * mClientResize);
-  lPositionData.height = static_cast<int>(lPositionData.height * mClientResize);
-  lPositionData.x = static_cast<int>(lPositionData.x * mClientResize);
-  lPositionData.y = static_cast<int>(lPositionData.y * mClientResize);
+  pos_size_type lPositionData = mCurrentThemeReader.GetWidgetTransform(t_scene, t_name);
+  lPositionData.width = static_cast<int>(lPositionData.width * m_ResizeClient);
+  lPositionData.height = static_cast<int>(lPositionData.height * m_ResizeClient);
+  lPositionData.x = static_cast<int>(lPositionData.x * m_ResizeClient);
+  lPositionData.y = static_cast<int>(lPositionData.y * m_ResizeClient);
 
   t_widget->move(lPositionData.x, lPositionData.y);
   t_widget->resize(lPositionData.width, lPositionData.height);
 }
 
-void ThemeManager::SetWidgetNames(QHash<QString, QWidget *> t_WidgetNames)
+void ThemeManager::RegisterWidgetGenericBulk(QHash<QString, QWidget *> t_WidgetNames)
 {
   m_WidgetNames = t_WidgetNames;
 }
 
-void ThemeManager::addWidgetName(QString t_widgetName, QWidget *t_widget)
+void ThemeManager::RegisterWidgetGeneric(QString t_widgetName, QWidget *t_widget)
 {
   m_WidgetNames[t_widgetName] = t_widget;
 }
@@ -206,19 +215,14 @@ QVector<ThemeTabInfo> ThemeManager::getTabsInfo()
   return ThemeManager::get().mCurrentThemeReader.getTabs();
 }
 
-bool ThemeManager::getConfigBool(QString value)
+bool ThemeManager::GetThemeConfigBool(QString value)
 {
-  return mCurrentThemeReader.getConfigBool(value);
+  return mCurrentThemeReader.GetConfigBool(value);
 }
 
-bool ThemeManager::getReloadPending()
+void ThemeManager::QueueFullReload()
 {
-  return mRequiresReload;
-}
-
-void ThemeManager::toggleReload()
-{
-  mRequiresReload = true;
+  m_FullReloadQueued = true;
 }
 
 pos_size_type ThemeManager::resizePosition(pos_size_type t_position, double t_scale)
@@ -231,39 +235,39 @@ pos_size_type ThemeManager::resizePosition(pos_size_type t_position, double t_sc
   return t_position;
 }
 
-void ThemeManager::setResize(double size)
+void ThemeManager::SetResizeClient(double size)
 {
-  mClientResize = size;
+  m_ResizeClient = size;
 }
 
-double ThemeManager::getResize()
+double ThemeManager::GetResizeClient()
 {
-  return mClientResize;
+  return m_ResizeClient;
 }
 
-void ThemeManager::setViewporResize(double size)
+void ThemeManager::SetResizeViewport(double size)
 {
-  mViewportResize = size;
+  m_ResizeViewport = size;
 }
 
-double ThemeManager::getViewporResize()
+double ThemeManager::GetResizeViewport()
 {
-  return mViewportResize;
+  return m_ResizeViewport;
 }
 
-void ThemeManager::addButton(QString name, AOButton *button)
+void ThemeManager::RegisterWidgetButton(QString name, AOButton *button)
 {
-  mButtonWidgets[name] = button;
+  m_WidgetsButtons[name] = button;
 }
 
-void ThemeManager:: addLineEdit(QString name, DROLineEdit* lineEdit)
+void ThemeManager:: RegisterWidgetLineEdit(QString name, DROLineEdit* lineEdit)
 {
-  mLineEditWidgets[name] = lineEdit;
+  m_WidgetsLineEdit[name] = lineEdit;
 }
 
-void ThemeManager::refreshButtons()
+void ThemeManager::RefreshWidgetsButton()
 {
-  for(AOButton* button : mButtonWidgets)
+  for(AOButton* button : m_WidgetsButtons)
   {
     button->set_theme_image();
     button->refresh_position();
@@ -271,9 +275,9 @@ void ThemeManager::refreshButtons()
   }
 }
 
-void ThemeManager::refreshLineEdit()
+void ThemeManager::RefreshWidgetsLineEdit()
 {
-  for(DROLineEdit* lineEdit : mLineEditWidgets)
+  for(DROLineEdit* lineEdit : m_WidgetsLineEdit)
   {
     lineEdit->refreshPosition();
     lineEdit->refreshCSS();
@@ -281,14 +285,14 @@ void ThemeManager::refreshLineEdit()
   }
 }
 
-void ThemeManager::addComboBox(QString name, DROComboBox *comboBox)
+void ThemeManager::RegisterWidgetComboBox(QString name, DROComboBox *comboBox)
 {
-  mComboBoxWidgets[name] = comboBox;
+  m_WidgetsComboBox[name] = comboBox;
 }
 
-void ThemeManager::refreshComboBox()
+void ThemeManager::RefreshWidgetsComboBox()
 {
-  for(DROComboBox* comboBox : mComboBoxWidgets)
+  for(DROComboBox* comboBox : m_WidgetsComboBox)
   {
     comboBox->refreshPosition();
     comboBox->refreshCSS();
@@ -296,9 +300,9 @@ void ThemeManager::refreshComboBox()
   }
 }
 
-void ThemeManager::setCourtroomBackground(AOImageDisplay *t_background)
+void ThemeManager::RegisterCourtroomBackground(AOImageDisplay *t_background)
 {
-  wCourtroomBackground = t_background;
+  m_WidgetCourtroomBackground = t_background;
 }
 
 
@@ -308,33 +312,43 @@ QWidget *ThemeManager::getWidget(QString name)
   return nullptr;
 }
 
-AOButton *ThemeManager::GetButton(QString t_name)
+void ThemeManager::UnregisterWidgetsAll()
 {
-  return dynamic_cast<AOButton*>(ThemeManager::get().getWidget(t_name));
-}
-
-void ThemeManager::clearWidgets()
-{
-  waTabWidgets.clear();
+  m_TabWidgets.clear();
   m_WidgetNames.clear();
-  mButtonWidgets.clear();
-  mLineEditWidgets.clear();
-  mComboBoxWidgets.clear();
+  m_WidgetsButtons.clear();
+  m_WidgetsLineEdit.clear();
+  m_WidgetsComboBox.clear();
 }
 
-void ThemeManager::createButtonWidget(QString t_name, QWidget *t_parent)
+AOButton *ThemeManager::CreateWidgetButton(ThemeSceneType t_scene, QString t_name, QString t_image, QString t_text, QWidget *t_parent)
 {
-  AOButton *lButton = new AOButton(t_parent, AOApplication::getInstance());
-  autoWidgetDimensions(lButton, t_name, REPLAYS);
-  addWidgetName(t_name, lButton);
-  lButton->show();
+  if(m_WidgetNames.contains(t_name))
+  {
+    delete m_WidgetNames[t_name];
+    m_WidgetNames.remove(t_name);
+  }
+
+  AOButton *l_ButtonWidget = new AOButton(t_parent, AOApplication::getInstance());
+
+  AutoAdjustWidgetDimensions(l_ButtonWidget, t_name, t_scene);
+
+  l_ButtonWidget->set_theme_image(t_name, t_image, "courtroom", t_text);
+
+  RegisterWidgetGeneric(t_name, l_ButtonWidget);
+
+  l_ButtonWidget->show();
+
+  m_WidgetsButtons[t_name] = l_ButtonWidget;
+
+  return l_ButtonWidget;
 }
 
-AOImageDisplay *ThemeManager::createImageWidget(QString t_name, QString t_image, bool visible, QWidget *t_parent)
+AOImageDisplay *ThemeManager::CreateWidgetImageDisplay(QString t_name, QString t_image, bool visible, QWidget *t_parent)
 {
   AOImageDisplay *l_image = new AOImageDisplay(t_parent, AOApplication::getInstance());
-  autoWidgetDimensions(l_image, t_name, REPLAYS);
-  addWidgetName(t_name, l_image);
+  AutoAdjustWidgetDimensions(l_image, t_name, REPLAYS);
+  RegisterWidgetGeneric(t_name, l_image);
   l_image->set_theme_image(AOApplication::getInstance()->current_theme->get_widget_image(t_name, t_image, "replays"));
 
   if(!visible) l_image->hide();
@@ -343,7 +357,7 @@ AOImageDisplay *ThemeManager::createImageWidget(QString t_name, QString t_image,
   return l_image;
 }
 
-void ThemeManager::createComboboxWidget(QString t_name)
+void ThemeManager::CreateWidgetCombobox(QString t_name)
 {
 
 }
