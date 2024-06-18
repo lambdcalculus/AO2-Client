@@ -3148,7 +3148,7 @@ void Courtroom::construct_playerlist_layout()
   player_columns = (( (int)((float)ui_player_list->height() * resize) - player_height) / (y_spacing + player_height)) + 1;
 
 
-  if(m_current_reportcard_reason != ReportCardReason::None)
+  if(m_current_reportcard_reason != ReportCardReason::None && m_chr_id != SpectatorId)
   {
     m_page_player_list = 0;
     ui_player_list_right->hide();
@@ -3295,8 +3295,6 @@ void Courtroom::write_area_desc()
   ui_area_desc->clear();
   QTextCursor l_cursor = ui_area_desc->textCursor();
   l_cursor.insertText(m_area_description, formatting);
-
-
 }
 
 
