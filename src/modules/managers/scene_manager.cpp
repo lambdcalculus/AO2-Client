@@ -11,6 +11,13 @@
 
 SceneManager SceneManager::s_Instance;
 
+SceneTestingLabs *SceneManager::SceneConstructTestingLabs()
+{
+  m_SceneTestingLabs = new SceneTestingLabs();
+  m_SceneTestingLabs->show();
+  return m_SceneTestingLabs;
+}
+
 ICMessageData *SceneManager::ProcessIncomingMessage(QStringList t_message)
 {
   if(m_CurrentMessageData != nullptr) delete m_CurrentMessageData;

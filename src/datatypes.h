@@ -121,10 +121,11 @@ public:
 
 enum ThemeSceneType
 {
-  LOBBY,
-  COURTROOM,
-  TESTINGLABS,
-  REPLAYS
+  SceneTypeLobby,
+  SceneTypeCourtroom,
+  SceneTypeTestingLab,
+  SceneTypeReplays,
+  SceneTypeViewport
 };
 
 class EvidenceData

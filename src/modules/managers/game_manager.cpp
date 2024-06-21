@@ -10,6 +10,7 @@ GameManager GameManager::s_Instance;
 void GameManager::StartGameLoop()
 {
   StopGameLoop();
+
   ReplayManager::get().RecordingStart();
   connect(&m_FrameTimer, &QTimer::timeout, this, &GameManager::RunGameLoop);
   m_FrameTimer.setInterval(1000 / m_FramesPerSecond);
@@ -37,7 +38,30 @@ void GameManager::SetAnimationGroup(AnimTypes t_type, QVector<GraphicObjectAnima
   m_GraphicObjectAnimations[t_type] = t_animations;
 }
 
-void GameManager::RunAnimationLoop(AnimTypes t_type)
+void GameManager::UpdateAnimationLoop(AnimTypes t_type)
+{
+  if(m_GraphicObjectAnimations.contains(t_type))
+  {
+    bool l_AnimationQueueComplete = true;
+    for(GraphicObjectAnimator * r_anim : m_GraphicObjectAnimations[t_type])
+    {
+      if(r_anim->getAnimation()->GetCurrentlyRunning())
+      {
+        l_AnimationQueueComplete = false;
+        r_anim->getAnimation()->RunAnimation();
+      }
+    }
+
+    if(l_AnimationQueueComplete)
+    {
+      m_GraphicObjectAnimations[t_type] = {};
+      if(t_type == eAnimationShout) emit ShoutComplete();
+      if(t_type == eAnimationGM) emit JudgeComplete();
+    }
+  }
+}
+
+void GameManager::RenderAnimationLoop(AnimTypes t_type)
 {
   if(m_WidgetTypeWriter != nullptr)
   {
@@ -142,8 +166,8 @@ void GameManager::RunGameLoop()
       m_PlayerAnimation->updateAnimation();
     }
 
-    RunAnimationLoop(eAnimationShout);
-    RunAnimationLoop(eAnimationGM);
+    RenderAnimationLoop(eAnimationShout);
+    RenderAnimationLoop(eAnimationGM);
 
 
     m_IsUpdateRunning = false;

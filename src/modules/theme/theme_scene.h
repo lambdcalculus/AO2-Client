@@ -9,6 +9,13 @@ class ThemeScene
 public:
   ThemeScene();
 
+  QStringList getWidgetNames()
+  {
+    QStringList l_returnValue = {};
+    for (auto it = m_Widgets.begin(); it != m_Widgets.end(); ++it) l_returnValue << it.key();
+
+    return l_returnValue;
+  }
   WidgetThemeData *getWidgetData(QString t_name);
   widgetFontStruct *getWidgetFont(QString t_name);
   QVector2D getWidgetSpacing(QString t_name);

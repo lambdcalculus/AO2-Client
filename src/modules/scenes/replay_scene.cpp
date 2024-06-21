@@ -8,9 +8,6 @@
 #include <modules/managers/audio_manager.h>
 #include <modules/managers/replay_manager.h>
 
-#include <modules/networking/download_manager.h>
-#include <modules/networking/network_downloader.h>
-
 ReplayScene::ReplayScene(AOApplication *p_ao_app, QWidget *parent) : QWidget(parent)
 {
   pAOApp = p_ao_app;
@@ -54,7 +51,8 @@ void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
   setText("");
   vpMessageShowname->setText(mMsgVariables["showname"]);
 
-  ThemeManager::get().getWidget("chatbox")->setVisible(false);
+  m_Viewport->ToggleChatbox(false);
+  //ThemeManager::get().getWidget("chatbox")->setVisible(false);
 
   m_Viewport->ProcessIncomingMessage(m_MessageData);
 
@@ -81,7 +79,7 @@ void ReplayScene::videoDone()
 
 void ReplayScene::preanim_done()
 {
-  if(!mMsgVariables["msg"].trimmed().isEmpty()) ThemeManager::get().getWidget("chatbox")->setVisible(true);
+  if(!mMsgVariables["msg"].trimmed().isEmpty()) m_Viewport->ToggleChatbox(true);//ThemeManager::get().getWidget("chatbox")->setVisible(true);
   setText(mMsgVariables["msg"]);
 }
 
@@ -94,19 +92,19 @@ void ReplayScene::constructWidgets()
 {
   ThemeManager::get().RegisterWidgetGenericBulk({});
 
-  m_Viewport = new DROViewportWidget(this);
-  ThemeManager::get().AutoAdjustWidgetDimensions(m_Viewport, "viewport", REPLAYS);
+  m_Viewport = new ViewportScene(this);
+  ThemeManager::get().AutoAdjustWidgetDimensions(m_Viewport, "viewport", SceneTypeReplays);
   ThemeManager::get().RegisterWidgetGeneric("viewport", m_Viewport);
 
-  m_Viewport->ConstructViewport(REPLAYS);
+  m_Viewport->ConstructViewport(SceneTypeReplays);
 
   //UI Images
-  ThemeManager::get().CreateWidgetImageDisplay("chatbox", "replay_chatmed.png", false, this);
-  ThemeManager::get().CreateWidgetImageDisplay("vp_overlay", "replay_overlay.png", true, this);
+  //ThemeManager::get().CreateWidgetImageDisplay("chatbox", "replay_chatmed.png", false, this);
+  //ThemeManager::get().CreateWidgetImageDisplay("vp_overlay", "replay_overlay.png", true, this);
 
   //Messagebox
-  vpMessage = new TypewriterTextEdit(ThemeManager::get().getWidget("chatbox"));
-  ThemeManager::get().AutoAdjustWidgetDimensions(vpMessage, "replay_message", REPLAYS);
+  vpMessage = new TypewriterTextEdit(m_Viewport);
+  ThemeManager::get().AutoAdjustWidgetDimensions(vpMessage, "replay_message", SceneTypeReplays);
   ThemeManager::get().RegisterWidgetGeneric("replay_message", vpMessage);
   vpMessage->setFrameStyle(QFrame::NoFrame);
   vpMessage->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -116,8 +114,8 @@ void ReplayScene::constructWidgets()
   set_drtextedit_font(vpMessage, "replay_message", REPLAYS_FONTS_INI, pAOApp);
 
   //Showname
-  vpMessageShowname = new DRTextEdit(ThemeManager::get().getWidget("chatbox"));
-  ThemeManager::get().AutoAdjustWidgetDimensions(vpMessageShowname, "replay_showname", REPLAYS);
+  vpMessageShowname = new DRTextEdit(m_Viewport);
+  ThemeManager::get().AutoAdjustWidgetDimensions(vpMessageShowname, "replay_showname", SceneTypeReplays);
   ThemeManager::get().RegisterWidgetGeneric("replay_showname", vpMessageShowname);
   vpMessageShowname->setFrameStyle(QFrame::NoFrame);
   vpMessageShowname->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -128,7 +126,7 @@ void ReplayScene::constructWidgets()
 
   //Replay Controls
   m_PlaybackScrubber = new QSlider(Qt::Horizontal, this);
-  ThemeManager::get().AutoAdjustWidgetDimensions(m_PlaybackScrubber, "scrubber", REPLAYS);
+  ThemeManager::get().AutoAdjustWidgetDimensions(m_PlaybackScrubber, "scrubber", SceneTypeReplays);
   ThemeManager::get().RegisterWidgetGeneric("scrubber", m_PlaybackScrubber);
 
 

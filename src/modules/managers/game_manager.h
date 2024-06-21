@@ -8,6 +8,8 @@
 
 #include <modules/theme/graphicobjectanimator.h>
 #include "modules/widgets/typewritertextedit.h"
+#include "qthread.h"
+#include <drserversocket.h>
 
 class GameManager : public QObject
 {
@@ -25,7 +27,9 @@ public:
   void SetPlayerAnimation(GraphicObjectAnimator * t_animation);
   void SetTypeWriter(TypewriterTextEdit * t_writer);
   void SetAnimationGroup(AnimTypes t_type, QVector<GraphicObjectAnimator *> t_animations);
-  void RunAnimationLoop(AnimTypes t_type);
+
+  void UpdateAnimationLoop(AnimTypes t_type);
+  void RenderAnimationLoop(AnimTypes t_type);
 
   //Data Gathering
   GameEffectData getEffect(QString t_name);
@@ -42,6 +46,7 @@ public:
 
   int getUptime();
 
+
 public slots:
   void RunGameLoop();
 
@@ -49,6 +54,9 @@ signals:
   void FrameComplete();
   void JudgeComplete();
   void ShoutComplete();
+
+
+private:
 
 private:
   GameManager() {}

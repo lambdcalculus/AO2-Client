@@ -1864,7 +1864,7 @@ void Courtroom::setup_chat()
   if(ao_app->current_theme->m_jsonLoaded)
   {
 
-    m_chatbox_message_outline = ThemeManager::get().mCurrentThemeReader.GetFontData(COURTROOM, "message").outline;
+    m_chatbox_message_outline = ThemeManager::get().mCurrentThemeReader.GetFontData(SceneTypeCourtroom, "message").outline;
   }
   else
   {
@@ -3267,7 +3267,7 @@ void Courtroom::write_area_desc()
 
   if(ao_app->current_theme->m_jsonLoaded)
   {
-    widgetFontStruct fontstruct = ThemeManager::get().mCurrentThemeReader.GetFontData(COURTROOM, "area_desc");
+    widgetFontStruct fontstruct = ThemeManager::get().mCurrentThemeReader.GetFontData(SceneTypeCourtroom, "area_desc");
     l_color = fontstruct.color;
     is_bold = fontstruct.bold;
   }

@@ -41,7 +41,6 @@
 
 #include <modules/managers/replay_manager.h>
 
-#include <modules/networking/network_downloader.h>
 
 Lobby::Lobby(AOApplication *p_ao_app)
     : QMainWindow()

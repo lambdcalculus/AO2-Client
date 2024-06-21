@@ -17,6 +17,7 @@
 #include "modules/widgets/typewritertextedit.h"
 #include <mk2/graphicsvideoscreen.h>
 #include <modules/widgets/droviewportwidget.h>
+#include "modules/scenes/viewport_scene.h"
 
 class ReplayScene : public QWidget
 {
@@ -52,7 +53,7 @@ protected:
 
 private:
   //Viewport
-  DROViewportWidget *m_Viewport = nullptr;
+  ViewportScene *m_Viewport = nullptr;
 
   DRTextEdit *vpShowname = nullptr;
   TypewriterTextEdit *vpMessage = nullptr;
