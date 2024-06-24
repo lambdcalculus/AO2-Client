@@ -27,11 +27,6 @@ void ReplayScene::playSong(QString t_song)
   AudioManager::get().BGMPlay(t_song);
 }
 
-void ReplayScene::setText(QString t_dialogue)
-{
-
-}
-
 void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
 {
   mMsgVariables = t_vars;
@@ -40,6 +35,7 @@ void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
   m_MessageData->m_ShowName = mMsgVariables["showname"];
   m_MessageData->m_CharacterFolder = mMsgVariables["char"];
   m_MessageData->m_SFXName = mMsgVariables["sound"];
+  m_MessageData->m_ShoutName = mMsgVariables["shout"];
   m_MessageData->m_CharacterEmotion = mMsgVariables["emote"];
   m_MessageData->m_PreAnimation = mMsgVariables["pre"];
   m_MessageData->m_VideoName = mMsgVariables["video"];
@@ -50,11 +46,9 @@ void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
   m_MessageData->m_MessageContents = mMsgVariables["msg"];
 
   m_Viewport->ToggleChatbox(false);
-  //ThemeManager::get().getWidget("chatbox")->setVisible(false);
 
   m_Viewport->ProcessIncomingMessage(m_MessageData);
 
-  //mReplayScene->setText(mPlaybackReplay[mCurrentPlaybackIndex].mVariables["msg"]);
 }
 
 void ReplayScene::setBackground(QString t_name)
@@ -77,8 +71,7 @@ void ReplayScene::videoDone()
 
 void ReplayScene::preanim_done()
 {
-  if(!mMsgVariables["msg"].trimmed().isEmpty()) m_Viewport->ToggleChatbox(true);//ThemeManager::get().getWidget("chatbox")->setVisible(true);
-  setText(mMsgVariables["msg"]);
+  if(!mMsgVariables["msg"].trimmed().isEmpty()) m_Viewport->ToggleChatbox(true);
 }
 
 void ReplayScene::OnScrubberSliderReleased()

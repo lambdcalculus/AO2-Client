@@ -129,8 +129,6 @@ void TypewriterTextEdit::UpdateDisplay()
         return;
       }
     }
-
-
   }
 
   textCursor().insertText(l_newChar, l_currentCharFormat);

@@ -43,6 +43,7 @@ public:
   int m_CharacterServerId = 0;
   int m_SFXDelay = 0;
   int m_ShoutModifier = 0;
+  QString m_ShoutName = "";
   int m_EvidenceId = 0;
 
 

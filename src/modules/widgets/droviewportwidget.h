@@ -44,6 +44,7 @@ signals:
   void PreanimDone();
 
 public slots:
+  void OnObjectionDone();
   void OnVideoDone();
   void OnPreanimDone();
 

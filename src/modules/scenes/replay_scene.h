@@ -28,7 +28,6 @@ public:
 
 
   void playSong(QString t_song);
-  void setText(QString t_dialogue);
   void setMsgOperation(QMap<QString, QString> t_vars);
   void setBackground(QString t_name);
 

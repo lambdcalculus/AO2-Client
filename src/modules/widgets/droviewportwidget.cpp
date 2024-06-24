@@ -21,12 +21,14 @@ void DROViewportWidget::ConstructViewport(ThemeSceneType t_scene)
   m_VpPlayer = new DRCharacterMovie(m_AOApp);
   m_VpEffect = new DREffectMovie(m_AOApp);
   m_VpVideo = new DRVideoScreen(m_AOApp);
+  m_VpShouts = new DRShoutMovie(m_AOApp);
 
   //Add items to the scene.
   this->scene()->addItem(m_VpBackground);
   this->scene()->addItem(m_VpPlayer);
   this->scene()->addItem(m_VpEffect);
   this->scene()->addItem(m_VpVideo);
+  this->scene()->addItem(m_VpShouts);
 
   m_VpBackground->start();
   m_VpPlayer->start();
@@ -35,6 +37,7 @@ void DROViewportWidget::ConstructViewport(ThemeSceneType t_scene)
   m_WidgetTransition->resize(this->width(), this->height());
 
   //Connections
+  connect(m_VpShouts, SIGNAL(done()), this, SLOT(OnObjectionDone()));
   connect(m_VpVideo, SIGNAL(finished()), this, SLOT(OnVideoDone()));
   connect(m_VpPlayer, SIGNAL(done()), this, SLOT(OnPreanimDone()));
 
@@ -56,6 +59,7 @@ void DROViewportWidget::ProcessIncomingMessage(ICMessageData *t_IncomingMessage)
   }
 
   TransitionAnimate();
+  m_VpShouts->stop();
   m_VpEffect->stop();
   m_VpVideo->play_character_video(m_IncomingMessage->m_CharacterFolder, m_IncomingMessage->m_VideoName);
 }
@@ -112,6 +116,7 @@ void DROViewportWidget::ConstructUserInterface()
 
   m_ShoutsPlayer = new KeyframePlayer(this);
   m_ShoutsPlayer->resize(960, 544);
+  connect(m_ShoutsPlayer, SIGNAL(animationFinished()), this, SLOT(OnObjectionDone()));
 
   ConstructText();
 }
@@ -168,10 +173,8 @@ void DROViewportWidget::UpdateBackground(QString t_position)
   m_VpBackground->start();
 }
 
-void DROViewportWidget::OnVideoDone()
+void DROViewportWidget::OnObjectionDone()
 {
-  emit VideoDone();
-  if (m_VpVideo->isVisible()) m_VpVideo->hide();
 
   if(!m_IncomingMessage->m_PreAnimation.isEmpty())
   {
@@ -197,6 +200,29 @@ void DROViewportWidget::OnVideoDone()
   }
 
   AudioManager::get().PlaySFXCharacter(m_IncomingMessage->m_SFXName, m_IncomingMessage->m_CharacterFolder);
+
+}
+
+void DROViewportWidget::OnVideoDone()
+{
+  emit VideoDone();
+  if (m_VpVideo->isVisible()) m_VpVideo->hide();
+
+  if (m_IncomingMessage->m_ShoutName.isEmpty())
+  {
+    OnObjectionDone();
+    return;
+  }
+
+  if(!m_ShoutsPlayer->playAnimation(m_IncomingMessage->m_ShoutName, eAnimationShout))
+  {
+    m_IncomingMessage->m_UsesPreAnimation = true;
+    m_VpShouts->set_play_once(true);
+    m_VpShouts->set_file_name(m_AOApp->get_shout_sprite_path(m_IncomingMessage->m_CharacterFolder, m_IncomingMessage->m_ShoutName));
+    m_VpShouts->start();
+  }
+
+
 }
 
 void DROViewportWidget::OnPreanimDone()

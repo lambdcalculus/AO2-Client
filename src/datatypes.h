@@ -18,6 +18,18 @@ enum class ChatTypes
   Narrator
 };
 
+class GameShoutData
+{
+public:
+  GameShoutData(QString t_name)
+  {
+    mName = t_name;
+  };
+
+  QString mName = "";
+  int mLegacyId = -1;
+};
+
 class GameEffectData
 {
 public:

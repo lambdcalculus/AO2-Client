@@ -99,7 +99,7 @@ void ReplayManager::RecordMessageIC(ICMessageData *m_Message)
   lNewOperation.mVariables["hide"] = QString::number(m_Message->m_HideCharacter);
   lNewOperation.mVariables["flip"] = QString::number(m_Message->m_IsFlipped);
   lNewOperation.mVariables["effect"] = m_Message->m_EffectData.mName;
-  lNewOperation.mVariables["shout"] = QString::number(m_Message->m_ShoutModifier);
+  lNewOperation.mVariables["shout"] = m_Message->m_ShoutName;
   m_ReplayOperationsRecorded.append(lNewOperation);
   RecordingSave();
 }

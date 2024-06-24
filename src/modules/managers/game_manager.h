@@ -32,8 +32,23 @@ public:
   void RenderAnimationLoop(AnimTypes t_type);
 
   //Data Gathering
-  GameEffectData getEffect(QString t_name);
-  GameEffectData getEffect(int t_id);
+  QString getShoutName(int t_id)
+  {
+    for(GameShoutData r_ShoutData : m_GameShouts) { if(t_id == r_ShoutData.mLegacyId) return r_ShoutData.mName; }
+    return "";
+  }
+
+  GameEffectData getEffect(QString t_name)
+  {
+    for(GameEffectData rEffectData : m_GameEffects) { if(t_name == rEffectData.mName) return rEffectData; }
+    return GameEffectData("<NONE>");
+  }
+
+  GameEffectData getEffect(int t_id)
+  {
+    for(GameEffectData rEffectData : m_GameEffects) { if(t_id == rEffectData.mLegacyId) return rEffectData; }
+    return GameEffectData("<NONE>");
+  }
 
   //Setup
   void setupGame();
@@ -79,10 +94,12 @@ private:
 
   //Data
   QVector<GameEffectData> m_GameEffects = {};
+  QVector<GameShoutData> m_GameShouts = {};
   QStringList m_ServerFeatures = {};
 
   void StartGameLoop();
   void setupGameEffects();
+  void setupGameShouts();
 };
 
 #endif // GAMEMANAGER_H

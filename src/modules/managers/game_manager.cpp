@@ -70,7 +70,7 @@ void GameManager::RenderAnimationLoop(AnimTypes t_type)
       m_WidgetTypeWriter->UpdateDisplay();
     }
   }
-  if(m_GraphicObjectAnimations.contains(t_type))
+  if(!m_GraphicObjectAnimations[t_type].empty())
   {
     bool lAllAnimationsDone = true;
     for(GraphicObjectAnimator * r_anim : m_GraphicObjectAnimations[t_type])
@@ -92,29 +92,14 @@ void GameManager::RenderAnimationLoop(AnimTypes t_type)
   }
 }
 
-GameEffectData GameManager::getEffect(QString t_name)
-{
-  for(GameEffectData rEffectData : m_GameEffects)
-  {
-    if(t_name == rEffectData.mName) return rEffectData;
-  }
 
-  return GameEffectData("<NONE>");
-}
 
-GameEffectData GameManager::getEffect(int t_id)
-{
-  for(GameEffectData rEffectData : m_GameEffects)
-  {
-    if(t_id == rEffectData.mLegacyId) return rEffectData;
-  }
 
-  return GameEffectData("<NONE>");
-}
 
 void GameManager::setupGame()
 {
   setupGameEffects();
+  setupGameShouts();
   StartGameLoop();
   AudioManager::get().InitializeAudio();
 }
@@ -145,6 +130,23 @@ void GameManager::setupGameEffects()
     lEffectData.mIgnoresPair = lEffectsReader.getBoolValue("ignore_pair");
     lEffectData.mLegacyId = lEffectsReader.getIntValue("id");
     m_GameEffects.append(lEffectData);
+  }
+}
+
+void GameManager::setupGameShouts()
+{
+  JSONReader l_ShoutsReader = JSONReader();
+  l_ShoutsReader.ReadFromFile(PathingManager::get().getBasePath() +  "shouts/default/shouts.json");
+
+  m_GameShouts = {};
+
+  QJsonArray l_ShoutsArray = l_ShoutsReader.mDocument.array();
+  for(QJsonValueRef r_shout : l_ShoutsArray)
+  {
+    l_ShoutsReader.SetTargetObject(r_shout.toObject());
+    GameShoutData l_ShoutData = GameShoutData(l_ShoutsReader.getStringValue("shout_name"));
+    l_ShoutData.mLegacyId = l_ShoutsReader.getIntValue("id");
+    m_GameShouts.append(l_ShoutData);
   }
 }
 
