@@ -348,6 +348,7 @@ struct widgetFontStruct
 struct WidgetThemeData
 {
   pos_size_type Transform;
+  double Rotation = 0;
   widgetFontStruct *Font = nullptr;
   QVector2D Spacing = QVector2D(-1, -1);
 };

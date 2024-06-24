@@ -1017,7 +1017,7 @@ void Courtroom::next_chatmessage(QStringList p_chatmessage)
 
 
   m_CurrentMessageData = SceneManager::get().ProcessIncomingMessage(p_chatmessage);
-
+  if(m_ViewportVerTwo != nullptr) m_ViewportVerTwo->ProcessIncomingMessage(m_CurrentMessageData);
   const int l_message_chr_id = m_CurrentMessageData->m_CharacterServerId;
   const bool l_system_speaking = l_message_chr_id == SpectatorId;
 

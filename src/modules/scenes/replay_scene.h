@@ -56,8 +56,6 @@ private:
   ViewportScene *m_Viewport = nullptr;
 
   DRTextEdit *vpShowname = nullptr;
-  TypewriterTextEdit *vpMessage = nullptr;
-  DRTextEdit *vpMessageShowname = nullptr;
   QSlider *m_PlaybackScrubber = nullptr;
 
   //To Be Moved

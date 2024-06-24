@@ -1,9 +1,11 @@
 #include "droviewportwidget.h"
 
 #include <QGraphicsOpacityEffect>
+#include <QGraphicsProxyWidget>
 #include <QPropertyAnimation>
 #include <modules/theme/thememanager.h>
 #include "aoapplication.h"
+#include "commondefs.h"
 #include <modules/managers/audio_manager.h>
 #include <modules/managers/scene_manager.h>
 
@@ -41,6 +43,9 @@ void DROViewportWidget::ConstructViewport(ThemeSceneType t_scene)
 
 void DROViewportWidget::ProcessIncomingMessage(ICMessageData *t_IncomingMessage)
 {
+  m_TextMessage->setTypewriterTarget("");
+  m_TextShowname->setText(t_IncomingMessage->m_ShowName);
+
   TransitionRender();
   UpdateBackground(t_IncomingMessage->m_AreaPosition);
    m_IncomingMessage = t_IncomingMessage;
@@ -89,8 +94,12 @@ void DROViewportWidget::ConstructUserInterface()
 
   QStringList l_widgetNames = ThemeManager::get().mCurrentThemeReader.GetSceneWidgetNames(SceneTypeViewport);
 
+  QStringList l_WidgetBlacklist = { "showname" };
+
   for(QString r_name : l_widgetNames)
   {
+    if(l_WidgetBlacklist.contains(r_name)) continue;
+
     DRSceneMovie* l_uiObject = new DRSceneMovie(m_AOApp);
     m_UserInterface->scene()->addItem(l_uiObject);
     l_uiObject->show();
@@ -103,6 +112,40 @@ void DROViewportWidget::ConstructUserInterface()
 
   m_ShoutsPlayer = new KeyframePlayer(this);
   m_ShoutsPlayer->resize(960, 544);
+
+  ConstructText();
+}
+
+void DROViewportWidget::ConstructText()
+{
+  m_TextMessage = new TypewriterTextEdit(this);
+  ThemeManager::get().AutoAdjustWidgetDimensions(m_TextMessage, "message", SceneTypeViewport);
+  m_TextMessage->setFrameStyle(QFrame::NoFrame);
+  m_TextMessage->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  m_TextMessage->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  m_TextMessage->setReadOnly(true);
+  GameManager::get().SetTypeWriter(m_TextMessage);
+  set_drtextedit_font(m_TextMessage, "message", VIEWPORT_FONTS_INI, m_AOApp);
+
+  m_TextShowname = new DRTextEdit();
+  ThemeManager::get().AutoAdjustWidgetDimensions(m_TextShowname, "showname", SceneTypeViewport);
+  m_TextShowname->setFrameStyle(QFrame::NoFrame);
+  m_TextShowname->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  m_TextShowname->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  m_TextShowname->setReadOnly(true);
+  set_drtextedit_font(m_TextShowname, "showname", VIEWPORT_FONTS_INI, m_AOApp);
+
+
+  QGraphicsProxyWidget* pProxy = m_UserInterface->scene()->addWidget(m_TextShowname);
+
+  WidgetThemeData * l_shownameData = ThemeManager::get().mCurrentThemeReader.GetWidgetData(SceneTypeViewport, "showname");
+
+  if(l_shownameData != nullptr)
+  {
+    pProxy->setRotation(l_shownameData->Rotation);
+    pProxy->setPos(l_shownameData->Transform.x, l_shownameData->Transform.y);
+  }
+  pProxy->show();
 }
 
 void DROViewportWidget::PlayShoutAnimation(QString t_name)
@@ -159,6 +202,7 @@ void DROViewportWidget::OnVideoDone()
 void DROViewportWidget::OnPreanimDone()
 {
   emit PreanimDone();
+  m_TextMessage->setTypewriterTarget(m_IncomingMessage->m_MessageContents);
 
   if(m_IncomingMessage->m_HideCharacter)
   {

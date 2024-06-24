@@ -29,7 +29,7 @@ void ReplayScene::playSong(QString t_song)
 
 void ReplayScene::setText(QString t_dialogue)
 {
-  vpMessage->setTypewriterTarget(t_dialogue);
+
 }
 
 void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
@@ -47,9 +47,7 @@ void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
   m_MessageData->m_HideCharacter = mMsgVariables["hide"] == "1";
   m_MessageData->m_IsFlipped = mMsgVariables["flip"] == "1";
   m_MessageData->m_EffectData = GameManager::get().getEffect(mMsgVariables["effect"]);
-
-  setText("");
-  vpMessageShowname->setText(mMsgVariables["showname"]);
+  m_MessageData->m_MessageContents = mMsgVariables["msg"];
 
   m_Viewport->ToggleChatbox(false);
   //ThemeManager::get().getWidget("chatbox")->setVisible(false);
@@ -97,32 +95,6 @@ void ReplayScene::constructWidgets()
   ThemeManager::get().RegisterWidgetGeneric("viewport", m_Viewport);
 
   m_Viewport->ConstructViewport(SceneTypeReplays);
-
-  //UI Images
-  //ThemeManager::get().CreateWidgetImageDisplay("chatbox", "replay_chatmed.png", false, this);
-  //ThemeManager::get().CreateWidgetImageDisplay("vp_overlay", "replay_overlay.png", true, this);
-
-  //Messagebox
-  vpMessage = new TypewriterTextEdit(m_Viewport);
-  ThemeManager::get().AutoAdjustWidgetDimensions(vpMessage, "replay_message", SceneTypeReplays);
-  ThemeManager::get().RegisterWidgetGeneric("replay_message", vpMessage);
-  vpMessage->setFrameStyle(QFrame::NoFrame);
-  vpMessage->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  vpMessage->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  vpMessage->setReadOnly(true);
-  GameManager::get().SetTypeWriter(vpMessage);
-  set_drtextedit_font(vpMessage, "replay_message", REPLAYS_FONTS_INI, pAOApp);
-
-  //Showname
-  vpMessageShowname = new DRTextEdit(m_Viewport);
-  ThemeManager::get().AutoAdjustWidgetDimensions(vpMessageShowname, "replay_showname", SceneTypeReplays);
-  ThemeManager::get().RegisterWidgetGeneric("replay_showname", vpMessageShowname);
-  vpMessageShowname->setFrameStyle(QFrame::NoFrame);
-  vpMessageShowname->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  vpMessageShowname->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  vpMessageShowname->setReadOnly(true);
-  set_drtextedit_font(vpMessageShowname, "replay_showname", REPLAYS_FONTS_INI, pAOApp);
-
 
   //Replay Controls
   m_PlaybackScrubber = new QSlider(Qt::Horizontal, this);

@@ -84,6 +84,13 @@ void Courtroom::create_widgets()
   ThemeManager::get().RegisterCourtroomBackground(ui_background);
 
 
+#ifdef QT_DEBUG
+  m_ViewportVerTwo = new DROViewportWidget(nullptr);
+  ThemeManager::get().AutoAdjustWidgetDimensions(m_ViewportVerTwo, "viewport", SceneTypeReplays);
+  m_ViewportVerTwo->ConstructViewport(SceneTypeReplays);
+  m_ViewportVerTwo->show();
+#endif
+
   ui_viewport = new DRGraphicsView(this);
   wShoutsLayer = new KeyframePlayer(this);
 

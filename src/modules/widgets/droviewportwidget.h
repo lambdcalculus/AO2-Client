@@ -11,6 +11,7 @@
 #include <drshoutmovie.h>
 #include "modules/managers/scenario_manager.h"
 #include "keyframe_player.h"
+#include "typewritertextedit.h"
 
 #include <mk2/graphicsvideoscreen.h>
 
@@ -29,6 +30,7 @@ public:
 
   //
   void ConstructUserInterface();
+  void ConstructText();
   void PlayShoutAnimation(QString t_name);
   void ToggleChatbox(bool t_state);
 
@@ -53,6 +55,10 @@ private:
   //User Interface
   QMap<QString, DRSceneMovie*> m_UserInterfaceObjects = {};
 
+  TypewriterTextEdit *m_TextMessage = nullptr;
+  DRTextEdit *m_TextShowname = nullptr;
+
+
   //Data
   ICMessageData *m_IncomingMessage = nullptr;
 
@@ -68,7 +74,7 @@ private:
 
   //Transition
   AOLabel *m_WidgetTransition = nullptr;
-  int m_FadeDuration = 200;
+  int m_FadeDuration = 500;
 };
 
 #endif // DROVIEWPORTWIDGET_H

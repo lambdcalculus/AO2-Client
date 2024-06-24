@@ -55,6 +55,19 @@ public:
     return l_widgetNames;
   }
 
+  WidgetThemeData * GetWidgetData(ThemeSceneType t_sceneType, QString t_name)
+  {
+    QVector<ThemeScene *> l_scenes = RetrieveSceneOrder(t_sceneType, false);
+    for(ThemeScene * r_scene : l_scenes)
+    {
+      if(r_scene != nullptr)
+      {
+        if(r_scene->containsWidget(t_name)) return r_scene->getWidgetData(t_name);
+      }
+    }
+    return nullptr;
+  }
+
 private:
   QString m_GameModeCurrentName = "";
   ThemeModeReader* m_GameModeCurrent = nullptr;
