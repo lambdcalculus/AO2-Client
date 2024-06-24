@@ -57,6 +57,11 @@ void ReplayScene::setBackground(QString t_name)
   m_Viewport->UpdateBackground("wit");
 }
 
+void ReplayScene::playWTCE(QString t_name)
+{
+  m_Viewport->PlaySplashAnimation(t_name);
+}
+
 void ReplayScene::SetupReplayMetadata(int t_operationsCount)
 {
   m_PlaybackScrubber->setMinimum(0);

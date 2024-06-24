@@ -22,6 +22,7 @@ void DROViewportWidget::ConstructViewport(ThemeSceneType t_scene)
   m_VpEffect = new DREffectMovie(m_AOApp);
   m_VpVideo = new DRVideoScreen(m_AOApp);
   m_VpShouts = new DRShoutMovie(m_AOApp);
+  m_VpWtce = new DRSplashMovie(m_AOApp);
 
   //Add items to the scene.
   this->scene()->addItem(m_VpBackground);
@@ -29,6 +30,7 @@ void DROViewportWidget::ConstructViewport(ThemeSceneType t_scene)
   this->scene()->addItem(m_VpEffect);
   this->scene()->addItem(m_VpVideo);
   this->scene()->addItem(m_VpShouts);
+  this->scene()->addItem(m_VpWtce);
 
   m_VpBackground->start();
   m_VpPlayer->start();
@@ -116,7 +118,7 @@ void DROViewportWidget::ConstructUserInterface()
 
   m_ShoutsPlayer = new KeyframePlayer(this);
   m_ShoutsPlayer->resize(960, 544);
-  connect(m_ShoutsPlayer, SIGNAL(animationFinished()), this, SLOT(OnObjectionDone()));
+  connect(m_ShoutsPlayer, SIGNAL(ShoutAnimationFinished()), this, SLOT(OnObjectionDone()));
 
   ConstructText();
 }
@@ -165,6 +167,15 @@ void DROViewportWidget::ToggleChatbox(bool t_state)
     if(t_state) m_UserInterfaceObjects["chatbox"]->show();
     else m_UserInterfaceObjects["chatbox"]->hide();
   }
+}
+
+void DROViewportWidget::PlaySplashAnimation(QString t_name)
+{
+  if(!m_ShoutsPlayer->playAnimation(t_name, eAnimationGM))
+  {
+    m_VpWtce->play(t_name);
+  }
+
 }
 
 void DROViewportWidget::UpdateBackground(QString t_position)

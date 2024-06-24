@@ -34,6 +34,9 @@ public:
   void PlayShoutAnimation(QString t_name);
   void ToggleChatbox(bool t_state);
 
+  //
+  void PlaySplashAnimation(QString t_name);
+
   //Visual Updates
   void UpdateBackground(QString t_position = "wit");
 

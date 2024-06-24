@@ -2213,6 +2213,10 @@ void Courtroom::handle_wtce(QString p_wtce)
     {
       m_effects_player->play_effect(ao_app->get_sfx(wtce_names[index - 1]));
 
+      ReplayManager::get().RecordPlaySplash(wtce_names[index - 1]);
+
+      if(m_ViewportVerTwo != nullptr) m_ViewportVerTwo->PlaySplashAnimation(wtce_names[index - 1]);
+
       if(!wShoutsLayer->playAnimation(wtce_names[index - 1], eAnimationGM))
       {
         ui_vp_wtce->play(wtce_names[index - 1]);
