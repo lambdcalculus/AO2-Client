@@ -214,7 +214,7 @@ jobs:
           cp bin/lib*.so AppDir/usr/lib
           cp Attorney_Online.desktop AppDir/usr/share
 
-          cp data/logo_icon.png AppDir/Attorney_Online.png
+          cp data/logo-client.png AppDir/Attorney_Online.png
 
           cd AppDir
           QTDIR=$QT_ROOT_DIR ../appimagetool deploy usr/share/Attorney_Online.desktop
