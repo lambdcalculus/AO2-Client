@@ -201,6 +201,7 @@ jobs:
           rm -r ./bin/base/themes/.git
 
       - name: Create AppImage
+        shell: bash
         run: |
           # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
           wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2) -o appimagetool
