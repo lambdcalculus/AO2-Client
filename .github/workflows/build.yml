@@ -204,7 +204,8 @@ jobs:
         shell: bash
         run: |
           # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
-          wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2) -o appimagetool
+          # wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2) 
+          wget -c https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-833-x86_64.AppImage -o appimagetool
           chmod +x appimagetool
 
           mkdir -p AppDir/usr/bin
