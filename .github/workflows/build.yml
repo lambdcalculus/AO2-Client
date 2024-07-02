@@ -203,6 +203,8 @@ jobs:
       - name: Create AppImage
         shell: bash
         run: |
+          # necessary, apparently
+          sudo apt install libxcb-cursor0
           # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
           wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
           mv appimagetool-*-x86_64.AppImage appimagetool
