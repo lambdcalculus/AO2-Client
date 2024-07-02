@@ -205,7 +205,6 @@ jobs:
         run: |
           # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
           wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
-          # wget -c https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-833-x86_64.AppImage -o appimagetool
           mv appimagetool-*-x86_64.AppImage appimagetool
           chmod +x appimagetool
 
@@ -220,7 +219,7 @@ jobs:
           cp data/logo-client.png AppDir/Attorney_Online.png
 
           cd AppDir
-          QTDIR=${QT_ROOT_DIR} ../appimagetool deploy usr/share/Attorney_Online.desktop
+          QTDIR=${Qt6_DIR} ../appimagetool deploy usr/share/Attorney_Online.desktop
           cd ..
 
           ARCH=x86_64 VERSION=2.11 ./appimagetool AppDir
