@@ -220,7 +220,7 @@ jobs:
           cp data/logo-client.png AppDir/Attorney_Online.png
 
           cd AppDir
-          QTDIR=$QT_ROOT_DIR ../appimagetool deploy usr/share/Attorney_Online.desktop
+          QTDIR=${QT_ROOT_DIR} ../appimagetool deploy usr/share/Attorney_Online.desktop
           cd ..
 
           ARCH=x86_64 VERSION=2.11 ./appimagetool AppDir
