@@ -1,12 +1,12 @@
 #ifndef DROVIEWPORTWIDGET_H
 #define DROVIEWPORTWIDGET_H
 
-#include <DRCharacterMovie.h>
-#include <DREffectMovie.h>
-#include <DRSceneMovie.h>
-#include <DRSplashMovie.h>
 #include <QObject>
 #include <QWidget>
+#include <drcharactermovie.h>
+#include <dreffectmovie.h>
+#include <drscenemovie.h>
+#include <drsplashmovie.h>
 #include <drgraphicscene.h>
 #include <drshoutmovie.h>
 #include "modules/managers/scenario_manager.h"
