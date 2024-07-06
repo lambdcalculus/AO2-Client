@@ -32,7 +32,7 @@ private:
 
   QMap<QString, QSizeF> mObjectSizes = {};
   QMap<QString, QString> mImageNames = {};
-  QMap<QString, QString> mVariableImages = {};
+  QMap<QString, VariableMappedString> mVariableImages = {};
 
 
   QMap<QString, QString> mObjectMasking = {};

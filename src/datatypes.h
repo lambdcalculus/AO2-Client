@@ -18,6 +18,24 @@ enum class ChatTypes
   Narrator
 };
 
+class VariableMappedString
+{
+public:
+  VariableMappedString()
+  {
+
+  }
+
+  VariableMappedString(QString t_input)
+  {
+    mInputString = t_input;
+  };
+
+  QString mInputString = "";
+  QMap<QString, QString> mVariableMap = {};
+};
+
+
 class GameShoutData
 {
 public:

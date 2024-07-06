@@ -41,6 +41,16 @@ QString VariableManager::parseVariableString(QString t_name, QMap<QString, QStri
   return lOutput;
 }
 
+QString VariableManager::parseVariableString(VariableMappedString t_varMappedString)
+{
+  QString lOutput = t_varMappedString.mInputString;
+  for(QString lKey : t_varMappedString.mVariableMap.keys())
+  {
+    lOutput.replace(lKey, getVariable(t_varMappedString.mVariableMap[lKey]));
+  }
+  return lOutput;
+}
+
 QString VariableManager::getVariable(QString t_name)
 {
   if(mVariables.contains(t_name)) return mVariables[t_name];

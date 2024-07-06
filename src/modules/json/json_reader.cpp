@@ -86,6 +86,26 @@ pos_size_type JSONReader::getPositionData(QString string)
   return lReturnValue;
 }
 
+VariableMappedString JSONReader::getVarMappedString(QString t_fallback)
+{
+
+  if(mTargetObject.contains("image"))
+  {
+    VariableMappedString l_ReturnData = VariableMappedString(getStringValue("image"));
+
+    QJsonArray variablesArray = getArrayValue("variables");
+    for(QJsonValueRef rVar : variablesArray)
+    {
+      QJsonObject varObject = rVar.toObject();
+      l_ReturnData.mVariableMap[varObject["key"].toString()] = varObject["value"].toString();
+    }
+
+    return l_ReturnData;
+  }
+
+  return VariableMappedString(t_fallback + ".png");
+}
+
 QStringList JSONReader::getStringArrayValue(QString string)
 {
   QStringList return_data = {};

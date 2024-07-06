@@ -25,6 +25,7 @@ public:
   QVector2D   getVector2DValue(QString string);
   QJsonArray  getArrayValue(QString string);
   pos_size_type  getPositionData(QString string);
+  VariableMappedString getVarMappedString(QString t_fallback);
 
   bool        getBoolValue(QString string);
   int         getIntValue(QString string);

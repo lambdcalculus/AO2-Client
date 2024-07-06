@@ -40,12 +40,12 @@ AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
     {
       SetTargetObject(r_animObject.toObject());
       QString lObjectName = getStringValue("name");
-      QString lImageName = getStringValue("variable_image");
+      VariableMappedString l_mappedString = getVarMappedString(lObjectName);
       QString lImageMask = getStringValue("image_mask");
 
-      if(!lImageName.isEmpty())
+      if(!l_mappedString.mInputString.isEmpty())
       {
-        mVariableImages[lObjectName] = lImageName;
+        mVariableImages[lObjectName] = l_mappedString;
       }
 
       if(!lImageMask.isEmpty())
@@ -54,6 +54,7 @@ AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
       }
 
       pos_size_type mDefaultPostion = getPositionData("position");
+
       mFrames[lObjectName].append(DROAnimationKeyframe(0, ePOS_X, mDefaultPostion.x, LINEAR,  LINEAR));
       mFrames[lObjectName].append(DROAnimationKeyframe(0, ePOS_Y, mDefaultPostion.y, LINEAR,  LINEAR));
       if(t_type != eAnimationPlayer)
@@ -126,14 +127,7 @@ QString AnimationReader::getImageName(QString t_name)
 {
   if(mVariableImages.contains(t_name))
   {
-    if(mVariableImages[t_name] == "speaker")
-    {
-      return "character/" + VariableManager::get().getVariable("speaker_chara") + ".png";
-    }
-    else if(mVariableImages[t_name] == "speaker_previous")
-    {
-      return "character/" + VariableManager::get().getVariable("speaker_chara_last") + ".png";
-    }
+    return VariableManager::get().parseVariableString(mVariableImages[t_name]);
   }
   if(mImageNames.contains(t_name)) return mImageNames[t_name];
   return t_name + ".png";
