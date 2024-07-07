@@ -2,6 +2,8 @@
 #include "qgraphicsscene.h"
 #include "qtimer.h"
 
+#include <modules/managers/game_manager.h>
+
 GraphicObjectAnimator::GraphicObjectAnimator(mk2::GraphicsSpriteItem *t_widget, int t_framerate)
 {
   mAnimationPlayer = new DROAnimation;
@@ -16,36 +18,41 @@ void GraphicObjectAnimator::startAnimation(bool t_loop)
 
   //mTargetWidget->setTransformOriginPoint(centerBottom);
   mTargetWidget->setCurrentAnimation(mAnimationPlayer);
+  mAnimationPlayer->CacheAnimation();
+  m_StartTick = GameManager::get().getUptime();
   mAnimationPlayer->Start(t_loop);
   //updateAnimation();
 }
 
 void GraphicObjectAnimator::updateAnimation()
 {
+  int l_CurrentTick = GameManager::get().getUptime();
+  int l_AnimationTick = l_CurrentTick - m_StartTick;
+
   if(!mAnimationPlayer->GetCurrentlyRunning()) return;
 
-  float posX = mAnimationPlayer->GetCurrentValue(ePOS_X);
-  float posY = mAnimationPlayer->GetCurrentValue(ePOS_Y);
+  float posX = mAnimationPlayer->GetCachedValue(ePOS_X, l_AnimationTick);
+  float posY = mAnimationPlayer->GetCachedValue(ePOS_Y, l_AnimationTick);
 
-  float lRotation = mAnimationPlayer->GetCurrentValue(eROTATION);
-  float lAlpha = mAnimationPlayer->GetCurrentValue(eALPHA);
+  float lRotation = mAnimationPlayer->GetCachedValue(eROTATION, l_AnimationTick);
+  float lAlpha = mAnimationPlayer->GetCachedValue(eALPHA, l_AnimationTick);
 
-  float lScale = mAnimationPlayer->GetCurrentValue(eSCALE);
+  float lScale = mAnimationPlayer->GetCachedValue(eSCALE, l_AnimationTick);
 
   mTargetWidget->setX(posX);
   mTargetWidget->setY(posY);
 
-  if(lScale != 9999999)
+  if(lScale != -11037)
   {
     double l_scale = (lScale / 100);
     mTargetWidget->setScale(l_scale);
   }
 
-  if(lRotation != 9999999)
+  if(lRotation != -11037)
   {
     mTargetWidget->setRotation(lRotation);
   }
-  if(lAlpha != 9999999)
+  if(lAlpha != -11037)
   {
     if (lAlpha != 0)
     {

@@ -22,6 +22,8 @@ public:
   void updateAnimation();
 
 private:
+  int m_StartTick = 0;
+
   int mFrameRate = 60;
   mk2::GraphicsSpriteItem *mTargetWidget = nullptr;
   DROAnimation *mAnimationPlayer = nullptr;

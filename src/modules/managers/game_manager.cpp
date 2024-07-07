@@ -48,7 +48,7 @@ void GameManager::UpdateAnimationLoop(AnimTypes t_type)
       if(r_anim->getAnimation()->GetCurrentlyRunning())
       {
         l_AnimationQueueComplete = false;
-        r_anim->getAnimation()->RunAnimation();
+        //r_anim->getAnimation()->RunAnimation();
       }
     }
 
@@ -78,7 +78,7 @@ void GameManager::RenderAnimationLoop(AnimTypes t_type)
       if(r_anim->getAnimation()->GetCurrentlyRunning())
       {
         lAllAnimationsDone = false;
-        r_anim->getAnimation()->RunAnimation();
+        //r_anim->getAnimation()->RunAnimation();
         r_anim->updateAnimation();
       }
     }

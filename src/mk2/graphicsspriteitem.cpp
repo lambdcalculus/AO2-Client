@@ -180,16 +180,16 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
   QImage l_image = m_player->get_current_frame();
   if (!l_image.isNull())
   {
-    if(mWidgetAnimation != nullptr)
-    {
-      int lWidth = mWidgetAnimation->GetCurrentValue(eVarWidth);
-      int lHeight = mWidgetAnimation->GetCurrentValue(eVarHeight);
-      if(lWidth != 9999999 && lHeight != 9999999 && mWidgetAnimation->GetCurrentlyRunning())
-      {
-        l_image = l_image.scaled(QSize(lWidth, lHeight), Qt::IgnoreAspectRatio);
-        update();
-      }
-    }
+    //if(mWidgetAnimation != nullptr)
+    //{
+    //  int lWidth = mWidgetAnimation->GetCurrentValue(eVarWidth);
+    //  int lHeight = mWidgetAnimation->GetCurrentValue(eVarHeight);
+    //  if(lWidth != 9999999 && lHeight != 9999999 && mWidgetAnimation->GetCurrentlyRunning())
+    //  {
+    //    l_image = l_image.scaled(QSize(lWidth, lHeight), Qt::IgnoreAspectRatio);
+    //    update();
+    //  }
+    //}
 
     painter->save();
     painter->setCompositionMode(mCompoMode);

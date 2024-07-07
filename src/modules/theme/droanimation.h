@@ -7,9 +7,25 @@ class DROAnimation
 {
 public:
   DROAnimation();
+
+  void CacheAnimation();
+  float GetFrameValue(AnimationVariableTypes t_frameType, int t_frame);
+
+  int GetLengthInFrames()
+  {
+    int l_largestNumber = 0;
+    for(DROAnimationKeyframe rKeyframe : m_AnimationKeyframes)
+    {
+      if(rKeyframe.Time > l_largestNumber) l_largestNumber = rKeyframe.Time;
+    }
+
+    return l_largestNumber;
+  };
+
   void RunAnimation();
 
   bool GetCurrentlyRunning();
+  float GetCachedValue(AnimationVariableTypes type, int t_frame);
   float GetCurrentValue(AnimationVariableTypes type);
 
   void SetNextKeyframe(AnimationVariableTypes animType);
@@ -24,6 +40,10 @@ public:
   int GetCurrentFrame();
 
 private:
+
+  QHash<AnimationVariableTypes, QList<float>> m_CachedVariables = {};
+
+  int m_AnimationTickRate = 16;
 
   QElapsedTimer m_AnimationTimer = QElapsedTimer();
   qint64 m_TimeElapsed = 0;
