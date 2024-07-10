@@ -31,13 +31,15 @@ void GraphicObjectAnimator::updateAnimation()
 
   if(!mAnimationPlayer->GetCurrentlyRunning()) return;
 
-  float posX = mAnimationPlayer->GetCachedValue(ePOS_X, l_AnimationTick);
-  float posY = mAnimationPlayer->GetCachedValue(ePOS_Y, l_AnimationTick);
+  mAnimationPlayer->UpdateCurrentTick(l_AnimationTick);
 
-  float lRotation = mAnimationPlayer->GetCachedValue(eROTATION, l_AnimationTick);
-  float lAlpha = mAnimationPlayer->GetCachedValue(eALPHA, l_AnimationTick);
+  float posX = mAnimationPlayer->GetCachedValue(ePOS_X);
+  float posY = mAnimationPlayer->GetCachedValue(ePOS_Y);
 
-  float lScale = mAnimationPlayer->GetCachedValue(eSCALE, l_AnimationTick);
+  float lRotation = mAnimationPlayer->GetCachedValue(eROTATION);
+  float lAlpha = mAnimationPlayer->GetCachedValue(eALPHA);
+
+  float lScale = mAnimationPlayer->GetCachedValue(eSCALE);
 
   mTargetWidget->setX(posX);
   mTargetWidget->setY(posY);

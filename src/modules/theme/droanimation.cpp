@@ -8,12 +8,12 @@ DROAnimation::DROAnimation()
 void DROAnimation::CacheAnimation()
 {
   //Give it an extra frame, just in case something goes wrong.
-  int l_animationLength = (GetLengthInFrames() + 16);
+  m_DurationLength = (GetLengthInFrames() + 16);
   int l_CurrentFrame = 0;
 
   m_CachedVariables.clear();
 
-  while(l_animationLength > l_CurrentFrame)
+  while(m_DurationLength > l_CurrentFrame)
   {
     m_CachedVariables[ePOS_X].append(GetFrameValue(ePOS_X, l_CurrentFrame));
     m_CachedVariables[ePOS_Y].append(GetFrameValue(ePOS_Y, l_CurrentFrame));
@@ -149,9 +149,9 @@ void DROAnimation::RunAnimation()
 {
   if (!m_IsRunning || m_AnimationKeyframes.empty()) return;
 
-  m_TimeElapsed = m_AnimationTimer.elapsed();
+  m_DurationElapsed = m_AnimationTimer.elapsed();
 
-  while(m_AnimationKeyframes.at(m_KeyframeIndex).Time <= m_TimeElapsed)
+  while(m_AnimationKeyframes.at(m_KeyframeIndex).Time <= m_DurationElapsed)
   {
     //Return and stop the animation if the keyframe count is at the end.
     if(m_AnimationKeyframes.count() == m_KeyframeIndex + 1) { m_IsRunning = false; m_KeyframeIndex += 1;  if(m_AnimationLoops) Start(m_AnimationLoops); return; }
@@ -221,7 +221,14 @@ bool DROAnimation::GetCurrentlyRunning()
 
 float DROAnimation::GetCachedValue(AnimationVariableTypes type, int t_frame)
 {
-  int t_arrayValue = t_frame / m_AnimationTickRate;
+  int l_CurrentTick = t_frame;
+  if(l_CurrentTick == -1)
+  {
+    if(m_DurationElapsed == -1) return -11037;
+    l_CurrentTick = m_DurationElapsed;
+  }
+
+  int t_arrayValue = l_CurrentTick / m_AnimationTickRate;
 
   if(m_AnimationLoops) t_arrayValue = t_arrayValue % (m_CachedVariables[type].count() - 1);
   if(m_CachedVariables.contains(type))
@@ -284,20 +291,20 @@ float DROAnimation::GetCurrentValue(AnimationVariableTypes type)
     AnimCurveType fadeOut = m_AnimationKeyframes.at(m_PreviousValues[type]).FadeOut;
 
            //Skip math if already at last time
-    if(m_TimeElapsed >= nextTime)
+    if(m_DurationElapsed >= nextTime)
     {
       return lastValue;
     }
 
            //Okay *now* do math.
     qint64 total_duration = nextTime - lastTime;
-    qint64 duration_passed = m_TimeElapsed - lastTime;
+    qint64 duration_passed = m_DurationElapsed - lastTime;
     float duration_percantage = (float)duration_passed / (float)total_duration;
     float distance = nextValue - lastValue;
     //Caluclate the value differances
     if(fadeIn == NONE)
     {
-      if (m_TimeElapsed >= nextTime)
+      if (m_DurationElapsed >= nextTime)
       {
         return nextValue;
       }

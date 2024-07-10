@@ -25,7 +25,7 @@ public:
   void RunAnimation();
 
   bool GetCurrentlyRunning();
-  float GetCachedValue(AnimationVariableTypes type, int t_frame);
+  float GetCachedValue(AnimationVariableTypes type, int t_frame = -1);
   float GetCurrentValue(AnimationVariableTypes type);
 
   void SetNextKeyframe(AnimationVariableTypes animType);
@@ -39,21 +39,27 @@ public:
 
   int GetCurrentFrame();
 
-private:
+  void UpdateCurrentTick(int t_tick)
+  {
+    if(m_DurationLength < t_tick && !m_AnimationLoops) m_IsRunning = false;
+    m_DurationElapsed = t_tick;
+  };
 
+private:
+  int m_AnimationTickRate = 16;
+  int m_DurationLength = 0;
+  qint64 m_DurationElapsed = 0;
   QHash<AnimationVariableTypes, QList<float>> m_CachedVariables = {};
 
-  int m_AnimationTickRate = 16;
-
-  QElapsedTimer m_AnimationTimer = QElapsedTimer();
-  qint64 m_TimeElapsed = 0;
   bool m_IsRunning = false;
-
   bool m_AnimationLoops = true;
 
-  int m_KeyframeIndex = 0;
+
   QVector<DROAnimationKeyframe> m_AnimationKeyframes = {};
 
+  //TO-DO: Remove
+  QElapsedTimer m_AnimationTimer = QElapsedTimer();
+  int m_KeyframeIndex = 0;
   QHash<AnimationVariableTypes, int> m_UpcomingValues = {};
   QHash<AnimationVariableTypes, int> m_PreviousValues = {};
   QHash<AnimationVariableTypes, float> m_CurrentValues = {};
