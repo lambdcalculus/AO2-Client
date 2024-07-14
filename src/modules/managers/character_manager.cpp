@@ -61,13 +61,13 @@ void CharacterManager::setOutfitList(QStringList t_outfits)
 {
   mCharacterOutfits = t_outfits;
   
-  QWidget *l_outfitSelectorWidget = ThemeManager::get().getWidget("outfit_selector");
+  QComboBox *l_WidgetOutfitSelector = ThemeManager::get().GetWidgetType<QComboBox>("outfit_selector");
 
-  if (dynamic_cast<QComboBox*>(l_outfitSelectorWidget) != nullptr)
+  if (l_WidgetOutfitSelector != nullptr)
   {
-    QComboBox* l_outfitSelectorCombo = dynamic_cast<QComboBox*>(l_outfitSelectorWidget);
-    l_outfitSelectorCombo->clear();
-    l_outfitSelectorCombo->addItems(t_outfits);
+    l_WidgetOutfitSelector->clear();
+    l_WidgetOutfitSelector->addItems(t_outfits);
+    if(l_WidgetOutfitSelector->count() > 1) l_WidgetOutfitSelector->setCurrentIndex(1);
   }
 }
 
