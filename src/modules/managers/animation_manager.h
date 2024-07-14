@@ -25,6 +25,12 @@ public:
   QVector<DROAnimationKeyframe> GetPlayerFrames(QString t_name);
   bool GetPlayerAnimLoops(QString t_name);
 
+  QString getPlayerAnimSound(QString t_name)
+  {
+    if(m_PlayerAnimations.contains(t_name)) return m_PlayerAnimations[t_name]->getAudioName();
+    return "";
+  };
+
 private:
   AnimationManager() { }
   static AnimationManager s_Instance;

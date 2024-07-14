@@ -84,6 +84,36 @@ public slots:
   void start();
   void restart();
   void setVerticalOffset(int t_offset);
+
+  void ResetAnimation()
+  {
+    setScale(1);
+    setRotation(0);
+    setOpacity(1);
+    setTransformOffset(0, 0);
+  }
+
+  void setTransformOffset(int t_x, int t_y)
+  {
+    if(t_x != -11037) m_TransformX = t_x;
+    if(t_y != -11037) m_TransformY = t_y;
+    update();
+  };
+
+  void setTransformX(int t_x)
+  {
+    if(t_x == -11037) return;
+    m_TransformX = t_x;
+    update();
+  };
+
+  void setTransformY(int t_y)
+  {
+    if(t_y == -11037) return;
+    m_TransformY = t_y;
+    update();
+  };
+
   void setBackgroundScaling(double t_offset);
 
   void setCurrentAnimation(DROAnimation* t_animation);
@@ -100,6 +130,9 @@ signals:
   void finished();
 
 private:
+  int m_TransformX = 0;
+  int m_TransformY = 0;
+
   QScopedPointer<SpritePlayer> m_player;
   QPainter::CompositionMode mCompoMode = QPainter::CompositionMode_SourceOver;
   int mVerticalVPOffset = 0;

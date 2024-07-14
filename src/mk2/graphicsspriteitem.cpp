@@ -194,14 +194,14 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
     painter->save();
     painter->setCompositionMode(mCompoMode);
     // calculate center position
-    QPointF l_horizontal_center;
+    QPointF l_horizontal_center(m_TransformX, m_TransformY);
     if(mCenterSprite)
     {
       if (auto *l_scene = scene())
       {
         const QPointF l_center = l_scene->sceneRect().center() - m_player->get_scaled_bounding_rect().center();
-        l_horizontal_center.setX(l_center.x());
-        l_horizontal_center.setY(mVerticalVPOffset);
+        l_horizontal_center.setX(l_horizontal_center.x() + l_center.x());
+        l_horizontal_center.setY(l_horizontal_center.y() + mVerticalVPOffset);
       }
     }
     if(rotation() == 0)
@@ -215,9 +215,14 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
       painter->setRenderHint(QPainter::Antialiasing, true);
     }
 
-
-
     painter->drawImage(l_horizontal_center, l_image);
+
+    //painter->setPen(Qt::blue);
+    //painter->drawRect(scene()->sceneRect());
+
+    //painter->setPen(Qt::red);
+    //painter->drawRect(m_player->get_scaled_bounding_rect());
+
     painter->restore();
   }
 }

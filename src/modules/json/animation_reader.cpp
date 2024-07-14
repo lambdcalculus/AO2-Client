@@ -32,6 +32,7 @@ AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
   {
     ReadFromFile(l_animationPath);
     mLoopAnimation = getBoolValue("loop");
+    mSoundName = getStringValue("sound");
     mFrameRate = getIntValue("framerate");
 
     QJsonArray l_animObjectArray = getArrayValue("objects");

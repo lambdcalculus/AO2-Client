@@ -40,6 +40,9 @@ private:
 
 
   bool flgUpdateRunning = false;
+
+  //IO Data
+  QString m_FileNameSFX = "";
 };
 
 #endif // KEYFRAMEPLAYER_H

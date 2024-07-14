@@ -1341,6 +1341,8 @@ void Courtroom::handle_chatmessage_2() // handles IC
   ui_vp_player_char->setPos(selfOffset, ui_vp_player_char->y());
   ui_vp_player_pair->setPos(otherOffset, ui_vp_player_pair->y());
 
+  //Manage Animation
+  ui_vp_player_char->ResetAnimation();
   QVector<DROAnimationKeyframe> t_frames = AnimationManager::get().GetPlayerFrames(SceneManager::get().GetSpeakerAnimation());
   if(t_frames.isEmpty())
   {
@@ -1348,6 +1350,7 @@ void Courtroom::handle_chatmessage_2() // handles IC
   }
   aniPlayerChar->setKeyframes(t_frames);
   aniPlayerChar->startAnimation(AnimationManager::get().GetPlayerAnimLoops(SceneManager::get().GetSpeakerAnimation()));
+  AudioManager::get().PlaySFX(AnimationManager::get().getPlayerAnimSound(SceneManager::get().GetSpeakerAnimation()));
   GameManager::get().SetPlayerAnimation(aniPlayerChar);
 
   setup_screenshake_anim(selfOffset);
@@ -1818,6 +1821,18 @@ void Courtroom::play_preanim()
   ui_vp_player_char->set_play_once(true);
   swap_viewport_reader(ui_vp_player_char, ViewportCharacterPre);
   ui_vp_player_char->start();
+}
+
+void Courtroom::handleAnimation(QString t_aniName)
+{
+  m_effects_player->play_effect(ao_app->get_sfx(t_aniName));
+  ReplayManager::get().RecordPlaySplash(t_aniName);
+  if(m_ViewportVerTwo != nullptr) m_ViewportVerTwo->PlaySplashAnimation(t_aniName);
+
+  if(!wShoutsLayer->playAnimation(t_aniName, eAnimationGM))
+  {
+    ui_vp_wtce->play(t_aniName);
+  }
 }
 
 void Courtroom::preanim_done()

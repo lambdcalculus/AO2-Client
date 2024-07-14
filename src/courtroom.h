@@ -271,6 +271,7 @@ public:
   void play_preanim();
 
   // plays a splash animation based on the argument
+  void handleAnimation(QString t_aniName);
   void handle_wtce(QString p_wtce);
 
   // sets the hp bar of defense(p_bar 1) or pro(p_bar 2)

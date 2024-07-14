@@ -18,6 +18,10 @@ public:
   void startAnimation(bool t_loop);
   void addKeyframe(qint64 time, AnimationVariableTypes type, float value, AnimCurveType fin, AnimCurveType fout);
   void setKeyframes(QVector<DROAnimationKeyframe> t_frames);
+  void setAudio(QString t_audioFile)
+  {
+    m_FileNameAudio = t_audioFile;
+  };
   DROAnimation *getAnimation();
   void updateAnimation();
 
@@ -27,6 +31,8 @@ private:
   int mFrameRate = 60;
   mk2::GraphicsSpriteItem *mTargetWidget = nullptr;
   DROAnimation *mAnimationPlayer = nullptr;
+
+  QString m_FileNameAudio = "";
 };
 
 #endif // GRAPHICOBJECTANIMATOR_H

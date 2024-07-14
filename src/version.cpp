@@ -13,12 +13,12 @@
 
 int get_release_version()
 {
-  return 1;
+  return 2;
 }
 
 int get_major_version()
 {
-  return 7;
+  return 0;
 }
 
 int get_minor_version()

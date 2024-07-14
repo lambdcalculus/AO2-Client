@@ -41,8 +41,7 @@ void GraphicObjectAnimator::updateAnimation()
 
   float lScale = mAnimationPlayer->GetCachedValue(eSCALE);
 
-  mTargetWidget->setX(posX);
-  mTargetWidget->setY(posY);
+  mTargetWidget->setTransformOffset(posX, posY);
 
   if(lScale != -11037)
   {

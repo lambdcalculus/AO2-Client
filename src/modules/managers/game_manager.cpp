@@ -164,7 +164,7 @@ void GameManager::RunGameLoop()
 
     if(m_PlayerAnimation != nullptr)
     {
-      m_PlayerAnimation->getAnimation()->RunAnimation();
+      //m_PlayerAnimation->getAnimation()->RunAnimation();
       m_PlayerAnimation->updateAnimation();
     }
 

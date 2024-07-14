@@ -14,6 +14,11 @@ public:
   QVector<DROAnimationKeyframe> getFrames(QString t_objectName);
   bool getCanLoop();
 
+  QString getAudioName()
+  {
+    return mSoundName;
+  };
+
   QStringList getObjectNames();
   QString getAnimPath();
 
@@ -26,6 +31,7 @@ public:
 private:
   int mFrameRate = 60;
   bool mLoopAnimation = false;
+  QString mSoundName = "";
   QString mAnimationPath = "";
 
   QStringList mObjectNames = {};

@@ -5,6 +5,7 @@
 #include <modules/json/animation_reader.h>
 #include "modules/managers/game_manager.h"
 #include "modules/managers/animation_manager.h"
+#include <modules/managers/audio_manager.h>
 
 KeyframePlayer::KeyframePlayer(QWidget *parent) : DRGraphicsView(parent)
 {
@@ -35,6 +36,7 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
   mObjectAnimations = {};
 
   AnimationReader *l_reader = new AnimationReader(mAnimType, t_animation);
+  m_FileNameSFX = l_reader->getAudioName();
   mNames = l_reader->getObjectNames();
 
   QString l_animPath = l_reader->getAnimPath();
@@ -54,14 +56,14 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
     l_newObject->start();
 
 
-    QString mMask = l_reader->getObjectMask(r_name);
-    if(!mMask.isEmpty())
-    {
-      if(mAnimationObjects.contains(mMask))
-      {
-        //l_newObject->set_composition_mode(QPainter::CompositionMode_SourceAtop);
-      }
-    }
+    //QString mMask = l_reader->getObjectMask(r_name);
+    //if(!mMask.isEmpty())
+    //{
+    //  if(mAnimationObjects.contains(mMask))
+    //  {
+    //    //l_newObject->set_composition_mode(QPainter::CompositionMode_SourceAtop);
+    //  }
+    //}
 
 
     GraphicObjectAnimator * l_newAnim = new GraphicObjectAnimator(l_newObject, 60);
@@ -76,6 +78,8 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
   {
     mObjectAnimations[r_name]->startAnimation(false);
   }
+
+  AudioManager::get().PlaySFX(m_FileNameSFX);
 
   return l_reader->animationLoaded();
 }
