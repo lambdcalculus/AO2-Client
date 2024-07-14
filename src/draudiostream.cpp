@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QtMath>
+#include <QUrl>
 
 #include <bass/bass.h>
 #include <bass/bassopus.h>
@@ -226,7 +227,13 @@ bool DRAudioStream::ensure_init()
 
   if(!m_url.isEmpty())
   {
-    l_hstream = BASS_StreamCreateURL(reinterpret_cast<const WCHAR*>(m_url.utf16()), 0, 0, nullptr, nullptr);
+    QByteArray l_encoded = QUrl(m_url).toEncoded();
+    if (l_encoded.isEmpty()) {
+      qWarning() << "error:" << m_url << "was not a valid URL for streaming.";
+      l_hstream = 0;
+    } else {
+      l_hstream = BASS_StreamCreateURL(l_encoded.constData(), 0, 0, nullptr, nullptr);
+    }
   }
   else if (m_filename.isEmpty())
   {
