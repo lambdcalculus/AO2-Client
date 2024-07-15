@@ -31,7 +31,7 @@ private:
   QTimer mFrameTimer;
   DROAnimation *mAnimation = nullptr;
   QStringList mNames = {};
-  QMap<QString, DRSceneMovie *> mAnimationObjects = {};
+  QMap<QString, QGraphicsItem *> mAnimationObjects = {};
   QMap<QString, GraphicObjectAnimator *> mObjectAnimations = {};
   QVector<GraphicObjectAnimator *> mAnimatiorObjects = {};
 

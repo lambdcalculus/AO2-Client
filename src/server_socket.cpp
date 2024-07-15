@@ -428,6 +428,13 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
     if (is_courtroom_constructed)
       m_courtroom->handleAnimation(l_content.at(0));
   }
+  else if (l_header == "SCENE")
+  {
+    if (l_content.size() < 1)
+      return;
+    if (is_courtroom_constructed)
+      m_courtroom->handleAnimation("RoomTransition");
+  }
   else if (l_header == "RT")
   {
     if (l_content.size() < 1)

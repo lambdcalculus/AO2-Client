@@ -45,15 +45,30 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
   {
     i++;
 
+    QString l_ObjectProxy = l_reader->getObjectProxy(r_name);
+
+
     DRSceneMovie * l_newObject = new DRSceneMovie(AOApplication::getInstance());
     scene()->addItem(l_newObject);
     l_newObject->setZValue(i);
     //ao_app->GetFirstThemeSpritePath({p_file_name, t_fallblockName});
-    l_newObject->set_file_name(l_animPath + l_reader->getImageName(r_name));
+
+    //Check if object is using a "proxy"
+
+    if(l_ObjectProxy == "viewport")
+    {
+      l_newObject->setProxyImage(SceneManager::get().RenderTransitionToImage());
+    }
+    else
+    {
+      l_newObject->set_file_name(l_animPath + l_reader->getImageName(r_name));
+    }
+
     l_newObject->set_center_mode(false);
     l_newObject->set_scaling_mode(mk2::SpritePlayer::NoScaling);
     l_newObject->set_size(l_reader->getObjectSize(r_name));
     l_newObject->start();
+
 
 
     //QString mMask = l_reader->getObjectMask(r_name);

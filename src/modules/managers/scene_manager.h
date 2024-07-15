@@ -39,6 +39,7 @@ public:
   AOLabel *GetTransition();
 
   void RenderTransition();
+  QImage RenderTransitionToImage();
   void AnimateTransition();
   void setFadeDuration(int duration);
 

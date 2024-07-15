@@ -41,12 +41,18 @@ AnimationReader::AnimationReader(AnimTypes t_type, QString t_name)
     {
       SetTargetObject(r_animObject.toObject());
       QString lObjectName = getStringValue("name");
+      QString l_ParamProxy = getStringValue("proxy");
       VariableMappedString l_mappedString = getVarMappedString(lObjectName);
       QString lImageMask = getStringValue("image_mask");
 
       if(!l_mappedString.mInputString.isEmpty())
       {
-        mVariableImages[lObjectName] = l_mappedString;
+        m_ParametersSpritePath[lObjectName] = l_mappedString;
+      }
+
+      if(!l_ParamProxy.isEmpty())
+      {
+        m_ParametersSpriteProxy[lObjectName] = l_ParamProxy;
       }
 
       if(!lImageMask.isEmpty())
@@ -126,9 +132,9 @@ QSizeF AnimationReader::getObjectSize(QString t_name)
 
 QString AnimationReader::getImageName(QString t_name)
 {
-  if(mVariableImages.contains(t_name))
+  if(m_ParametersSpritePath.contains(t_name))
   {
-    return VariableManager::get().parseVariableString(mVariableImages[t_name]);
+    return VariableManager::get().parseVariableString(m_ParametersSpritePath[t_name]);
   }
   if(mImageNames.contains(t_name)) return mImageNames[t_name];
   return t_name + ".png";
@@ -139,6 +145,15 @@ QString AnimationReader::getObjectMask(QString t_name)
   if(mObjectMasking.contains(t_name))
   {
     return mObjectMasking[t_name];
+  }
+  return "";
+}
+
+QString AnimationReader::getObjectProxy(QString t_name)
+{
+  if(m_ParametersSpriteProxy.contains(t_name))
+  {
+    return m_ParametersSpriteProxy[t_name];
   }
   return "";
 }

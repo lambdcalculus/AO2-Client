@@ -93,6 +93,12 @@ void GraphicsSpriteItem::set_file_name(QString p_file_name)
   m_player->set_file_name(p_file_name);
 }
 
+void GraphicsSpriteItem::setProxyImage(QImage t_image)
+{
+  mUsesProxy = true;
+  m_ProxyImage = t_image;
+}
+
 QIODevice *GraphicsSpriteItem::get_device() const
 {
   return m_player->get_device();
@@ -176,8 +182,15 @@ void GraphicsSpriteItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
   Q_UNUSED(option);
   Q_UNUSED(widget);
 
-
-  QImage l_image = m_player->get_current_frame();
+  QImage l_image;
+  if(mUsesProxy)
+  {
+    l_image = m_ProxyImage;
+  }
+  else
+  {
+    l_image = m_player->get_current_frame();
+  }
   if (!l_image.isNull())
   {
     //if(mWidgetAnimation != nullptr)

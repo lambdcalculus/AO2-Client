@@ -77,6 +77,8 @@ public slots:
 
   void set_file_name(QString file_name);
 
+  void setProxyImage(QImage t_image);
+
   void set_device(QIODevice *device);
 
   void set_reader(SpriteReader::ptr reader);
@@ -138,6 +140,9 @@ private:
   int mVerticalVPOffset = 0;
   bool mCenterSprite = true;
   DROAnimation* mWidgetAnimation = nullptr;
+
+  bool mUsesProxy = false;
+  QImage m_ProxyImage = QImage();
 
 private slots:
   void notify_size();

@@ -25,6 +25,7 @@ public:
   QSizeF getObjectSize(QString t_name);
   QString getImageName(QString t_name);
   QString getObjectMask(QString t_name);
+  QString getObjectProxy(QString t_name);
 
   bool animationLoaded();
 
@@ -38,8 +39,9 @@ private:
 
   QMap<QString, QSizeF> mObjectSizes = {};
   QMap<QString, QString> mImageNames = {};
-  QMap<QString, VariableMappedString> mVariableImages = {};
 
+  QMap<QString, VariableMappedString> m_ParametersSpritePath = {};
+  QMap<QString, QString> m_ParametersSpriteProxy = {};
 
   QMap<QString, QString> mObjectMasking = {};
 

@@ -95,6 +95,17 @@ void SceneManager::RenderTransition()
   p_WidgetTransition->setPixmap(QPixmap::fromImage(image));
 }
 
+QImage SceneManager::RenderTransitionToImage()
+{
+  QImage image(p_WidgetViewport->scene()->sceneRect().size().toSize(), QImage::Format_ARGB32);
+  image.fill(Qt::transparent);
+
+  QPainter painter(&image);
+  p_WidgetViewport->scene()->render(&painter);
+
+  return image;
+}
+
 void SceneManager::AnimateTransition()
 {
   QGraphicsOpacityEffect *eff = new QGraphicsOpacityEffect();
