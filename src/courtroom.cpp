@@ -963,6 +963,8 @@ void Courtroom::on_ic_message_return_pressed()
   if(wCharaAnimList->currentItem() != nullptr)
   {
     lAnimName = wCharaAnimList->currentItem()->text();
+    bool l_isLoops = AnimationManager::get().GetPlayerAnimLoops(lAnimName);
+    if(!l_isLoops) wCharaAnimList->setCurrentRow(0);
   }
 
   m_CurrentMessageData->m_KeyframeAnimation = lAnimName;
