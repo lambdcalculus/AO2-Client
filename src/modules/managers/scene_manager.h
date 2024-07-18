@@ -22,7 +22,9 @@ public:
     return s_Instance;
   }
 
-  SceneTestingLabs *SceneConstructTestingLabs();
+  SceneTestingLabs *ConstructTestingLabs();
+
+
 
 
   ICMessageData *ProcessIncomingMessage(QStringList t_message);

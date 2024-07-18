@@ -169,14 +169,21 @@ void AOApplication::construct_courtroom()
 
 void AOApplication::destruct_courtroom()
 {
-  GameManager::get().StopGameLoop();
   // destruct courtroom
   if (is_courtroom_constructed)
   {
+    GameManager::get().StopGameLoop();
+    while(GameManager::get().IsGameLoopRunning())
+    {
+      //Wait for the game loop to stop.
+    }
+
     delete m_courtroom;
     is_courtroom_constructed = false;
     ao_config->set_gamemode(nullptr);
     ao_config->set_timeofday(nullptr);
+
+    GameManager::get().StartGameLoop();
   }
   else
   {

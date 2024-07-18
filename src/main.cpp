@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     QStringList arguments = QCoreApplication::arguments();
     if (arguments.contains("--testinglabs"))
     {
-      SceneManager::get().SceneConstructTestingLabs();
+      SceneManager::get().ConstructTestingLabs();
       //app.constructTestingLabs();
     }
     else

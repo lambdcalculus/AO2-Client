@@ -93,6 +93,7 @@ void ReplayScene::constructWidgets()
   ThemeManager::get().RegisterWidgetGeneric("viewport", m_Viewport);
 
   m_Viewport->ConstructViewport(SceneTypeReplays);
+  SceneManager::get().CreateTransition(this, AOApplication::getInstance(), m_Viewport);
 
   //Replay Controls
   m_PlaybackScrubber = new QSlider(Qt::Horizontal, this);

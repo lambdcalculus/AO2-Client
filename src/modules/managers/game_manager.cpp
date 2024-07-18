@@ -9,8 +9,6 @@ GameManager GameManager::s_Instance;
 
 void GameManager::StartGameLoop()
 {
-  StopGameLoop();
-
   ReplayManager::get().RecordingStart();
   connect(&m_FrameTimer, &QTimer::timeout, this, &GameManager::RunGameLoop);
   m_FrameTimer.setInterval(1000 / m_FramesPerSecond);
@@ -20,7 +18,15 @@ void GameManager::StartGameLoop()
 void GameManager::StopGameLoop()
 {
   m_WidgetTypeWriter = nullptr;
+  m_PlayerAnimation = nullptr;
+  m_GraphicObjectAnimations.clear();
   m_FrameTimer.stop();
+}
+
+void GameManager::RestartGameLoop()
+{
+  StopGameLoop();
+  StartGameLoop();
 }
 
 void GameManager::SetPlayerAnimation(GraphicObjectAnimator *t_animation)

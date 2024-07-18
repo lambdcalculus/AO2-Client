@@ -11,7 +11,7 @@
 
 SceneManager SceneManager::s_Instance;
 
-SceneTestingLabs *SceneManager::SceneConstructTestingLabs()
+SceneTestingLabs *SceneManager::ConstructTestingLabs()
 {
   m_SceneTestingLabs = new SceneTestingLabs();
   m_SceneTestingLabs->show();

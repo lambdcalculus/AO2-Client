@@ -22,7 +22,14 @@ public:
     return s_Instance;
   }
 
+  void StartGameLoop();
   void StopGameLoop();
+  void RestartGameLoop();
+
+  bool IsGameLoopRunning()
+  {
+    return m_IsUpdateRunning;
+  }
 
   void SetPlayerAnimation(GraphicObjectAnimator * t_animation);
   void SetTypeWriter(TypewriterTextEdit * t_writer);
@@ -97,7 +104,6 @@ private:
   QVector<GameShoutData> m_GameShouts = {};
   QStringList m_ServerFeatures = {};
 
-  void StartGameLoop();
   void setupGameEffects();
   void setupGameShouts();
 };
