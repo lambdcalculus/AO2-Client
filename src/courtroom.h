@@ -517,6 +517,7 @@ private:
   QMenu *ui_music_menu = nullptr;
   QAction *ui_music_menu_play = nullptr;
   QAction *ui_music_menu_insert_ooc = nullptr;
+  QAction *p_ActionPinMusic = nullptr;
 
   QListWidget *wCharaAnimList = nullptr;
   QListWidget *ui_sfx_list = nullptr;
@@ -564,7 +565,9 @@ private:
   {
     DefaultPositionIndex,
   };
-  QComboBox *ui_pos_dropdown = nullptr;
+
+  QComboBox *p_DropdownPosition = nullptr;
+  QComboBox *p_DropdownMusicCategory = nullptr;
 
   AOImageDisplay *ui_defense_bar = nullptr;
   AOImageDisplay *ui_prosecution_bar = nullptr;
@@ -717,6 +720,7 @@ private:
   void construct_playerlist();
 
   QString get_current_position();
+  QString getCurrentCategory();
 
   void load_note();
   void save_note();
@@ -782,6 +786,7 @@ private slots:
   void on_music_list_context_menu_requested(QPoint p_point);
   void on_music_menu_play_triggered();
   void on_music_menu_insert_ooc_triggered();
+  void OnMusicMenuPinSongTriggered();
   void on_music_search_edited(QString);
   void on_music_search_edited();
   void send_mc_packet(QString p_song);
@@ -798,6 +803,7 @@ private slots:
   void onCharacterSelectPackageChanged(int p_index);
   void update_iniswap_dropdown_searchable();
   void UpdateIniswapStylesheet();
+  void OnMusicCategoryChanged();
   void on_pos_dropdown_changed();
 
   void on_cycle_clicked();

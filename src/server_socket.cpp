@@ -279,8 +279,9 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
       l_music_list = l_content.mid(i - 1);
       break;
     }
+
     m_courtroom->set_area_list(l_area_list);
-    m_courtroom->set_music_list(l_music_list);
+    m_courtroom->set_music_list(ScenarioManager::get().ParseMusicList(l_music_list));
 
     m_loaded_music = m_music_count;
     m_lobby->set_loading_text("Loading music:\n" + QString::number(m_loaded_music) + "/" + QString::number(m_music_count));
@@ -319,7 +320,7 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   {
     if (!is_courtroom_constructed)
       return;
-    m_courtroom->set_music_list(l_content);
+    m_courtroom->set_music_list(ScenarioManager::get().ParseMusicList(l_content));
 
     if (!m_loaded_area_list && is_lobby_constructed)
     {

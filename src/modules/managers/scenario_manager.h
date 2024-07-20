@@ -61,7 +61,61 @@ public:
 class ScenarioManager
 {
 public:
-  ScenarioManager();
+
+  static ScenarioManager& get()
+  {
+    return s_Instance;
+  }
+
+  QStringList ParseMusicList(QStringList l_musicList);
+
+  QStringList GetAllMusic()
+  {
+    QStringList l_returnValue = {};
+
+    for(QString rMusicCategory : m_MusicCategories)
+    {
+      l_returnValue.append(rMusicCategory);
+      for(QString r_MusicTrack : m_CurrentMusicList[rMusicCategory])
+      {
+        l_returnValue.append(r_MusicTrack);
+      }
+    }
+    return l_returnValue;
+  };
+
+  QStringList GetCategoryMusic(QString t_category)
+  {
+    if(m_CurrentMusicList.contains(t_category))
+    {
+      return m_CurrentMusicList[t_category];
+    }
+    return {};
+  };
+
+  QStringList GetMusicCategories()
+  {
+    return m_MusicCategories;
+  };
+
+  QStringList GetPinnedTracks()
+  {
+    return m_PinnedTracks;
+  };
+
+  void PinTrack(QString t_track)
+  {
+    if(!m_PinnedTracks.contains(t_track)) m_PinnedTracks.append(t_track);
+  };
+
+private:
+  ScenarioManager() {}
+  static ScenarioManager s_Instance;
+
+  QMap<QString, QStringList> m_CurrentMusicList = {};
+  QStringList m_MusicCategories = {};
+  QStringList m_PinnedTracks = {};
+
 };
 
 #endif // SCENARIO_MANAGER_H

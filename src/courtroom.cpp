@@ -122,6 +122,9 @@ void Courtroom::set_area_list(QStringList p_area_list)
 void Courtroom::set_music_list(QStringList p_music_list)
 {
   m_music_list = p_music_list;
+  p_DropdownMusicCategory->clear();
+  p_DropdownMusicCategory->addItems({"All", "Pinned"});
+  p_DropdownMusicCategory->addItems(ScenarioManager::get().GetMusicCategories());
   list_music();
 }
 
@@ -737,11 +740,16 @@ void Courtroom::list_note_files()
 
 QString Courtroom::get_current_position()
 {
-  if (ui_pos_dropdown->currentIndex() == DefaultPositionIndex)
+  if (p_DropdownPosition->currentIndex() == DefaultPositionIndex)
   {
     return CharacterManager::get().p_SelectedCharacter->getSide();
   }
-  return ui_pos_dropdown->currentData(Qt::UserRole).toString();
+  return p_DropdownPosition->currentData(Qt::UserRole).toString();
+}
+
+QString Courtroom::getCurrentCategory()
+{
+  return p_DropdownMusicCategory->currentText();
 }
 
 void Courtroom::load_note()
@@ -2265,16 +2273,16 @@ void Courtroom::set_character_position(QString p_pos)
 {
   const bool l_is_default_pos = p_pos == CharacterManager::get().p_SelectedCharacter->getSide();
 
-  int l_pos_index = ui_pos_dropdown->currentIndex();
+  int l_pos_index = p_DropdownPosition->currentIndex();
   if (!l_is_default_pos)
   {
-    const int l_new_pos_index = ui_pos_dropdown->findData(p_pos);
+    const int l_new_pos_index = p_DropdownPosition->findData(p_pos);
     if (l_new_pos_index != -1)
     {
       l_pos_index = l_new_pos_index;
     }
   }
-  ui_pos_dropdown->setCurrentIndex(l_pos_index);
+  p_DropdownPosition->setCurrentIndex(l_pos_index);
 
   VariableManager::get().setVariable("player_pos", p_pos);
   // enable judge mechanics if appropriate
@@ -2487,6 +2495,17 @@ void Courtroom::on_music_menu_insert_ooc_triggered()
   {
     const QString l_song = l_item->data(Qt::UserRole).toString();
     ui_ooc_chat_message->insert(l_song);
+  }
+  ui_ooc_chat_message->setFocus();
+}
+
+void Courtroom::OnMusicMenuPinSongTriggered()
+{
+  QListWidgetItem *l_item = ui_music_list->currentItem();
+  if (l_item)
+  {
+    const QString l_song = l_item->data(Qt::UserRole).toString();
+    ScenarioManager::get().PinTrack(l_song);
   }
   ui_ooc_chat_message->setFocus();
 }

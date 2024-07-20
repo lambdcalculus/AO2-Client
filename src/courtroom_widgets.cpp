@@ -178,6 +178,8 @@ void Courtroom::create_widgets()
   m_loading_timer->setSingleShot(true);
   m_loading_timer->setInterval(ao_config->loading_bar_delay());
 
+  p_DropdownMusicCategory = new QComboBox(this);
+
   ui_iniswap_dropdown = new QComboBox(this);
   ui_iniswap_dropdown->setInsertPolicy(QComboBox::NoInsert);
   {
@@ -221,6 +223,7 @@ void Courtroom::create_widgets()
   ui_music_menu = new QMenu(this);
   ui_music_menu_play = ui_music_menu->addAction(tr("Play"));
   ui_music_menu_insert_ooc = ui_music_menu->addAction(tr("Insert to OOC"));
+  p_ActionPinMusic = ui_music_menu->addAction(tr("Add song to pinned."));
 
 
   wCharaAnimList = new QListWidget(this);
@@ -450,7 +453,9 @@ void Courtroom::connect_widgets()
 
   connect(ui_emote_dropdown, SIGNAL(activated(int)), this, SLOT(on_emote_dropdown_changed(int)));
   connect(ui_iniswap_dropdown, SIGNAL(activated(int)), this, SLOT(on_iniswap_dropdown_changed(int)));
-  connect(ui_pos_dropdown, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed()));
+
+  connect(p_DropdownMusicCategory, SIGNAL(activated(int)), this, SLOT(OnMusicCategoryChanged()));
+  connect(p_DropdownPosition, SIGNAL(activated(int)), this, SLOT(on_pos_dropdown_changed()));
 
 
   connect(pCharaSelectSeries, SIGNAL(activated(int)), this, SLOT(onCharacterSelectPackageChanged(int)));
@@ -474,6 +479,9 @@ void Courtroom::connect_widgets()
   connect(ui_music_list, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_music_list_context_menu_requested(QPoint)));
 
   connect(ui_music_menu_play, SIGNAL(triggered()), this, SLOT(on_music_menu_play_triggered()));
+
+  connect(p_ActionPinMusic, SIGNAL(triggered()), this, SLOT(OnMusicMenuPinSongTriggered()));
+
   connect(ui_music_menu_insert_ooc, SIGNAL(triggered()), this, SLOT(on_music_menu_insert_ooc_triggered()));
 
   connect(ui_area_list, SIGNAL(clicked(QModelIndex)), this, SLOT(on_area_list_clicked()));
@@ -683,7 +691,8 @@ void Courtroom::reset_widget_names()
       {"emote_right", ui_emote_right},
       {"emote_dropdown", ui_emote_dropdown},
       {"iniswap_dropdown", ui_iniswap_dropdown},
-      {"pos_dropdown", ui_pos_dropdown},
+      {"pos_dropdown", p_DropdownPosition},
+      {"category_dropdown", p_DropdownMusicCategory},
       {"defense_bar", ui_defense_bar},
       {"prosecution_bar", ui_prosecution_bar},
       // Each ui_shouts[i]
@@ -1144,8 +1153,11 @@ void Courtroom::set_widgets()
   UpdateIniswapStylesheet();
   TimeDebugger::get().CheckpointTimer("Courtroom Setup", "Iniswap Dropdown");
 
-  set_size_and_pos(ui_pos_dropdown, "pos_dropdown", COURTROOM_DESIGN_INI, ao_app);
-  set_stylesheet(ui_pos_dropdown, "[POS DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
+  set_size_and_pos(p_DropdownMusicCategory, "category_dropdown", COURTROOM_DESIGN_INI, ao_app);
+  set_stylesheet(p_DropdownMusicCategory, "[CATEGORY DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
+
+  set_size_and_pos(p_DropdownPosition, "pos_dropdown", COURTROOM_DESIGN_INI, ao_app);
+  set_stylesheet(p_DropdownPosition, "[POS DROPDOWN]", COURTROOM_STYLESHEETS_CSS, ao_app);
 
 
   setupWidgetElement(ui_defense_bar, "defense_bar", "defensebar" + QString::number(defense_bar_state) + ".png", true);

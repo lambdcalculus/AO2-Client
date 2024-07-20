@@ -48,14 +48,14 @@ void Courtroom::construct_emotes()
   }
 
   ui_emote_dropdown = new QComboBox(this);
-  ui_pos_dropdown = new QComboBox(this);
-  ui_pos_dropdown->addItem(LocalizationManager::get().getLocalizationText("DEFAULT"));
-  ui_pos_dropdown->addItem(LocalizationManager::get().getLocalizationText("POS_WIT"), "wit");
-  ui_pos_dropdown->addItem(LocalizationManager::get().getLocalizationText("POS_DEF"), "def");
-  ui_pos_dropdown->addItem(LocalizationManager::get().getLocalizationText("POS_PRO"), "pro");
-  ui_pos_dropdown->addItem(LocalizationManager::get().getLocalizationText("POS_JUD"), "jud");
-  ui_pos_dropdown->addItem(LocalizationManager::get().getLocalizationText("POS_DEF_ASS"), "hld");
-  ui_pos_dropdown->addItem(LocalizationManager::get().getLocalizationText("POS_PRO_ASS"), "hlp");
+  p_DropdownPosition = new QComboBox(this);
+  p_DropdownPosition->addItem(LocalizationManager::get().getLocalizationText("DEFAULT"));
+  p_DropdownPosition->addItem(LocalizationManager::get().getLocalizationText("POS_WIT"), "wit");
+  p_DropdownPosition->addItem(LocalizationManager::get().getLocalizationText("POS_DEF"), "def");
+  p_DropdownPosition->addItem(LocalizationManager::get().getLocalizationText("POS_PRO"), "pro");
+  p_DropdownPosition->addItem(LocalizationManager::get().getLocalizationText("POS_JUD"), "jud");
+  p_DropdownPosition->addItem(LocalizationManager::get().getLocalizationText("POS_DEF_ASS"), "hld");
+  p_DropdownPosition->addItem(LocalizationManager::get().getLocalizationText("POS_PRO_ASS"), "hlp");
 }
 
 void Courtroom::construct_emote_page_layout()
