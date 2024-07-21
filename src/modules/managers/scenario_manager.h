@@ -108,6 +108,9 @@ public:
     if(!m_PinnedTracks.contains(t_track)) m_PinnedTracks.append(t_track);
   };
 
+  void ScreenshotViewport();
+
+
 private:
   ScenarioManager() {}
   static ScenarioManager s_Instance;

@@ -104,6 +104,7 @@ void GameManager::RenderAnimationLoop(AnimTypes t_type)
 
 void GameManager::setupGame()
 {
+  PathingManager::get().CreateInitialFolders();
   setupGameEffects();
   setupGameShouts();
   StartGameLoop();

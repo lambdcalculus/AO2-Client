@@ -7,6 +7,13 @@
 
 PathingManager PathingManager::s_Instance;
 
+void PathingManager::CreateInitialFolders()
+{
+  QDir().mkdir("base/screenshots");
+  QDir().mkdir("base/replays");
+  QDir().mkdir("base/configs");
+}
+
 QString PathingManager::getRunningPath()
 {
 #ifdef Q_OS_MACOS

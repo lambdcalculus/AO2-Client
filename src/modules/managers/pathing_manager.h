@@ -17,6 +17,9 @@ public:
     return s_Instance;
   }
 
+
+  void CreateInitialFolders();
+
   QString getRunningPath();
   QString getBasePath();
   QString getPackagePath(QString t_package);

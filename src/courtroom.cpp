@@ -2355,7 +2355,12 @@ void Courtroom::on_ooc_message_return_pressed()
 {
   const QString l_message = ui_ooc_chat_message->text();
 
-  if (l_message.startsWith("/rainbow") && !is_rainbow_enabled)
+  if (l_message.startsWith("/screenshot"))
+  {
+    ScenarioManager::get().ScreenshotViewport();
+    return;
+  }
+  else if (l_message.startsWith("/rainbow") && !is_rainbow_enabled)
   {
     ui_text_color->addItem(LocalizationManager::get().getLocalizationText("COLOR_RAINBOW"));
     ui_ooc_chat_message->clear();

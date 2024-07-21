@@ -1,5 +1,10 @@
 #include "scenario_manager.h"
 
+#include <drgraphicscene.h>
+#include <qpixmap.h>
+
+#include <modules/theme/thememanager.h>
+
 ScenarioManager ScenarioManager::s_Instance;
 
 QStringList ScenarioManager::ParseMusicList(QStringList l_musicList)
@@ -33,4 +38,19 @@ QStringList ScenarioManager::ParseMusicList(QStringList l_musicList)
 
   }
   return m_ReturnValue;
+}
+
+void ScenarioManager::ScreenshotViewport()
+{
+  DRGraphicsView *l_viewport = ThemeManager::get().GetWidgetType<DRGraphicsView>("viewport");
+
+  if(l_viewport != nullptr)
+  {
+    QPixmap l_Pixmap = l_viewport->grab();
+    QString l_FileName = QDateTime::currentDateTime().toString("yyyy-MM-dd (hh.mm.ss.z)'.png'");
+    QString l_Path = "base/screenshots/" + l_FileName;
+    if (!l_Pixmap.save(l_Path, "PNG")) {
+      qWarning("Failed to save the screenshot.");
+    }
+  }
 }
