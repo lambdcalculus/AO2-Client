@@ -16,12 +16,13 @@ void GraphicObjectAnimator::startAnimation(bool t_loop)
   QRectF boundingRect = mTargetWidget->boundingRect();
   QPointF centerBottom(boundingRect.width() / 2.0, boundingRect.height());
 
-  //mTargetWidget->setTransformOriginPoint(centerBottom);
+  mTargetWidget->setTransformOriginPoint(centerBottom);
   mTargetWidget->setCurrentAnimation(mAnimationPlayer);
   mAnimationPlayer->CacheAnimation();
   m_StartTick = GameManager::get().getUptime();
   mAnimationPlayer->Start(t_loop);
-  //updateAnimation();
+  updateAnimation();
+  mTargetWidget->show();
 }
 
 void GraphicObjectAnimator::updateAnimation()

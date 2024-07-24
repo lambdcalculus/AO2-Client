@@ -16,7 +16,20 @@ void VariableManager::addWatchlist(QString t_freeblock, QString t_variable)
 
 void VariableManager::setVariable(QString t_name, QString t_variable)
 {
+  QString l_PreviousVariableName = "previous_" + t_name;
+
+  if(mVariables.contains(t_name))
+  {
+    mVariables[l_PreviousVariableName] = mVariables[t_name];
+    updateRequiredImages(l_PreviousVariableName);
+  }
+
   mVariables[t_name] = t_variable;
+  updateRequiredImages(t_name);
+}
+
+void VariableManager::updateRequiredImages(QString t_name)
+{
   if(mVariableWatchlist.contains(t_name))
   {
     for(QString l_freeblock : mVariableWatchlist[t_name])

@@ -17,6 +17,7 @@
 #include "modules/networking/json_packet.h"
 
 #include <modules/managers/game_manager.h>
+#include <modules/managers/variable_manager.h>
 
 void AOApplication::connect_to_server(DRServerInfo p_server)
 {
@@ -433,6 +434,8 @@ void AOApplication::_p_handle_server_packet(DRPacket p_packet)
   {
     if (l_content.size() < 1)
       return;
+
+    VariableManager::get().setVariable("area_name", l_content.at(0));
     if (is_courtroom_constructed)
       m_courtroom->handleAnimation("RoomTransition");
   }

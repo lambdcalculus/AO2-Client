@@ -31,7 +31,6 @@ bool KeyframePlayer::playAnimation(QString t_animation, AnimTypes t_type)
 
 bool KeyframePlayer::loadAnimation(QString t_animation)
 {
-
   mAnimationObjects = {};
   mObjectAnimations = {};
 
@@ -49,6 +48,7 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
 
 
     DRSceneMovie * l_newObject = new DRSceneMovie(AOApplication::getInstance());
+    l_newObject->hide();
     scene()->addItem(l_newObject);
     l_newObject->setZValue(i);
     //ao_app->GetFirstThemeSpritePath({p_file_name, t_fallblockName});
@@ -92,6 +92,7 @@ bool KeyframePlayer::loadAnimation(QString t_animation)
   for(QString r_name : mNames)
   {
     mObjectAnimations[r_name]->startAnimation(false);
+    mAnimationObjects[r_name]->show();
   }
 
   AudioManager::get().PlaySFX(m_FileNameSFX);

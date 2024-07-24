@@ -21,6 +21,9 @@ public:
   void setWatchlist(QMap<QString, QStringList> t_watchlist);
   void addWatchlist(QString t_freeblock, QString t_variable);
   void setVariable(QString t_name, QString t_variable);
+
+  void updateRequiredImages(QString t_name);
+
   QString parseVariableString(QString t_name, QMap<QString, QString> t_map);
   QString parseVariableString(VariableMappedString t_varMappedString);
   QString getVariable(QString t_name);
