@@ -16,13 +16,19 @@ KeyframePlayer::KeyframePlayer(QWidget *parent) : DRGraphicsView(parent)
   connect(&GameManager::get(), SIGNAL(JudgeComplete()), this, SLOT(animationComplete()));
 }
 
-bool KeyframePlayer::playAnimation(QString t_animation, AnimTypes t_type)
+void KeyframePlayer::stopAnimation()
 {
-  mAnimType = t_type;
   if(!mObjectAnimations.isEmpty())
   {
     clearAniamtions();
   }
+}
+
+bool KeyframePlayer::playAnimation(QString t_animation, AnimTypes t_type)
+{
+  mAnimType = t_type;
+  stopAnimation();
+
   bool animationExists = loadAnimation(t_animation);
   GameManager::get().SetAnimationGroup(mAnimType, mAnimatiorObjects);
 

@@ -34,6 +34,8 @@ void ReplayScene::setMsgOperation(QMap<QString, QString> t_vars)
   ICMessageData *m_MessageData = new ICMessageData({}, false);
   m_MessageData->m_ShowName = mMsgVariables["showname"];
   m_MessageData->m_CharacterFolder = mMsgVariables["char"];
+
+  m_MessageData->m_CharacterOutfit = mMsgVariables["outfit"];
   m_MessageData->m_SFXName = mMsgVariables["sound"];
   m_MessageData->m_ShoutName = mMsgVariables["shout"];
   m_MessageData->m_CharacterEmotion = mMsgVariables["emote"];

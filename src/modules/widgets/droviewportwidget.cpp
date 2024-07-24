@@ -8,6 +8,7 @@
 #include "commondefs.h"
 #include <modules/managers/audio_manager.h>
 #include <modules/managers/scene_manager.h>
+#include <modules/managers/variable_manager.h>
 
 DROViewportWidget::DROViewportWidget(QWidget *parent) : DRGraphicsView{parent}
 {
@@ -48,6 +49,11 @@ void DROViewportWidget::ConstructViewport(ThemeSceneType t_scene)
 
 void DROViewportWidget::ProcessIncomingMessage(ICMessageData *t_IncomingMessage)
 {
+  //m_ShoutsPlayer->stopAnimation();
+  VariableManager::get().setMessageVariables(t_IncomingMessage);
+
+  if(!t_IncomingMessage->m_CharacterOutfit.trimmed().isEmpty()) t_IncomingMessage->m_CharacterFolder = (t_IncomingMessage->m_CharacterFolder + "/outfits/" +  t_IncomingMessage->m_CharacterOutfit);
+  if(t_IncomingMessage->m_PreAnimation.trimmed().isEmpty()) t_IncomingMessage->m_PreAnimation = "-";
   m_TextMessage->setTypewriterTarget("");
   m_TextShowname->setText(t_IncomingMessage->m_ShowName);
 
@@ -116,11 +122,12 @@ void DROViewportWidget::ConstructUserInterface()
 
   m_UserInterface->show();
 
+  ConstructText();
+
   m_ShoutsPlayer = new KeyframePlayer(this);
   m_ShoutsPlayer->resize(960, 544);
   connect(m_ShoutsPlayer, SIGNAL(ShoutAnimationFinished()), this, SLOT(OnObjectionDone()));
 
-  ConstructText();
 }
 
 void DROViewportWidget::ConstructText()

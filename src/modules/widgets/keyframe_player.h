@@ -13,6 +13,7 @@ class KeyframePlayer : public DRGraphicsView
   Q_OBJECT
 public:
   KeyframePlayer(QWidget *parent = nullptr);
+  void stopAnimation();
   bool playAnimation(QString t_animation, AnimTypes t_type);
   bool loadAnimation(QString t_animation);
   void updateView();

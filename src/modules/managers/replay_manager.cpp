@@ -89,6 +89,7 @@ void ReplayManager::RecordMessageIC(ICMessageData *m_Message)
 
   lNewOperation.mVariables["pre"] = m_Message->m_PreAnimation;
   lNewOperation.mVariables["char"] = m_Message->m_CharacterFolder;
+  lNewOperation.mVariables["outfit"] = m_Message->m_CharacterOutfit;
   lNewOperation.mVariables["emote"] = m_Message->m_CharacterEmotion;
   lNewOperation.mVariables["msg"] = m_Message->m_MessageContents;
   lNewOperation.mVariables["pos"] = m_Message->m_AreaPosition;
@@ -223,6 +224,7 @@ void ReplayManager::PlaybackProgressManual()
     if(mOp == "wtce")
     {
       p_SceneReplay->playWTCE(m_ReplayOperationsPlayback[m_PlaybackPositionIndex].mVariables["name"]);
+      if(m_ReplayOperationsPlayback[m_PlaybackPositionIndex].mVariables["name"] == "RoomTransition") mOp = "IGNORE";
     }
 
     if(mOp == "bgm")

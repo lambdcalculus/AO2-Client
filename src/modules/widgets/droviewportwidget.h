@@ -40,6 +40,11 @@ public:
   //Visual Updates
   void UpdateBackground(QString t_position = "wit");
 
+  bool isPlayingAnimation()
+  {
+    return false;
+  }
+
   AOApplication *m_AOApp = nullptr;
 
 signals:

@@ -3,6 +3,7 @@
 
 #include "drstickerviewer.h"
 #include "datatypes.h"
+#include "scenario_manager.h"
 #include <QString>
 #include <qmap.h>
 
@@ -20,6 +21,11 @@ public:
 
   void setWatchlist(QMap<QString, QStringList> t_watchlist);
   void addWatchlist(QString t_freeblock, QString t_variable);
+  void setMessageVariables(ICMessageData *m_MessageData)
+  {
+    setVariable("speaker_chara", m_MessageData->m_CharacterFolder);
+    setVariable("speaker_outfit", m_MessageData->m_CharacterOutfit);
+  };
   void setVariable(QString t_name, QString t_variable);
 
   void updateRequiredImages(QString t_name);
