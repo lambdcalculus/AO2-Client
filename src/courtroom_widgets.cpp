@@ -394,6 +394,7 @@ void Courtroom::create_widgets()
   ui_player_list_right = ThemeManager::get().CreateWidgetButton(SceneTypeCourtroom, "player_list_right", "arrow_right.png", "->", this);
   ui_area_look = ThemeManager::get().CreateWidgetButton(SceneTypeCourtroom, "area_look", "area_look.png", LocalizationManager::get().getLocalizationText("TITLE_LOOK"), this);
 
+  p_ButtonScreenshot = ThemeManager::get().CreateWidgetButton(SceneTypeCourtroom, "screenshot", "screenshot.png", "Screenshot", this);
   constructEvidenceList();
   construct_playerlist();
 
@@ -573,6 +574,10 @@ void Courtroom::connect_widgets()
   connect(ui_player_list_right, SIGNAL(clicked()), this, SLOT(on_player_list_right_clicked()));
   connect(ui_area_look, SIGNAL(clicked()), this, SLOT(on_area_look_clicked()));
 
+  connect(p_ButtonScreenshot, SIGNAL(clicked()), this, SLOT(onScreenshotClicked()));
+
+
+
 }
 
 
@@ -748,7 +753,8 @@ void Courtroom::reset_widget_names()
       {"evidence_right", wEvidenceRight},
       {"evidence_present", wEvidencePresent},
       {"chara_animations", wCharaAnimList},
-      {"shouts_player", wShoutsLayer}
+      {"shouts_player", wShoutsLayer},
+      {"screenshot", p_ButtonScreenshot}
   };
 
     ThemeManager::get().RegisterWidgetGenericBulk(widget_names);

@@ -86,11 +86,13 @@ public:
 
   QStringList GetCategoryMusic(QString t_category)
   {
+    QStringList l_List = {};
+    l_List.append(t_category);
     if(m_CurrentMusicList.contains(t_category))
     {
-      return m_CurrentMusicList[t_category];
+      l_List.append(m_CurrentMusicList[t_category]);
     }
-    return {};
+    return l_List;
   };
 
   QStringList GetMusicCategories()

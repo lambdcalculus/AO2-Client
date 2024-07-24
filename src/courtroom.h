@@ -677,6 +677,10 @@ private:
   AOButton *ui_player_list_left = nullptr;
   AOButton *ui_player_list_right = nullptr;
   AOButton *ui_area_look = nullptr;
+
+
+  AOButton *p_ButtonScreenshot = nullptr;
+
   DRTextEdit *ui_area_desc = nullptr;
 
 
@@ -892,6 +896,7 @@ private slots:
   void on_player_list_left_clicked();
   void on_player_list_right_clicked();
   void on_area_look_clicked();
+  void onScreenshotClicked();
 
   void ping_server();
 

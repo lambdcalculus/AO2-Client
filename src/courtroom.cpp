@@ -3296,6 +3296,12 @@ void Courtroom::on_player_list_right_clicked()
     ui_ic_chat_message_field->setFocus();
 }
 
+void Courtroom::onScreenshotClicked()
+{
+  AudioManager::get().PlaySFX("screenshot");
+  ScenarioManager::get().ScreenshotViewport();
+}
+
 void Courtroom::on_area_look_clicked()
 {
   if(m_current_reportcard_reason == ReportCardReason::PendingLook)
