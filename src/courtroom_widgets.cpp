@@ -396,6 +396,8 @@ void Courtroom::create_widgets()
   ui_area_look = ThemeManager::get().CreateWidgetButton(SceneTypeCourtroom, "area_look", "area_look.png", LocalizationManager::get().getLocalizationText("TITLE_LOOK"), this);
 
   p_ButtonScreenshot = ThemeManager::get().CreateWidgetButton(SceneTypeCourtroom, "screenshot", "screenshot.png", "Screenshot", this);
+  // p_ScreenshotShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S), this);
+
   constructEvidenceList();
   construct_playerlist();
 
